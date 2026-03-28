@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  DOWNLINE
+  SPONSOR
+  UPLINE
+  ADMIN
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+  SAVINGS_LOCK
+  SAVINGS_UNLOCK
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String
+  name            String
+  role            Role      @default(DOWNLINE)
+  isActive        Boolean   @default(true)
+  subscriptionEnd DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Hierarchy
+  sponsorId String?
+  sponsor   User?   @relation("SponsorDownlines", fields: [sponsorId], references: [id])
+  downlines User[]  @relation("SponsorDownlines")
+
+  uplineId  String?
+  upline    User?   @relation("UplineUsers", fields: [uplineId], references: [id])
+  uplineUsers User[] @relation("UplineUsers")
+
+  // Relations
+  wallet              Wallet?
+  initiatedWithdrawals Withdrawal[] @relation("WithdrawalInitiator")
+  targetWithdrawals   Withdrawal[] @relation("WithdrawalDownline")
+  approvedWithdrawals Withdrawal[] @relation("WithdrawalApprover")
+  notifications       Notification[]
+  auditLogs           AuditLog[]
+}
+
+model Wallet {
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paystackAccountNumber String?
+  paystackBankName      String?
+  paystackAccountName   String?
+  paystackBankCode      String?
+  paystackReference     String?   @unique
+  totalEarned           Float     @default(0)
+  totalWithdrawn        Float     @default(0)
+  savingsBalance        Float     @default(0)
+  savingsLockedUntil    DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  walletId    String
+  wallet      Wallet            @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type        TransactionType
+  amount      Float
+  description String
+  reference   String?           @unique
+  status      TransactionStatus @default(PENDING)
+  metadata    Json?
+  createdAt   DateTime          @default(now())
+}
+
+model Withdrawal {
+  id          String           @id @default(cuid())
+  initiatorId String
+  initiator   User             @relation("WithdrawalInitiator", fields: [initiatorId], references: [id])
+  downlineId  String
+  downline    User             @relation("WithdrawalDownline", fields: [downlineId], references: [id])
+  approverId  String?
+  approver    User?            @relation("WithdrawalApprover", fields: [approverId], references: [id])
+  amount      Float
+  reason      String?
+  bankName    String?
+  accountNumber String?
+  accountName String?
+  status      WithdrawalStatus @default(PENDING)
+  rejectionReason String?
+  approvedAt  DateTime?
+  completedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String?
+  details   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  plan      String   @default("basic")
+  amount    Float
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  reference String?  @unique
+  createdAt DateTime @default(now())
+}
