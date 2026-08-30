@@ -1,0 +1,1739 @@
+<title>PatientLoop AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* ============================================================
+   PatientLoop AI — tokens
+   ============================================================ */
+:root{
+  --ground:#F6F9FB;
+  --ground-2:#FFFFFF;
+  --surface:#FFFFFF;
+  --surface-2:#EFF4F8;
+  --surface-3:#E7EEF4;
+  --ink:#0A1E38;
+  --ink-2:#465C74;
+  --ink-3:#7C8DA1;
+  --line:#DFE8EF;
+  --line-2:#EDF2F6;
+  --accent:#0E9F97;
+  --accent-2:#1D8FD1;
+  --accent-deep:#0B7C79;
+  --accent-soft:#E2F5F2;
+  --accent-glow:rgba(14,159,151,.18);
+  --warn:#C8813A;
+  --warn-soft:#FBF0E2;
+  --band:#08182C;
+  --band-2:#0D2743;
+  --band-ink:#EAF3F9;
+  --band-ink-2:#9FB6CB;
+  --band-line:rgba(255,255,255,.10);
+  --shadow-s:0 1px 2px rgba(10,30,56,.05), 0 2px 8px rgba(10,30,56,.04);
+  --shadow-m:0 2px 4px rgba(10,30,56,.04), 0 12px 32px rgba(10,30,56,.07);
+  --shadow-l:0 4px 8px rgba(10,30,56,.05), 0 28px 60px rgba(10,30,56,.12);
+  --r-s:10px; --r-m:16px; --r-l:24px; --r-xl:34px;
+  --solid-bg:#0A1E38; --solid-fg:#FFFFFF;
+  --maxw:1180px;
+  --display:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#061320;
+    --ground-2:#0A1D2E;
+    --surface:#0B2135;
+    --surface-2:#0F2B42;
+    --surface-3:#14374F;
+    --ink:#E9F2F8;
+    --ink-2:#A2B8CB;
+    --ink-3:#71889D;
+    --line:#183349;
+    --line-2:#122A3E;
+    --accent:#2ED3C3;
+    --accent-2:#54B4EE;
+    --accent-deep:#1FB5A9;
+    --accent-soft:#0D3A3B;
+    --accent-glow:rgba(46,211,195,.20);
+    --warn:#E0A05C;
+    --warn-soft:#2E2416;
+    --band:#030C15;
+    --band-2:#07192B;
+    --band-ink:#EAF3F9;
+    --band-ink-2:#93AABF;
+    --band-line:rgba(255,255,255,.09);
+    --shadow-s:0 1px 2px rgba(0,0,0,.4);
+    --shadow-m:0 2px 4px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.35);
+    --shadow-l:0 4px 8px rgba(0,0,0,.3), 0 28px 60px rgba(0,0,0,.5);
+    --solid-bg:#E9F2F8; --solid-fg:#08182C;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#061320; --ground-2:#0A1D2E; --surface:#0B2135; --surface-2:#0F2B42; --surface-3:#14374F;
+  --ink:#E9F2F8; --ink-2:#A2B8CB; --ink-3:#71889D; --line:#183349; --line-2:#122A3E;
+  --accent:#2ED3C3; --accent-2:#54B4EE; --accent-deep:#1FB5A9; --accent-soft:#0D3A3B; --accent-glow:rgba(46,211,195,.20);
+  --warn:#E0A05C; --warn-soft:#2E2416;
+  --band:#030C15; --band-2:#07192B; --band-ink:#EAF3F9; --band-ink-2:#93AABF; --band-line:rgba(255,255,255,.09);
+  --shadow-s:0 1px 2px rgba(0,0,0,.4);
+  --shadow-m:0 2px 4px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.35);
+  --shadow-l:0 4px 8px rgba(0,0,0,.3), 0 28px 60px rgba(0,0,0,.5);
+  --solid-bg:#E9F2F8; --solid-fg:#08182C;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--display);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%}
+a{color:inherit}
+h1,h2,h3,h4{margin:0;text-wrap:balance;letter-spacing:-.028em;font-weight:700;line-height:1.06}
+p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.narrow{max-width:760px}
+section{position:relative}
+.sec{padding:104px 0}
+.sec-tight{padding:76px 0}
+@media (max-width:760px){ .sec{padding:68px 0} .sec-tight{padding:52px 0} }
+
+.eyebrow{
+  font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent-deep);display:inline-flex;align-items:center;gap:9px;
+}
+.eyebrow::before{content:"";width:20px;height:1px;background:currentColor;opacity:.5}
+.band .eyebrow{color:var(--accent)}
+.h1{font-size:clamp(40px,6.4vw,74px);font-weight:800;letter-spacing:-.038em}
+.h2{font-size:clamp(31px,4.3vw,52px);font-weight:800;letter-spacing:-.034em}
+.h3{font-size:clamp(20px,2.2vw,25px);font-weight:700;letter-spacing:-.02em}
+.lede{font-size:clamp(17px,1.7vw,20.5px);line-height:1.55;color:var(--ink-2);font-weight:400}
+.serif{font-family:var(--serif);font-weight:350;font-size:clamp(18px,1.9vw,21.5px);line-height:1.62;color:var(--ink-2)}
+.serif em{font-style:italic;color:var(--ink)}
+.sec-head{display:flex;flex-direction:column;gap:18px;max-width:720px}
+.sec-head.center{margin:0 auto;text-align:center;align-items:center}
+.note{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-3);text-transform:uppercase}
+
+/* Buttons */
+.btn{
+  --bg:var(--ink); --fg:#fff;
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:15px 26px;border-radius:100px;border:1px solid transparent;
+  background:var(--bg);color:var(--fg);font-weight:600;font-size:15.5px;letter-spacing:-.01em;
+  text-decoration:none;cursor:pointer;overflow:hidden;isolation:isolate;white-space:nowrap;
+  transition:transform .28s cubic-bezier(.2,.8,.3,1), box-shadow .28s, background .2s;
+  box-shadow:0 1px 2px rgba(10,30,56,.16), 0 10px 22px -12px rgba(10,30,56,.5);
+}
+.btn::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.22) 48%,transparent 72%);
+  transform:translateX(-120%);transition:transform .7s cubic-bezier(.3,.7,.3,1);
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(10,30,56,.16), 0 18px 34px -14px rgba(10,30,56,.55)}
+.btn:hover::after{transform:translateX(120%)}
+.btn:active{transform:translateY(0)}
+.btn-accent{--bg:linear-gradient(135deg,var(--accent) 0%,var(--accent-deep) 100%);--fg:#fff;box-shadow:0 1px 2px var(--accent-glow),0 14px 30px -12px var(--accent-glow)}
+.btn-ghost{--bg:transparent;--fg:var(--ink);border-color:var(--line);box-shadow:none;background:var(--surface)}
+.btn-ghost:hover{border-color:var(--accent);box-shadow:0 10px 24px -14px var(--accent-glow)}
+.band .btn-ghost{--fg:var(--band-ink);background:rgba(255,255,255,.05);border-color:var(--band-line)}
+.btn-lg{padding:19px 34px;font-size:17px}
+.btn .arw{transition:transform .3s cubic-bezier(.2,.8,.3,1)}
+.btn:hover .arw{transform:translateX(4px)}
+
+/* Reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.2,.7,.3,1),transform .8s cubic-bezier(.2,.7,.3,1)}
+.rv.in{opacity:1;transform:none}
+.rv-l{transform:translateX(-26px)} .rv-r{transform:translateX(26px)}
+.rv-s{transform:translateY(14px) scale(.975)}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1!important;transform:none!important;transition:none!important}
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.06s!important;scroll-behavior:auto!important}
+}
+html{scroll-behavior:smooth}
+section[id]{scroll-margin-top:96px}
+
+/* Dark bands */
+.band{background:var(--band);color:var(--band-ink)}
+.band h1,.band h2,.band h3{color:var(--band-ink)}
+.band .lede,.band .serif{color:var(--band-ink-2)}
+.band .serif em{color:var(--band-ink)}
+.band .note{color:var(--band-ink-2);opacity:.75}
+</style>
+
+<style>
+/* ============================================================
+   Navigation
+   ============================================================ */
+.progress{position:fixed;top:0;left:0;height:2px;width:100%;z-index:120;background:transparent;pointer-events:none}
+.progress i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent-2),var(--accent));transition:width .1s linear}
+.nav{
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:color-mix(in srgb,var(--ground) 78%,transparent);
+  border-bottom:1px solid transparent;transition:border-color .3s,background .3s,box-shadow .3s;
+}
+.nav.stuck{border-bottom-color:var(--line);box-shadow:0 6px 24px -18px rgba(10,30,56,.5)}
+.nav-in{display:flex;align-items:center;gap:24px;height:70px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0}
+.brand svg{display:block;width:34px;height:34px}
+.brand-tx{display:flex;flex-direction:column;line-height:1}
+.brand-tx b{font-size:17.5px;font-weight:800;letter-spacing:-.032em}
+.brand-tx b span{color:var(--accent)}
+.brand-tx small{font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;color:var(--ink-3);margin-top:3px;text-transform:uppercase}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nav-links a{
+  position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:var(--ink-2);
+  padding:8px 13px;border-radius:8px;transition:color .2s,background .2s;
+}
+.nav-links a:hover{color:var(--ink);background:var(--surface-2)}
+.nav-cta{margin-left:auto}
+.nav-links + .nav-cta{margin-left:12px}
+@media (max-width:900px){ .nav-links{display:none} }
+@media (max-width:620px){ .nav-cta .btn{padding:12px 17px;font-size:14px} .hide-sm{display:none} }
+@media (max-width:400px){ .brand-tx small{display:none} .nav-in{gap:12px} }
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero{position:relative;overflow:hidden;padding:76px 0 96px}
+.hero-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-bg .mesh{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;
+  animation:drift 22s ease-in-out infinite alternate;
+}
+.mesh-a{width:620px;height:620px;top:-260px;right:-160px;background:radial-gradient(circle,var(--accent-glow),transparent 68%)}
+.mesh-b{width:520px;height:520px;top:180px;left:-220px;background:radial-gradient(circle,rgba(29,143,209,.16),transparent 68%);animation-delay:-8s}
+.mesh-c{width:420px;height:420px;bottom:-200px;left:44%;background:radial-gradient(circle,var(--accent-glow),transparent 70%);animation-delay:-14s}
+@keyframes drift{ from{transform:translate3d(0,0,0) scale(1)} to{transform:translate3d(28px,-34px,0) scale(1.12)} }
+.grid-lines{
+  position:absolute;inset:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:74px 74px;
+  mask-image:radial-gradient(ellipse 78% 62% at 50% 32%,#000 5%,transparent 74%);
+  -webkit-mask-image:radial-gradient(ellipse 78% 62% at 50% 32%,#000 5%,transparent 74%);
+  opacity:.55;
+}
+.hero-in{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center}
+@media (max-width:980px){ .hero-in{grid-template-columns:1fr;gap:52px} .hero{padding:52px 0 72px} }
+
+.hero-copy{display:flex;flex-direction:column;gap:26px;align-items:flex-start}
+.tagpill{
+  display:inline-flex;align-items:center;gap:10px;padding:7px 15px 7px 8px;border-radius:100px;
+  background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-s);
+  font-size:13px;font-weight:500;color:var(--ink-2);
+}
+.tagpill b{
+  display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:100px;
+  background:var(--accent-soft);color:var(--accent-deep);font-family:var(--mono);
+  font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);position:relative}
+.pulse-dot::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1px solid var(--accent);animation:ping 2.2s ease-out infinite}
+@keyframes ping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.1);opacity:0}}
+
+h1.hero-h{font-size:clamp(38px,5.6vw,68px);font-weight:800;letter-spacing:-.04em;line-height:1.02}
+h1.hero-h .w{display:inline-block;opacity:0;transform:translateY(26px) rotate(2deg);animation:wordUp .8s cubic-bezier(.16,.9,.3,1) forwards}
+@keyframes wordUp{to{opacity:1;transform:none}}
+.uline{position:relative;display:inline-block;color:var(--accent-deep);white-space:nowrap}
+.uline svg{position:absolute;left:0;right:0;bottom:-.16em;width:100%;height:.32em;overflow:visible}
+.uline path{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;
+  stroke-dasharray:420;stroke-dashoffset:420;animation:draw 1.1s cubic-bezier(.6,0,.2,1) 1.15s forwards;opacity:.85}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+.hero-cta{display:flex;flex-wrap:wrap;gap:13px}
+.hero-trust{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;font-size:13.5px;color:var(--ink-3);font-weight:500}
+.hero-trust i{width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.7;display:inline-block}
+.hero-trust span{display:inline-flex;align-items:center;gap:8px}
+
+/* ============================================================
+   Phone / live conversation
+   ============================================================ */
+.stage{position:relative;display:flex;justify-content:center;perspective:1400px}
+.phone{
+  position:relative;width:340px;max-width:100%;border-radius:44px;padding:11px;
+  background:linear-gradient(160deg,#22405f,#08182c 60%);
+  box-shadow:var(--shadow-l),0 0 0 1px rgba(255,255,255,.08) inset;
+  transform:rotateY(-7deg) rotateX(3deg) translateZ(0);
+  transition:transform .9s cubic-bezier(.2,.8,.3,1);
+  animation:float 7s ease-in-out infinite;
+}
+.stage:hover .phone{transform:rotateY(0deg) rotateX(0deg)}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -12px}}
+.phone-screen{position:relative;border-radius:34px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column;height:592px}
+.notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:96px;height:22px;border-radius:100px;background:#08182c;z-index:5}
+.ph-top{padding:28px 16px 12px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;gap:11px;background:var(--surface)}
+.ph-av{width:34px;height:34px;border-radius:11px;background:linear-gradient(140deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0}
+.ph-who{flex:1;min-width:0}
+.ph-who b{display:block;font-size:13.5px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph-who small{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--accent-deep)}
+.ph-time{font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+.ph-body{flex:1;overflow:hidden;padding:16px 14px 8px;display:flex;flex-direction:column;gap:9px;justify-content:flex-end;background:var(--surface)}
+.msg{max-width:83%;padding:11px 14px;font-size:14px;line-height:1.44;border-radius:18px;position:relative;
+  animation:pop .42s cubic-bezier(.2,1.3,.4,1) both;word-wrap:break-word}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:none}}
+.msg.lead{align-self:flex-start;background:var(--surface-2);color:var(--ink);border-bottom-left-radius:6px}
+.msg.pl{align-self:flex-end;background:linear-gradient(150deg,var(--accent),var(--accent-deep));color:#fff;border-bottom-right-radius:6px;
+  box-shadow:0 8px 18px -10px var(--accent-glow)}
+.msg .tag{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.62;margin-bottom:4px}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:13px 15px;background:var(--surface-2);border-radius:18px;border-bottom-left-radius:6px;animation:pop .3s ease both}
+.typing.pl{align-self:flex-end;background:linear-gradient(150deg,var(--accent),var(--accent-deep));border-bottom-right-radius:6px;border-bottom-left-radius:18px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--ink-3);animation:blink 1.3s ease-in-out infinite}
+.typing.pl i{background:rgba(255,255,255,.85)}
+.typing i:nth-child(2){animation-delay:.18s}.typing i:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.booked{
+  margin:6px 0 2px;padding:13px 14px;border-radius:16px;background:var(--accent-soft);
+  border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);display:flex;gap:11px;align-items:center;
+  animation:stamp .55s cubic-bezier(.2,1.5,.4,1) both;
+}
+@keyframes stamp{from{opacity:0;transform:scale(.8) rotate(-3deg)}to{opacity:1;transform:none}}
+.booked .ck{width:30px;height:30px;border-radius:9px;background:var(--accent);display:grid;place-items:center;flex-shrink:0}
+.booked b{display:block;font-size:13px;font-weight:700;color:var(--accent-deep);letter-spacing:-.01em}
+.booked small{display:block;font-size:11.5px;color:var(--ink-2)}
+.ph-foot{padding:10px 14px 15px;border-top:1px solid var(--line-2);display:flex;gap:8px;align-items:center;background:var(--surface)}
+.ph-input{flex:1;height:34px;border-radius:100px;background:var(--surface-2);display:flex;align-items:center;padding:0 14px;
+  font-size:12.5px;color:var(--ink-3)}
+.ph-send{width:34px;height:34px;border-radius:50%;background:var(--accent);display:grid;place-items:center;flex-shrink:0}
+
+.scenarios{display:flex;gap:7px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+.scn{
+  padding:8px 15px;border-radius:100px;border:1px solid var(--line);background:var(--surface);
+  font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:all .25s;
+}
+.scn:hover{border-color:var(--accent);color:var(--ink)}
+.scn[aria-selected="true"]{background:var(--solid-bg);color:var(--solid-fg);border-color:var(--solid-bg)}
+.scn-hint{text-align:center;margin-top:12px}
+
+/* floating chips around phone */
+.chip{
+  position:absolute;z-index:6;display:flex;align-items:center;gap:9px;padding:9px 14px 9px 10px;border-radius:14px;
+  background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-m);
+  font-size:12.5px;font-weight:600;white-space:nowrap;
+  animation:floaty 6s ease-in-out infinite;
+}
+.chip small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:400}
+.chip .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex-shrink:0}
+.chip-1{top:12%;left:-6%;animation-delay:-1s}
+.chip-2{top:47%;right:-11%;animation-delay:-3s}
+.chip-3{bottom:9%;left:-9%;animation-delay:-5s}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@media (max-width:1080px){ .chip-1{left:-2%} .chip-2{right:-2%} .chip-3{left:-2%} }
+@media (max-width:520px){ .chip{display:none} }
+</style>
+
+<style>
+/* ============================================================
+   Trust strip / logo marquee
+   ============================================================ */
+.strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--ground-2);padding:22px 0;overflow:hidden}
+.marquee{display:flex;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+.mq-track{display:flex;gap:52px;padding-right:52px;flex-shrink:0;animation:mq 34s linear infinite;align-items:center}
+.marquee:hover .mq-track{animation-play-state:paused}
+.mq-rev .mq-track{animation-direction:reverse;animation-duration:42s}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+.mq-item{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;color:var(--ink-2);white-space:nowrap;
+  transition:color .25s,opacity .25s;opacity:.78}
+.mq-item:hover{color:var(--ink);opacity:1}
+.mq-item .dot{width:9px;height:9px;border-radius:3px;background:var(--accent);opacity:.55}
+
+/* ============================================================
+   Problem / leak visual
+   ============================================================ */
+.leak-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:44px}
+@media (max-width:820px){ .leak-grid{grid-template-columns:1fr} }
+.leak{border-radius:var(--r-l);border:1px solid var(--line);background:var(--surface);padding:26px;box-shadow:var(--shadow-s);position:relative;overflow:hidden}
+.leak.bad{background:linear-gradient(180deg,var(--warn-soft),var(--surface) 60%)}
+.leak.good{background:linear-gradient(180deg,var(--accent-soft),var(--surface) 60%);border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}
+.leak h4{font-size:15px;font-weight:700;display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.leak .sub{font-size:13.5px;color:var(--ink-2);min-height:38px}
+.dots{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin:22px 0 18px;max-width:340px}
+.dots i{aspect-ratio:1;border-radius:50%;background:var(--surface-3);display:block;transform:scale(.5);opacity:0;
+  transition:transform .5s cubic-bezier(.2,1.4,.4,1),opacity .5s,background .5s}
+.in .dots i{transform:scale(1);opacity:1}
+.dots i.on{background:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.dots i.gone{background:transparent;box-shadow:inset 0 0 0 1.5px var(--warn);opacity:.42}
+.leak .tally{display:flex;align-items:baseline;gap:9px;padding-top:14px;border-top:1px solid var(--line-2)}
+.leak .tally b{font-size:30px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.leak.good .tally b{color:var(--accent-deep)}
+.leak .tally span{font-size:13px;color:var(--ink-2)}
+.pain-list{display:grid;gap:0;margin-top:36px;border-top:1px solid var(--line)}
+.pain{display:flex;align-items:center;gap:18px;padding:19px 4px;border-bottom:1px solid var(--line);position:relative;
+  transition:background .3s,padding-left .3s}
+.pain:hover{background:var(--surface);padding-left:14px}
+.pain .n{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;flex-shrink:0;width:26px}
+.pain p{flex:1;font-size:16.5px;font-weight:500}
+.pain .lost{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--warn);
+  opacity:0;transform:translateX(-8px);transition:all .3s;white-space:nowrap}
+.pain:hover .lost{opacity:1;transform:none}
+@media (max-width:640px){ .pain .lost{display:none} .pain p{font-size:15px} }
+.verdict{margin-top:40px;padding:30px 34px;border-radius:var(--r-l);background:var(--band);color:var(--band-ink);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px}
+.verdict p{font-family:var(--serif);font-size:clamp(20px,2.5vw,27px);font-weight:400;line-height:1.3;letter-spacing:-.02em;max-width:640px}
+.verdict em{font-style:italic;color:var(--accent)}
+
+/* ============================================================
+   Feature cards
+   ============================================================ */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+@media (max-width:940px){ .cards{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:600px){ .cards{grid-template-columns:1fr} }
+.card{
+  position:relative;padding:28px 26px 26px;border-radius:var(--r-l);background:var(--surface);
+  border:1px solid var(--line);box-shadow:var(--shadow-s);overflow:hidden;
+  transition:transform .4s cubic-bezier(.2,.8,.3,1),box-shadow .4s,border-color .4s;
+}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),var(--accent-glow),transparent 62%);
+  opacity:0;transition:opacity .4s;pointer-events:none}
+.card:hover{transform:translateY(-5px);box-shadow:var(--shadow-m);border-color:color-mix(in srgb,var(--accent) 34%,var(--line))}
+.card:hover::before{opacity:1}
+.card .ico{width:46px;height:46px;border-radius:14px;background:var(--accent-soft);display:grid;place-items:center;margin-bottom:18px;
+  transition:transform .45s cubic-bezier(.2,1.4,.4,1),background .3s}
+.card:hover .ico{transform:scale(1.08) rotate(-4deg)}
+.card .ico svg{width:23px;height:23px;stroke:var(--accent-deep);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-size:18.5px;margin-bottom:9px;letter-spacing:-.022em}
+.card p{font-size:15px;color:var(--ink-2);line-height:1.55}
+.card .idx{position:absolute;top:24px;right:24px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--ink-3);opacity:.7}
+.card.wide{grid-column:span 1}
+@media (min-width:941px){ .card:nth-child(4),.card:nth-child(5){grid-column:span 1} }
+
+/* ============================================================
+   How it works — flow
+   ============================================================ */
+.flow{position:relative;margin-top:52px;display:grid;gap:0}
+.flow::before{content:"";position:absolute;left:27px;top:34px;bottom:34px;width:2px;background:var(--line)}
+.flow-fill{position:absolute;left:27px;top:34px;width:2px;background:linear-gradient(180deg,var(--accent-2),var(--accent));
+  height:0;transition:height .1s linear;border-radius:2px;box-shadow:0 0 12px var(--accent-glow)}
+.step{position:relative;display:grid;grid-template-columns:56px 1fr;gap:22px;padding:0 0 40px}
+.step:last-child{padding-bottom:0}
+.step .bul{
+  width:56px;height:56px;border-radius:19px;background:var(--surface);border:1px solid var(--line);
+  display:grid;place-items:center;font-family:var(--mono);font-size:14px;font-weight:500;color:var(--ink-3);
+  position:relative;z-index:2;transition:all .5s cubic-bezier(.2,1.2,.4,1);
+}
+.step.lit .bul{background:var(--solid-bg);color:var(--solid-fg);border-color:var(--solid-bg);transform:scale(1.06)}
+.step.lit .bul::after{content:"";position:absolute;inset:-6px;border-radius:24px;border:1px solid var(--accent);opacity:.45;animation:ping 2.4s ease-out infinite}
+.step-body{padding-top:6px;min-width:0}
+.step-body h3{font-size:21px;margin-bottom:7px}
+.step-body p{color:var(--ink-2);font-size:15.5px;max-width:520px}
+.step-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.step-chips span{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 10px;border-radius:7px;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line-2)}
+.step.lit .step-chips span{background:var(--accent-soft);color:var(--accent-deep);border-color:transparent}
+@media (max-width:560px){ .step{grid-template-columns:44px 1fr;gap:16px} .step .bul{width:44px;height:44px;border-radius:15px}
+  .flow::before,.flow-fill{left:21px} }
+
+/* ============================================================
+   Demo / video
+   ============================================================ */
+.videobox{
+  position:relative;margin-top:44px;border-radius:var(--r-xl);overflow:hidden;
+  background:linear-gradient(150deg,var(--band-2),var(--band));
+  border:1px solid var(--band-line);box-shadow:var(--shadow-l);aspect-ratio:16/9;
+  display:grid;place-items:center;cursor:pointer;
+}
+.videobox .scan{position:absolute;inset:0;background:
+  linear-gradient(transparent 0 50%,rgba(255,255,255,.025) 50% 100%);background-size:100% 4px;pointer-events:none}
+.videobox .halo{position:absolute;width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent 62%);
+  filter:blur(40px);animation:drift 14s ease-in-out infinite alternate}
+.play{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;padding:20px}
+.play-btn{width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.94);display:grid;place-items:center;
+  box-shadow:0 20px 50px -18px rgba(0,0,0,.7);transition:transform .35s cubic-bezier(.2,1.3,.4,1)}
+.videobox:hover .play-btn{transform:scale(1.09)}
+.play-btn::after{content:"";position:absolute;width:84px;height:84px;border-radius:50%;border:1px solid rgba(255,255,255,.4);animation:ping 2.6s ease-out infinite}
+.play-btn svg{margin-left:5px}
+.play b{color:#fff;font-size:19px;font-weight:700;letter-spacing:-.02em}
+.play small{color:var(--band-ink-2);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.pipeline{display:flex;gap:0;margin-top:26px;border-radius:var(--r-m);border:1px solid var(--band-line);
+  background:rgba(255,255,255,.04);overflow-x:auto}
+.pl-step{flex:1;min-width:132px;padding:16px 14px;border-right:1px solid var(--band-line);position:relative;transition:background .4s}
+.pl-step:last-child{border-right:0}
+.pl-step.act{background:rgba(46,211,195,.13)}
+.pl-step small{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--band-ink-2);margin-bottom:5px}
+.pl-step b{font-size:13.5px;font-weight:600;letter-spacing:-.01em;display:block;color:var(--band-ink);opacity:.62;transition:opacity .4s}
+.pl-step.act b{color:var(--accent);opacity:1}
+.pl-step .bar{position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--accent);transition:width .1s linear}
+
+/* ============================================================
+   Before / after
+   ============================================================ */
+.switch{display:inline-flex;padding:4px;border-radius:100px;background:var(--surface-2);border:1px solid var(--line);gap:2px;margin-top:6px}
+.switch button{padding:9px 20px;border-radius:100px;border:0;background:transparent;font-size:14px;font-weight:600;cursor:pointer;
+  color:var(--ink-2);transition:all .3s}
+.switch button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-s)}
+.switch button.on-good[aria-pressed="true"]{background:var(--accent);color:#fff}
+.compare{margin-top:36px;border-radius:var(--r-l);border:1px solid var(--line);background:var(--surface);overflow:hidden;box-shadow:var(--shadow-s)}
+.cmp-head{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+.cmp-head div{padding:16px 24px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
+.cmp-head .a{color:var(--warn);background:var(--warn-soft)}
+.cmp-head .b{color:var(--accent-deep);background:var(--accent-soft)}
+.cmp-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line-2)}
+.cmp-row:last-child{border-bottom:0}
+.cmp-row>div{padding:17px 24px;font-size:15.5px;display:flex;align-items:center;gap:11px;transition:background .3s}
+.cmp-row .a{color:var(--ink-2);border-right:1px solid var(--line-2)}
+.cmp-row .b{font-weight:500}
+.cmp-row:hover .b{background:var(--accent-soft)}
+.cmp-row .mk{width:18px;height:18px;border-radius:50%;flex-shrink:0;display:grid;place-items:center}
+.cmp-row .a .mk{background:var(--warn-soft);color:var(--warn)}
+.cmp-row .b .mk{background:var(--accent);color:#fff}
+@media (max-width:700px){
+  .cmp-head{display:none}
+  .cmp-row{grid-template-columns:1fr}
+  .cmp-row .a{border-right:0;border-bottom:1px dashed var(--line)}
+  .cmp-row .a::before{content:"Without";font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--warn);margin-right:2px}
+  .cmp-row .b::before{content:"With";font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-deep);margin-right:2px}
+}
+</style>
+
+<style>
+/* ============================================================
+   Reactivation funnel (dark band)
+   ============================================================ */
+.funnel{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:44px}
+@media (max-width:860px){ .funnel{grid-template-columns:repeat(2,1fr)} }
+.fn{
+  position:relative;padding:26px 22px;border-radius:var(--r-l);
+  background:rgba(255,255,255,.045);border:1px solid var(--band-line);
+  transition:transform .4s,background .4s;
+}
+.fn:hover{transform:translateY(-4px);background:rgba(255,255,255,.075)}
+.fn small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--band-ink-2);margin-bottom:12px}
+.fn b{display:block;font-size:clamp(34px,4.6vw,48px);font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;
+  background:linear-gradient(120deg,#fff,var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fn p{font-size:13.5px;color:var(--band-ink-2);margin-top:9px}
+.fn .meter{height:4px;border-radius:4px;background:rgba(255,255,255,.1);margin-top:16px;overflow:hidden}
+.fn .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent-2),var(--accent));transition:width 1.4s cubic-bezier(.2,.8,.3,1);border-radius:4px}
+.fn::after{content:"→";position:absolute;right:-11px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:20px;z-index:3;opacity:.6}
+.fn:last-child::after{display:none}
+@media (max-width:860px){ .fn::after{display:none} }
+.demo-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:100px;
+  background:rgba(255,255,255,.07);border:1px solid var(--band-line);
+  font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--band-ink-2)}
+.demo-tag.light{background:var(--surface-2);border-color:var(--line);color:var(--ink-3)}
+
+/* ============================================================
+   Calculator
+   ============================================================ */
+.calc{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;margin-top:44px;align-items:start}
+@media (max-width:900px){ .calc{grid-template-columns:1fr} }
+.calc-in{padding:30px;border-radius:var(--r-l);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-s);display:grid;gap:26px}
+.field label{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:600;margin-bottom:12px;gap:12px}
+.field label b{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--accent-deep);font-variant-numeric:tabular-nums}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:5px;background:var(--surface-3);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--surface);
+  border:2px solid var(--accent);box-shadow:0 2px 10px var(--accent-glow);cursor:grab;transition:transform .2s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.14)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);cursor:grab}
+.calc-out{padding:30px;border-radius:var(--r-l);background:var(--band);color:var(--band-ink);box-shadow:var(--shadow-m);position:relative;overflow:hidden}
+.calc-out .glow{position:absolute;width:340px;height:340px;border-radius:50%;top:-160px;right:-120px;
+  background:radial-gradient(circle,rgba(46,211,195,.28),transparent 66%);filter:blur(30px);animation:drift 16s ease-in-out infinite alternate}
+.calc-out h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:500;position:relative}
+.big-num{font-size:clamp(42px,6vw,62px);font-weight:800;letter-spacing:-.045em;line-height:1;margin:14px 0 6px;
+  font-variant-numeric:tabular-nums;position:relative}
+.calc-out .per{font-size:14px;color:var(--band-ink-2);position:relative}
+.calc-rows{margin-top:26px;padding-top:20px;border-top:1px solid var(--band-line);display:grid;gap:13px;position:relative}
+.calc-rows div{display:flex;justify-content:space-between;align-items:baseline;font-size:14.5px;gap:14px}
+.calc-rows span{color:var(--band-ink-2)}
+.calc-rows b{font-weight:600;font-variant-numeric:tabular-nums}
+.disclaim{margin-top:20px;font-size:12px;line-height:1.5;color:var(--band-ink-2);opacity:.8;position:relative}
+
+/* ============================================================
+   Audience + install
+   ============================================================ */
+.aud{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:44px}
+@media (max-width:900px){ .aud{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:480px){ .aud{grid-template-columns:1fr} }
+.aud-c{padding:22px 20px;border-radius:var(--r-m);background:var(--surface);border:1px solid var(--line);
+  display:flex;align-items:center;gap:13px;font-weight:600;font-size:15px;transition:all .35s;box-shadow:var(--shadow-s)}
+.aud-c:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 40%,var(--line));box-shadow:var(--shadow-m)}
+.aud-c .g{width:34px;height:34px;border-radius:11px;background:var(--accent-soft);display:grid;place-items:center;flex-shrink:0;
+  color:var(--accent-deep);font-family:var(--mono);font-size:11px;font-weight:500}
+.qualifier{margin-top:26px;padding:20px 24px;border-radius:var(--r-m);background:var(--surface-2);border-left:3px solid var(--accent);
+  font-size:15.5px;color:var(--ink-2)}
+.qualifier b{color:var(--ink);font-weight:600}
+
+.install{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:38px}
+@media (max-width:820px){ .install{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:520px){ .install{grid-template-columns:1fr} }
+.ins{display:flex;align-items:center;gap:11px;padding:14px 16px;border-radius:var(--r-s);background:var(--surface);
+  border:1px solid var(--line-2);font-size:14.5px;font-weight:500;transition:all .3s}
+.ins:hover{border-color:var(--accent);background:var(--accent-soft)}
+.ins .ck{width:20px;height:20px;border-radius:6px;background:var(--accent-soft);color:var(--accent-deep);display:grid;place-items:center;flex-shrink:0;transition:all .3s}
+.ins:hover .ck{background:var(--accent);color:#fff}
+
+/* ============================================================
+   Dashboard
+   ============================================================ */
+.dash{margin-top:44px;border-radius:var(--r-xl);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-l);overflow:hidden}
+.dash-bar{display:flex;align-items:center;gap:12px;padding:15px 22px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.dash-bar .tl{display:flex;gap:6px}
+.dash-bar .tl i{width:10px;height:10px;border-radius:50%;background:var(--surface-3)}
+.dash-bar b{font-size:13.5px;font-weight:600}
+.dash-bar .rng{margin-left:auto;display:flex;gap:4px}
+.dash-bar .rng button{padding:5px 11px;border-radius:7px;border:1px solid transparent;background:transparent;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--ink-3);cursor:pointer;transition:all .25s}
+.dash-bar .rng button[aria-pressed="true"]{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+@media (max-width:760px){ .tiles{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:440px){ .tiles{grid-template-columns:1fr} }
+.tile{background:var(--surface);padding:22px 24px}
+.tile small{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:9px}
+.tile b{font-size:31px;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums;line-height:1;display:block}
+.tile .trend{display:inline-flex;align-items:center;gap:5px;margin-top:9px;padding:3px 9px;border-radius:100px;
+  background:var(--accent-soft);color:var(--accent-deep);font-family:var(--mono);font-size:10.5px;letter-spacing:.04em}
+.tile .spark{margin-top:12px;height:26px;width:100%;display:block}
+.dash-body{display:grid;grid-template-columns:1.55fr 1fr;gap:1px;background:var(--line)}
+@media (max-width:820px){ .dash-body{grid-template-columns:1fr} }
+.panel{background:var(--surface);padding:22px 24px 20px}
+.panel h5{margin:0 0 3px;font-size:14.5px;font-weight:700;letter-spacing:-.015em}
+.panel .cap{font-size:12.5px;color:var(--ink-3);margin-bottom:16px}
+.chart-wrap{position:relative}
+.chart-wrap svg{display:block;width:100%;height:auto;overflow:visible}
+.tt{position:absolute;pointer-events:none;opacity:0;transform:translate(-50%,-118%);transition:opacity .15s;
+  background:var(--solid-bg);color:var(--solid-fg);padding:8px 11px;border-radius:9px;font-size:12px;white-space:nowrap;box-shadow:var(--shadow-m);z-index:4}
+.tt b{font-variant-numeric:tabular-nums}
+.tt small{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.65}
+.srcs{display:grid;gap:14px}
+.src b{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:7px;font-variant-numeric:tabular-nums}
+.src .bar{height:9px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+.src .bar i{display:block;height:100%;width:0;border-radius:5px;background:var(--accent);transition:width 1.2s cubic-bezier(.2,.8,.3,1)}
+.src:nth-child(2) .bar i{background:color-mix(in srgb,var(--accent) 78%,var(--surface-3))}
+.src:nth-child(3) .bar i{background:color-mix(in srgb,var(--accent) 56%,var(--surface-3))}
+.src:nth-child(4) .bar i{background:color-mix(in srgb,var(--accent) 34%,var(--surface-3))}
+.src:hover .bar i{filter:brightness(1.08)}
+
+/* ============================================================
+   Compliance
+   ============================================================ */
+.trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+@media (max-width:860px){ .trust-grid{grid-template-columns:1fr} }
+.tr{padding:24px;border-radius:var(--r-m);background:rgba(255,255,255,.04);border:1px solid var(--band-line);transition:background .35s}
+.tr:hover{background:rgba(255,255,255,.075)}
+.tr h4{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.tr p{font-size:14.5px;color:var(--band-ink-2);line-height:1.55}
+.tr .ic{width:30px;height:30px;border-radius:9px;background:rgba(46,211,195,.14);display:grid;place-items:center;flex-shrink:0}
+
+/* ============================================================
+   Offer / FAQ / CTA / footer
+   ============================================================ */
+.offer{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:center;
+  padding:44px;border-radius:var(--r-xl);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-m);margin-top:8px}
+@media (max-width:860px){ .offer{grid-template-columns:1fr;padding:30px} }
+.audit-list{display:grid;gap:11px;margin-top:8px}
+.audit-list div{display:flex;gap:12px;align-items:center;font-size:15.5px;padding:12px 15px;border-radius:var(--r-s);
+  background:var(--surface-2);transition:transform .3s,background .3s}
+.audit-list div:hover{transform:translateX(5px);background:var(--accent-soft)}
+.audit-list .n{font-family:var(--mono);font-size:10.5px;color:var(--accent-deep);letter-spacing:.08em}
+
+.faq{margin-top:40px;border-top:1px solid var(--line)}
+.q{border-bottom:1px solid var(--line)}
+.q button{width:100%;display:flex;align-items:center;gap:18px;padding:22px 4px;background:none;border:0;cursor:pointer;text-align:left}
+.q button h4{flex:1;font-size:17.5px;font-weight:600;letter-spacing:-.018em}
+.q .pm{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;flex-shrink:0;
+  transition:all .35s cubic-bezier(.2,.8,.3,1)}
+.q[data-open="true"] .pm{background:var(--accent);border-color:var(--accent);color:#fff;transform:rotate(135deg)}
+.q .ans{overflow:hidden;height:0;transition:height .4s cubic-bezier(.2,.8,.3,1)}
+.q .ans p{padding:0 46px 24px 4px;color:var(--ink-2);font-size:15.5px;line-height:1.6;max-width:720px}
+
+.finale{position:relative;overflow:hidden;padding:120px 0}
+.aurora{position:absolute;inset:-30%;pointer-events:none;
+  background:
+   radial-gradient(closest-side circle at 25% 40%,rgba(46,211,195,.22),transparent),
+   radial-gradient(closest-side circle at 72% 55%,rgba(84,180,238,.20),transparent),
+   radial-gradient(closest-side circle at 50% 85%,rgba(46,211,195,.14),transparent);
+  filter:blur(20px);animation:aur 20s ease-in-out infinite alternate}
+@keyframes aur{from{transform:translate3d(-3%,2%,0) scale(1)}to{transform:translate3d(4%,-3%,0) scale(1.18)}}
+.finale .wrap{position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;gap:24px}
+.finale h2{font-size:clamp(34px,6vw,66px)}
+.counter-strip{display:flex;gap:36px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.counter-strip div{text-align:center}
+.counter-strip b{display:block;font-size:26px;font-weight:800;letter-spacing:-.03em;color:var(--accent);font-variant-numeric:tabular-nums}
+.counter-strip small{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--band-ink-2)}
+
+footer{background:var(--band-2);color:var(--band-ink);padding:56px 0 32px;border-top:1px solid var(--band-line)}
+.ft-top{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:34px;padding-bottom:34px;border-bottom:1px solid var(--band-line)}
+@media (max-width:760px){ .ft-top{grid-template-columns:1fr;gap:26px} }
+.ft-top p{font-size:14.5px;color:var(--band-ink-2);max-width:330px;margin-top:14px}
+.ft-col h6{margin:0 0 14px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--band-ink-2);font-weight:500}
+.ft-col a{display:block;text-decoration:none;font-size:14.5px;color:var(--band-ink);opacity:.82;padding:5px 0;transition:opacity .2s,transform .2s}
+.ft-col a:hover{opacity:1;transform:translateX(3px);color:var(--accent)}
+.ft-bot{padding-top:24px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  font-size:13px;color:var(--band-ink-2)}
+.ft-bot .legal{display:flex;gap:18px;flex-wrap:wrap}
+.ft-bot a{text-decoration:none;opacity:.85}
+.ft-bot a:hover{opacity:1;color:var(--accent)}
+</style>
+
+<div class="progress"><i id="prog"></i></div>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="PatientLoop AI home">
+      <svg viewBox="0 0 40 40" role="img" aria-hidden="true">
+        <defs>
+          <linearGradient id="pl-g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2FA6E0"/><stop offset="1" stop-color="#0E9F97"/>
+          </linearGradient>
+          <linearGradient id="pl-g2" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="#0E9F97"/><stop offset="1" stop-color="#5FD6C8"/>
+          </linearGradient>
+        </defs>
+        <path d="M14 4h8.5a10.5 10.5 0 0 1 0 21H14z" fill="url(#pl-g1)"/>
+        <rect x="7.5" y="4" width="6.5" height="32" rx="3.25" fill="#0A1E38"/>
+        <path d="M7 36c-.4-6.6 3.4-11.6 9.6-13.2.7 6.8-3.2 11.9-9.6 13.2z" fill="url(#pl-g2)"/>
+        <rect x="22" y="27" width="14" height="10" rx="4" fill="#0E9F97"/>
+        <circle cx="26" cy="32" r="1.25" fill="#fff"/><circle cx="29" cy="32" r="1.25" fill="#fff"/><circle cx="32" cy="32" r="1.25" fill="#fff"/>
+      </svg>
+      <span class="brand-tx">
+        <b>Patient<span>Loop</span></b>
+        <small>Revenue Recovery</small>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="#problem">The Leak</a>
+      <a href="#how">How It Works</a>
+      <a href="#demo">Demo</a>
+      <a href="#calculator">Calculator</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta"><a class="btn btn-accent" href="#audit"><span class="hide-sm">Book a&nbsp;</span>Revenue Audit</a></div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="grid-lines"></div>
+    <div class="mesh mesh-a"></div><div class="mesh mesh-b"></div><div class="mesh mesh-c"></div>
+  </div>
+  <div class="wrap hero-in">
+    <div class="hero-copy">
+      <div class="tagpill"><b><i class="pulse-dot"></i>Live</b> Built for med spas &amp; aesthetic clinics</div>
+      <h1 class="hero-h">
+        <span class="w" style="animation-delay:.05s">Stop</span>
+        <span class="w" style="animation-delay:.11s">Losing</span>
+        <span class="w" style="animation-delay:.17s">Med</span>
+        <span class="w" style="animation-delay:.23s">Spa</span>
+        <span class="w" style="animation-delay:.29s">Leads</span>
+        <span class="w" style="animation-delay:.35s">You</span>
+        <span class="uline w" style="animation-delay:.41s">Already Paid For
+          <svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M3 8.5C58 3 132 2.5 297 6.5"/>
+          </svg>
+        </span>
+      </h1>
+      <p class="lede">PatientLoop automatically follows up with new leads, missed calls, no-shows and past patients — turning more of the opportunities you already paid for into booked appointments.</p>
+      <div class="hero-cta">
+        <a class="btn btn-accent btn-lg" href="#demo">See PatientLoop in Action <svg class="arw" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost btn-lg" href="#audit">Book a Free Revenue Audit</a>
+      </div>
+      <div class="hero-trust">
+        <span><i></i>Built for Med Spas</span>
+        <span><i></i>Done For You</span>
+        <span><i></i>Works With Your Existing Systems</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="stage">
+        <div class="chip chip-1">
+          <span class="ic" style="background:#E8F1FE"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.7-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0022 12z"/></svg></span>
+          <span><small>New Lead</small>Meta Lead Ad</span>
+        </div>
+        <div class="chip chip-2">
+          <span class="ic" style="background:var(--warn-soft)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C8813A" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/><path d="M17 3l4 4M21 3l-4 4"/></svg></span>
+          <span><small>8:42 PM</small>Missed Call</span>
+        </div>
+        <div class="chip chip-3">
+          <span class="ic" style="background:var(--accent-soft)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0B7C79" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <span><small>Recovered</small>No-Show Rebooked</span>
+        </div>
+
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="notch" aria-hidden="true"></div>
+            <div class="ph-top">
+              <div class="ph-av">S</div>
+              <div class="ph-who">
+                <b id="ph-name">Sarah M. — New Lead</b>
+                <small><i class="pulse-dot"></i> PatientLoop Active</small>
+              </div>
+              <div class="ph-time">now</div>
+            </div>
+            <div class="ph-body" id="thread" aria-live="polite" aria-label="Example patient conversation"></div>
+            <div class="ph-foot">
+              <div class="ph-input">Message…</div>
+              <div class="ph-send"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scenarios" role="tablist" aria-label="Conversation examples">
+        <button class="scn" role="tab" aria-selected="true" data-scn="0">Botox inquiry</button>
+        <button class="scn" role="tab" aria-selected="false" data-scn="1">Laser hair removal</button>
+        <button class="scn" role="tab" aria-selected="false" data-scn="2">Medical weight loss</button>
+        <button class="scn" role="tab" aria-selected="false" data-scn="3">Missed call, 8:42 PM</button>
+      </div>
+      <p class="note scn-hint">Example conversation — replay a scenario above</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ INTEGRATION MARQUEE ============================ -->
+<div class="strip">
+  <div class="wrap" style="margin-bottom:16px"><p class="note" style="text-align:center">Sits on top of the stack you already run</p></div>
+  <div class="marquee" id="mq1"><div class="mq-track"></div><div class="mq-track" aria-hidden="true"></div></div>
+</div>
+
+<!-- ============================ PROBLEM ============================ -->
+<section class="sec" id="problem">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">The real bottleneck</span>
+      <h2 class="h2">Your med spa probably doesn't need more leads. It needs better follow-up.</h2>
+      <p class="serif">You already spend on ads, social and referrals to make the phone ring. The revenue doesn't leak at the top of the funnel — <em>it leaks in the minutes and days after the inquiry arrives.</em></p>
+    </div>
+
+    <div class="pain-list rv">
+      <div class="pain"><span class="n">01</span><p>Someone submits a form at 9 PM and hears nothing until Tuesday.</p><span class="lost">Booked elsewhere</span></div>
+      <div class="pain"><span class="n">02</span><p>A potential patient calls while your team is in a treatment room.</p><span class="lost">Never calls back</span></div>
+      <div class="pain"><span class="n">03</span><p>Someone asks about Botox pricing, gets an answer, and goes quiet.</p><span class="lost">No second touch</span></div>
+      <div class="pain"><span class="n">04</span><p>A patient misses an appointment and nobody reaches back out.</p><span class="lost">Empty chair</span></div>
+      <div class="pain"><span class="n">05</span><p>A patient came in six months ago and is overdue for treatment.</p><span class="lost">Forgotten</span></div>
+    </div>
+
+    <div class="leak-grid">
+      <div class="leak bad rv rv-l" data-dots="bad">
+        <h4><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.01"/></svg> Manual follow-up</h4>
+        <p class="sub">Inquiries wait for a human with a free moment. Most conversations never actually start.</p>
+        <div class="dots" aria-hidden="true"></div>
+        <div class="tally"><b data-count="0" data-to="9">0</b><span>conversations reach a real reply</span></div>
+      </div>
+      <div class="leak good rv rv-r" data-dots="good">
+        <h4><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-deep)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> PatientLoop follow-up</h4>
+        <p class="sub">Every inquiry gets a reply within moments, then a structured sequence until they answer or opt out.</p>
+        <div class="dots" aria-hidden="true"></div>
+        <div class="tally"><b data-count="0" data-to="31">0</b><span>conversations reach a real reply</span></div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:14px">Illustrative diagram of the same 100 inquiries — not a performance claim.</p>
+
+    <div class="verdict rv">
+      <p>Those aren't dead leads. They're <em>unrecovered revenue</em> sitting in your CRM right now.</p>
+      <a class="btn btn-accent" href="#reactivation">See what's in your database <svg class="arw" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FIVE LEAKS ============================ -->
+<section class="sec" style="background:var(--ground-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <span class="eyebrow">What PatientLoop does</span>
+      <h2 class="h2">One system. Five revenue leaks fixed.</h2>
+      <p class="lede">Each one is a separate workflow, running on your data, in your voice, on your booking calendar.</p>
+    </div>
+    <div class="cards">
+      <article class="card rv rv-s" style="transition-delay:.02s">
+        <span class="idx">01</span>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M13 2L4.1 12.6a1 1 0 00.8 1.6H11l-1 8 8.9-10.6a1 1 0 00-.8-1.6H12l1-8z"/></svg></div>
+        <h3>Instant Lead Follow-Up</h3>
+        <p>New inquiries get a reply while the person is still on your website, still in the ad, still thinking about it. Speed is the whole game.</p>
+      </article>
+      <article class="card rv rv-s" style="transition-delay:.08s">
+        <span class="idx">02</span>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M20 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.7A2 2 0 012.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L6.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/><path d="M22 4l-4 4"/></svg></div>
+        <h3>Missed Call Recovery</h3>
+        <p>When the phone goes unanswered — lunch, a treatment, after hours — a text goes out in seconds and the conversation keeps going.</p>
+      </article>
+      <article class="card rv rv-s" style="transition-delay:.14s">
+        <span class="idx">03</span>
+        <div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18M9.5 16l1.8 1.8L15 14"/></svg></div>
+        <h3>No-Show Recovery</h3>
+        <p>An empty chair is an unrecoverable hour. Missed appointments trigger a same-day reschedule sequence instead of a note nobody reads.</p>
+      </article>
+      <article class="card rv rv-s" style="transition-delay:.2s">
+        <span class="idx">04</span>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v5h-5"/><circle cx="12" cy="12" r="2.6"/></svg></div>
+        <h3>Old Lead Reactivation</h3>
+        <p>The hundreds of people who asked about a price two years ago and never booked. We restart those conversations in batches you control.</p>
+      </article>
+      <article class="card rv rv-s" style="transition-delay:.26s">
+        <span class="idx">05</span>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 2.5-3.2 2.5-5.1A4.9 4.9 0 0012 6.4 4.9 4.9 0 002.5 8.9C2.5 13.5 12 21 12 21s3.6-2.8 6-6"/><path d="M15.5 12.5h6"/></svg></div>
+        <h3>Past Patient Reactivation</h3>
+        <p>Botox wears off. Filler settles. Packages run out. PatientLoop reaches out when a treatment window reopens — not at random.</p>
+      </article>
+      <article class="card rv rv-s" style="transition-delay:.32s;background:linear-gradient(160deg,var(--accent-soft),var(--surface) 70%);border-color:color-mix(in srgb,var(--accent) 30%,var(--line))">
+        <span class="idx">+</span>
+        <div class="ico" style="background:var(--accent);"><svg viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></div>
+        <h3>And a number you can point at</h3>
+        <p>Every conversation, booking and recovered no-show is tracked in one place, so you know exactly what your follow-up produced this month.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ HOW IT WORKS ============================ -->
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">The loop</span>
+      <h2 class="h2">From inquiry to appointment — automatically.</h2>
+      <p class="lede">Five stages. No new app for your front desk to learn.</p>
+    </div>
+    <div class="flow" id="flow">
+      <div class="flow-fill" id="flowFill"></div>
+      <div class="step"><div class="bul">01</div><div class="step-body">
+        <h3>A lead comes in</h3>
+        <p>Website form, Meta or Google ad, Instagram DM, a phone call nobody caught, or a row that's been sitting in your CRM since 2023.</p>
+        <div class="step-chips"><span>Web form</span><span>Meta lead ads</span><span>Missed call</span><span>CRM import</span></div>
+      </div></div>
+      <div class="step"><div class="bul">02</div><div class="step-body">
+        <h3>PatientLoop responds</h3>
+        <p>A first message goes out in seconds over SMS, email or whichever approved channel you use — personalised to the treatment they asked about.</p>
+        <div class="step-chips"><span>SMS</span><span>Email</span><span>Consent-aware</span></div>
+      </div></div>
+      <div class="step"><div class="bul">03</div><div class="step-body">
+        <h3>The lead gets qualified</h3>
+        <p>It answers the questions your front desk answers forty times a week — pricing ranges, downtime, areas treated, who the provider is — and finds out what they actually want.</p>
+        <div class="step-chips"><span>Pricing ranges</span><span>Treatment areas</span><span>Intent capture</span></div>
+      </div></div>
+      <div class="step"><div class="bul">04</div><div class="step-body">
+        <h3>An appointment gets booked</h3>
+        <p>Real availability from your calendar is offered, held and confirmed — then backed up with reminders so it actually shows up.</p>
+        <div class="step-chips"><span>Live availability</span><span>Confirmation</span><span>Reminders</span></div>
+      </div></div>
+      <div class="step"><div class="bul">05</div><div class="step-body">
+        <h3>Your team gets updated</h3>
+        <p>The full transcript, the appointment and the lead's new status land in your CRM. Anything that needs a human is flagged and handed over mid-conversation.</p>
+        <div class="step-chips"><span>CRM sync</span><span>Human handoff</span><span>Daily digest</span></div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ DEMO ============================ -->
+<section class="sec band" id="demo">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <span class="eyebrow">Watch it work</span>
+      <h2 class="h2">Watch PatientLoop book an appointment.</h2>
+      <p class="lede">Two minutes, start to finish: a med-spa lead enters the system and leaves with a confirmed appointment.</p>
+    </div>
+    <div class="videobox rv" id="videobox" role="button" tabindex="0" aria-label="Play the PatientLoop demo video">
+      <div class="halo" aria-hidden="true"></div>
+      <div class="scan" aria-hidden="true"></div>
+      <div class="play">
+        <div class="play-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="#0A1E38"><path d="M7 4.5l13 7.5-13 7.5z"/></svg></div>
+        <b>Full walkthrough — lead to booked appointment</b>
+        <small>Drop your demo video here</small>
+      </div>
+    </div>
+    <div class="pipeline rv" id="pipeline" aria-hidden="true">
+      <div class="pl-step"><small>Step 01</small><b>Facebook lead</b><i class="bar"></i></div>
+      <div class="pl-step"><small>Step 02</small><b>Enters CRM</b><i class="bar"></i></div>
+      <div class="pl-step"><small>Step 03</small><b>Auto message</b><i class="bar"></i></div>
+      <div class="pl-step"><small>Step 04</small><b>AI conversation</b><i class="bar"></i></div>
+      <div class="pl-step"><small>Step 05</small><b>Question answered</b><i class="bar"></i></div>
+      <div class="pl-step"><small>Step 06</small><b>Times offered</b><i class="bar"></i></div>
+      <div class="pl-step"><small>Step 07</small><b>Appointment booked</b><i class="bar"></i></div>
+      <div class="pl-step"><small>Step 08</small><b>Staff notified</b><i class="bar"></i></div>
+    </div>
+    <div class="rv" style="text-align:center;margin-top:38px;display:flex;flex-direction:column;align-items:center;gap:18px">
+      <p class="lede" style="max-width:520px">Want to see how this would run inside your clinic, with your treatments and your calendar?</p>
+      <a class="btn btn-accent btn-lg" href="#audit">Book My Free Revenue Audit <svg class="arw" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ BEFORE / AFTER ============================ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">The difference</span>
+      <h2 class="h2">Before PatientLoop vs after PatientLoop.</h2>
+      <div class="switch" role="group" aria-label="Highlight a column">
+        <button data-col="a" aria-pressed="false">Without</button>
+        <button class="on-good" data-col="b" aria-pressed="true">With PatientLoop</button>
+      </div>
+    </div>
+    <div class="compare rv" id="compare">
+      <div class="cmp-head"><div class="a">Without PatientLoop</div><div class="b">With PatientLoop</div></div>
+      <div class="cmp-row"><div class="a"><i class="mk">×</i>Leads wait hours — sometimes days</div><div class="b"><i class="mk">✓</i>Leads are contacted within moments</div></div>
+      <div class="cmp-row"><div class="a"><i class="mk">×</i>Missed calls disappear</div><div class="b"><i class="mk">✓</i>Every missed call gets a text back</div></div>
+      <div class="cmp-row"><div class="a"><i class="mk">×</i>Staff chase prospects between clients</div><div class="b"><i class="mk">✓</i>Follow-up runs whether the room is busy or not</div></div>
+      <div class="cmp-row"><div class="a"><i class="mk">×</i>Old leads sit untouched in the CRM</div><div class="b"><i class="mk">✓</i>Old leads get reactivated in controlled batches</div></div>
+      <div class="cmp-row"><div class="a"><i class="mk">×</i>No-shows are quietly forgotten</div><div class="b"><i class="mk">✓</i>No-shows get a same-day reschedule offer</div></div>
+      <div class="cmp-row"><div class="a"><i class="mk">×</i>Past patients come back only if they remember</div><div class="b"><i class="mk">✓</i>Past patients are reached when treatment is due</div></div>
+      <div class="cmp-row"><div class="a"><i class="mk">×</i>Nobody can say what follow-up produced</div><div class="b"><i class="mk">✓</i>Every conversation and booking is tracked</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ REACTIVATION ============================ -->
+<section class="sec band" id="reactivation">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Your best list is one you already own</span>
+      <h2 class="h2">There's revenue sitting inside your existing database.</h2>
+      <p class="serif">You may already have hundreds — often thousands — of people who requested pricing, asked about a treatment, came in once, missed an appointment, or simply stopped replying. <em>None of them cost you another dollar in ad spend.</em></p>
+    </div>
+    <div class="funnel" id="funnel">
+      <div class="fn rv rv-s"><small>Step 01 — Database</small><b data-count="0" data-to="2487">0</b><p>Old contacts already in your CRM</p><div class="meter"><i data-w="100"></i></div></div>
+      <div class="fn rv rv-s" style="transition-delay:.09s"><small>Step 02 — Outreach</small><b data-count="0" data-to="327">0</b><p>Replied and entered a conversation</p><div class="meter"><i data-w="42"></i></div></div>
+      <div class="fn rv rv-s" style="transition-delay:.18s"><small>Step 03 — Intent</small><b data-count="0" data-to="74">0</b><p>Expressed real interest in a treatment</p><div class="meter"><i data-w="24"></i></div></div>
+      <div class="fn rv rv-s" style="transition-delay:.27s"><small>Step 04 — Calendar</small><b data-count="0" data-to="31">0</b><p>Consultations placed on the books</p><div class="meter"><i data-w="14"></i></div></div>
+    </div>
+    <div class="rv" style="margin-top:26px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between">
+      <span class="demo-tag"><i class="pulse-dot"></i>Example campaign — illustrative figures, not client results</span>
+      <a class="btn btn-accent" href="#calculator">See how many patients you could recover <svg class="arw" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CALCULATOR ============================ -->
+<section class="sec" id="calculator">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Model it yourself</span>
+      <h2 class="h2">What is slow follow-up costing you a month?</h2>
+      <p class="lede">Move the sliders to match your clinic. This is a planning model you control — not a projection of results.</p>
+    </div>
+    <div class="calc">
+      <div class="calc-in rv rv-l">
+        <div class="field">
+          <label for="s-leads">New inquiries per month <b id="v-leads">120</b></label>
+          <input id="s-leads" type="range" min="20" max="600" step="10" value="120">
+        </div>
+        <div class="field">
+          <label for="s-value">Average value per booked patient <b id="v-value">$850</b></label>
+          <input id="s-value" type="range" min="150" max="4000" step="50" value="850">
+        </div>
+        <div class="field">
+          <label for="s-rate">Inquiries you book today <b id="v-rate">18%</b></label>
+          <input id="s-rate" type="range" min="3" max="60" step="1" value="18">
+        </div>
+        <div class="field">
+          <label for="s-lift">Improvement you want to model <b id="v-lift">+8 pts</b></label>
+          <input id="s-lift" type="range" min="1" max="25" step="1" value="8">
+        </div>
+        <div class="field">
+          <label for="s-db">Dormant contacts in your CRM <b id="v-db">2,000</b></label>
+          <input id="s-db" type="range" min="0" max="12000" step="250" value="2000">
+        </div>
+      </div>
+      <div class="calc-out rv rv-r">
+        <div class="glow" aria-hidden="true"></div>
+        <h4>Modelled monthly recovery</h4>
+        <div class="big-num" id="out-main">$0</div>
+        <p class="per">from inquiries you are already paying to generate</p>
+        <div class="calc-rows">
+          <div><span>Additional appointments / month</span><b id="out-appts">0</b></div>
+          <div><span>Additional appointments / year</span><b id="out-year-appts">0</b></div>
+          <div><span>Modelled annual recovery</span><b id="out-year">$0</b></div>
+          <div><span>One-time reactivation opportunity</span><b id="out-db">$0</b></div>
+        </div>
+        <p class="disclaim">A planning model only. Outputs are your inputs multiplied — they are not a forecast, a guarantee, or a report of another clinic's results. We'll build a grounded version with your real numbers during the audit.</p>
+        <a class="btn btn-accent" style="margin-top:22px;width:100%" href="#audit">Pressure-test these numbers with us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ AUDIENCE ============================ -->
+<section class="sec" style="background:var(--ground-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Who it's for</span>
+      <h2 class="h2">Built for growing aesthetic businesses.</h2>
+      <p class="lede">The follow-up problem looks the same across every one of these — high-intent inquiries, a busy floor, and nobody free to chase.</p>
+    </div>
+    <div class="aud">
+      <div class="aud-c rv rv-s"><span class="g">01</span>Medical Spas</div>
+      <div class="aud-c rv rv-s" style="transition-delay:.05s"><span class="g">02</span>Botox &amp; Filler Clinics</div>
+      <div class="aud-c rv rv-s" style="transition-delay:.1s"><span class="g">03</span>Laser Clinics</div>
+      <div class="aud-c rv rv-s" style="transition-delay:.15s"><span class="g">04</span>Body Contouring</div>
+      <div class="aud-c rv rv-s" style="transition-delay:.2s"><span class="g">05</span>Aesthetic Clinics</div>
+      <div class="aud-c rv rv-s" style="transition-delay:.25s"><span class="g">06</span>Medical Weight Loss</div>
+      <div class="aud-c rv rv-s" style="transition-delay:.3s"><span class="g">07</span>IV Therapy Clinics</div>
+      <div class="aud-c rv rv-s" style="transition-delay:.35s"><span class="g">08</span>Skin &amp; Wellness Studios</div>
+    </div>
+    <div class="qualifier rv">
+      <b>Best fit:</b> clinics already generating inquiries — from ads, referrals or walk-ins — but losing opportunities to inconsistent follow-up. If you aren't generating inquiries yet, we'll tell you that on the call instead of selling you a system that has nothing to work with.
+    </div>
+  </div>
+</section>
+
+<!-- ============================ INTEGRATIONS ============================ -->
+<section class="sec-tight">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <span class="eyebrow">Integrations</span>
+      <h2 class="h2" style="font-size:clamp(27px,3.4vw,40px)">Works with the tools you already use.</h2>
+    </div>
+  </div>
+  <div style="margin-top:40px;display:grid;gap:20px">
+    <div class="marquee" id="mq2"><div class="mq-track"></div><div class="mq-track" aria-hidden="true"></div></div>
+    <div class="marquee mq-rev" id="mq3"><div class="mq-track"></div><div class="mq-track" aria-hidden="true"></div></div>
+  </div>
+  <div class="wrap" style="margin-top:34px">
+    <p class="lede rv" style="text-align:center;max-width:620px;margin:0 auto">Already running a different CRM or booking platform? We'll review your current setup during the revenue audit and tell you honestly what can be connected.</p>
+  </div>
+</section>
+
+<!-- ============================ WHAT YOU INSTALL ============================ -->
+<section class="sec" style="background:var(--ground-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Done for you</span>
+      <h2 class="h2">Not another software subscription you have to figure out.</h2>
+      <p class="serif">We build, connect and configure the whole system for your clinic — then keep tuning it. <em>You focus on treating patients. We handle the machine behind the front desk.</em></p>
+    </div>
+    <div class="install">
+      <div class="ins rv rv-s"><span class="ck">✓</span>CRM configuration</div>
+      <div class="ins rv rv-s" style="transition-delay:.03s"><span class="ck">✓</span>Lead routing</div>
+      <div class="ins rv rv-s" style="transition-delay:.06s"><span class="ck">✓</span>Automated follow-up sequences</div>
+      <div class="ins rv rv-s" style="transition-delay:.09s"><span class="ck">✓</span>AI conversation logic</div>
+      <div class="ins rv rv-s" style="transition-delay:.12s"><span class="ck">✓</span>Treatment &amp; pricing knowledge base</div>
+      <div class="ins rv rv-s" style="transition-delay:.15s"><span class="ck">✓</span>Appointment booking</div>
+      <div class="ins rv rv-s" style="transition-delay:.18s"><span class="ck">✓</span>Missed-call workflows</div>
+      <div class="ins rv rv-s" style="transition-delay:.21s"><span class="ck">✓</span>No-show recovery</div>
+      <div class="ins rv rv-s" style="transition-delay:.24s"><span class="ck">✓</span>Lead reactivation campaigns</div>
+      <div class="ins rv rv-s" style="transition-delay:.27s"><span class="ck">✓</span>Past patient reactivation</div>
+      <div class="ins rv rv-s" style="transition-delay:.3s"><span class="ck">✓</span>Consent &amp; opt-out handling</div>
+      <div class="ins rv rv-s" style="transition-delay:.33s"><span class="ck">✓</span>Human handoff rules</div>
+      <div class="ins rv rv-s" style="transition-delay:.36s"><span class="ck">✓</span>Reporting dashboard</div>
+      <div class="ins rv rv-s" style="transition-delay:.39s"><span class="ck">✓</span>End-to-end testing</div>
+      <div class="ins rv rv-s" style="transition-delay:.42s"><span class="ck">✓</span>Ongoing optimisation</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ DASHBOARD ============================ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Reporting</span>
+      <h2 class="h2">Know exactly what your follow-up is producing.</h2>
+      <p class="lede">One view your team actually opens on a Monday morning — not a report nobody reads.</p>
+    </div>
+    <div class="dash rv">
+      <div class="dash-bar">
+        <span class="tl" aria-hidden="true"><i></i><i></i><i></i></span>
+        <b>PatientLoop — Recovery Overview</b>
+        <span class="demo-tag light" style="margin-left:10px">Demo data</span>
+        <span class="rng">
+          <button aria-pressed="false">7D</button>
+          <button aria-pressed="true">30D</button>
+          <button aria-pressed="false">90D</button>
+        </span>
+      </div>
+      <div class="tiles">
+        <div class="tile"><small>Leads contacted</small><b data-count="0" data-to="1284">0</b><span class="trend">▲ 22% vs prior</span><svg class="spark" data-spark="12,15,13,18,17,21,20,24,23,27,29,33"></svg></div>
+        <div class="tile"><small>Conversations started</small><b data-count="0" data-to="612">0</b><span class="trend">▲ 18% vs prior</span><svg class="spark" data-spark="8,9,11,10,14,13,16,15,19,18,22,24"></svg></div>
+        <div class="tile"><small>Appointments booked</small><b data-count="0" data-to="188">0</b><span class="trend">▲ 26% vs prior</span><svg class="spark" data-spark="4,5,5,7,6,9,8,11,10,13,14,16"></svg></div>
+        <div class="tile"><small>No-shows recovered</small><b data-count="0" data-to="43">0</b><span class="trend">▲ 11% vs prior</span><svg class="spark" data-spark="1,2,2,3,2,4,3,5,4,5,6,7"></svg></div>
+        <div class="tile"><small>Patients reactivated</small><b data-count="0" data-to="96">0</b><span class="trend">▲ 31% vs prior</span><svg class="spark" data-spark="2,3,4,4,6,5,8,7,10,9,12,14"></svg></div>
+        <div class="tile"><small>Est. revenue recovered</small><b data-count="0" data-to="164200" data-prefix="$">0</b><span class="trend">▲ 24% vs prior</span><svg class="spark" data-spark="5,6,8,7,10,12,11,15,17,16,20,23"></svg></div>
+      </div>
+      <div class="dash-body">
+        <div class="panel">
+          <h5>Appointments booked</h5>
+          <p class="cap">Weekly, last 12 weeks — demo data</p>
+          <div class="chart-wrap" id="chartWrap">
+            <svg id="chart" viewBox="0 0 640 220" role="img" aria-label="Appointments booked per week, rising from 6 to 21 over 12 weeks"></svg>
+            <div class="tt" id="tt"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h5>Where bookings came from</h5>
+          <p class="cap">Share of booked appointments — demo data</p>
+          <div class="srcs" id="srcs">
+            <div class="src"><b><span>Meta lead ads</span><span>64</span></b><div class="bar"><i data-w="100"></i></div></div>
+            <div class="src"><b><span>Reactivation campaigns</span><span>52</span></b><div class="bar"><i data-w="81"></i></div></div>
+            <div class="src"><b><span>Missed-call recovery</span><span>41</span></b><div class="bar"><i data-w="64"></i></div></div>
+            <div class="src"><b><span>Website forms</span><span>31</span></b><div class="bar"><i data-w="48"></i></div></div>
+          </div>
+          <p class="note" style="margin-top:22px">Totals shown are illustrative demo data used to show the report layout.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TRUST ============================ -->
+<section class="sec-tight band">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Built for a clinical setting</span>
+      <h2 class="h2" style="font-size:clamp(27px,3.4vw,40px)">Automation you'd be comfortable showing a patient.</h2>
+    </div>
+    <div class="trust-grid">
+      <div class="tr rv rv-s">
+        <h4><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>Consent-first messaging</h4>
+        <p>Outreach runs on contacts who opted in through your forms and intake. Opt-out language is built into the sequences and honoured immediately across every channel.</p>
+      </div>
+      <div class="tr rv rv-s" style="transition-delay:.08s">
+        <h4><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>Minimal clinical detail</h4>
+        <p>Conversations stay at the booking layer — treatments of interest, availability, next steps. Clinical questions get routed to your provider rather than answered by a bot.</p>
+      </div>
+      <div class="tr rv rv-s" style="transition-delay:.16s">
+        <h4><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg></span>Human in the loop</h4>
+        <p>Every thread is visible to your team, every handoff is a rule you set, and anything sensitive, urgent or off-script goes to a person — mid-conversation, not the next morning.</p>
+      </div>
+    </div>
+    <p class="note" style="margin-top:24px">Compliance obligations vary by state and by clinic. We configure workflows around the rules and consent language your practice operates under — we don't replace your legal counsel.</p>
+  </div>
+</section>
+
+<!-- ============================ OFFER ============================ -->
+<section class="sec" id="audit">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <span class="eyebrow">The next step</span>
+      <h2 class="h2">Start with a revenue recovery audit.</h2>
+      <p class="lede">Before we build anything, we look at where your opportunities are actually going.</p>
+    </div>
+    <div class="offer rv">
+      <div>
+        <h3 class="h3" style="margin-bottom:16px">We'll review how your clinic handles:</h3>
+        <div class="audit-list">
+          <div><span class="n">01</span>New leads and how fast they get a reply</div>
+          <div><span class="n">02</span>Missed and after-hours calls</div>
+          <div><span class="n">03</span>Follow-up sequences after the first message</div>
+          <div><span class="n">04</span>No-shows and cancellations</div>
+          <div><span class="n">05</span>Old leads sitting in your CRM</div>
+          <div><span class="n">06</span>Past patients due for another treatment</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:18px;align-items:flex-start">
+        <p class="serif">Then we'll show you exactly where PatientLoop could recover opportunities you're currently losing — <em>and where it wouldn't be worth it.</em></p>
+        <a class="btn btn-accent btn-lg" style="width:100%" href="mailto:hello@patientloop.ai?subject=Revenue%20Recovery%20Audit">Book My Free Revenue Audit</a>
+        <div class="hero-trust"><span><i></i>15–30 minutes</span><span><i></i>No obligation</span><span><i></i>No prep needed</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FAQ ============================ -->
+<section class="sec" id="faq" style="background:var(--ground-2);border-top:1px solid var(--line)">
+  <div class="wrap narrow">
+    <div class="sec-head rv">
+      <span class="eyebrow">Questions</span>
+      <h2 class="h2">Straight answers.</h2>
+    </div>
+    <div class="faq" id="faq">
+      <div class="q"><button aria-expanded="false"><h4>Will PatientLoop replace my receptionist?</h4><span class="pm">+</span></button>
+        <div class="ans"><p>No — and it shouldn't. It handles the repetitive follow-up your team never gets to: the 9 PM form fill, the third check-in, the reactivation list nobody has time for. Your front desk keeps the conversations that need a person, and gets fewer of the ones that don't.</p></div></div>
+      <div class="q"><button aria-expanded="false"><h4>Do I need to change my CRM?</h4><span class="pm">+</span></button>
+        <div class="ans"><p>Not necessarily. We start by reviewing what you already run and determine what can be integrated. If your current stack can carry the workflows, we build on it. If it genuinely can't, we'll say so and explain the options rather than quietly migrating you.</p></div></div>
+      <div class="q"><button aria-expanded="false"><h4>Can it book appointments automatically?</h4><span class="pm">+</span></button>
+        <div class="ans"><p>Yes, depending on the booking or calendar system you use. Where we can connect to live availability, PatientLoop offers real times and writes the appointment back. Where a platform is closed, it qualifies the lead and hands a ready-to-book patient to your team.</p></div></div>
+      <div class="q"><button aria-expanded="false"><h4>Can it follow up with old leads?</h4><span class="pm">+</span></button>
+        <div class="ans"><p>Yes. Reactivation is one of the core PatientLoop services, and it's usually where clinics see movement first — because those contacts are already in your database and cost nothing more to reach. We run them in controlled batches so your team isn't buried.</p></div></div>
+      <div class="q"><button aria-expanded="false"><h4>Can it respond after business hours?</h4><span class="pm">+</span></button>
+        <div class="ans"><p>Yes. Workflows keep handling inquiries outside working hours, within the sending windows and quiet hours you set. Anything that needs a human waits in a clearly flagged queue for the morning instead of going cold.</p></div></div>
+      <div class="q"><button aria-expanded="false"><h4>How quickly can this be installed?</h4><span class="pm">+</span></button>
+        <div class="ans"><p>It depends on your CRM, your booking system and which integrations are required — a clinic already on a connected stack moves much faster than one consolidating three tools. We give you a specific timeline at the end of the audit, once we've seen what we're working with.</p></div></div>
+      <div class="q"><button aria-expanded="false"><h4>What does it sound like to a patient?</h4><span class="pm">+</span></button>
+        <div class="ans"><p>Like your clinic. We write the conversation logic around your treatments, pricing ranges, providers and tone, and you approve every message template before it goes live. It identifies itself as your clinic's assistant and hands off to a person the moment the conversation calls for one.</p></div></div>
+      <div class="q"><button aria-expanded="false"><h4>What if my clinic isn't generating enough leads yet?</h4><span class="pm">+</span></button>
+        <div class="ans"><p>Then follow-up automation isn't your bottleneck, and we'll tell you that. PatientLoop multiplies existing demand — it doesn't create it. We'd rather lose the sale than install a system with nothing to recover.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FINAL CTA ============================ -->
+<section class="finale band">
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="eyebrow rv">Last thing</span>
+    <h2 class="h2 rv">How many appointments are you losing every month?</h2>
+    <p class="lede rv" style="max-width:640px">Let's review your current lead follow-up and find the opportunities slipping through the cracks. No pressure — we'll simply show you what can be improved.</p>
+    <div class="rv"><a class="btn btn-accent btn-lg" href="mailto:hello@patientloop.ai?subject=Revenue%20Recovery%20Audit">Book My Free Revenue Audit <svg class="arw" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="counter-strip rv">
+      <div><b>5</b><small>Revenue leaks closed</small></div>
+      <div><b>&lt; 60s</b><small>Typical first reply</small></div>
+      <div><b>24/7</b><small>Follow-up coverage</small></div>
+      <div><b>0</b><small>New apps for your front desk</small></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="ft-top">
+      <div>
+        <a class="brand" href="#top" style="color:var(--band-ink)">
+          <svg viewBox="0 0 40 40" aria-hidden="true" style="width:36px;height:36px">
+            <path d="M14 4h8.5a10.5 10.5 0 0 1 0 21H14z" fill="url(#pl-g1)"/>
+            <rect x="7.5" y="4" width="6.5" height="32" rx="3.25" fill="#EAF3F9"/>
+            <path d="M7 36c-.4-6.6 3.4-11.6 9.6-13.2.7 6.8-3.2 11.9-9.6 13.2z" fill="url(#pl-g2)"/>
+            <rect x="22" y="27" width="14" height="10" rx="4" fill="#0E9F97"/>
+            <circle cx="26" cy="32" r="1.25" fill="#fff"/><circle cx="29" cy="32" r="1.25" fill="#fff"/><circle cx="32" cy="32" r="1.25" fill="#fff"/>
+          </svg>
+          <span class="brand-tx"><b style="color:#fff">Patient<span style="color:var(--accent)">Loop</span> AI</b><small>Revenue Recovery</small></span>
+        </a>
+        <p>Automated revenue recovery for med spas and aesthetic clinics. Built, connected and maintained for you.</p>
+      </div>
+      <div class="ft-col">
+        <h6>Product</h6>
+        <a href="#problem">The revenue leak</a>
+        <a href="#how">How it works</a>
+        <a href="#demo">Watch the demo</a>
+        <a href="#calculator">Recovery calculator</a>
+      </div>
+      <div class="ft-col">
+        <h6>Company</h6>
+        <a href="#audit">Book a revenue audit</a>
+        <a href="mailto:hello@patientloop.ai">hello@patientloop.ai</a>
+        <a href="#" rel="noopener">LinkedIn</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <span>© 2026 PatientLoop AI. All rights reserved.</span>
+      <span class="legal"><a href="#">Privacy Policy</a><a href="#">Terms</a><a href="#">Messaging &amp; Opt-Out Policy</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var $  = function(s,c){ return (c||document).querySelector(s); };
+  var $$ = function(s,c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); };
+
+  /* ---------- scroll progress + sticky nav ---------- */
+  var prog = $("#prog"), nav = $("#nav");
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + "%";
+    nav.classList.toggle("stuck", window.scrollY > 8);
+    flowProgress();
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+
+  /* ---------- reveal on scroll ---------- */
+  var revealed = new WeakSet();
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting || revealed.has(e.target)) return;
+      revealed.add(e.target);
+      e.target.classList.add("in");
+      if(e.target.dataset.dots) fillDots(e.target);
+      $$("[data-count]", e.target).forEach(runCount);
+      $$(".meter i, .src .bar i", e.target).forEach(function(el){
+        setTimeout(function(){ el.style.width = el.dataset.w + "%"; }, 220);
+      });
+    });
+  }, {threshold:.16, rootMargin:"0px 0px -8% 0px"});
+  $$(".rv").forEach(function(el){ io.observe(el); });
+
+  /* count-up for standalone counters (tiles, funnels) */
+  var cio = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ runCount(e.target); cio.unobserve(e.target); } });
+  }, {threshold:.5});
+  $$("[data-count]").forEach(function(el){ cio.observe(el); });
+
+  function runCount(el){
+    if(el.dataset.done) return;
+    el.dataset.done = "1";
+    var to = parseFloat(el.dataset.to || "0"), pre = el.dataset.prefix || "", t0 = null, dur = 1500;
+    if(RM){ el.textContent = pre + to.toLocaleString(); return; }
+    function frame(t){
+      if(!t0) t0 = t;
+      var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = pre + Math.round(to * e).toLocaleString();
+      if(p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- problem: dot grids ---------- */
+  function fillDots(card){
+    var box = $(".dots", card), good = card.dataset.dots === "good";
+    if(!box || box.childElementCount) return;
+    var on = good ? 31 : 9, off = good ? 5 : 27;
+    // (j*37+11) mod 100 is a permutation of 0..99, so this scatters an exact
+    // count evenly across the grid instead of clustering it
+    for(var j=0;j<100;j++){
+      var h = (j * 37 + 11) % 100, h2 = (j * 53 + 7) % 100;
+      var d = document.createElement("i");
+      if(h < on) d.className = "on"; else if(h2 < off) d.className = "gone";
+      d.style.transitionDelay = (j * 7) + "ms";
+      box.appendChild(d);
+    }
+  }
+
+  /* ---------- hero conversation engine ---------- */
+  var SCENARIOS = [
+    { who:"Sarah M. — New Lead", initial:"S",
+      msgs:[
+        {s:"lead", t:"Hi, I was wondering how much Botox costs?"},
+        {s:"pl",   t:"Hi Sarah! Happy to help. Pricing depends on the treatment area and how many units you need. Are you interested in forehead lines, frown lines, crow's feet — or multiple areas?", tag:"PatientLoop · replied in 41s"},
+        {s:"lead", t:"Forehead and frown lines."},
+        {s:"pl",   t:"Perfect — those two are usually treated together in one session. I can get you in for a consult with our injector. I have Thursday at 2:30 PM or Friday at 11:00 AM. Which works better?"},
+        {s:"lead", t:"Friday."}
+      ],
+      booked:{t:"Appointment booked", s:"Friday, 11:00 AM · Consultation"} },
+
+    { who:"Dana R. — Instagram DM", initial:"D",
+      msgs:[
+        {s:"lead", t:"Do you do laser hair removal on underarms?"},
+        {s:"pl",   t:"We do — underarms is one of our quickest areas, about 15 minutes in the chair. Most patients plan a series of sessions spaced a few weeks apart. Have you had laser before?", tag:"PatientLoop · replied in 28s"},
+        {s:"lead", t:"No, this would be my first time 😅"},
+        {s:"pl",   t:"Totally normal! Your first visit includes a skin assessment and a patch test so we can set your settings safely. I have Tuesday at 4:00 PM or Saturday at 10:15 AM open."},
+        {s:"lead", t:"Saturday is better for me."}
+      ],
+      booked:{t:"Appointment booked", s:"Saturday, 10:15 AM · First visit + patch test"} },
+
+    { who:"Michelle T. — Meta Lead Ad", initial:"M",
+      msgs:[
+        {s:"lead", t:"Hi — I saw your ad about medical weight loss. Are you taking new patients?"},
+        {s:"pl",   t:"We are! The program starts with a medical intake and labs, then our provider builds a plan with you. Are you looking for a medically supervised program, or mainly nutrition coaching?", tag:"PatientLoop · replied in 33s"},
+        {s:"lead", t:"Medically supervised. What does the first visit cost?"},
+        {s:"pl",   t:"The new-patient consult is a flat fee that's credited toward your program if you enroll — our provider will go through the full pricing with you. She has Wednesday at 9:45 AM or Thursday at 1:15 PM."},
+        {s:"lead", t:"Wednesday works."}
+      ],
+      booked:{t:"Appointment booked", s:"Wednesday, 9:45 AM · New patient consult"} },
+
+    { who:"Unknown — Missed Call", initial:"?",
+      msgs:[
+        {s:"pl",   t:"Hi, this is Luxe Aesthetics — sorry we missed your call just now, the team was with a patient. What can we help you with?", tag:"Auto · missed call 8:42 PM"},
+        {s:"lead", t:"Oh hi! I wanted to ask about lip filler for next month."},
+        {s:"pl",   t:"Great timing — lip filler books out about two weeks, so next month is very doable. Our injector likes to do a short consult first to talk through shape and volume. Would a weekday evening or a Saturday morning suit you better?"},
+        {s:"lead", t:"Weekday evening."},
+        {s:"pl",   t:"I have Tuesday at 5:45 PM or Wednesday at 6:15 PM. Which one should I hold?"},
+        {s:"lead", t:"Tuesday please."}
+      ],
+      booked:{t:"Appointment booked", s:"Tuesday, 5:45 PM · Lip filler consult"} }
+  ];
+
+  var thread = $("#thread"), phName = $("#ph-name"), phAv = $(".ph-av"), run = 0, active = 0, visible = true;
+
+  function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+  function bubble(m){
+    var d = document.createElement("div");
+    d.className = "msg " + m.s;
+    if(m.tag){ var t = document.createElement("span"); t.className = "tag"; t.textContent = m.tag; d.appendChild(t); }
+    d.appendChild(document.createTextNode(m.t));
+    thread.appendChild(d);
+  }
+
+  async function play(idx){
+    var token = ++run, sc = SCENARIOS[idx];
+    thread.innerHTML = "";
+    phName.textContent = sc.who;
+    phAv.textContent = sc.initial;
+    await wait(420); if(token !== run) return;
+    for(var i=0;i<sc.msgs.length;i++){
+      var m = sc.msgs[i];
+      var typ = document.createElement("div");
+      typ.className = "typing" + (m.s === "pl" ? " pl" : "");
+      typ.innerHTML = "<i></i><i></i><i></i>";
+      thread.appendChild(typ);
+      await wait(m.s === "pl" ? 1000 : 780); if(token !== run) return;
+      typ.remove();
+      bubble(m);
+      await wait(Math.min(2600, 700 + m.t.length * 17)); if(token !== run) return;
+    }
+    var b = document.createElement("div");
+    b.className = "booked";
+    b.innerHTML = '<span class="ck"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>' +
+                  '<span><b>' + sc.booked.t + '</b><small>' + sc.booked.s + '</small></span>';
+    thread.appendChild(b);
+    var sync = document.createElement("div");
+    sync.className = "msg pl";
+    sync.style.background = "var(--band)";
+    sync.style.color = "var(--band-ink)";
+    sync.innerHTML = '<span class="tag">System</span>Synced to CRM · staff notified · reminders scheduled';
+    thread.appendChild(sync);
+    if(RM) return;
+    await wait(5200); if(token !== run) return;
+    play(idx);
+  }
+
+  $$(".scn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      $$(".scn").forEach(function(b){ b.setAttribute("aria-selected", String(b === btn)); });
+      active = parseInt(btn.dataset.scn, 10);
+      play(active);
+    });
+  });
+
+  var heroIO = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      visible = e.isIntersecting;
+      if(e.isIntersecting && !thread.childElementCount) play(active);
+    });
+  }, {threshold:.15});
+  heroIO.observe($(".stage"));
+
+  /* ---------- marquees ---------- */
+  var TOOLS_A = ["GoHighLevel","Twilio","Google Calendar","Meta Lead Ads","HubSpot","Zapier","Calendly","Gmail","Outlook","Make","n8n","Slack"];
+  var TOOLS_B = ["Aesthetic Record","Boulevard","Mindbody","Vagaro","Acuity Scheduling","Square Appointments","Stripe","Klaviyo","Podium","Google Ads"];
+  function fillMarquee(id, list){
+    var el = $(id); if(!el) return;
+    $$(".mq-track", el).forEach(function(track){
+      list.concat(list).forEach(function(name){
+        var s = document.createElement("span");
+        s.className = "mq-item";
+        s.innerHTML = '<i class="dot"></i>' + name;
+        track.appendChild(s);
+      });
+    });
+  }
+  fillMarquee("#mq1", TOOLS_A);
+  fillMarquee("#mq2", TOOLS_A);
+  fillMarquee("#mq3", TOOLS_B);
+
+  /* ---------- how it works: progress line + lit steps ---------- */
+  var flow = $("#flow"), flowFill = $("#flowFill"), steps = $$(".step", flow);
+  function flowProgress(){
+    if(!flow) return;
+    var r = flow.getBoundingClientRect(), mid = window.innerHeight * 0.62;
+    var total = r.height - 94;
+    var p = Math.max(0, Math.min(1, (mid - r.top - 34) / total));
+    flowFill.style.height = (p * total) + "px";
+    steps.forEach(function(s){
+      var b = s.querySelector(".bul").getBoundingClientRect();
+      s.classList.toggle("lit", b.top < mid);
+    });
+  }
+
+  /* ---------- demo pipeline auto-advance ---------- */
+  var pl = $$("#pipeline .pl-step"), pi = 0, ptimer = null;
+  function pipeTick(){
+    pl.forEach(function(s,i){
+      s.classList.toggle("act", i === pi);
+      s.querySelector(".bar").style.width = i < pi ? "100%" : (i === pi ? "100%" : "0%");
+    });
+    pi = (pi + 1) % (pl.length + 1);
+    if(pi === 0) pl.forEach(function(s){ s.querySelector(".bar").style.width = "0%"; s.classList.remove("act"); });
+  }
+  if(pl.length && !RM){
+    var pio = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ if(!ptimer){ pipeTick(); ptimer = setInterval(pipeTick, 1100); } }
+        else if(ptimer){ clearInterval(ptimer); ptimer = null; }
+      });
+    }, {threshold:.3});
+    pio.observe($("#pipeline"));
+  }
+
+  /* ---------- before/after switch ---------- */
+  $$(".switch button").forEach(function(b){
+    b.addEventListener("click", function(){
+      $$(".switch button").forEach(function(x){ x.setAttribute("aria-pressed", String(x === b)); });
+      var col = b.dataset.col;
+      $$("#compare .cmp-row").forEach(function(r){
+        r.querySelector(".a").style.opacity = col === "a" ? "1" : ".42";
+        r.querySelector(".b").style.opacity = col === "b" ? "1" : ".42";
+      });
+    });
+  });
+  $$("#compare .cmp-row").forEach(function(r){ r.querySelector(".a").style.opacity = ".42"; });
+
+  /* ---------- calculator ---------- */
+  var C = {
+    leads:$("#s-leads"), value:$("#s-value"), rate:$("#s-rate"), lift:$("#s-lift"), db:$("#s-db")
+  };
+  function money(n){ return "$" + Math.round(n).toLocaleString(); }
+  function calc(){
+    var leads = +C.leads.value, val = +C.value.value, rate = +C.rate.value, lift = +C.lift.value, db = +C.db.value;
+    $("#v-leads").textContent = leads.toLocaleString();
+    $("#v-value").textContent = money(val);
+    $("#v-rate").textContent  = rate + "%";
+    $("#v-lift").textContent  = "+" + lift + " pts";
+    $("#v-db").textContent    = db.toLocaleString();
+    var extra = leads * (lift / 100);
+    var monthly = extra * val;
+    // dormant list: modelled at a quarter of the lift, one time across the list
+    var dbAppts = db * (lift / 100) * 0.25;
+    $("#out-main").textContent  = money(monthly);
+    $("#out-appts").textContent = extra.toFixed(1);
+    $("#out-year-appts").textContent = Math.round(extra * 12).toLocaleString();
+    $("#out-year").textContent  = money(monthly * 12);
+    $("#out-db").textContent    = money(dbAppts * val);
+    var pct = Math.min(100, (rate + lift));
+    Object.keys(C).forEach(function(k){
+      var s = C[k], p = ((s.value - s.min) / (s.max - s.min)) * 100;
+      s.style.background = "linear-gradient(90deg,var(--accent) " + p + "%,var(--surface-3) " + p + "%)";
+    });
+    return pct;
+  }
+  Object.keys(C).forEach(function(k){ C[k].addEventListener("input", calc); });
+  calc();
+
+  /* ---------- sparklines ---------- */
+  var NS = "http://www.w3.org/2000/svg";
+  function el(n, attrs){
+    var e = document.createElementNS(NS, n);
+    for(var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  $$(".spark").forEach(function(svg){
+    var vals = svg.dataset.spark.split(",").map(Number);
+    var W = 120, H = 30, pad = 3;
+    var max = Math.max.apply(null, vals), min = Math.min.apply(null, vals);
+    var x = function(i){ return pad + (i / (vals.length - 1)) * (W - pad * 2); };
+    var y = function(v){ return H - pad - ((v - min) / (max - min || 1)) * (H - pad * 2); };
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    var d = vals.map(function(v,i){ return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1); }).join(" ");
+    svg.appendChild(el("path", {d:d + " L" + x(vals.length-1) + " " + H + " L" + x(0) + " " + H + " Z",
+      fill:"var(--accent)", opacity:".10"}));
+    var line = el("path", {d:d, fill:"none", stroke:"var(--accent)", "stroke-width":"1.6",
+      "stroke-linecap":"round", "stroke-linejoin":"round"});
+    svg.appendChild(line);
+    svg.appendChild(el("circle", {cx:x(vals.length-1), cy:y(vals[vals.length-1]), r:"2.6",
+      fill:"var(--accent)", stroke:"var(--surface)", "stroke-width":"1.6"}));
+  });
+
+  /* ---------- appointments chart ---------- */
+  (function(){
+    var svg = $("#chart"); if(!svg) return;
+    var data = [6,7,6,9,8,11,10,13,12,16,18,21];
+    var W = 640, H = 220, L = 34, R = 22, T = 20, B = 30;
+    var max = 24, min = 0;
+    var x = function(i){ return L + (i / (data.length - 1)) * (W - L - R); };
+    var y = function(v){ return H - B - ((v - min) / (max - min)) * (H - T - B); };
+
+    var grad = el("linearGradient", {id:"chartFill", x1:"0", y1:"0", x2:"0", y2:"1"});
+    grad.appendChild(el("stop", {offset:"0", "stop-color":"var(--accent)", "stop-opacity":".26"}));
+    grad.appendChild(el("stop", {offset:"1", "stop-color":"var(--accent)", "stop-opacity":"0"}));
+    var defs = el("defs", {}); defs.appendChild(grad); svg.appendChild(defs);
+
+    [0,6,12,18,24].forEach(function(v){
+      svg.appendChild(el("line", {x1:L, y1:y(v), x2:W-R, y2:y(v), stroke:"var(--line)", "stroke-width":"1"}));
+      var t = el("text", {x:L-9, y:y(v)+4, "text-anchor":"end", fill:"var(--ink-3)",
+        "font-size":"10.5", "font-family":"var(--mono)"});
+      t.textContent = v; svg.appendChild(t);
+    });
+
+    var d = data.map(function(v,i){ return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1); }).join(" ");
+    svg.appendChild(el("path", {d:d + " L" + x(data.length-1) + " " + y(0) + " L" + x(0) + " " + y(0) + " Z", fill:"url(#chartFill)"}));
+    var line = el("path", {d:d, fill:"none", stroke:"var(--accent)", "stroke-width":"2",
+      "stroke-linecap":"round", "stroke-linejoin":"round"});
+    svg.appendChild(line);
+
+    data.forEach(function(v,i){
+      svg.appendChild(el("circle", {cx:x(i), cy:y(v), r: i === data.length-1 ? "5" : "3.4",
+        fill: i === data.length-1 ? "var(--accent)" : "var(--surface)",
+        stroke:"var(--accent)", "stroke-width":"2"}));
+    });
+    [0,5,11].forEach(function(i){
+      var t = el("text", {x:x(i), y:H-9, "text-anchor":"middle", fill:"var(--ink-3)",
+        "font-size":"10.5", "font-family":"var(--mono)"});
+      t.textContent = "W" + (i+1); svg.appendChild(t);
+    });
+    var lbl = el("text", {x:x(11), y:y(21)-14, "text-anchor":"end", fill:"var(--ink)",
+      "font-size":"13", "font-weight":"700"});
+    lbl.textContent = "21"; svg.appendChild(lbl);
+
+    var cross = el("line", {x1:0, y1:T-6, x2:0, y2:H-B, stroke:"var(--ink-3)",
+      "stroke-width":"1", "stroke-dasharray":"3 3", opacity:"0"});
+    svg.appendChild(cross);
+
+    if(!RM){
+      var len = line.getTotalLength();
+      line.style.strokeDasharray = len; line.style.strokeDashoffset = len;
+      var lio = new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if(e.isIntersecting){
+            line.style.transition = "stroke-dashoffset 1.6s cubic-bezier(.3,.8,.3,1)";
+            line.style.strokeDashoffset = 0;
+            lio.disconnect();
+          }
+        });
+      }, {threshold:.35});
+      lio.observe(svg);
+    }
+
+    var wrap = $("#chartWrap"), tt = $("#tt");
+    function move(ev){
+      var r = svg.getBoundingClientRect(), k = r.width / W;
+      var px = (ev.clientX - r.left) / k;
+      var i = Math.max(0, Math.min(data.length-1, Math.round((px - L) / ((W - L - R) / (data.length - 1)))));
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", ".5");
+      tt.style.opacity = "1";
+      tt.style.left = (x(i) * k) + "px";
+      tt.style.top  = (y(data[i]) * k) + "px";
+      tt.innerHTML = "<small>Week " + (i+1) + "</small><b>" + data[i] + "</b> appointments booked";
+    }
+    svg.addEventListener("mousemove", move);
+    svg.addEventListener("mouseleave", function(){ tt.style.opacity = "0"; cross.setAttribute("opacity","0"); });
+  })();
+
+  /* ---------- dashboard range buttons (visual) ---------- */
+  $$(".dash-bar .rng button").forEach(function(b){
+    b.addEventListener("click", function(){
+      $$(".dash-bar .rng button").forEach(function(x){ x.setAttribute("aria-pressed", String(x === b)); });
+    });
+  });
+
+  /* ---------- FAQ ---------- */
+  $$("#faq .q").forEach(function(q){
+    var btn = q.querySelector("button"), ans = q.querySelector(".ans");
+    btn.addEventListener("click", function(){
+      var open = q.dataset.open === "true";
+      $$("#faq .q").forEach(function(o){
+        o.dataset.open = "false";
+        o.querySelector(".ans").style.height = "0px";
+        o.querySelector("button").setAttribute("aria-expanded", "false");
+      });
+      if(!open){
+        q.dataset.open = "true";
+        btn.setAttribute("aria-expanded", "true");
+        ans.style.height = ans.firstElementChild.offsetHeight + "px";
+      }
+    });
+  });
+
+  /* ---------- card cursor glow ---------- */
+  $$(".card").forEach(function(c){
+    c.addEventListener("mousemove", function(e){
+      var r = c.getBoundingClientRect();
+      c.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      c.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+  });
+
+  /* ---------- demo placeholder ---------- */
+  var vb = $("#videobox");
+  if(vb){
+    var open = function(){
+      var p = vb.querySelector(".play small");
+      p.textContent = "Replace this block with your demo embed";
+      vb.animate([{transform:"scale(1)"},{transform:"scale(.985)"},{transform:"scale(1)"}], {duration:340, easing:"ease-out"});
+    };
+    vb.addEventListener("click", open);
+    vb.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+  }
+
+  onScroll();
+  window.addEventListener("resize", function(){ flowProgress(); });
+})();
+</script>
