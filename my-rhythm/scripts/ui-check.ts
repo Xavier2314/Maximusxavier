@@ -106,7 +106,7 @@ async function route(page: Page) {
 const session = { access_token: "fake", token_type: "bearer", expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600, refresh_token: "fake", user };
 const cookie = { name: "sb-localhost-auth-token", value: "base64-" + Buffer.from(JSON.stringify(session)).toString("base64url"), domain: "localhost", path: "/" };
 
-const PAGES = ["/", "/calendar", "/calendar?view=week", "/add", "/add?mode=ai", "/reminders", "/proposals/demo", "/spiritual", "/fitness", "/music", "/podcast", "/habits", "/settings", "/assistant", "/travel"];
+const PAGES = ["/", "/timer", "/calendar", "/calendar?view=week", "/add", "/add?mode=ai", "/reminders", "/proposals/demo", "/spiritual", "/fitness", "/music", "/podcast", "/habits", "/settings", "/assistant", "/travel"];
 
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });

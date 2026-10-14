@@ -146,6 +146,7 @@ function Dashboard() {
       <div className="flex gap-2">
         <Link href="/add" className="flex-1"><Button className="w-full"><Plus className="h-4 w-4" /> Quick Add</Button></Link>
         <Link href="/assistant" className="flex-1"><Button variant="soft" className="w-full"><Sparkles className="h-4 w-4 text-lavender" /> Ask AI</Button></Link>
+        <Link href={current ? `/timer?a=${current.activityId}&d=${current.occurrenceDate}&title=${encodeURIComponent(current.title)}` : "/timer"} aria-label="Timer"><Button variant="secondary" className="w-full"><Timer className="h-4 w-4" /> <span className="hidden sm:inline">Timer</span></Button></Link>
       </div>
 
       {data.flagged.length > 0 && (

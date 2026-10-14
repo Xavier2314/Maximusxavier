@@ -242,6 +242,11 @@ export function ActivitySheet({
                 <div className="grid grid-cols-2 gap-2">
                   {occ.state !== "completed" && !inProgress && <Button variant="secondary" onClick={() => act("start")} loading={busy === "start"}><Play className="h-4 w-4" /> Start</Button>}
                   {inProgress && <Button variant="secondary" onClick={() => act("undo")} loading={busy === "undo"}><Pause className="h-4 w-4" /> Stop timer</Button>}
+                  {occ.state !== "completed" && occ.state !== "skipped" && (
+                    <Link href={`/timer?a=${occ.activityId}&d=${occ.occurrenceDate}&title=${encodeURIComponent(occ.title)}`} className="col-span-2">
+                      <Button variant="soft" className="w-full"><Timer className="h-4 w-4" /> Time this with the timer</Button>
+                    </Link>
+                  )}
                   {occ.state !== "completed" && <Button variant="sage" onClick={() => act("complete", { notes: notes || undefined })} loading={busy === "complete"}><Check className="h-4 w-4" /> Complete</Button>}
                   {occ.state !== "skipped" && occ.state !== "completed" && <Button variant="secondary" onClick={() => act("skip", { notes: notes || undefined })} loading={busy === "skip"}><SkipForward className="h-4 w-4" /> Skip</Button>}
                   {(occ.state === "completed" || occ.state === "skipped") && <Button variant="secondary" onClick={() => act("undo")} loading={busy === "undo"}><RotateCcw className="h-4 w-4" /> Undo status</Button>}

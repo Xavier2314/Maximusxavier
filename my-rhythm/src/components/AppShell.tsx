@@ -5,7 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import clsx from "clsx";
 import {
   BellRing, BookOpen, CalendarDays, Dumbbell, Flame, History, House, Luggage, Menu, Mic, Music, PanelLeftClose, PanelLeft, Plus,
-  Settings, Sparkles, ChartColumn, WifiOff,
+  Settings, Sparkles, ChartColumn, WifiOff, Timer,
 } from "lucide-react";
 import { PwaClient } from "./PwaClient";
 import { Sheet } from "./ui";
@@ -25,6 +25,7 @@ const GROWTH = [
   { href: "/habits", label: "Habits", icon: Flame },
 ];
 const PLAN = [
+  { href: "/timer", label: "Timer", icon: Timer },
   { href: "/assistant", label: "Ask AI", icon: Sparkles },
   { href: "/travel", label: "Travel", icon: Luggage },
   { href: "/review", label: "Weekly review", icon: ChartColumn },
