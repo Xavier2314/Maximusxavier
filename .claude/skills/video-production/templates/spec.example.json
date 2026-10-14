@@ -1,0 +1,41 @@
+{
+  "output": "out/promo_vertical.mp4",
+  "preset": "vertical",
+  "fps": 30,
+  "background": "#0f1115",
+  "transition": { "type": "fade", "duration": 0.35 },
+  "voiceover": "assets/vo.wav",
+  "music": "assets/music.mp3",
+  "music_volume": 0.12,
+  "fit_to_voiceover": true,
+  "style": {
+    "font": "DejaVu Sans",
+    "accent": "#FFD400",
+    "caption_words": 3
+  },
+  "scenes": [
+    {
+      "duration": 2,
+      "image": "assets/photo1.jpg",
+      "motion": "zoom_in",
+      "title": "Stop losing leads\nat 2am"
+    },
+    {
+      "duration": 3,
+      "video": "assets/clip.mp4",
+      "start": 0.5,
+      "caption": "Your voice agent answers every call in under a second"
+    },
+    {
+      "duration": 3,
+      "image": "assets/photo2.png",
+      "motion": "pan_right",
+      "caption": "It books the meeting straight into your calendar"
+    },
+    {
+      "duration": 2.5,
+      "color": "#e63946",
+      "title": "Book a demo\nlink in bio"
+    }
+  ]
+}

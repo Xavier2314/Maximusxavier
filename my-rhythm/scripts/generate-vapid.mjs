@@ -1,0 +1,4 @@
+// Generates a VAPID key pair for Web Push (run: npm run vapid)
+import webpush from "web-push";
+const k = webpush.generateVAPIDKeys();
+console.log(`NEXT_PUBLIC_VAPID_PUBLIC_KEY=${k.publicKey}\nVAPID_PRIVATE_KEY=${k.privateKey}`);

@@ -1,3 +1,5 @@
+> **Also in this repo:** [`my-rhythm/`](my-rhythm/README.md) — MY RHYTHM, a personal AI life-planner PWA (Next.js + Supabase + Web Push + Claude).
+
 # FreelanceFund — Managed Freelance Earnings & Fund Control Platform
 
 A transparent, dual-approval fund management platform for freelancers and their network.
