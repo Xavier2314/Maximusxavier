@@ -86,7 +86,7 @@ function CalendarInner() {
         </>
       )}
 
-      <Link href={`/add?date=${anchor}`} className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+148px)] z-30 flex h-12 w-12 items-center justify-center rounded-full bg-navy text-white shadow-lg md:hidden dark:bg-lavender dark:text-[#0b1222]" aria-label="Add on this day">
+      <Link href={`/add?date=${anchor}`} className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+148px)] z-30 flex h-12 w-12 items-center justify-center rounded-full bg-navy text-white shadow-lg md:hidden dark:bg-lavender dark:text-[#08101f]" aria-label="Add on this day">
         <Plus className="h-6 w-6" />
       </Link>
       <ActivitySheet occ={open} tz={tz} categories={data?.categories ?? []} onClose={() => setOpen(null)} onChanged={() => mutate()} />

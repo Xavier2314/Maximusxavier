@@ -19,7 +19,7 @@ export default function HabitsPage() {
   const from = DateTime.fromISO(today).minus({ days: 120 }).toISODate()!;
   const comps = useCollection<HC>("habit_completions", `from.completed_on=${from}&limit=1000`);
   const [adding, setAdding] = useState(false);
-  const [nh, setNh] = useState({ name: "", target_per_week: 7, color: "#8b7fd6" });
+  const [nh, setNh] = useState({ name: "", target_per_week: 7, color: "#2563eb" });
   const week = Array.from({ length: 7 }, (_, i) => DateTime.fromISO(today).startOf("week").plus({ days: i }));
 
   if (habits.error) return <ErrorState error={habits.error} />;
@@ -88,7 +88,7 @@ export default function HabitsPage() {
 
       <Sheet open={adding} onClose={() => setAdding(false)} title="New habit" footer={
         <div className="flex justify-end gap-2"><Button variant="secondary" onClick={() => setAdding(false)}>Cancel</Button>
-          <Button onClick={async () => { if (!nh.name.trim()) return; await habits.create({ ...nh, icon: "sparkles", position: habits.rows!.length, active: true }); setAdding(false); setNh({ name: "", target_per_week: 7, color: "#8b7fd6" }); }}>Create</Button></div>
+          <Button onClick={async () => { if (!nh.name.trim()) return; await habits.create({ ...nh, icon: "sparkles", position: habits.rows!.length, active: true }); setAdding(false); setNh({ name: "", target_per_week: 7, color: "#2563eb" }); }}>Create</Button></div>
       }>
         <div className="space-y-4">
           <Field label="Name"><Input value={nh.name} onChange={(e) => setNh({ ...nh, name: e.target.value })} placeholder="e.g. Read 10 pages" /></Field>

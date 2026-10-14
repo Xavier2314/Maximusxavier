@@ -181,7 +181,7 @@ function Plans() {
         <Card className="divide-y divide-line">
           {plans.rows.map((p) => (
             <div key={p.id} className="flex items-center gap-3 p-3">
-              <div className="min-w-0 flex-1"><p className="font-medium">{p.name} {p.active && <Badge color="#6f9a7c">active</Badge>}</p><p className="text-xs text-muted">From {p.start_date} · {p.days} days</p></div>
+              <div className="min-w-0 flex-1"><p className="font-medium">{p.name} {p.active && <Badge color="#f97316">active</Badge>}</p><p className="text-xs text-muted">From {p.start_date} · {p.days} days</p></div>
               {!p.active && <Button size="sm" variant="secondary" onClick={async () => { for (const x of plans.rows!) if (x.active) await plans.update(x.id, { active: false }); await plans.update(p.id, { active: true }); }}>Make active</Button>}
               <Button size="icon" variant="ghost" aria-label="Delete plan" onClick={() => plans.remove(p.id)}><Trash2 className="h-4 w-4" /></Button>
             </div>

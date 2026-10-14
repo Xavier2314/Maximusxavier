@@ -196,9 +196,9 @@ export function ActivitySheet({
               {cat && <Badge color={cat.color}>{cat.name}</Badge>}
               <Badge>{CLASS_LABEL[occ.classification]}</Badge>
               {occ.recurring && <Badge><Repeat className="h-3 w-3" /> {a ? describeRecurrence(a.recurrence) : "Repeats"}</Badge>}
-              {occ.modified && <Badge color="#8b7fd6">Changed for this day</Badge>}
+              {occ.modified && <Badge color="#2563eb">Changed for this day</Badge>}
               {occ.status === "needs_reschedule" && <Badge color="#b7791f"><Flag className="h-3 w-3" /> Needs rescheduling</Badge>}
-              {occ.state === "completed" && <Badge color="#6f9a7c"><Check className="h-3 w-3" /> Completed</Badge>}
+              {occ.state === "completed" && <Badge color="#f97316"><Check className="h-3 w-3" /> Completed</Badge>}
               {occ.state === "skipped" && <Badge>Skipped</Badge>}
               {occ.state === "missed" && <Badge color="#c2413b">Missed</Badge>}
             </div>

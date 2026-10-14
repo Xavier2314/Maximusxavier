@@ -101,7 +101,7 @@ function Assistant() {
         )}
         {messages.map((m, i) => (
           <div key={i} className={clsx("flex", m.role === "user" ? "justify-end" : "justify-start")}>
-            <div className={clsx("max-w-[88%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap", m.role === "user" ? "rounded-br-md bg-navy text-white dark:bg-lavender dark:text-[#0b1222]" : "rounded-bl-md border border-line bg-surface")}>
+            <div className={clsx("max-w-[88%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap", m.role === "user" ? "rounded-br-md bg-navy text-white dark:bg-lavender dark:text-[#08101f]" : "rounded-bl-md border border-line bg-surface")}>
               <FormattedText text={m.content} />
               {m.proposals?.map((p) => (
                 <Link key={p} href={`/proposals/${p}`} className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-lavender px-3 py-2 text-sm font-semibold text-white">

@@ -1,5 +1,5 @@
 /* MY RHYTHM service worker — push notifications, offline-friendly caching. */
-const VERSION = "myrhythm-v1";
+const VERSION = "myrhythm-v2";
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
 const API_CACHE = `${VERSION}-api`;

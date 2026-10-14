@@ -94,7 +94,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {collapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
           </button>
         </div>
-        <Link href="/add" className={clsx("mb-4 flex items-center justify-center gap-2 rounded-xl bg-navy py-2.5 font-medium text-white dark:bg-lavender dark:text-[#0b1222]", collapsed && "px-0")}>
+        <Link href="/add" className={clsx("mb-4 flex items-center justify-center gap-2 rounded-xl bg-navy py-2.5 font-medium text-white dark:bg-lavender dark:text-[#08101f]", collapsed && "px-0")}>
           <Plus className="h-5 w-5" /> {!collapsed && "Quick Add"}
         </Link>
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto scroll-hide">
@@ -119,7 +119,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {!["/assistant", "/add", "/proposals", "/travel"].some((x) => path.startsWith(x)) && (
         <button
           onClick={() => router.push("/assistant")}
-          className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+88px)] z-30 flex h-12 items-center gap-2 rounded-full bg-gradient-to-br from-lavender to-[#6d62c4] px-4 font-medium text-white shadow-lg md:bottom-6"
+          className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+88px)] z-30 flex h-12 items-center gap-2 rounded-full bg-gradient-to-br from-lavender to-[#f97316] px-4 font-medium text-white shadow-lg md:bottom-6"
           aria-label="Ask AI"
         >
           <Sparkles className="h-5 w-5" /> <span className="hidden sm:inline">Ask AI</span>
@@ -130,7 +130,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <nav className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/90 backdrop-blur-xl md:hidden" aria-label="Main">
         <div className="mx-auto grid max-w-md grid-cols-5 items-center px-2 pt-1.5 pb-1">
           {PRIMARY.slice(0, 2).map((n) => <BottomItem key={n.href} {...n} />)}
-          <Link href="/add" aria-label="Quick Add" className="mx-auto -mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-navy text-white shadow-lg ring-4 ring-bg dark:bg-lavender dark:text-[#0b1222]">
+          <Link href="/add" aria-label="Quick Add" className="mx-auto -mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#fb923c] to-[#ea580c] text-white shadow-lg shadow-orange-500/30 ring-4 ring-bg">
             <Plus className="h-7 w-7" />
           </Link>
           <BottomItem {...PRIMARY[2]} />

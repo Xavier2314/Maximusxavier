@@ -7,7 +7,7 @@ const Ctx = createContext<{ theme: Theme; setTheme: (t: Theme) => void }>({ them
 function apply(t: Theme) {
   const dark = t === "dark" || (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
   document.documentElement.classList.toggle("dark", dark);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#0b1222" : "#fbf8f3");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#08101f" : "#f7f9fd");
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

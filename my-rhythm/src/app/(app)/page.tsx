@@ -261,11 +261,11 @@ function Dashboard() {
 function StateBadge({ state, flagged }: { state: string; flagged?: boolean }) {
   if (flagged) return <Badge color="#b7791f"><Flag className="h-3 w-3" /> Flagged</Badge>;
   switch (state) {
-    case "completed": return <Badge color="#6f9a7c">Done</Badge>;
+    case "completed": return <Badge color="#f97316">Done</Badge>;
     case "skipped": return <Badge>Skipped</Badge>;
     case "missed": return <Badge color="#c2413b">Missed</Badge>;
-    case "in_progress": return <Badge color="#6f9a7c"><Timer className="h-3 w-3" /> Running</Badge>;
-    case "now": return <Badge color="#8b7fd6">Now</Badge>;
+    case "in_progress": return <Badge color="#f97316"><Timer className="h-3 w-3" /> Running</Badge>;
+    case "now": return <Badge color="#2563eb">Now</Badge>;
     case "cancelled": return <Badge>Cancelled</Badge>;
     default: return null;
   }

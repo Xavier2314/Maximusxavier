@@ -219,7 +219,7 @@ export default function ReminderCenter() {
                 <div className="flex items-start gap-3">
                   <span className="w-[74px] shrink-0 text-sm tabular-nums">{t12(r.fire_at, TZ)}<span className="block text-xs text-muted">{dayLabel(r.fire_at, TZ, "ccc d")}</span></span>
                   <div className="min-w-0 flex-1"><p className="truncate text-sm">{r.body}</p>{r.last_error && <p className="text-xs text-danger">{r.last_error}</p>}</div>
-                  <Badge color={r.status === "sent" ? "#6f9a7c" : r.status === "suppressed" ? "#66718a" : "#c2413b"}>{r.status === "sent" ? "accepted" : r.status}</Badge>
+                  <Badge color={r.status === "sent" ? "#f97316" : r.status === "suppressed" ? "#66718a" : "#c2413b"}>{r.status === "sent" ? "accepted" : r.status}</Badge>
                 </div>
                 {logs.length > 0 && (
                   <p className="mt-1 pl-[86px] text-xs text-muted">

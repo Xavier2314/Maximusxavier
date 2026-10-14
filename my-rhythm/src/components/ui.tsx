@@ -8,7 +8,7 @@ export { clsx };
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "soft" | "sage";
 const VARIANTS: Record<Variant, string> = {
-  primary: "bg-navy text-white dark:bg-lavender dark:text-[#0b1222] hover:opacity-90 shadow-sm",
+  primary: "bg-navy text-white dark:bg-lavender dark:text-[#08101f] hover:opacity-90 shadow-sm",
   secondary: "bg-surface text-ink border border-line hover:bg-surface-2",
   ghost: "text-ink-2 hover:bg-surface-2",
   danger: "bg-danger text-white hover:opacity-90",
@@ -194,7 +194,7 @@ export function Sheet({ open, onClose, title, children, footer, wide }: { open: 
   if (!open || typeof document === "undefined") return null;
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-[#0b1222]/40 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="absolute inset-0 bg-[#08101f]/40 backdrop-blur-[2px]" onClick={onClose} />
       <div
         ref={ref}
         tabIndex={-1}

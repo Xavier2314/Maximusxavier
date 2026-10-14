@@ -207,7 +207,7 @@ export function ProposalReview({ proposal, categories, onDone }: { proposal: Pro
                     <Icon className="h-4 w-4 text-lavender" />
                     <span className="font-medium">{r.title}</span>
                     {r.classification && <Badge>{CLASS_LABEL[r.classification]}</Badge>}
-                    {overrides[r.id] && <Badge color="#8b7fd6">modified</Badge>}
+                    {overrides[r.id] && <Badge color="#2563eb">modified</Badge>}
                   </div>
                   <p className="mt-1 text-sm text-muted">{r.reason}</p>
                   {err && <p className="mt-1 text-sm text-danger">Not applied: {err.error}</p>}

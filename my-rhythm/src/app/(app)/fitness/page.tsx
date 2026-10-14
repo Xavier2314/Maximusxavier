@@ -83,7 +83,7 @@ export default function FitnessPage() {
                 <p className="text-sm font-semibold">{DateTime.fromISO(o.start).setZone(tz).toFormat("ccc d LLL")}</p>
                 <p className="text-xs text-muted">{t12(o.start, tz)}</p>
                 {o.state === "completed" && <Badge color="#22A06B">done</Badge>}
-                {o.modified && <Badge color="#8b7fd6">moved</Badge>}
+                {o.modified && <Badge color="#2563eb">moved</Badge>}
               </button>
             ))}
           </div>

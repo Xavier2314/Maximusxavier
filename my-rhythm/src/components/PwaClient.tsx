@@ -47,7 +47,7 @@ export function PwaClient() {
     setAlarm(null);
   };
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#0b1222]/50 p-6 backdrop-blur-sm" role="alertdialog" aria-label="Reminder">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#08101f]/50 p-6 backdrop-blur-sm" role="alertdialog" aria-label="Reminder">
       <div className="animate-fade-up w-full max-w-sm rounded-3xl border border-line bg-surface p-6 text-center shadow-2xl">
         <div className="animate-pulse-ring mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-lavender-soft text-lavender">
           <AlarmClock className="h-8 w-8" />
