@@ -3,7 +3,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { DateTime } from "luxon";
-import { BellRing, Check, ChevronRight, Flag, Flame, Plus, Sparkles, Timer, TriangleAlert } from "lucide-react";
+import { BellRing, Check, ChevronRight, Flag, Flame, Mic, Plus, Sparkles, Timer, TriangleAlert } from "lucide-react";
 import { Badge, Button, Card, EmptyState, ErrorState, ProgressRing, SectionTitle, Skeleton, clsx } from "@/components/ui";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ActivitySheet } from "@/components/ActivitySheet";
@@ -146,6 +146,7 @@ function Dashboard() {
       <div className="flex gap-2">
         <Link href="/add" className="flex-1"><Button className="w-full"><Plus className="h-4 w-4" /> Quick Add</Button></Link>
         <Link href="/assistant" className="flex-1"><Button variant="soft" className="w-full"><Sparkles className="h-4 w-4 text-lavender" /> Ask AI</Button></Link>
+        <Link href="/add?mode=talk" aria-label="Talk it through"><Button variant="secondary" className="w-full"><Mic className="h-4 w-4 text-sage" /> <span className="hidden sm:inline">Talk</span></Button></Link>
         <Link href={current ? `/timer?a=${current.activityId}&d=${current.occurrenceDate}&title=${encodeURIComponent(current.title)}` : "/timer"} aria-label="Timer"><Button variant="secondary" className="w-full"><Timer className="h-4 w-4" /> <span className="hidden sm:inline">Timer</span></Button></Link>
       </div>
 

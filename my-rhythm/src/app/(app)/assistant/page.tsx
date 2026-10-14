@@ -2,7 +2,9 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowUp, History, MessageSquarePlus, Sparkles } from "lucide-react";
+import { ArrowUp, History, MessageSquarePlus, Mic, MicOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { useDictation } from "@/lib/client/dictation";
+import { speak, unlockVoice } from "@/lib/client/voice";
 import { Button, Card, PageHeader, Sheet, Skeleton, Textarea, clsx } from "@/components/ui";
 import { api, useApi } from "@/lib/client/api";
 import { useToast } from "@/components/toast";
@@ -20,6 +22,7 @@ const SUGGESTIONS = [
   "What have I been consistent with this month?",
   "Help me plan tomorrow.",
   "Which activities did I miss this week?",
+  "I want to call Mum at 6, go to the market, and practise keyboard for an hour. Make me a task list.",
 ];
 
 export default function AssistantPage() {
@@ -34,6 +37,9 @@ function Assistant() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [readAloud, setReadAloud] = useState(false);
+  const dict = useDictation(setInput);
+  useEffect(() => { try { setReadAloud(localStorage.getItem("myrhythm.readAloud") === "1"); } catch {} }, []);
   const bottom = useRef<HTMLDivElement>(null);
   const sentInitial = useRef(false);
   const { data: convs, mutate: refreshConvs } = useApi<{ conversations: { id: string; title: string; updated_at: string }[] }>(showHistory ? "/api/ai/conversations" : null);
@@ -43,6 +49,8 @@ function Assistant() {
   async function send(text: string) {
     const msg = text.trim();
     if (!msg || busy) return;
+    if (dict.listening) dict.stop();
+    if (readAloud) unlockVoice();
     setInput("");
     setMessages((m) => [...m, { role: "user", content: msg }]);
     setBusy(true);
@@ -50,6 +58,7 @@ function Assistant() {
       const res = await api<{ conversationId: string; reply: string; proposals: string[] }>("/api/ai/chat", { body: { conversationId, message: msg } });
       setConversationId(res.conversationId);
       setMessages((m) => [...m, { role: "assistant", content: res.reply, proposals: res.proposals }]);
+      if (readAloud) speak(res.reply.replace(/\*\*/g, ""), { force: true, interrupt: true });
     } catch (e) {
       const err = e instanceof Error ? e.message : "Something went wrong";
       setMessages((m) => [...m, { role: "assistant", content: `⚠️ ${err}` }]);
@@ -81,6 +90,11 @@ function Assistant() {
         subtitle="Answers come from your real schedule. Changes are only proposed — you approve them."
         action={
           <div className="flex gap-1">
+            <Button size="icon" variant="ghost" aria-label={readAloud ? "Stop reading replies aloud" : "Read replies aloud"} onClick={() => {
+              const v = !readAloud; setReadAloud(v);
+              try { localStorage.setItem("myrhythm.readAloud", v ? "1" : "0"); } catch {}
+              if (v) speak("I'll read my replies out loud.", { force: true, interrupt: true });
+            }}>{readAloud ? <Volume2 className="h-5 w-5 text-lavender" /> : <VolumeX className="h-5 w-5" />}</Button>
             <Button size="icon" variant="ghost" aria-label="Conversation history" onClick={() => setShowHistory(true)}><History className="h-5 w-5" /></Button>
             <Button size="icon" variant="ghost" aria-label="New conversation" onClick={() => { setConversationId(null); setMessages([]); }}><MessageSquarePlus className="h-5 w-5" /></Button>
           </div>
@@ -127,8 +141,15 @@ function Assistant() {
           <Textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about your schedule…" rows={1} maxLength={4000}
             className="max-h-40 min-h-[44px] flex-1 resize-none border-0 py-2.5 focus:ring-0"
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }} />
+          {dict.supported && (
+            <Button type="button" size="icon" variant={dict.listening ? "danger" : "ghost"} aria-label={dict.listening ? "Stop listening" : "Speak"} onClick={() => (dict.listening ? dict.stop() : dict.start(input))}>
+              {dict.listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+            </Button>
+          )}
           <Button type="submit" size="icon" aria-label="Send" disabled={!input.trim() || busy}><ArrowUp className="h-5 w-5" /></Button>
         </div>
+        {dict.listening && <p className="mt-1 text-center text-xs text-muted">Listening… tap the mic again or send when you&apos;re done.</p>}
+        {dict.error && <p className="mt-1 text-center text-xs text-danger">{dict.error}</p>}
       </form>
 
       <Sheet open={showHistory} onClose={() => setShowHistory(false)} title="Conversations">

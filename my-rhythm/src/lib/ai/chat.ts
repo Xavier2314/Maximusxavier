@@ -3,13 +3,15 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { DateTime } from "luxon";
 import { z } from "zod";
-import { anthropic, FALLBACK, MODEL } from "./claude";
+import { anthropic, extractPlan, FALLBACK, MODEL } from "./claude";
 import { decorate, loadScheduleData, occurrencesForDays } from "../data";
 import { findFreeSlots } from "../schedule/freeSlots";
 import { detectConflicts } from "../schedule/conflicts";
 import { expandOccurrences } from "../schedule/occurrences";
 import { ActivityDraftSchema } from "../schedule/draft";
-import { proposeDrafts, proposeFindTime } from "../proposals";
+import { proposeDrafts, proposeFindTime, saveProposal } from "../proposals";
+import { planToDrafts } from "./tasks";
+import { analyzeDrafts } from "../schedule/analyze";
 import { categoryStats } from "../stats";
 import { fmtTime } from "../time";
 import { log } from "../log";
@@ -19,7 +21,7 @@ const SYSTEM = `You are MY RHYTHM, the owner's private, calm and encouraging per
 
 How you work:
 - ALWAYS use tools to read the owner's real schedule and records before answering questions about them. Never invent events, completions or statistics.
-- You cannot change the calendar directly. To suggest a change, call propose_new_activity or propose_find_time. These create a PROPOSAL the owner reviews and approves in the app. Say clearly that nothing changes until they approve it.
+- You cannot change the calendar directly. To suggest a change, call propose_new_activity, propose_task_list (when they list several things they want to do) or propose_find_time. These create a PROPOSAL the owner reviews and approves in the app. Say clearly that nothing changes until they approve it.
 - Respect the owner's priorities (given in each request) and activity classifications: fixed (never move casually), essential (needs extra care, e.g. Bible devotion), flexible (can move), optional (can skip).
 - Protect sleep and rest. Don't fill every free minute.
 - Be brief: short paragraphs or bullets, 12-hour times (e.g. 4:00 PM), the owner's timezone.
@@ -77,6 +79,12 @@ const tools: Anthropic.Beta.BetaTool[] = [
       required: ["title", "category_key", "start_date", "start_time", "duration_minutes", "classification", "is_trip", "destination", "location"],
       additionalProperties: false,
     },
+    strict: true,
+  },
+  {
+    name: "propose_task_list",
+    description: "When the owner lists several things they want to do (tasks, reminders, trips, practice, errands…), turn them into a timed task list proposal. Pass their words; times they didn't give are filled with free slots. Owner approves in the app.",
+    input_schema: { type: "object", properties: { spoken_text: { type: "string", description: "everything the owner said they want to do, in their words" } }, required: ["spoken_text"], additionalProperties: false },
     strict: true,
   },
   {
@@ -185,6 +193,17 @@ async function runTool(name: string, input: unknown, ctx: ToolCtx): Promise<unkn
         conflicts: p.payload.conflicts.map((c) => c.message),
         recommendations: p.payload.recommendations.map((r) => ({ action: r.action, title: r.title, preselected: r.selected })),
       };
+    }
+    case "propose_task_list": {
+      const i = z.object({ spoken_text: z.string().min(2).max(6000) }).parse(input);
+      const { plan } = await extractPlan(i.spoken_text, now);
+      const { placed, trip } = planToDrafts(plan, ctx.data, now, "ai");
+      const drafts = placed.flatMap((p) => (p.draft ? [p.draft] : []));
+      if (!drafts.length) return { status: "nothing to add", summary: plan.summary };
+      const payload = analyzeDrafts(drafts, ctx.data, { now, trip: trip ? { destination: trip.destination, prepMinutes: 60 } : null });
+      const p = await saveProposal(ctx.sb, ctx.userId, "ai_chat", `Your plan (${drafts.length} items)`, payload, ctx.data);
+      ctx.proposals.push(p.id);
+      return { proposal_id: p.id, status: "awaiting owner approval", items: placed.map((x) => ({ title: x.title, when: x.when, time_source: x.placed })), conflicts: p.payload.conflicts.map((c) => c.message) };
     }
     case "propose_find_time": {
       const i = z.object({

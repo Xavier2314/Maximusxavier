@@ -1,5 +1,5 @@
 /* MY RHYTHM service worker — push notifications, offline-friendly caching. */
-const VERSION = "myrhythm-v2";
+const VERSION = "myrhythm-v3";
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
 const API_CACHE = `${VERSION}-api`;
@@ -104,7 +104,7 @@ self.addEventListener("push", (event) => {
     // Tell an open window to show the in-app alarm overlay (+ optional sound).
     const wins = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
     for (const w of wins) {
-      if (w.visibilityState === "visible") w.postMessage({ type: "reminder", payload: { title, body: options.body, url: options.data.url, token: data.token, actionable: !!data.actionable } });
+      if (w.visibilityState === "visible") w.postMessage({ type: "reminder", payload: { title, body: options.body, url: options.data.url, token: data.token, actionable: !!data.actionable, activityId: data.activityId || null, occurrenceDate: data.occurrenceDate || null } });
     }
     // Device receipt: proves this device got the push and asked the OS to show it.
     if (data.token) {

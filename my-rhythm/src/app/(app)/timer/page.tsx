@@ -2,12 +2,13 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DateTime } from "luxon";
-import { BellRing, Check, Flag, Pause, Play, RotateCcw, Sun, Timer as TimerIcon, Trash2 } from "lucide-react";
+import { BellRing, Check, Flag, Pause, Play, RotateCcw, Sparkles, Sun, Timer as TimerIcon, Trash2, Volume2, VolumeX } from "lucide-react";
 import { Button, Card, Field, Input, PageHeader, SectionTitle, Segmented, Select, Skeleton, Toggle, clsx } from "@/components/ui";
 import { useToast } from "@/components/toast";
 import { api, useApi } from "@/lib/client/api";
 import { useProfile } from "@/lib/client/hooks";
 import { playSound, unlockAudio, type SoundName } from "@/lib/client/sounds";
+import { setVoiceEnabled, speak, unlockVoice, voiceEnabled, voiceSupported } from "@/lib/client/voice";
 import { durationLabel, t12 } from "@/lib/client/format";
 import type { OccurrenceView } from "@/lib/data";
 
@@ -43,6 +44,23 @@ function fmt(ms: number) {
   return neg ? `+${body}` : body;
 }
 
+interface Coach { start: string; halfway: string; five_minutes: string; one_minute: string; ten_seconds: string; finish: string; stopwatch_checkin: string }
+
+/** Built-in coach lines (used instantly, and whenever AI is off or unavailable). */
+function defaultCoach(task: string, minutes: number | null, name: string): Coach {
+  const t = task || "your task";
+  const n = name ? `${name}, ` : "";
+  return {
+    start: minutes ? `Let's go, ${n}${minutes} minutes of ${t}. You've got this.` : `Timer started for ${t}. Let's do this.`,
+    halfway: `You're halfway through. You're doing great — keep going.`,
+    five_minutes: `Five minutes left. Strong finish now.`,
+    one_minute: `One minute to go. Bring it home.`,
+    ten_seconds: `You are doing very great. You have just ten seconds to complete your task.`,
+    finish: `Time! Well done, ${n}you finished ${t}.`,
+    stopwatch_checkin: `You've been on ${t} for {minutes} minutes. Keep it up.`,
+  };
+}
+
 export default function TimerPage() {
   return <Suspense fallback={<Skeleton className="h-96" />}><TimerInner /></Suspense>;
 }
@@ -58,6 +76,12 @@ function TimerInner() {
   const [custom, setCustom] = useState("");
   const [keepAwake, setKeepAwake] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [coachOn, setCoachOn] = useState(true);
+  const [coachLine, setCoachLine] = useState<string | null>(null);
+  const coach = useRef<Coach>(defaultCoach("", null, ""));
+  const spoken = useRef<Set<string>>(new Set());
+  const { profile } = useProfile();
+  const firstName = (profile?.display_name ?? "").split(" ")[0];
   const wakeLock = useRef<{ release: () => Promise<void> } | null>(null);
 
   // load persisted state; a link passed in the URL (from an activity) pre-fills it
@@ -87,15 +111,52 @@ function TimerInner() {
     return () => clearInterval(i);
   }, [running]);
 
+  useEffect(() => { setCoachOn(voiceEnabled()); }, []);
+
+  // Opened from a reminder ("Start timer"): preset a countdown for the task's planned length.
+  const presetDone = useRef(false);
+  useEffect(() => {
+    if (presetDone.current || !t || !sched || params.get("countdown") !== "1" || t.startedAt || t.accumulated || !t.link) return;
+    presetDone.current = true;
+    const o = sched.occurrences.find((x) => x.activityId === t.link!.activityId && x.occurrenceDate === t.link!.occurrenceDate);
+    if (o) save({ ...t, mode: "countdown", durationMs: Math.max(60_000, DateTime.fromISO(o.end).diff(DateTime.fromISO(o.start)).toMillis()) });
+  }, [t, sched, params, save]);
+
+  const say = useCallback((key: string, text: string) => {
+    if (spoken.current.has(key)) return;
+    spoken.current.add(key);
+    setCoachLine(text);
+    if (coachOn) speak(text);
+  }, [coachOn]);
+
+  // AI voice coach: speaks at milestones while the timer runs
+  useEffect(() => {
+    if (!t || !running) return;
+    const c = coach.current;
+    if (t.mode === "countdown") {
+      const total = t.durationMs;
+      const secs = Math.ceil(remaining / 1000);
+      if (total >= 4 * 60_000 && elapsed >= total / 2) say("half", c.halfway);
+      if (total > 8 * 60_000 && remaining <= 5 * 60_000 && remaining > 4.5 * 60_000) say("five", c.five_minutes);
+      if (total > 2 * 60_000 && remaining <= 60_000 && remaining > 50_000) say("one", c.one_minute);
+      if (total > 20_000 && remaining <= 10_000 && remaining > 4_000) say("ten", c.ten_seconds);
+      if (secs <= 3 && secs >= 1 && total > 10_000) say(`n${secs}`, String(secs));
+    } else {
+      const mins = Math.floor(elapsed / 60_000);
+      if (mins > 0 && mins % 10 === 0) say(`sw${mins}`, c.stopwatch_checkin.replace("{minutes}", String(mins)));
+    }
+  }, [t, running, elapsed, remaining, say]);
+
   // countdown reached zero while the app is open → sound + vibration (once)
   useEffect(() => {
     if (!t || t.mode !== "countdown" || !running || t.finishedNotified || remaining > 0) return;
     let sound: SoundName = "chime";
     try { sound = (localStorage.getItem("myrhythm.soundName") as SoundName) || "chime"; } catch {}
-    playSound(sound, 3);
+    playSound(sound, 2);
+    say("finish", coach.current.finish);
     toast.show("success", `${t.label || "Timer"} finished!`);
     save({ ...t, finishedNotified: true });
-  }, [t, running, remaining, save, toast]);
+  }, [t, running, remaining, save, toast, say]);
 
   // keep the screen on while timing (where supported)
   useEffect(() => {
@@ -124,6 +185,20 @@ function TimerInner() {
 
   async function start() {
     unlockAudio(); // a tap is required before the browser allows the end-of-timer sound
+    unlockVoice();
+    const task = t!.link?.title || t!.label || "";
+    const minutes = t!.mode === "countdown" ? Math.round(t!.durationMs / 60_000) : null;
+    if (!t!.accumulated) {
+      spoken.current = new Set();
+      coach.current = defaultCoach(task, minutes, firstName);
+      say("start", coach.current.start);
+      // personalised lines from the AI (falls back silently to the built-in ones)
+      api<{ lines: Coach | null }>("/api/ai/coach", { body: { task: task || "your task", minutes } })
+        .then((r) => { if (r.lines) coach.current = { ...r.lines, start: coach.current.start }; })
+        .catch(() => {});
+    } else {
+      say(`resume${Date.now()}`, "Back to it.");
+    }
     setBusy(true);
     const base = { ...t!, finishedNotified: false };
     const alertId = await scheduleAlert(base, base.durationMs - base.accumulated);
@@ -143,6 +218,8 @@ function TimerInner() {
 
   async function reset() {
     await cancelAlert(t!.alertId);
+    spoken.current = new Set();
+    setCoachLine(null);
     save({ ...fresh(t!.mode), durationMs: t!.durationMs, label: t!.link ? "" : t!.label });
   }
 
@@ -198,7 +275,19 @@ function TimerInner() {
           </div>
         </div>
 
+        {coachLine && (running || t.accumulated > 0 || t.finishedNotified) && (
+          <div className="animate-fade-up flex max-w-md items-start gap-2 rounded-2xl bg-lavender-soft px-4 py-2.5 text-[15px]">
+            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-lavender" />
+            <span>{coachLine}</span>
+          </div>
+        )}
+
         <div className="flex flex-wrap justify-center gap-2">
+          {voiceSupported() && (
+            <Button variant="ghost" size="lg" aria-label={coachOn ? "Mute voice coach" : "Unmute voice coach"} onClick={() => { const v = !coachOn; setCoachOn(v); setVoiceEnabled(v); }}>
+              {coachOn ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+            </Button>
+          )}
           {running ? (
             <Button variant="secondary" size="lg" onClick={pause}><Pause className="h-5 w-5" /> Pause</Button>
           ) : (
@@ -244,6 +333,10 @@ function TimerInner() {
             </Select>
           </Field>
           {!t.link && <Field label="Label (optional)"><Input value={t.label} maxLength={80} placeholder="e.g. Reading, Scales, Study" onChange={(e) => save({ ...t, label: e.target.value })} /></Field>}
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-surface-2/60 px-3 py-2">
+            <span className="flex items-center gap-2 text-sm"><Sparkles className="h-4 w-4 text-lavender" /> AI voice coach (speaks while you work)</span>
+            <Toggle checked={coachOn} onChange={(v) => { setCoachOn(v); setVoiceEnabled(v); if (v) speak("Voice coach on. I'll cheer you on while you work.", { force: true, interrupt: true }); }} label="AI voice coach" />
+          </div>
           <div className="flex items-center justify-between gap-3 rounded-xl bg-surface-2/60 px-3 py-2">
             <span className="flex items-center gap-2 text-sm"><Sun className="h-4 w-4 text-warn" /> Keep screen on while timing</span>
             <Toggle checked={keepAwake} onChange={setKeepAwake} label="Keep screen on" />

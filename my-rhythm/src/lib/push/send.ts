@@ -64,6 +64,8 @@ export async function sendReminder(admin: SupabaseClient, r: PushReminder, badge
     token,
     kind: r.kind,
     actionable: !!r.activity_id,
+    activityId: r.activity_id,
+    occurrenceDate: r.occurrence_date,
     badge: badgeCount,
     sentAt: new Date().toISOString(),
   });

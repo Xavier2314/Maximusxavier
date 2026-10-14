@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlarmClock, Check, X } from "lucide-react";
+import { AlarmClock, Check, Timer, X } from "lucide-react";
 import { registerSW } from "@/lib/client/push";
 import { playSound, type SoundName } from "@/lib/client/sounds";
+import { speak } from "@/lib/client/voice";
 import { Button } from "./ui";
 
 interface Alarm {
@@ -12,6 +13,8 @@ interface Alarm {
   url: string;
   token?: string;
   actionable?: boolean;
+  activityId?: string | null;
+  occurrenceDate?: string | null;
 }
 
 /**
@@ -30,8 +33,10 @@ export function PwaClient() {
       if (e.data?.type === "reminder") {
         setAlarm(e.data.payload);
         try {
-          if (localStorage.getItem("myrhythm.sound") === "1") playSound((localStorage.getItem("myrhythm.soundName") as SoundName) || "chime");
+          if (localStorage.getItem("myrhythm.sound") === "1") playSound((localStorage.getItem("myrhythm.soundName") as SoundName) || "chime", 1);
         } catch {}
+        // Speak the reminder out loud, e.g. "It's 2:00 PM — time for Keyboard practice."
+        setTimeout(() => speak(e.data.payload.body ?? ""), 900);
       }
       if (e.data?.type === "navigate" && typeof e.data.url === "string") router.push(e.data.url);
     };
@@ -57,6 +62,13 @@ export function PwaClient() {
         <div className="mt-5 grid grid-cols-2 gap-2">
           {alarm.actionable && <Button variant="secondary" onClick={() => act("snooze")}>Snooze 10 min</Button>}
           {alarm.actionable && <Button variant="sage" onClick={() => act("complete")}><Check className="h-4 w-4" /> Done</Button>}
+          {alarm.activityId && alarm.occurrenceDate && (
+            <Button variant="soft" className="col-span-2" onClick={() => {
+              setAlarm(null);
+              const title = alarm.title.split(" · ")[0].replace(/ \(snoozed\)$/, "");
+              router.push(`/timer?a=${alarm.activityId}&d=${alarm.occurrenceDate}&title=${encodeURIComponent(title)}&countdown=1`);
+            }}><Timer className="h-4 w-4" /> Start timer for this</Button>
+          )}
           <Button className="col-span-2" onClick={() => { setAlarm(null); router.push(alarm.url || "/"); }}>Open</Button>
         </div>
         <button className="mt-3 inline-flex items-center gap-1 text-sm text-muted" onClick={() => setAlarm(null)}><X className="h-4 w-4" /> Dismiss</button>

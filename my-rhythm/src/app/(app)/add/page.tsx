@@ -1,7 +1,9 @@
 "use client";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Keyboard, Mic, MicOff, PenLine, Sparkles, TriangleAlert } from "lucide-react";
+import { CalendarCheck, Keyboard, ListChecks, Mic, MicOff, PenLine, Sparkles, TriangleAlert } from "lucide-react";
+import { Badge } from "@/components/ui";
+import { speak, unlockVoice } from "@/lib/client/voice";
 import { Button, Card, ErrorState, PageHeader, Segmented, Skeleton, Textarea } from "@/components/ui";
 import { ActivityForm, emptyForm, formToDraft, type FormValue } from "@/components/ActivityForm";
 import { ProposalReview, type ProposalRecord } from "@/components/ProposalReview";
@@ -9,7 +11,9 @@ import { useToast } from "@/components/toast";
 import { api, useApi } from "@/lib/client/api";
 import type { CategoryRow, Profile } from "@/lib/types";
 
-type Mode = "manual" | "ai" | "voice";
+type Mode = "manual" | "ai" | "talk";
+
+interface PlanResult { summary: string; engine: string; items: { title: string; type: string; when: string | null; placed: "said" | "suggested" | "unplaced" }[] }
 
 const EXAMPLES = [
   "I have a business meeting tomorrow at 11 AM.",
@@ -30,7 +34,8 @@ function AddInner() {
   const { data: cats, error } = useApi<{ categories: CategoryRow[] }>("/api/categories");
   const { data: prof } = useApi<{ profile: Profile }>("/api/profile");
   const tz = prof?.profile?.timezone ?? "Africa/Lagos";
-  const [mode, setMode] = useState<Mode>((params.get("mode") as Mode) || "manual");
+  const [mode, setMode] = useState<Mode>(() => { const m = params.get("mode"); return m === "voice" || m === "talk" ? "talk" : m === "ai" ? "ai" : "manual"; });
+  const [plan, setPlan] = useState<PlanResult | null>(null);
   const [form, setForm] = useState<FormValue | null>(null);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -85,10 +90,33 @@ function AddInner() {
   if (error) return <ErrorState error={error} />;
   if (!cats || !form) return <Skeleton className="h-96" />;
 
+  async function makePlan(text: string) {
+    if (text.trim().length < 2) return;
+    setBusy(true);
+    setPlan(null);
+    unlockVoice();
+    try {
+      const res = await api<PlanResult & { proposal: ProposalRecord | null }>("/api/ai/plan", { body: { text, source: "voice" } });
+      setPlan({ summary: res.summary, engine: res.engine, items: res.items });
+      setEngine(res.engine);
+      if (res.proposal) {
+        setProposal(res.proposal);
+        setAssumptions(res.items.some((i) => i.placed === "suggested") ? ["Items without a time were placed in your next free slots — change any time with the pencil icon."] : []);
+      }
+      const n = res.items.filter((i) => i.placed !== "unplaced").length;
+      speak(n ? `${res.summary} I've lined up ${n} item${n > 1 ? "s" : ""}. Review them and tap approve.` : res.summary);
+    } catch (err) {
+      toast.show("error", err instanceof Error ? err.message : "Couldn't make your list");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (proposal) {
     return (
       <div>
-        <PageHeader title="Review before saving" subtitle="Nothing changes until you approve." />
+        <PageHeader title={plan ? "Your task list" : "Review before saving"} subtitle="Nothing changes until you approve." />
+        {plan && <PlanSummary plan={plan} />}
         {assumptions.length > 0 && (
           <Card className="mb-4 flex gap-3 border-warn/40 bg-warn-soft/60 p-3 text-sm">
             <TriangleAlert className="h-4 w-4 shrink-0 text-warn" />
@@ -96,7 +124,7 @@ function AddInner() {
           </Card>
         )}
         <ProposalReview proposal={proposal} categories={cats.categories} onDone={(applied) => (applied ? router.push("/") : setProposal(null))} />
-        <Button variant="ghost" className="mt-3" onClick={() => setProposal(null)}>← Back to editing</Button>
+        <Button variant="ghost" className="mt-3" onClick={() => { setProposal(null); setPlan(null); }}>← Back to editing</Button>
       </div>
     );
   }
@@ -111,7 +139,7 @@ function AddInner() {
         options={[
           { value: "manual", label: <span className="flex items-center gap-1.5"><PenLine className="h-4 w-4" /> Manual</span> },
           { value: "ai", label: <span className="flex items-center gap-1.5"><Sparkles className="h-4 w-4" /> Ask AI</span> },
-          { value: "voice", label: <span className="flex items-center gap-1.5"><Mic className="h-4 w-4" /> Voice</span> },
+          { value: "talk", label: <span className="flex items-center gap-1.5"><Mic className="h-4 w-4" /> Talk it through</span> },
         ]}
       />
 
@@ -142,7 +170,12 @@ function AddInner() {
         </div>
       )}
 
-      {mode === "voice" && <VoiceEntry busy={busy} onSubmit={(t) => analyzeText(t, "voice")} clarify={clarify} />}
+      {mode === "talk" && (
+        <>
+          <VoiceEntry busy={busy} onSubmit={makePlan} clarify={null} />
+          {plan && plan.items.length === 0 && <Card className="mt-4 p-4 text-sm">{plan.summary}</Card>}
+        </>
+      )}
     </div>
   );
 }
@@ -179,7 +212,8 @@ function VoiceEntry({ busy, onSubmit, clarify }: { busy: boolean; onSubmit: (t: 
     const r = new C();
     r.lang = "en-NG";
     r.interimResults = true;
-    r.continuous = false;
+    r.continuous = true;
+    const base = transcript ? `${transcript.trim()} ` : "";
     let finalText = "";
     r.onresult = (e) => {
       let interim = "";
@@ -188,7 +222,7 @@ function VoiceEntry({ busy, onSubmit, clarify }: { busy: boolean; onSubmit: (t: 
         if (res.isFinal) finalText += res[0].transcript;
         else interim += res[0].transcript;
       }
-      setTranscript((finalText + interim).trim());
+      setTranscript((base + finalText + interim).trim());
     };
     r.onerror = (e) => {
       setErr(e.error === "not-allowed" ? "Microphone permission was denied. Allow it in Settings → Safari (or the app) → Microphone, or type instead." : `Speech recognition stopped (${e.error}). You can type or use the keyboard's dictation key.`);
@@ -196,7 +230,6 @@ function VoiceEntry({ busy, onSubmit, clarify }: { busy: boolean; onSubmit: (t: 
     };
     r.onend = () => setListening(false);
     rec.current = r;
-    setTranscript("");
     r.start();
     setListening(true);
   }
@@ -216,17 +249,41 @@ function VoiceEntry({ busy, onSubmit, clarify }: { busy: boolean; onSubmit: (t: 
               className={`flex h-24 w-24 items-center justify-center rounded-full text-white shadow-lg transition ${listening ? "animate-pulse-ring bg-danger" : "bg-navy dark:bg-lavender"}`}>
               {listening ? <MicOff className="h-10 w-10" /> : <Mic className="h-10 w-10" />}
             </button>
-            <p className="text-sm text-muted">{listening ? "Listening… speak your plan" : "Tap and say e.g. “Add a meeting with my team tomorrow by 8 PM.”"}</p>
+            <p className="max-w-sm text-sm text-muted">{listening ? "Listening… say everything you want to do. Tap again when you're done." : "Tap and talk naturally: “I want to call Mum at 6, go to the market, practise keyboard for an hour, and I'm travelling to Abuja Monday 9 AM, back Tuesday evening.”"}</p>
           </>
         )}
         {err && <p className="text-sm text-danger">{err}</p>}
       </Card>
       <Card className="p-4">
-        <p className="mb-2 text-[13px] font-medium text-ink-2">Transcription (edit if needed)</p>
-        <Textarea value={transcript} onChange={(e) => setTranscript(e.target.value)} placeholder="Your words will appear here…" />
-        <Button className="mt-3 w-full" onClick={() => onSubmit(transcript)} loading={busy} disabled={transcript.trim().length < 2}>Extract &amp; preview</Button>
+        <p className="mb-2 text-[13px] font-medium text-ink-2">What you said (edit, or type instead)</p>
+        <Textarea value={transcript} onChange={(e) => setTranscript(e.target.value)} placeholder="Tasks, reminders, trips, practice, meetings — anything you want to do…" className="min-h-[130px]" />
+        <div className="mt-3 flex gap-2">
+          <Button className="flex-1" onClick={() => { rec.current?.stop(); onSubmit(transcript); }} loading={busy} disabled={transcript.trim().length < 2}><ListChecks className="h-4 w-4" /> Make my task list</Button>
+          {transcript && <Button variant="ghost" onClick={() => setTranscript("")}>Clear</Button>}
+        </div>
       </Card>
       {clarify && <Clarify q={clarify} />}
     </div>
+  );
+}
+
+function PlanSummary({ plan }: { plan: PlanResult }) {
+  return (
+    <Card className="mb-4 p-4">
+      <p className="flex items-start gap-2 text-[15px]"><Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-lavender" />{plan.summary}</p>
+      <ul className="mt-3 space-y-1.5">
+        {plan.items.map((i, n) => (
+          <li key={n} className="flex items-center gap-2 text-sm">
+            <CalendarCheck className="h-4 w-4 shrink-0 text-sage" />
+            <span className="min-w-0 flex-1 truncate font-medium">{i.title}</span>
+            {i.when && <span className="shrink-0 text-muted">{i.when}</span>}
+            {i.placed === "suggested" && <Badge color="#2563eb">suggested time</Badge>}
+            {i.placed === "unplaced" && <Badge color="#d03a32">needs a time</Badge>}
+          </li>
+        ))}
+      </ul>
+      {plan.items.some((i) => i.placed === "unplaced") && <p className="mt-2 text-xs text-muted">Items marked “needs a time” couldn&apos;t be placed (for trips, say the departure and return). Add them with Manual entry.</p>}
+      {plan.engine === "fallback" && <p className="mt-2 text-xs text-muted">Made without AI (the AI key isn&apos;t set or AI is off), so please double-check the titles.</p>}
+    </Card>
   );
 }
