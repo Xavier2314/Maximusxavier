@@ -191,7 +191,7 @@ function EpisodeSheet({ ep, stages, tasks, onClose, onSave, onDelete, onAddTask,
         {tab === "research" && <Textarea className="min-h-[50vh]" placeholder="Sources, quotes, facts to verify…" value={v.research_notes ?? ""} onChange={(e) => setDraft({ ...draft, research_notes: e.target.value })} />}
         {tab === "outline" && <Textarea className="min-h-[50vh]" placeholder={"1. Hook\n2. Main point\n3. Story\n4. Takeaway"} value={v.outline ?? ""} onChange={(e) => setDraft({ ...draft, outline: e.target.value })} />}
         {tab === "script" && <Textarea className="min-h-[50vh] font-display text-[16px] leading-relaxed" placeholder="Write your script…" value={v.script ?? ""} onChange={(e) => setDraft({ ...draft, script: e.target.value })} />}
-        {tab === "checklists" && <div className="grid gap-4 md:grid-cols-2">{checklist("recording_checklist", "Recording checklist")}{checklist("editing_checklist", "Editing checklist")}</div>}
+        {tab === "checklists" && <div className="grid grid-cols-1 gap-4 md:grid-cols-2">{checklist("recording_checklist", "Recording checklist")}{checklist("editing_checklist", "Editing checklist")}</div>}
       </div>
     </Sheet>
   );

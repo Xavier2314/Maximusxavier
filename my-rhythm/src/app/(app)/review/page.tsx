@@ -72,7 +72,7 @@ export default function ReviewPage() {
         </Card>
       </section>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <section>
           <SectionTitle>Habits</SectionTitle>
           <Card className="divide-y divide-line">
@@ -97,7 +97,7 @@ export default function ReviewPage() {
         </section>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <section>
           <SectionTitle>Podcast progress</SectionTitle>
           <Card className="p-4 text-sm">

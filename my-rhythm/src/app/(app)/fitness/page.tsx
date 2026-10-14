@@ -90,7 +90,7 @@ export default function FitnessPage() {
         )}
       </section>
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <Card className="p-4"><p className="mb-2 text-sm font-semibold">Consistency (workouts per week)</p><Bars data={weekly} max={Math.max(4, ...weekly.map((x) => x.value))} color="#22A06B" height={120} /></Card>
         <Card className="p-4">
           <p className="mb-2 text-sm font-semibold">Strength progress (heaviest set, kg)</p>
@@ -133,7 +133,7 @@ export default function FitnessPage() {
               <Button size="sm" variant="secondary" onClick={() => setRows([...rows, { exercise_name: "", sets: "3", reps: "10", weight_kg: "", rest_seconds: "60" }])}><Plus className="h-4 w-4" /> Add exercise</Button>
             </div>
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <Field label="Workout notes"><Textarea value={w.notes} onChange={(e) => setW({ ...w, notes: e.target.value })} /></Field>
             <Field label="Recovery notes (soreness, sleep, how you feel)"><Textarea value={w.recovery_notes} onChange={(e) => setW({ ...w, recovery_notes: e.target.value })} /></Field>
           </div>

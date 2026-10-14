@@ -251,7 +251,7 @@ export default function ReminderCenter() {
       </section>
 
       {/* Limits + troubleshooting */}
-      <section className="grid gap-4 md:grid-cols-2">
+      <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card className="p-4 text-sm">
           <p className="mb-2 flex items-center gap-2 font-semibold"><BellOff className="h-4 w-4 text-warn" /> What iPhone web apps can&apos;t do</p>
           <ul className="list-disc space-y-1 pl-4 text-ink-2">

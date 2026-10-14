@@ -140,7 +140,7 @@ export function ProposalReview({ proposal, categories, onDone }: { proposal: Pro
         </section>
       )}
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <section>
           <SectionTitle>Original schedule</SectionTitle>
           <Card className="p-3">

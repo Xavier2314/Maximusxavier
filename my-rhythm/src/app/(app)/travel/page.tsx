@@ -50,7 +50,7 @@ export default function TravelPage() {
     <div className="space-y-6">
       <PageHeader title="Travel mode" subtitle="Plan a trip and I'll reorganise your routine around it — with your approval." />
       <form onSubmit={analyze}>
-        <Card className="grid gap-4 p-5 md:grid-cols-2">
+        <Card className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2">
           <Field label="Destination" className="md:col-span-2"><Input required value={f.destination} onChange={(e) => setF({ ...f, destination: e.target.value })} placeholder="e.g. Abuja" /></Field>
           <Field label="Departure date"><Input type="date" required min={today} value={f.depart_date} onChange={(e) => setF({ ...f, depart_date: e.target.value, return_date: f.return_date || e.target.value })} /></Field>
           <Field label="Departure time"><Input type="time" required value={f.depart_time} onChange={(e) => setF({ ...f, depart_time: e.target.value })} /></Field>

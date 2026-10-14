@@ -256,7 +256,7 @@ function Verses() {
         <Button disabled={!v.reference.trim()} onClick={async () => { await verses.create(v); setV({ reference: "", verse_text: "", translation: "", note: "" }); }}><BookMarked className="h-4 w-4" /> Save verse</Button>
       </Card>
       {!verses.rows ? <Skeleton className="h-24" /> : verses.rows.length === 0 ? <EmptyState title="No saved verses yet" /> : (
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {verses.rows.map((x) => (
             <Card key={x.id} className="p-4">
               <div className="flex items-center justify-between"><p className="font-semibold text-lavender">{x.reference}{x.translation ? ` (${x.translation})` : ""}</p><Button size="icon" variant="ghost" aria-label="Delete" onClick={() => verses.remove(x.id)}><Trash2 className="h-4 w-4" /></Button></div>

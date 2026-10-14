@@ -89,7 +89,7 @@ function Dashboard() {
         </Link>
       )}
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {/* Now / Next */}
         <Card className="relative overflow-hidden p-5 md:col-span-2">
           <div className="absolute inset-0 -z-0 bg-gradient-to-br from-lavender-soft/70 via-transparent to-sage-soft/60" />
@@ -159,8 +159,8 @@ function Dashboard() {
         </Card>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <section>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <section className="min-w-0">
           <SectionTitle action={<Link href="/calendar" className="text-sm font-medium text-lavender">Calendar</Link>}>Today&apos;s timeline</SectionTitle>
           {data.today.length === 0 ? (
             <EmptyState title="A clear day" body="Nothing is scheduled today. Use Quick Add to plan something — or simply rest." />
@@ -191,7 +191,7 @@ function Dashboard() {
           )}
         </section>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <section>
             <SectionTitle action={<Link href="/habits" className="text-sm font-medium text-lavender">All</Link>}>Habit streaks</SectionTitle>
             <div className="grid grid-cols-2 gap-2">
@@ -274,7 +274,7 @@ function DashboardSkeleton() {
   return (
     <div className="space-y-5">
       <Skeleton className="h-20 w-2/3" />
-      <div className="grid gap-4 md:grid-cols-3"><Skeleton className="h-40 md:col-span-2" /><Skeleton className="h-40" /></div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3"><Skeleton className="h-40 md:col-span-2" /><Skeleton className="h-40" /></div>
       <Skeleton className="h-11" />
       <Skeleton className="h-96" />
     </div>

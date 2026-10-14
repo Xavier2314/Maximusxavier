@@ -195,8 +195,10 @@ export function detectConflicts(candidates: Candidate[], ctx: DetectContext): Co
   });
 
   // Day-level load checks for every local day the candidates touch.
+  // Load checks don't apply to trips / multi-day time away (the whole day is "the trip").
   const days = new Set<string>();
   for (const c of candidates) {
+    if (c.away || occInterval(c).length("hours") > 20) continue;
     let d = DateTime.fromISO(c.start).setZone(ctx.tz).startOf("day");
     const e = DateTime.fromISO(c.end).setZone(ctx.tz);
     while (d < e) {
@@ -205,7 +207,7 @@ export function detectConflicts(candidates: Candidate[], ctx: DetectContext): Co
     }
   }
   for (const date of days) {
-    const load = dayLoad(date, [...live, ...candidates.map(asPseudo)], ctx);
+    const load = dayLoad(date, [...live, ...candidates.filter((c) => !c.away).map(asPseudo)], ctx);
     const max = ctx.preferences.max_daily_hours * 60;
     if (load.busyMinutes > max) {
       out.push({ id: id(), type: "overload", severity: "medium", candidateIndex: 0, date,

@@ -115,7 +115,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
 
       {/* Ask AI floating button (every main screen) */}
-      {path !== "/assistant" && (
+      {!["/assistant", "/add", "/proposals", "/travel"].some((x) => path.startsWith(x)) && (
         <button
           onClick={() => router.push("/assistant")}
           className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+88px)] z-30 flex h-12 items-center gap-2 rounded-full bg-gradient-to-br from-lavender to-[#6d62c4] px-4 font-medium text-white shadow-lg md:bottom-6"

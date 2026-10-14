@@ -240,3 +240,18 @@ describe("free-slot finder", () => {
     }
   });
 });
+
+describe("trip load checks", () => {
+  it("does not report overload/no-rest for the trip itself", () => {
+    const data = seededData();
+    const trip = ActivityDraftSchema.parse({ title: "Trip", category_key: "travel", kind: "trip", start_date: "2026-10-19", start_time: "09:00", duration_minutes: 33 * 60 });
+    const p = analyzeDrafts([trip], data, { now: DateTime.fromISO("2026-10-14T12:00", { zone: TZ }) });
+    expect(p.conflicts.some((c) => c.type === "overload" || c.type === "no_rest")).toBe(false);
+  });
+  it("still reports overload for a long day of new commitments", () => {
+    const data = seededData();
+    const busy = ActivityDraftSchema.parse({ title: "Workshop", start_date: "2026-10-19", start_time: "12:00", duration_minutes: 240 });
+    const p = analyzeDrafts([busy], data, { now: DateTime.fromISO("2026-10-14T12:00", { zone: TZ }) });
+    expect(p.conflicts.some((c) => c.type === "overload")).toBe(true);
+  });
+});

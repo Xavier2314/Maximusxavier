@@ -73,7 +73,7 @@ export default function SettingsPage() {
 
       <section>
         <SectionTitle>Profile & sleep</SectionTitle>
-        <Card className="grid gap-4 p-5 md:grid-cols-2">
+        <Card className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2">
           <Field label="Name"><Input value={p.display_name} onChange={(e) => setP({ ...p, display_name: e.target.value })} /></Field>
           <Field label="Timezone" hint="Your routine follows you when you travel (wall-clock times are kept).">
             <Select value={ZONES.includes(p.timezone) ? p.timezone : "custom"} onChange={(e) => e.target.value !== "custom" && setP({ ...p, timezone: e.target.value })}>
@@ -148,7 +148,7 @@ export default function SettingsPage() {
 
       <section>
         <SectionTitle>Focus hours & protected rest</SectionTitle>
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <Card className="p-4"><p className="mb-1 font-medium">Preferred focus hours</p><p className="mb-3 text-sm text-muted">Suggestions for practice & projects prefer these.</p><WindowsEditor value={prefs.focus_hours} onSave={(v) => savePrefs({ focus_hours: v })} /></Card>
           <Card className="p-4"><p className="mb-1 font-medium">Protected rest periods</p><p className="mb-3 text-sm text-muted">Never suggested for new activities.</p><WindowsEditor value={prefs.protected_rest} onSave={(v) => savePrefs({ protected_rest: v })} /></Card>
         </div>
