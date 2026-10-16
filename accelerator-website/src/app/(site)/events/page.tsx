@@ -7,6 +7,7 @@ import { ImageReveal, Parallax } from "@/components/Motion";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
 import { Countdown } from "@/components/Countdown";
+import { EarlyBirdCountdown } from "@/components/EarlyBirdCountdown";
 import { TicketCards } from "@/components/TicketCards";
 import { CONTEST_STATUS_LABEL, getAwards, getContests, getEventSettings, getSpeakers, getTickets } from "@/lib/content";
 import { formatLagos, formatLagosDate, formatNaira } from "@/lib/tickets";
@@ -184,6 +185,7 @@ export default async function EventsPage() {
               <p className="mt-6 text-sm text-slate">Your fee depends on your membership position. Pay by bank transfer to the official account, then submit the official registration form with your proof of payment. Your place is confirmed once the team verifies your payment.</p>
             </Reveal>
             <div className="lg:col-span-8">
+              <EarlyBirdCountdown tickets={tickets} serverNow={now} className="mb-8" />
               <TicketCards tickets={tickets} serverNow={now} feeLabel={`${formatNaira(MIN_FEE_KOBO)} \u2013 ${formatNaira(MAX_FEE_KOBO)}`} />
               <div className="mt-14 grid gap-10 border-t border-sand pt-12 md:grid-cols-5">
                 <div className="md:col-span-2">

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CalendarDays, MapPin } from "lucide-react";
 import { RegisterFlow } from "@/components/RegisterFlow";
 import { Facets } from "@/components/Facets";
+import { EarlyBirdCountdown } from "@/components/EarlyBirdCountdown";
 import { getEventSettings, getTickets } from "@/lib/content";
 import { formatLagos, formatLagosDate, ticketStatus } from "@/lib/tickets";
 import { site } from "@/lib/site";
@@ -38,6 +39,7 @@ export default async function RegisterPage() {
             ) : null}
           </div>
           <p className="mt-6 max-w-2xl text-sm text-mist md:text-base">Three simple steps: <b className="text-white">choose your position</b> to see your fee, <b className="text-white">pay into the official account</b>, then <b className="text-white">submit the registration form</b> with your receipt.</p>
+          <EarlyBirdCountdown tickets={tickets} serverNow={now.getTime()} className="mt-8" />
         </div>
       </section>
 
