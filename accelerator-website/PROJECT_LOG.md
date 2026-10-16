@@ -43,3 +43,7 @@
 - Official theme confirmed: "The Summit of Excellence" with tagline "Rise with Purpose. Lead with Power. Reign with Excellence." (DEFAULT_EVENT.theme / themeTagline; editable in admin).
 - Two more community photos added to the gallery (yellow jerseys group, burgundy attire).
 - Photo credit line removed from under the founder portrait, at the client's request.
+
+## Register page redesign
+- Fees and the official account now come first; no form button appears above them.
+- Visitors select their position (amount to pay shown in the payment card), tick "I have transferred ₦X", and only then is the "Click here to submit your registration" button unlocked (RegisterFlow.tsx). BankDetails.tsx removed (merged into RegisterFlow).
