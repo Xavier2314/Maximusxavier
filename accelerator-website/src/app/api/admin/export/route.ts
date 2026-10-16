@@ -4,7 +4,7 @@ import { db, dbConfigured } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-const COLS = ["reference", "status", "ticket_id", "full_name", "email", "phone", "city", "is_member", "organisation", "referral_source", "notes", "amount_kobo", "currency", "channel", "paid_at", "created_at"] as const;
+const COLS = ["reference", "status", "ticket_id", "position", "payment_method", "full_name", "email", "phone", "city", "organisation", "referral_source", "notes", "amount_kobo", "currency", "channel", "paid_at", "created_at"] as const;
 
 function cell(v: unknown) {
   let s = v == null ? "" : String(v);

@@ -5,11 +5,12 @@ import { verifyTransaction } from "./paystack";
 import { sendEmail, confirmationEmail } from "./email";
 import { getEventSettings, getTicket } from "./content";
 import { formatLagos, formatLagosDate, formatNaira } from "./tickets";
+import { positionById } from "./fees";
 
 export type Registration = {
   id: string; reference: string; ticket_id: string; full_name: string; email: string; phone: string; city: string | null;
-  is_member: string | null; organisation: string | null; referral_source: string | null; notes: string | null;
-  amount_kobo: number; currency: string; status: "pending" | "paid" | "failed" | "abandoned" | "duplicate_paid";
+  position: string | null; payment_method: string; extra: Record<string, unknown> | null; organisation: string | null; referral_source: string | null; notes: string | null;
+  amount_kobo: number; currency: string; status: "awaiting_payment" | "awaiting_verification" | "pending" | "paid" | "failed" | "abandoned" | "rejected" | "duplicate_paid";
   paid_at: string | null; channel: string | null; gateway_response: string | null; confirmation_sent_at: string | null; created_at: string;
 };
 
@@ -88,14 +89,14 @@ export async function confirmPayment(reference: string): Promise<ConfirmResult> 
   return { state: "pending", registration: reg };
 }
 
-async function sendConfirmation(reg: Registration) {
+export async function sendConfirmation(reg: Registration) {
   const [event, ticket] = await Promise.all([getEventSettings(), getTicket(reg.ticket_id)]);
   const where = [event.venueName, event.city].filter(Boolean).join(", ") || null;
   const ok = await sendEmail(
     reg.email,
     `Registration confirmed: ${event.name} (${reg.reference})`,
     confirmationEmail({
-      name: reg.full_name, reference: reg.reference, ticket: ticket?.name ?? reg.ticket_id,
+      name: reg.full_name, reference: reg.reference, ticket: [positionById(reg.position ?? "")?.name, ticket?.name].filter(Boolean).join(" \u00b7 ") || reg.ticket_id,
       amount: formatNaira(reg.amount_kobo) ?? "", eventName: event.name, eventWhen: event.timeConfirmed ? formatLagos(event.startsAt) : formatLagosDate(event.startsAt, true), eventWhere: where,
     }),
   );

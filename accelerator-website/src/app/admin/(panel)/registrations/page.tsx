@@ -1,8 +1,10 @@
 import { db, dbConfigured } from "@/lib/db";
 import { formatLagos, formatNaira } from "@/lib/tickets";
 import type { Registration } from "@/lib/registrations";
+import { positionById } from "@/lib/fees";
+import { verifyRegistration } from "@/lib/admin-actions";
 
-const STATUSES = ["all", "paid", "pending", "failed", "abandoned", "duplicate_paid"];
+const STATUSES = ["all", "awaiting_verification", "awaiting_payment", "paid", "rejected", "pending", "failed", "abandoned", "duplicate_paid"];
 
 export default async function Registrations({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; ticket?: string }> }) {
   const { q = "", status = "all", ticket = "all" } = await searchParams;
@@ -29,22 +31,29 @@ export default async function Registrations({ searchParams }: { searchParams: Pr
         <select name="ticket" defaultValue={ticket} className="field" aria-label="Ticket"><option value="all">all tickets</option><option value="early_bird">Early Bird</option><option value="late">Late</option></select>
         <button className="btn btn-navy">Filter</button>
       </form>
-      <p className="mt-4 text-sm text-slate">{rows.length} shown (max 500; use export for everything).</p>
+      <p className="mt-4 text-sm text-slate">{rows.length} shown (max 500; use export for everything). Before confirming a transfer, check your Moniepoint statement for the amount and the reference in the narration.</p>
       <div className="mt-4 overflow-x-auto bg-white">
         <table className="w-full min-w-[960px] text-left text-sm">
-          <thead className="bg-navy text-xs uppercase tracking-wider text-white"><tr>{["Reference", "Name", "Email", "Phone", "Ticket", "Amount", "Status", "Created", "Paid"].map((h) => <th key={h} className="px-3 py-3 font-semibold">{h}</th>)}</tr></thead>
+          <thead className="bg-navy text-xs uppercase tracking-wider text-white"><tr>{["Reference", "Name", "Contact", "Position", "Amount", "Status", "Transfer from", "Created", "Action"].map((h) => <th key={h} className="px-3 py-3 font-semibold">{h}</th>)}</tr></thead>
           <tbody className="divide-y divide-sand">
             {rows.map((r) => (
               <tr key={r.id} className="align-top">
-                <td className="px-3 py-3 font-mono text-xs">{r.reference}</td>
-                <td className="px-3 py-3">{r.full_name}<div className="text-xs text-slate">{r.city} · {r.is_member}</div></td>
-                <td className="px-3 py-3">{r.email}</td>
-                <td className="px-3 py-3">{r.phone}</td>
-                <td className="px-3 py-3">{r.ticket_id === "early_bird" ? "Early Bird" : "Late"}</td>
-                <td className="px-3 py-3">{formatNaira(r.amount_kobo)}</td>
-                <td className="px-3 py-3"><span className={`px-2 py-1 text-xs font-semibold ${r.status === "paid" ? "bg-royal text-white" : r.status === "pending" ? "bg-stone" : "bg-red/10 text-red"}`}>{r.status}</span></td>
+                <td className="px-3 py-3 font-mono text-xs">{r.reference}<div className="text-[11px] text-slate">{r.ticket_id === "early_bird" ? "Early Bird" : "Late"} · {r.payment_method === "card" ? "card" : "transfer"}</div></td>
+                <td className="px-3 py-3">{r.full_name}<div className="text-xs text-slate">{r.city}{r.organisation ? ` · ${r.organisation}` : ""}</div></td>
+                <td className="px-3 py-3">{r.email}<div className="text-xs text-slate">{r.phone}</div></td>
+                <td className="px-3 py-3">{positionById(r.position ?? "")?.name ?? "-"}</td>
+                <td className="px-3 py-3 tabular-nums">{formatNaira(r.amount_kobo)}</td>
+                <td className="px-3 py-3"><span className={`px-2 py-1 text-xs font-semibold ${r.status === "paid" ? "bg-royal text-white" : r.status === "awaiting_verification" ? "bg-gold text-navy" : r.status.startsWith("awaiting") || r.status === "pending" ? "bg-stone" : "bg-red/10 text-red"}`}>{r.status.replace("_", " ")}</span>{r.paid_at && <div className="mt-1 text-[11px] text-slate">{formatLagos(r.paid_at)}</div>}</td>
+                <td className="px-3 py-3 text-xs">{(r.extra as { transfer?: { senderName?: string; senderBank?: string } } | null)?.transfer?.senderName ?? "-"}<div className="text-slate">{(r.extra as { transfer?: { senderBank?: string } } | null)?.transfer?.senderBank ?? ""}</div></td>
                 <td className="px-3 py-3 text-xs">{formatLagos(r.created_at)}</td>
-                <td className="px-3 py-3 text-xs">{formatLagos(r.paid_at) ?? "-"}</td>
+                <td className="px-3 py-3">
+                  {(r.status === "awaiting_verification" || r.status === "awaiting_payment") && (
+                    <div className="flex flex-col gap-2">
+                      <form action={verifyRegistration}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="decision" value="paid" /><button className="w-full bg-royal px-3 py-1.5 text-xs font-semibold text-white">Confirm paid</button></form>
+                      <form action={verifyRegistration}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="decision" value="rejected" /><button className="w-full border border-red px-3 py-1.5 text-xs font-semibold text-red">Reject</button></form>
+                    </div>
+                  )}
+                </td>
               </tr>
             ))}
             {!rows.length && <tr><td colSpan={9} className="px-3 py-10 text-center text-slate">No registrations found.</td></tr>}

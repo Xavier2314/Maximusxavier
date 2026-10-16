@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { checkPassword, createSession, destroySession, requireAdmin } from "./admin-auth";
 import { db } from "./db";
 import { lagosLocalToIso } from "./tickets";
+import { sendConfirmation, type Registration } from "./registrations";
 
 // ---- auth --------------------------------------------------------------------------------
 const attempts = new Map<string, { n: number; until: number }>();
@@ -116,6 +117,25 @@ export async function deleteItem(form: FormData) {
   await db().from(table).delete().eq("id", id);
   await audit(me.actor, `${table}.delete`, id, {});
   revalidatePath("/", "layout");
+}
+
+export async function verifyRegistration(form: FormData) {
+  const me = await requireAdmin();
+  const id = s(form, "id");
+  const decision = s(form, "decision");
+  if (!id || (decision !== "paid" && decision !== "rejected")) return;
+  const patch = decision === "paid"
+    ? { status: "paid", paid_at: new Date().toISOString(), channel: "bank_transfer", gateway_response: `Verified by ${me.actor}`, updated_at: new Date().toISOString() }
+    : { status: "rejected", gateway_response: s(form, "reason") ?? `Rejected by ${me.actor}`, updated_at: new Date().toISOString() };
+  const { data, error } = await db().from("registrations").update(patch).eq("id", id).in("status", ["awaiting_payment", "awaiting_verification"]).select("*").maybeSingle();
+  if (error?.code === "23505") {
+    await db().from("registrations").update({ status: "duplicate_paid", gateway_response: "Email already confirmed - review for refund" }).eq("id", id);
+  } else if (data && decision === "paid") {
+    await sendConfirmation(data as Registration);
+  }
+  await audit(me.actor, `registration.${decision}`, id, { reference: (data as Registration | null)?.reference ?? null });
+  revalidatePath("/admin/registrations");
+  revalidatePath("/admin");
 }
 
 export async function toggleMessageHandled(form: FormData) {

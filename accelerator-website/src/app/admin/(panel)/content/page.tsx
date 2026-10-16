@@ -1,4 +1,4 @@
-import { getAwards, getContests, getSpeakers, type Award, type Contest, type Speaker } from "@/lib/content";
+import { getAwards, getContestRows, getSpeakers, type Award, type Contest, type Speaker } from "@/lib/content";
 import { deleteItem, saveItem } from "@/lib/admin-actions";
 import { isoToLagosLocal } from "@/lib/tickets";
 
@@ -83,11 +83,11 @@ function Group<X extends { id: string }>({ title, items, label, render, table, N
 }
 
 export default async function ContentPage() {
-  const [speakers, awards, contests] = await Promise.all([getSpeakers(true), getAwards(true), getContests(true)]);
+  const [speakers, awards, contests] = await Promise.all([getSpeakers(true), getAwards(true), getContestRows()]);
   return (
     <>
       <h1 className="font-display text-4xl text-navy">Speakers, awards &amp; contests</h1>
-      <p className="mt-2 text-sm text-slate">Unpublished items stay hidden from the public site. When a list has no published items, the site shows a tasteful &ldquo;Coming soon&rdquo; section.</p>
+      <p className="mt-2 text-sm text-slate">The \u20A6100K Content Challenge from the official flyer is shown on the site until you add contests here. Unpublished items stay hidden from the public site. When a list has no published items, the site shows a tasteful &ldquo;Coming soon&rdquo; section.</p>
       <Group title="Speakers & trainers" table="speakers" items={speakers} label={(s) => `${s.name}${s.published ? "" : " (draft)"}`} render={(s) => <SpeakerForm s={s} />} NewForm={<SpeakerForm />} />
       <Group title="Award categories" table="awards" items={awards} label={(a) => `${a.title}${a.published ? "" : " (draft)"}`} render={(a) => <AwardForm a={a} />} NewForm={<AwardForm />} />
       <Group title="Video competitions" table="contests" items={contests} label={(c) => `${c.title} · ${c.status.replace("_", " ")}${c.published ? "" : " (draft)"}`} render={(c) => <ContestForm c={c} />} NewForm={<ContestForm />} />

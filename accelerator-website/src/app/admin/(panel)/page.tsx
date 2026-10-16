@@ -16,9 +16,9 @@ export default async function Overview() {
   const paid = rows.filter((r) => r.status === "paid");
   const revenue = paid.reduce((a, r) => a + r.amount_kobo, 0);
   const stats: [string, string | number][] = [
-    ["Total registrations", rows.length], ["Confirmed payments", paid.length], ["Pending payments", count((r) => r.status === "pending")],
-    ["Failed / abandoned", count((r) => r.status === "failed" || r.status === "abandoned")], ["Early Bird (paid)", count((r) => r.status === "paid" && r.ticket_id === "early_bird")],
-    ["Late (paid)", count((r) => r.status === "paid" && r.ticket_id === "late")], ["Revenue (verified)", formatNaira(revenue) ?? "₦0"], ["Duplicates to refund", count((r) => r.status === "duplicate_paid")],
+    ["Total registrations", rows.length], ["Confirmed payments", paid.length], ["Transfers to verify", count((r) => r.status === "awaiting_verification")], ["Awaiting payment", count((r) => r.status === "awaiting_payment" || r.status === "pending")],
+    ["Failed / rejected", count((r) => ["failed", "abandoned", "rejected"].includes(r.status))], ["Early Bird (paid)", count((r) => r.status === "paid" && r.ticket_id === "early_bird")],
+    ["Late (paid)", count((r) => r.status === "paid" && r.ticket_id === "late")], ["Revenue (verified)", formatNaira(revenue) ?? "₦0"],
   ];
   return (
     <>

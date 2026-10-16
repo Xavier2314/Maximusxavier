@@ -9,7 +9,7 @@ import { formatLagos, formatLagosDate, formatNaira, ticketStatus, type TicketTyp
  * offset) so the switch at midnight Lagos time shows without a reload. The server enforces
  * the same windows on checkout, so the UI state is never the only safeguard.
  */
-export function TicketCards({ tickets, serverNow }: { tickets: TicketType[]; serverNow: number }) {
+export function TicketCards({ tickets, serverNow, feeLabel }: { tickets: TicketType[]; serverNow: number; feeLabel?: string }) {
   const [offset] = useState(() => serverNow - Date.now());
   const [now, setNow] = useState(serverNow);
   useEffect(() => {
@@ -46,8 +46,9 @@ export function TicketCards({ tickets, serverNow }: { tickets: TicketType[]; ser
               <p className={`mt-3 text-sm leading-relaxed ${live ? "text-mist" : "text-slate"}`}>{t.description}</p>
 
               <div className="mt-8 border-t border-current/15 pt-6">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] opacity-70">Price</p>
-                <p className="mt-2 font-display text-4xl">{price ?? <span className="text-2xl italic opacity-80">To be announced</span>}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] opacity-70">Fee</p>
+                <p className="mt-2 font-display text-3xl">{price ?? (live && feeLabel ? feeLabel : <span className="text-2xl italic opacity-80">To be announced</span>)}</p>
+                {!price && live && feeLabel && <p className="mt-1 text-xs opacity-75">Depends on your membership position</p>}
               </div>
 
               <dl className="mt-6 space-y-2 text-sm">
@@ -73,7 +74,7 @@ export function TicketCards({ tickets, serverNow }: { tickets: TicketType[]; ser
 
               <div className="mt-auto pt-10">
                 {live ? (
-                  <Link href={`/events/register?ticket=${t.id}`} className="btn btn-red w-full">Register now</Link>
+                  <Link href="/events/register" className="btn btn-red w-full">Register now</Link>
                 ) : (
                   <button type="button" className="btn btn-ghost-dark w-full" disabled aria-disabled="true">
                     <Lock size={15} aria-hidden="true" />

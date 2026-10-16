@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { POSITION_IDS } from "./fees";
 
 /**
  * DRAFT registration fields.
@@ -6,7 +7,6 @@ import { z } from "zod";
  * When they arrive, update this schema, `REGISTRATION_FIELDS` and the database `extra` mapping.
  */
 export const REFERRAL_OPTIONS = ["A friend or member", "Instagram", "Facebook", "WhatsApp", "X (Twitter)", "Flyer or poster", "Other"] as const;
-export const MEMBER_OPTIONS = ["Yes, I am a member", "No, I am a guest"] as const;
 
 const phone = z
   .string()
@@ -15,12 +15,12 @@ const phone = z
   .refine((v) => /^(\+?234|0)[789][01]\d{8}$/.test(v) || /^\+\d{8,15}$/.test(v), "Enter a valid phone number, e.g. 0803 123 4567 or +234 803 123 4567");
 
 export const registrationSchema = z.object({
-  ticketId: z.enum(["early_bird", "late"]),
+  position: z.enum(POSITION_IDS, { errorMap: () => ({ message: "Choose your membership position" }) }),
+  method: z.enum(["bank_transfer", "card"]).default("bank_transfer"),
   fullName: z.string().trim().min(3, "Enter your full name").max(120),
   email: z.string().trim().toLowerCase().email("Enter a valid email address").max(160),
   phone,
   city: z.string().trim().min(2, "Enter your city or state").max(80),
-  isMember: z.enum(MEMBER_OPTIONS, { errorMap: () => ({ message: "Choose one option" }) }),
   organisation: z.string().trim().max(120).optional().or(z.literal("")),
   referralSource: z.enum(REFERRAL_OPTIONS, { errorMap: () => ({ message: "Choose one option" }) }),
   notes: z.string().trim().max(500).optional().or(z.literal("")),
@@ -49,3 +49,9 @@ export function fieldErrors(err: z.ZodError) {
   }
   return out;
 }
+
+export const transferConfirmSchema = z.object({
+  reference: z.string().regex(/^ACC26-[A-Z0-9]{8}$/, "Invalid reference"),
+  senderName: z.string().trim().min(2, "Enter the name on the account you paid from").max(120),
+  senderBank: z.string().trim().max(80).optional().or(z.literal("")),
+});

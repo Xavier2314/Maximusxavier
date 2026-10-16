@@ -38,7 +38,8 @@ export const site = {
   founder: {
     name: "Chukwuemeka (Peter) Muoneke" as string | null,
     title: "Founder & CEO",
-    photo: null as string | null, // awaiting a high-resolution portrait, e.g. "/images/founder.jpg"
+    photo: "/images/founder-chukwuemeka-muoneke.jpg" as string | null,
+    photoCredit: "Emperor Sam Photography",
     shortIntro:
       "Chukwuemeka (Peter) Muoneke is the founder and CEO of the Accelerator Billionaires Team, where he leads a team of freelancers providing business automation, email marketing, copywriting, website design, software development and marketing for brands." as string | null,
     biography: [

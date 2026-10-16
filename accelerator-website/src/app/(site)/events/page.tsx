@@ -8,7 +8,9 @@ import { Pending } from "@/components/Pending";
 import { Countdown } from "@/components/Countdown";
 import { TicketCards } from "@/components/TicketCards";
 import { CONTEST_STATUS_LABEL, getAwards, getContests, getEventSettings, getSpeakers, getTickets } from "@/lib/content";
-import { formatLagos, formatLagosDate } from "@/lib/tickets";
+import { formatLagos, formatLagosDate, formatNaira } from "@/lib/tickets";
+import { FeeTable } from "@/components/FeeTable";
+import { MAX_FEE_KOBO, MIN_FEE_KOBO } from "@/lib/fees";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -149,10 +151,19 @@ export default async function EventsPage() {
               <p className="eyebrow">Registration</p>
               <h2 className="display-lg mt-5 text-navy">Secure your place.</h2>
               <p className="mt-6 leading-relaxed text-ink/75">Early Bird registration is open until 31 October 2026 at 11:59 PM (Lagos time). Late Registration opens automatically on 1 November 2026.</p>
-              <p className="mt-6 text-sm text-slate">Payments are processed securely by Paystack. Your registration is confirmed only after your payment is verified.</p>
+              <p className="mt-6 text-sm text-slate">Your fee depends on your membership position. Pay by bank transfer to the official account shown during registration, using your registration reference. Your place is confirmed once the team verifies your payment.</p>
             </Reveal>
             <div className="lg:col-span-8">
-              <TicketCards tickets={tickets} serverNow={now} />
+              <TicketCards tickets={tickets} serverNow={now} feeLabel={`${formatNaira(MIN_FEE_KOBO)} \u2013 ${formatNaira(MAX_FEE_KOBO)}`} />
+              <div className="mt-14 grid gap-10 border-t border-sand pt-12 md:grid-cols-5">
+                <div className="md:col-span-2">
+                  <p className="eyebrow">Registration fees</p>
+                  <h3 className="display-md mt-4 text-navy">Fees by membership position</h3>
+                  <p className="mt-4 text-sm text-ink/75">Choose your position when you register and the correct fee is applied automatically.</p>
+                  <Link href="/events/register" className="btn btn-red mt-8">Register now</Link>
+                </div>
+                <div className="md:col-span-3"><FeeTable /></div>
+              </div>
             </div>
           </div>
         </div>
@@ -258,6 +269,7 @@ export default async function EventsPage() {
                     </dl>
                     <div className="flex flex-col gap-4 md:col-span-3 md:items-end">
                       {c.status === "open" && c.submission_url && <a href={c.submission_url} target="_blank" rel="noopener noreferrer" className="btn btn-red w-full md:w-auto">Submit entry</a>}
+                      {c.id === "inter-office-100k-content-challenge" && <Link href="/events/content-challenge" className="btn btn-navy w-full md:w-auto">View the challenge</Link>}
                       {c.rules && <details className="w-full text-sm"><summary className="cursor-pointer font-semibold text-navy">Contest rules</summary><p className="mt-3 whitespace-pre-line text-ink/75">{c.rules}</p></details>}
                       {c.status === "winners_announced" && c.winners && <p className="text-sm"><span className="field-label !mb-1">Winners</span>{c.winners}</p>}
                     </div>

@@ -73,6 +73,38 @@ export async function getEventSettings(): Promise<EventSettings> {
   }
 }
 
+/**
+ * Contests supplied on official flyers. Used until the database holds published contests.
+ * Status follows the dates automatically (see contestStatus), unless winners are announced.
+ */
+export const DEFAULT_CONTESTS: Contest[] = [
+  {
+    id: "inter-office-100k-content-challenge",
+    title: "Accelerator Inter-Office \u20A6100K Content Challenge",
+    description: "Unleash your creativity. Edit with impact. Win big. Inspire more. Create and edit standout video content and compete for a share of \u20A6100,000.",
+    requirements: null,
+    starts_at: "2026-10-11T23:00:00.000Z", // 12 Oct 2026, 00:00 Lagos
+    deadline: "2026-10-31T22:59:59.999Z", // 31 Oct 2026, 23:59 Lagos
+    status: "open",
+    prize: "1st place \u20A650,000 \u00B7 2nd place \u20A630,000 \u00B7 3rd place \u20A620,000",
+    submission_url: null,
+    rules: null,
+    winners: null,
+    sort_order: 0,
+    published: true,
+  },
+];
+
+/** Derive a contest's live status from its dates (winners_announced is always manual). */
+export function contestStatus(c: Contest, now = new Date()): ContestStatus {
+  if (c.status === "winners_announced") return c.status;
+  const t = now.getTime();
+  if (c.starts_at && t < Date.parse(c.starts_at)) return "coming_soon";
+  if (c.deadline && t > Date.parse(c.deadline)) return "closed";
+  if (c.starts_at || c.deadline) return "open";
+  return c.status;
+}
+
 async function list<T>(table: string, publishedOnly = true): Promise<T[]> {
   if (!dbConfigured()) return [];
   try {
@@ -87,7 +119,13 @@ async function list<T>(table: string, publishedOnly = true): Promise<T[]> {
 
 export const getSpeakers = (all = false) => list<Speaker>("speakers", !all);
 export const getAwards = (all = false) => list<Award>("awards", !all);
-export const getContests = (all = false) => list<Contest>("contests", !all);
+export async function getContests(all = false): Promise<Contest[]> {
+  const rows = await list<Contest>("contests", !all);
+  const merged = rows.length ? rows : DEFAULT_CONTESTS;
+  return merged.map((c) => ({ ...c, status: contestStatus(c) }));
+}
+export const getContestRows = () => list<Contest>("contests", false);
+export const getContest = async (id: string) => (await getContests()).find((c) => c.id === id) ?? null;
 
 export const CONTEST_STATUS_LABEL: Record<ContestStatus, string> = {
   coming_soon: "Coming soon",

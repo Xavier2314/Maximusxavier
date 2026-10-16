@@ -49,7 +49,7 @@ export default function FounderPage() {
             <Reveal delay={0.1}>
               <div className="relative aspect-[4/5] overflow-hidden bg-navy-900 ring-1 ring-white/10">
                 {f.photo ? (
-                  <Image src={f.photo} alt={`${f.name ?? "The founder"}, founder of Accelerator Community`} fill priority sizes="(min-width:768px) 40vw, 100vw" className="object-cover" />
+                  <Image src={f.photo} alt={`Portrait of ${f.name ?? "the founder"}, founder of Accelerator Community, smiling in a burgundy pinstripe blazer and tinted glasses`} fill priority sizes="(min-width:768px) 40vw, 100vw" className="object-cover object-top" />
                 ) : (
                   <div className="flex h-full flex-col items-center justify-center gap-6 p-10 text-center">
                     <Logo variant="icon-reversed" width={160} />
@@ -58,6 +58,7 @@ export default function FounderPage() {
                 )}
                 <span className="absolute -bottom-0 right-0 h-2 w-2/3 bg-red" />
               </div>
+              {f.photo && f.photoCredit && <p className="mt-3 text-right text-[11px] uppercase tracking-[0.18em] text-mist">Photo: {f.photoCredit}</p>}
             </Reveal>
           </div>
         </div>

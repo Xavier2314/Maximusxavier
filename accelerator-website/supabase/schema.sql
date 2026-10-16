@@ -33,19 +33,20 @@ on conflict (id) do nothing;
 create table if not exists registrations (
   id uuid primary key default gen_random_uuid(),
   reference text not null unique,
-  ticket_id text not null references ticket_types(id),
+  ticket_id text not null references ticket_types(id), -- registration window: early_bird or late
+  position text,                                         -- membership position (see src/lib/fees.ts)
+  payment_method text not null default 'bank_transfer',
   full_name text not null,
   email text not null,
   phone text not null,
   city text,
-  is_member text,
   organisation text,
   referral_source text,
   notes text,
   consent boolean not null default false,
   amount_kobo integer not null,
   currency text not null default 'NGN',
-  status text not null default 'pending' check (status in ('pending','paid','failed','abandoned','duplicate_paid')),
+  status text not null default 'pending' check (status in ('awaiting_payment','awaiting_verification','pending','paid','failed','abandoned','rejected','duplicate_paid')),
   paystack_access_code text,
   paid_at timestamptz,
   channel text,
