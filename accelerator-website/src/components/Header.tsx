@@ -34,7 +34,7 @@ export function Header() {
       className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,padding] duration-500 ${scrolled || open ? "bg-navy/95 shadow-[0_10px_30px_-15px_rgba(0,0,0,.6)] backdrop-blur" : "bg-transparent"}`}
       style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
     >
-      <div className={`container-x flex items-center justify-between gap-6 transition-[height] duration-500 ${scrolled ? "h-16" : "h-20 md:h-24"}`}>
+      <div className={`container-x flex items-center justify-between gap-3 sm:gap-6 transition-[height] duration-500 ${scrolled ? "h-16" : "h-20 md:h-24"}`}>
         <Link href="/" aria-label="Accelerator Community home" className="shrink-0">
           <Logo variant="horizontal-reversed" width={scrolled ? 150 : 176} className="h-auto transition-[width] duration-500" priority />
         </Link>
@@ -53,7 +53,16 @@ export function Header() {
             ))}
           </ul>
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <ul className="flex items-center gap-1.5 max-[379px]:hidden sm:gap-2" aria-label="Follow us">
+            {site.social.filter((x) => x.href).map((x) => (
+              <li key={x.name}>
+                <a href={x.href!} target="_blank" rel="noopener noreferrer" aria-label={`${x.name} (opens in a new tab)`} title={x.name} className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 sm:h-10 sm:w-10 text-white transition-colors hover:border-red hover:bg-red">
+                  <SocialIcon name={x.name} size={18} />
+                </a>
+              </li>
+            ))}
+          </ul>
           <Link href={cta.href} className="btn btn-red hidden min-h-11 px-5 sm:inline-flex">{cta.short}</Link>
           <button
             type="button"
