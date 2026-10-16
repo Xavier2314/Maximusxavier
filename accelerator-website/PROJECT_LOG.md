@@ -61,3 +61,9 @@
 - Gallery: calmer fade-in, balanced layout (two mirrored feature blocks + a row of four).
 - Buttons: red/blue glow that breathes, stronger glow on hover, click ripple. Desktop cursor: glowing dot + trailing ring that grows over links/buttons, click burst.
 - Welcome voice: added, then removed at the client's request (no sound on the site).
+
+## Responsive audit (phones, tablets, desktop)
+- Automated test on the live site: 11 pages x 9 screen sizes (320, 375, 390, 430, 768, 834, 1024 landscape, 1280, 1920), checking sideways scrolling, elements off-screen, tap-target size, tiny text, iOS input zoom, hidden content, JS errors and the mobile menu.
+- Fixed: 7px sideways scroll on /events/register at 320px (grid columns now shrink, step headings wrap); 10px sideways scroll on /events at 1024px (html/body overflow-x: clip site-wide).
+- Bigger tap targets: Copy buttons, footer links, "link-arrow" links and header nav (44px where possible). Tap highlight in brand red; no double-tap zoom delay.
+- All 12-column layouts use grid-cols-1 on phones so long content can't push the page wider.

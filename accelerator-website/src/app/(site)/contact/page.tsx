@@ -25,7 +25,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
     <>
       <PageHero eyebrow="Contact us" title="Let's talk." intro="Questions about the community, the event or a partnership? Send us a message and we will get back to you." />
       <section className="bg-cream py-20 md:py-28">
-        <div className="container-x grid gap-16 lg:grid-cols-12">
+        <div className="container-x grid grid-cols-1 gap-16 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <Reveal>
               <ul className="space-y-8">

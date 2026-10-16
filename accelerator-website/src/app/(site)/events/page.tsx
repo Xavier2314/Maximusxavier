@@ -114,7 +114,7 @@ export default async function EventsPage() {
 
       {/* ABOUT */}
       <section id="about" className="scroll-mt-20 bg-cream py-24 md:py-32">
-        <div className="container-x grid gap-16 lg:grid-cols-12">
+        <div className="container-x grid grid-cols-1 gap-16 lg:grid-cols-12">
           <Reveal className="lg:col-span-6">
             <p className="eyebrow">About the event</p>
             <h2 className="display-lg mt-5 text-navy">Recognise achievement. Celebrate excellence. Grow together.</h2>
@@ -140,7 +140,7 @@ export default async function EventsPage() {
       {/* MOMENTS */}
       <section aria-label="Moments from past gatherings" className="bg-cream pb-24 md:pb-32">
         <div className="container-x">
-          <div className="grid gap-3 md:grid-cols-12">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
             {[
               { src: "/images/speaker-addressing-audience.jpg", alt: "A speaker in a cream suit addresses a seated audience taking notes", cap: "Training", span: "md:col-span-7 md:row-span-2", h: "h-72 md:h-full" },
               { src: "/images/recognition-medal-winners.jpg", alt: "Award winners with medals on stage with hosts", cap: "Recognition", span: "md:col-span-5", h: "h-64" },
@@ -176,7 +176,7 @@ export default async function EventsPage() {
       {/* TICKETS */}
       <section id="tickets" className="scroll-mt-20 relative overflow-hidden bg-white py-24 md:py-32">
         <div className="container-x">
-          <div className="grid gap-10 lg:grid-cols-12">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
             <Reveal className="lg:col-span-4">
               <p className="eyebrow">Registration</p>
               <h2 className="display-lg mt-5 text-navy">Secure your place.</h2>

@@ -42,7 +42,7 @@ export function Header() {
                 <Link
                   href={n.href}
                   aria-current={isActive(n.href) ? "page" : undefined}
-                  className={`relative py-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-white/85 transition-colors hover:text-white after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:bg-red after:transition-transform after:duration-300 ${isActive(n.href) ? "text-white after:scale-x-100" : "after:scale-x-0 hover:after:scale-x-100"}`}
+                  className={`relative py-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-white/85 transition-colors hover:text-white after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:bg-red after:transition-transform after:duration-300 ${isActive(n.href) ? "text-white after:scale-x-100" : "after:scale-x-0 hover:after:scale-x-100"}`}
                 >
                   {n.label}
                 </Link>

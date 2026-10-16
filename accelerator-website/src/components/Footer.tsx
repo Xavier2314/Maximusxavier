@@ -16,9 +16,9 @@ export function Footer() {
         </div>
         <div className="md:col-span-2">
           <h2 className="eyebrow mb-5">Explore</h2>
-          <ul className="space-y-3 text-sm">
+          <ul className="space-y-1 text-sm">
             {nav.map((n) => (
-              <li key={n.href}><Link className="text-white/80 hover:text-white" href={n.href}>{n.label}</Link></li>
+              <li key={n.href}><Link className="inline-flex min-h-[40px] items-center text-white/80 hover:text-white" href={n.href}>{n.label}</Link></li>
             ))}
           </ul>
         </div>
@@ -33,9 +33,9 @@ export function Footer() {
         <div className="md:col-span-3">
           <h2 className="eyebrow mb-5">Follow</h2>
           {socials.length ? (
-            <ul className="space-y-3 text-sm">
+            <ul className="space-y-1 text-sm">
               {socials.map((s) => (
-                <li key={s.name}><a href={s.href!} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-white">{s.name}</a></li>
+                <li key={s.name}><a href={s.href!} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[40px] items-center text-white/80 hover:text-white">{s.name}</a></li>
               ))}
             </ul>
           ) : (
@@ -50,9 +50,9 @@ export function Footer() {
             {site.legal.rcNumber ? ` RC ${site.legal.rcNumber}.` : ""} All rights reserved.
           </p>
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
-            <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
-            <li><Link href="/refunds" className="hover:text-white">Refunds &amp; cancellations</Link></li>
+            <li><Link href="/privacy" className="inline-flex min-h-[40px] items-center hover:text-white">Privacy</Link></li>
+            <li><Link href="/terms" className="inline-flex min-h-[40px] items-center hover:text-white">Terms</Link></li>
+            <li><Link href="/refunds" className="inline-flex min-h-[40px] items-center hover:text-white">Refunds &amp; cancellations</Link></li>
           </ul>
         </div>
       </div>

@@ -14,7 +14,7 @@ function CopyButton({ value, label, tone = "light" }: { value: string; label: st
       onClick={async () => {
         try { await navigator.clipboard.writeText(value); setDone(true); setTimeout(() => setDone(false), 2000); } catch { /* clipboard blocked: the value stays selectable */ }
       }}
-      className={`inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] ${tone === "dark" ? "text-[#9DB2FF] hover:text-white" : "text-royal hover:text-navy"}`}
+      className={`-my-2 inline-flex min-h-[44px] shrink-0 items-center gap-1.5 px-2 text-xs font-semibold uppercase tracking-[0.14em] ${tone === "dark" ? "text-[#9DB2FF] hover:text-white" : "text-royal hover:text-navy"}`}
       aria-label={`Copy ${label}`}
     >
       {done ? <><Check size={14} aria-hidden="true" /> Copied</> : <><Copy size={14} aria-hidden="true" /> Copy</>}
@@ -65,11 +65,11 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
   };
 
   return (
-    <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
       {/* Step 1: fees */}
-      <motion.div className="lg:col-span-7" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: EASE }}>
-        <div className="flex items-baseline gap-4">
-          <span className="font-display text-4xl italic text-red">01</span>
+      <motion.div className="min-w-0 lg:col-span-7" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: EASE }}>
+        <div className="flex min-w-0 items-baseline gap-3 sm:gap-4">
+          <span className="shrink-0 font-display text-3xl italic text-red sm:text-4xl">01</span>
           <div>
             <h2 className="display-md text-navy">Choose your position</h2>
             <p className="mt-1 text-sm text-ink/70">Your registration fee depends on your membership position.</p>
@@ -106,10 +106,10 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
       </motion.div>
 
       {/* Steps 2 and 3: pay, then submit */}
-      <motion.div ref={payRef} className="scroll-mt-24 lg:col-span-5" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.15, ease: EASE }}>
+      <motion.div ref={payRef} className="min-w-0 scroll-mt-24 lg:col-span-5" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.15, ease: EASE }}>
         <div className="space-y-6 lg:sticky lg:top-28">
-          <div className="flex items-baseline gap-4">
-            <span className="font-display text-4xl italic text-red">02</span>
+          <div className="flex min-w-0 items-baseline gap-3 sm:gap-4">
+            <span className="shrink-0 font-display text-3xl italic text-red sm:text-4xl">02</span>
             <div>
               <h2 className="display-md text-navy">Pay by bank transfer</h2>
               <p className="mt-1 text-sm text-ink/70">Use your <b>full name</b> as the narration and keep your receipt.</p>
@@ -139,7 +139,7 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
                 <div key={k} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
                   <dt className="text-sm text-slate">{k}</dt>
                   <dd className="flex items-center gap-4">
-                    <span className={`select-all font-semibold text-navy ${k === "Account number" ? "font-display text-3xl tabular-nums tracking-wide" : ""}`}>{v}</span>
+                    <span className={`select-all font-semibold text-navy ${k === "Account number" ? "font-display text-2xl tabular-nums tracking-wide sm:text-3xl" : ""}`}>{v}</span>
                     {copy && <CopyButton value={v} label={k} />}
                   </dd>
                 </div>
@@ -149,8 +149,8 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
           <p className="text-xs text-slate">Pay only into this official account. Never send money to an account shared any other way.</p>
 
           <div className="bg-navy p-6 text-white md:p-8">
-            <div className="flex items-baseline gap-4">
-              <span className="font-display text-4xl italic text-red">03</span>
+            <div className="flex min-w-0 items-baseline gap-3 sm:gap-4">
+              <span className="shrink-0 font-display text-3xl italic text-red sm:text-4xl">03</span>
               <h2 className="font-display text-3xl">Check your receipt</h2>
             </div>
             <p className="mt-3 text-sm text-mist">Upload your transfer receipt. We check that it shows <b className="text-white">{amount ?? "your fee"}</b> paid into the official account before the registration form opens. Your receipt is read on your device and is not uploaded to us.</p>

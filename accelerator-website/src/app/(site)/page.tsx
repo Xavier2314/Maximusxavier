@@ -59,7 +59,7 @@ export default async function HomePage() {
             </h1>
           </Reveal>
           <Reveal delay={0.16}>
-            <div className="mt-10 grid gap-10 md:grid-cols-12 md:items-end">
+            <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-12 md:items-end">
               <p className="lead text-mist md:col-span-6">{site.shortDescription}</p>
               <div className="flex flex-col gap-3 sm:flex-row md:col-span-6 md:justify-end">
                 <Link href="/about" className="btn btn-ghost-light">Explore Accelerator</Link>
@@ -86,7 +86,7 @@ export default async function HomePage() {
 
       {/* ABOUT PREVIEW */}
       <section className="relative overflow-hidden bg-cream py-24 md:py-36">
-        <div className="container-x grid gap-16 md:grid-cols-12 md:items-center">
+        <div className="container-x grid grid-cols-1 gap-16 md:grid-cols-12 md:items-center">
           <div className="md:col-span-6">
             <Reveal>
               <p className="eyebrow">Who we are</p>
@@ -215,7 +215,7 @@ export default async function HomePage() {
 
       {/* FOUNDER PREVIEW */}
       <section className="bg-white py-24 md:py-32" aria-labelledby="founder-title">
-        <div className="container-x grid gap-14 md:grid-cols-12 md:items-center">
+        <div className="container-x grid grid-cols-1 gap-14 md:grid-cols-12 md:items-center">
           <div className="md:col-span-5">
             <Reveal>
               <div className="relative aspect-[4/5] overflow-hidden bg-navy">

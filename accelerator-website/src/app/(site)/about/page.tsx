@@ -33,7 +33,7 @@ export default function AboutPage() {
 
       {/* Who we are + story */}
       <section className="bg-cream py-24 md:py-32">
-        <div className="container-x grid gap-16 md:grid-cols-12">
+        <div className="container-x grid grid-cols-1 gap-16 md:grid-cols-12">
           <Reveal className="md:col-span-5">
             <p className="eyebrow">Who we are</p>
             <h2 className="display-lg mt-5 text-navy">One community. Different journeys. Shared progress.</h2>
@@ -95,7 +95,7 @@ export default function AboutPage() {
 
       {/* What it means to be part */}
       <section className="relative overflow-hidden bg-cream py-24 md:py-32">
-        <div className="container-x grid gap-16 lg:grid-cols-12">
+        <div className="container-x grid grid-cols-1 gap-16 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <Reveal>
               <div className="relative aspect-[3/4] overflow-hidden lg:sticky lg:top-28">

@@ -65,7 +65,7 @@ export default function FounderPage() {
       </section>
 
       <section className="bg-cream py-24 md:py-32">
-        <div className="container-x grid gap-16 lg:grid-cols-12">
+        <div className="container-x grid grid-cols-1 gap-16 lg:grid-cols-12">
           <div className="space-y-16 lg:col-span-7">
             <Reveal>
               <p className="eyebrow">Biography</p>
