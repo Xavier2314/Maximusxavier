@@ -60,4 +60,4 @@
   - Limitation: an edited screenshot can still pass, and the form URL is public. The team must still verify every payment against the bank statement.
 - Gallery: calmer fade-in, balanced layout (two mirrored feature blocks + a row of four).
 - Buttons: red/blue glow that breathes, stronger glow on hover, click ripple. Desktop cursor: glowing dot + trailing ring that grows over links/buttons, click burst.
-- Welcome voice: "Welcome to Accelerators Billionaires" (browser speech) on the first tap/click of a visit; speaker button bottom-left to mute/replay.
+- Welcome voice: added, then removed at the client's request (no sound on the site).
