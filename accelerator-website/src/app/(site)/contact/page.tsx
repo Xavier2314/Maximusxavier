@@ -1,0 +1,60 @@
+import type { Metadata } from "next";
+import { Mail, Phone, MapPin } from "lucide-react";
+import { PageHero } from "@/components/PageHero";
+import { ContactForm } from "@/components/ContactForm";
+import { Pending } from "@/components/Pending";
+import { Reveal } from "@/components/Reveal";
+import { site } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: "Get in touch with Accelerator Community about membership, Accelerators Events 2026, partnerships and sponsorship.",
+  alternates: { canonical: "/contact" },
+};
+
+const channels = [
+  { title: "Community enquiries", text: "Joining, volunteering or getting involved." },
+  { title: "Event enquiries", text: "Tickets, registration and event-day questions for Accelerators Events 2026." },
+  { title: "Partnerships & sponsorship", text: "Brands and organisations who want to support the community." },
+];
+
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
+  const { topic } = await searchParams;
+  const socials = site.social.filter((s) => s.href);
+  return (
+    <>
+      <PageHero eyebrow="Contact us" title="Let's talk." intro="Questions about the community, the event or a partnership? Send us a message and we will get back to you." />
+      <section className="bg-cream py-20 md:py-28">
+        <div className="container-x grid gap-16 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <Reveal>
+              <ul className="space-y-8">
+                <li className="flex gap-4"><Mail className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><p className="field-label">Email</p>{site.contact.email ? <a href={`mailto:${site.contact.email}`} className="text-lg text-navy underline-offset-4 hover:underline">{site.contact.email}</a> : <Pending label="Official email" className="text-slate" />}</div></li>
+                <li className="flex gap-4"><Phone className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><p className="field-label">Phone</p>{site.contact.phone ? <a href={`tel:${site.contact.phone}`} className="text-lg text-navy">{site.contact.phone}</a> : <Pending label="Official phone" className="text-slate" />}</div></li>
+                <li className="flex gap-4"><MapPin className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><p className="field-label">Address</p>{site.contact.address ? <p className="text-lg text-navy">{site.contact.address}</p> : <Pending label="Official address" className="text-slate" />}</div></li>
+              </ul>
+              <div className="mt-12 border-t border-sand pt-8">
+                <p className="field-label">Social</p>
+                {socials.length ? <ul className="mt-3 flex flex-wrap gap-4">{socials.map((s) => <li key={s.name}><a href={s.href!} target="_blank" rel="noopener noreferrer" className="link-arrow">{s.name}</a></li>)}</ul> : <Pending label="Social media links" className="mt-2 text-slate" />}
+              </div>
+              <div className="mt-12 space-y-6 border-t border-sand pt-8">
+                {channels.map((c) => (
+                  <div key={c.title}><h2 className="font-display text-2xl text-navy">{c.title}</h2><p className="mt-1 text-sm text-slate">{c.text}</p></div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+          <div className="lg:col-span-7 lg:col-start-6">
+            <Reveal delay={0.08}>
+              <div className="bg-white p-6 shadow-[0_30px_60px_-40px_rgba(11,30,63,.45)] sm:p-10">
+                <h2 className="display-md text-navy">Send a message</h2>
+                <p className="mb-8 mt-3 text-sm text-slate">Fields marked * are required.</p>
+                <ContactForm defaultTopic={topic} />
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
