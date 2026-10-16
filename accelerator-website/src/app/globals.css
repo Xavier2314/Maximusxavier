@@ -126,3 +126,13 @@
 .orbit-rev { animation-duration: 6s; animation-direction: reverse; }
 .orbit-slow { animation-duration: 18s; }
 .text-stroke { color: transparent; -webkit-text-stroke: 1.5px currentColor; }
+
+/* animated logo */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin-slow { animation: spin 40s linear infinite; }
+@keyframes logo-float { 0%,100% { transform: translateY(-6px) rotateY(-10deg); } 50% { transform: translateY(8px) rotateY(10deg); } }
+.logo-float { animation: logo-float 7s ease-in-out infinite 1.6s; transform-style: preserve-3d; }
+@keyframes logo-glow { 0%,100% { opacity: .55; transform: scale(.9); } 50% { opacity: 1; transform: scale(1.08); } }
+.logo-glow { background: radial-gradient(circle at 35% 40%, rgba(30,75,255,.75), transparent 60%), radial-gradient(circle at 70% 60%, rgba(225,30,45,.7), transparent 60%); filter: blur(40px); animation: logo-glow 5s ease-in-out infinite; }
+@keyframes logo-shine { 0%, 55% { background-position: 150% 0; } 85%, 100% { background-position: -50% 0; } }
+.logo-shine { -webkit-mask: url(/brand/icon-colour.png) center / contain no-repeat; mask: url(/brand/icon-colour.png) center / contain no-repeat; background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.85) 50%, transparent 60%); background-size: 250% 100%; animation: logo-shine 5s ease-in-out infinite 2.2s; mix-blend-mode: screen; }

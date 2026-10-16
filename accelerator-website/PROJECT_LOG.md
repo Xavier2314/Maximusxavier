@@ -78,3 +78,4 @@
 - Home hero: KineticHeadline (words rise from masks), WordCycler (theme tagline phrases), MorphShape (brand gradient shape morphing diamond/square/octagon/triangle with orbiting dots, desktop), ParticleField (canvas, pauses off-screen).
 - KineticBand: scroll-driven giant type rows before the gallery.
 - All respect reduced-motion.
+- Hero centrepiece is now the animated brand mark (LogoMotion) instead of the abstract morph shape: the logo is split into its blue "A" and red "B" (public/brand/icon-part-a.png / -b.png), which fly in and lock together, then float/sway in 3D with pointer tilt, a masked light gleam, pulsing glow, rotating dashed ring and orbiting dots. Shown on all screen sizes (smaller on phones).

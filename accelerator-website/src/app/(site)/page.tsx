@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Award, GraduationCap, Users, Clapperboard } from "lucide-react";
 import { Facets } from "@/components/Facets";
 import { ImageReveal, Parallax } from "@/components/Motion";
-import { KineticBand, KineticHeadline, MorphShape, ParticleField, WordCycler } from "@/components/HeroMotion";
+import { KineticBand, KineticHeadline, LogoMotion, ParticleField, WordCycler } from "@/components/HeroMotion";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
 import { Gallery } from "@/components/Gallery";
@@ -46,9 +46,9 @@ export default async function HomePage() {
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,30,63,.55)_0%,rgba(11,30,63,.35)_35%,rgba(7,21,48,.96)_100%)]" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_15%_85%,rgba(30,75,255,.35),transparent)]" />
         <ParticleField className="absolute inset-0 -z-10 h-full w-full" />
-        <MorphShape className="absolute right-[5%] top-[18%] hidden w-[min(32vw,440px)] lg:block" />
+        <LogoMotion className="absolute right-[4%] top-[16%] hidden w-[min(34vw,470px)] lg:block" />
         <Facets side="left" className="pointer-events-none absolute -left-28 top-24 hidden h-[380px] w-auto xl:block" />
-        <Facets side="right" className="pointer-events-none absolute -right-8 top-24 h-[150px] w-auto opacity-90 md:h-[420px] lg:hidden" />
+        <LogoMotion className="absolute right-[-6%] top-20 w-[64vw] max-w-[360px] sm:right-[2%] sm:top-24 lg:hidden" />
 
         <div className="container-x relative pb-16 pt-40 md:pb-24">
           <Reveal>
