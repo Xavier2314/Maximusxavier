@@ -10,6 +10,6 @@ export default function Page() {
     { h: "How we use it", p: ["To manage your registration, confirm your payment, communicate with you about the event, respond to your enquiries and keep accurate records. We do not sell your personal information."] },
     { h: "How we protect it", p: ["Registration records are stored in a secured database that is not publicly accessible. Only authorised administrators can view them."] },
     { h: "How long we keep it", p: [{ pending: "Data retention period to be confirmed" }] },
-    { h: "Your rights", p: ["You can ask to see, correct or delete the personal information we hold about you, subject to our legal and accounting obligations, including the Nigeria Data Protection Act 2023.", { pending: "Official contact email for privacy requests" }] },
+    { h: "Your rights", p: ["You can ask to see, correct or delete the personal information we hold about you, subject to our legal and accounting obligations, including the Nigeria Data Protection Act 2023.", "To make a request, email info@acceleratorsbillionaires.com."] },
   ]} />;
 }

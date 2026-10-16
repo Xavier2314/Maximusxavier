@@ -25,7 +25,8 @@ export function Footer() {
         <div className="md:col-span-3">
           <h2 className="eyebrow mb-5">Contact</h2>
           <ul className="space-y-3 text-sm text-white/80">
-            <li>{site.contact.email ? <a href={`mailto:${site.contact.email}`} className="hover:text-white">{site.contact.email}</a> : <Pending label="Official email" />}</li>
+            <li>{site.contact.email ? <a href={`mailto:${site.contact.email}`} className="break-all hover:text-white">{site.contact.email}</a> : <Pending label="Official email" />}</li>
+            {site.contact.adminEmail && <li><a href={`mailto:${site.contact.adminEmail}`} className="break-all hover:text-white">{site.contact.adminEmail}</a></li>}
             <li>{site.contact.phone ? <a href={`tel:${site.contact.phone}`} className="hover:text-white">{site.contact.phone}</a> : <Pending label="Official phone" />}</li>
             <li className="pt-2"><Link href="/contact" className="link-arrow !text-white">Send a message</Link></li>
           </ul>

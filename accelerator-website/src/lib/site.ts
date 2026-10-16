@@ -117,7 +117,9 @@ export const site = {
   ],
 
   contact: {
-    email: null as string | null,
+    // Official mailboxes (active October 2026).
+    email: "info@acceleratorsbillionaires.com" as string | null,
+    adminEmail: "admin@acceleratorsbillionaires.com" as string | null,
     phone: null as string | null,
     whatsapp: null as string | null,
     address: null as string | null,

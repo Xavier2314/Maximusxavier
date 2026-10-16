@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     : false;
 
   if (!stored && !mailed) {
-    return NextResponse.json({ message: "Messages cannot be received yet while the site is being set up. Please try again soon." }, { status: 503 });
+    return NextResponse.json({ message: "The contact form is not connected yet. Please email us directly at info@acceleratorsbillionaires.com." }, { status: 503 });
   }
   return NextResponse.json({ ok: true });
 }
