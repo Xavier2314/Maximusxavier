@@ -81,7 +81,7 @@ export default function FounderPage() {
             </Reveal>
             <Block eyebrow="The vision" title="The vision-bearer" text={f.vision} pending="Founder's vision for Accelerator" />
             <Reveal className="-mt-8 flex flex-wrap gap-3">
-              <Link href="/about#vision" className="btn btn-navy">Our vision &amp; mission <ArrowRight size={16} aria-hidden="true" /></Link>
+              <Link href="/vision" className="btn btn-navy">Our vision &amp; mission <ArrowRight size={16} aria-hidden="true" /></Link>
               <a href={site.charter.pdf} download className="btn btn-ghost-dark"><Download size={16} aria-hidden="true" /> Download the charter</a>
             </Reveal>
             <Block eyebrow="In his words" title="What drives him" text={f.philosophy ? `\u201C${f.philosophy}\u201D` : null} pending="Leadership philosophy" />

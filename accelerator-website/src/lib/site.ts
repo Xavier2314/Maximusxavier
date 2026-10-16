@@ -31,6 +31,12 @@ export const site = {
     pdf: "/downloads/Accelerators_Billionaires_Vision_Mission_Charter.pdf",
     reference: "AB/VM/001",
     edition: "October 2026",
+    title: "Vision & Mission Statement",
+    subtitle: "The founding vision, mission and four-horizon story of Accelerators Billionaires \u2014 raising skilled, resourceful and purposeful young leaders, from Africa to the world.",
+    issuedBy: "Office of the Founder & CEO",
+    status: "Official \u00b7 Public",
+    founderRole: "Founder & CEO, Accelerators Billionaires",
+    horizonsIntro: "The vision is pursued in four horizons. Each builds on the one before it \u2014 from a measurable first milestone to a legacy designed to outlive the generation that builds it.",
     fullVision:
       "To become the world’s foremost youth-development ecosystem — raising generations of skilled, resourceful and purposeful leaders, from Africa to every nation, who master technology and enterprise to solve real human problems with excellence, and whose work builds a legacy that blesses generation after generation, for the revelation of the glory and wisdom of God.",
     fullMission:
@@ -142,6 +148,7 @@ export const sponsorship = {
 export const nav = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
+  { href: "/vision", label: "Vision & Mission" },
   { href: "/founder", label: "Founder" },
   { href: "/events", label: "Events 2026" },
   { href: "/sponsorship", label: "Sponsorship" },

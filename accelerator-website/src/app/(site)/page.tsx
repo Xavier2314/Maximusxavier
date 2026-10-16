@@ -139,7 +139,7 @@ export default async function HomePage() {
           </div>
 
           <Reveal className="mt-10">
-            <Link href="/about#vision" className="link-arrow text-sm font-semibold uppercase tracking-[0.2em] text-[#9DB2FF] hover:text-white">Read the full vision &amp; four horizons <ArrowRight size={16} aria-hidden="true" /></Link>
+            <Link href="/vision" className="link-arrow text-sm font-semibold uppercase tracking-[0.2em] text-[#9DB2FF] hover:text-white">Read the full vision &amp; four horizons <ArrowRight size={16} aria-hidden="true" /></Link>
           </Reveal>
 
           <div className="mt-24 grid gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
