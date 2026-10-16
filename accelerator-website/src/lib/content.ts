@@ -5,7 +5,8 @@ import { DEFAULT_TICKETS, type TicketType, type TicketId } from "./tickets";
 export type EventSettings = {
   name: string;
   theme: string | null;
-  startsAt: string | null; // ISO instant
+  startsAt: string | null; // ISO instant (midnight Lagos time when only the date is confirmed)
+  timeConfirmed: boolean; // false = only the date is confirmed, hide the start time
   endsAt: string | null;
   venueName: string | null;
   address: string | null;
@@ -16,11 +17,13 @@ export type EventSettings = {
 export const DEFAULT_EVENT: EventSettings = {
   name: "Accelerators Events 2026",
   theme: null,
-  startsAt: null,
+  // Confirmed by Accelerator Community: Saturday 5 December 2026, Ibadan. Start time not yet confirmed.
+  startsAt: "2026-12-04T23:00:00.000Z", // 5 Dec 2026 00:00 Lagos
+  timeConfirmed: false,
   endsAt: null,
   venueName: null,
   address: null,
-  city: null,
+  city: "Ibadan",
   summary: null,
 };
 

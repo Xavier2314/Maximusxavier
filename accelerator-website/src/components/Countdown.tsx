@@ -16,7 +16,7 @@ export function Countdown({ target, serverNow, label }: { target: string; server
   }, [offset]);
   const left = Date.parse(target) - now;
   const p = parts(left);
-  if (left <= 0) return <p className="font-display text-2xl">{label ? `${label} has started` : "It's happening now"}</p>;
+  if (left <= 0) return <p className="font-display text-2xl">{label ? `${label}: it's event day` : "It's event day"}</p>;
   const cells: [string, number][] = [["Days", p.days], ["Hours", p.hours], ["Minutes", p.minutes], ["Seconds", p.seconds]];
   return (
     <div role="timer" aria-label={`${p.days} days, ${p.hours} hours and ${p.minutes} minutes to go`} className="grid grid-cols-4 gap-px bg-white/15">

@@ -45,15 +45,15 @@ export default async function EventsPage() {
   const now = Date.now();
   const where = [event.venueName, event.address, event.city].filter(Boolean).join(", ");
 
-  const jsonLd = event.startsAt && event.venueName ? {
+  const jsonLd = event.startsAt && (event.venueName || event.city) ? {
     "@context": "https://schema.org",
     "@type": "Event",
     name: event.name,
-    startDate: event.startsAt,
+    startDate: event.timeConfirmed ? event.startsAt : "2026-12-05",
     ...(event.endsAt ? { endDate: event.endsAt } : {}),
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-    location: { "@type": "Place", name: event.venueName, address: [event.address, event.city].filter(Boolean).join(", ") || undefined },
+    location: { "@type": "Place", name: event.venueName ?? event.city, address: { "@type": "PostalAddress", addressLocality: event.city ?? undefined, addressCountry: "NG", streetAddress: event.address ?? undefined } },
     organizer: { "@type": "Organization", name: site.name, url: site.url },
     image: [`${site.url}/images/community-white-attire.jpg`],
     description: event.summary ?? undefined,
@@ -84,8 +84,8 @@ export default async function EventsPage() {
           <Reveal delay={0.18}>
             <div className="mt-12 grid gap-8 border-t border-white/15 pt-8 md:grid-cols-12 md:items-end">
               <dl className="grid gap-6 sm:grid-cols-2 md:col-span-6">
-                <div className="flex gap-3"><CalendarDays className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><dt className="text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">Date</dt><dd className="mt-1 font-display text-2xl">{formatLagosDate(event.startsAt) ?? "To be announced"}</dd>{event.startsAt && <dd className="text-sm text-mist">{formatLagos(event.startsAt, { day: undefined, month: undefined, year: undefined })} WAT</dd>}</div></div>
-                <div className="flex gap-3"><MapPin className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><dt className="text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">Venue</dt><dd className="mt-1 font-display text-2xl">{where || "To be announced"}</dd></div></div>
+                <div className="flex gap-3"><CalendarDays className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><dt className="text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">Date</dt><dd className="mt-1 font-display text-2xl">{formatLagosDate(event.startsAt, true) ?? "To be announced"}</dd>{event.startsAt && !event.timeConfirmed && <dd className="text-sm text-mist">Start time to be announced</dd>}{event.startsAt && event.timeConfirmed && <dd className="text-sm text-mist">{formatLagos(event.startsAt, { day: undefined, month: undefined, year: undefined })} WAT</dd>}</div></div>
+                <div className="flex gap-3"><MapPin className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><dt className="text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">Venue</dt><dd className="mt-1 font-display text-2xl">{where || "To be announced"}</dd>{!event.venueName && event.city && <dd className="text-sm text-mist">Exact venue to be announced</dd>}</div></div>
               </dl>
               <div className="md:col-span-6">
                 {event.startsAt ? <Countdown target={event.startsAt} serverNow={now} label={event.name} /> : (

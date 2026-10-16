@@ -85,8 +85,8 @@ export function formatLagos(iso: string | null, opts: Intl.DateTimeFormatOptions
   }).format(new Date(iso));
 }
 
-export function formatLagosDate(iso: string | null) {
-  return formatLagos(iso, { hour: undefined, minute: undefined, hour12: undefined });
+export function formatLagosDate(iso: string | null, withWeekday = false) {
+  return formatLagos(iso, { hour: undefined, minute: undefined, hour12: undefined, ...(withWeekday ? { weekday: "long" as const } : {}) });
 }
 
 /** Convert a `datetime-local` value entered as Lagos time into a UTC ISO instant. */

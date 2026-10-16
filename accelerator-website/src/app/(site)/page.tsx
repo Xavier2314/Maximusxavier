@@ -159,7 +159,7 @@ export default async function HomePage() {
                 A celebration of achievement and growth: recognition for outstanding members, leadership training, inspiring speakers, networking and video competitions.
               </p>
               <dl className="mt-10 grid grid-cols-2 gap-6 border-t border-white/15 pt-8 text-sm">
-                <div><dt className="text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">Date</dt><dd className="mt-2 font-display text-xl">{formatLagosDate(event.startsAt) ?? "To be announced"}</dd></div>
+                <div><dt className="text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">Date</dt><dd className="mt-2 font-display text-xl">{formatLagosDate(event.startsAt, true) ?? "To be announced"}</dd></div>
                 <div><dt className="text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">Venue</dt><dd className="mt-2 font-display text-xl">{where || "To be announced"}</dd></div>
               </dl>
               {event.startsAt && (

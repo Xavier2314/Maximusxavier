@@ -4,7 +4,7 @@ import { db } from "./db";
 import { verifyTransaction } from "./paystack";
 import { sendEmail, confirmationEmail } from "./email";
 import { getEventSettings, getTicket } from "./content";
-import { formatLagos, formatNaira } from "./tickets";
+import { formatLagos, formatLagosDate, formatNaira } from "./tickets";
 
 export type Registration = {
   id: string; reference: string; ticket_id: string; full_name: string; email: string; phone: string; city: string | null;
@@ -96,7 +96,7 @@ async function sendConfirmation(reg: Registration) {
     `Registration confirmed: ${event.name} (${reg.reference})`,
     confirmationEmail({
       name: reg.full_name, reference: reg.reference, ticket: ticket?.name ?? reg.ticket_id,
-      amount: formatNaira(reg.amount_kobo) ?? "", eventName: event.name, eventWhen: formatLagos(event.startsAt), eventWhere: where,
+      amount: formatNaira(reg.amount_kobo) ?? "", eventName: event.name, eventWhen: event.timeConfirmed ? formatLagos(event.startsAt) : formatLagosDate(event.startsAt, true), eventWhere: where,
     }),
   );
   if (ok) await db().from("registrations").update({ confirmation_sent_at: new Date().toISOString() }).eq("reference", reg.reference);

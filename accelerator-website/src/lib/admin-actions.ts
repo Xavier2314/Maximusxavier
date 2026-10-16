@@ -67,6 +67,7 @@ export async function updateEvent(form: FormData) {
     name: s(form, "name") ?? "Accelerators Events 2026",
     theme: s(form, "theme"),
     startsAt: lagosLocalToIso(String(form.get("startsAt") ?? "")),
+    timeConfirmed: b(form, "timeConfirmed"),
     endsAt: lagosLocalToIso(String(form.get("endsAt") ?? "")),
     venueName: s(form, "venueName"),
     address: s(form, "address"),
