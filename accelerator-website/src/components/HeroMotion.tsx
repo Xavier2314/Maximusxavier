@@ -79,7 +79,7 @@ const SHAPES = [
 export function MorphShape({ className = "" }: { className?: string }) {
   const reduce = useReducedMotion();
   return (
-    <div className={`pointer-events-none relative aspect-square ${className}`} aria-hidden="true">
+    <div className={`pointer-events-none aspect-square ${className || "relative"}`} aria-hidden="true">
       <motion.div
         className="absolute inset-[14%]"
         style={{ clipPath: SHAPES[0], background: "linear-gradient(135deg,#E11E2D,#1E4BFF)" }}
@@ -137,7 +137,7 @@ export function LogoMotion({ className = "" }: { className?: string }) {
   );
 
   return (
-    <div ref={ref} className={`pointer-events-none relative aspect-square [perspective:1000px] ${className}`} aria-hidden="true">
+    <div ref={ref} className={`pointer-events-none aspect-square [perspective:1000px] ${className || "relative"}`} aria-hidden="true">
       {/* pulsing glow */}
       <div className="logo-glow absolute inset-[18%] rounded-full" />
       {/* rotating dashed ring with diamond markers */}
@@ -153,7 +153,7 @@ export function LogoMotion({ className = "" }: { className?: string }) {
 
       {/* the mark */}
       <motion.div className="absolute inset-[20%] [transform-style:preserve-3d]" style={reduce ? undefined : { rotateX: rx, rotateY: ry }}>
-        <div className={reduce ? "absolute inset-0" : "logo-float absolute inset-0"}>
+        <div className={`logo-mark absolute inset-0 ${reduce ? "" : "logo-float"}`}>
           {part("/brand/icon-part-a.png", -70)}
           {part("/brand/icon-part-b.png", 70)}
           {!reduce && <div className="logo-shine absolute inset-0" />}
