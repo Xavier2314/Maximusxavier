@@ -26,19 +26,20 @@ export function Gallery({ photos }: { photos: Photo[] }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [index, step]);
 
-  const layout = ["md:col-span-7 md:row-span-2", "md:col-span-5", "md:col-span-5", "md:col-span-4", "md:col-span-4", "md:col-span-4", "md:col-span-8 md:row-span-2", "md:col-span-4 md:row-span-2", "md:col-span-6", "md:col-span-6"];
+  // Two mirrored feature blocks, then a tidy row of four.
+  const layout = ["md:col-span-7 md:row-span-2", "md:col-span-5", "md:col-span-5", "md:col-span-5", "md:col-span-7 md:row-span-2", "md:col-span-5", "md:col-span-3", "md:col-span-3", "md:col-span-3", "md:col-span-3"];
 
   return (
     <>
-      <div className="grid auto-rows-[240px] gap-3 sm:grid-cols-2 md:grid-cols-12 md:auto-rows-[280px] md:grid-flow-dense">
+      <div className="grid auto-rows-[240px] gap-3 sm:grid-cols-2 md:grid-cols-12 md:auto-rows-[260px] md:grid-flow-dense">
         {photos.map((p, i) => (
           <motion.button
             key={p.src}
             type="button"
-            initial={reduce ? false : { opacity: 0, y: 40, clipPath: "inset(12% 6% 0% 6%)" }}
-            whileInView={{ opacity: 1, y: 0, clipPath: "inset(0% 0% 0% 0%)" }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.9, delay: (i % 3) * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            initial={reduce ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.6, delay: (i % 3) * 0.06, ease: "easeOut" }}
             onClick={() => open(i)}
             className={`group relative overflow-hidden bg-navy text-left ${layout[i % layout.length]}`}
             aria-label={`Open photo: ${p.caption}`}

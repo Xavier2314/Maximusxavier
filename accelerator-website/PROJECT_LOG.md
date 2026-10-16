@@ -54,3 +54,10 @@
 - Gallery tiles rise in with a staggered clip reveal. Facet graphics float gently. Buttons lift with a light sweep on hover.
 - Register page: fee rows slide in one by one, the selected-row highlight glides between positions, the amount counts up, and the submit button springs in with a pulse once unlocked. On phones the page scrolls to the payment card after the first choice.
 - All motion respects "reduce motion" settings.
+
+## Receipt check, cursor, glow, voice
+- Register step 3 is now "Check your receipt": visitors upload one or more transfer receipts (screenshots/photos). Text is read ON THE DEVICE with tesseract.js (no upload to us); `lib/receipt-check.ts` extracts the amount and looks for the official account (8115774517 / masked / account name). Receipts must add up to the position fee, all go to the official account, no duplicates; otherwise a warning shows the shortfall ("₦20,000 short — pay the rest and upload that receipt too"). Only then does the form button unlock.
+  - Limitation: an edited screenshot can still pass, and the form URL is public. The team must still verify every payment against the bank statement.
+- Gallery: calmer fade-in, balanced layout (two mirrored feature blocks + a row of four).
+- Buttons: red/blue glow that breathes, stronger glow on hover, click ripple. Desktop cursor: glowing dot + trailing ring that grows over links/buttons, click burst.
+- Welcome voice: "Welcome to Accelerators Billionaires" (browser speech) on the first tap/click of a visit; speaker button bottom-left to mute/replay.

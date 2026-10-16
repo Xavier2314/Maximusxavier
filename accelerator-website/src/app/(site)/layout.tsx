@@ -1,6 +1,8 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ScrollProgress } from "@/components/Motion";
+import { CursorEffects } from "@/components/CursorEffects";
+import { WelcomeVoice } from "@/components/WelcomeVoice";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +12,8 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <Header />
       <main id="main">{children}</main>
       <Footer />
+      <CursorEffects />
+      <WelcomeVoice />
     </>
   );
 }

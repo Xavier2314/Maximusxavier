@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform, type Variants } from "framer-motion";
 import { ArrowUpRight, Check, CircleCheck, Copy, Landmark, Lock } from "lucide-react";
 import { BANK_ACCOUNT, POSITIONS, type PositionId } from "@/lib/fees";
 import { formatNaira } from "@/lib/tickets";
+import { ReceiptCheck, type ReceiptVerdict } from "./ReceiptCheck";
 
 function CopyButton({ value, label, tone = "light" }: { value: string; label: string; tone?: "light" | "dark" }) {
   const [done, setDone] = useState(false);
@@ -41,14 +42,16 @@ function AnimatedAmount({ naira }: { naira: number }) {
 /**
  * Registration page flow: fee by position and the official account are shown first.
  * The link to the official registration form is unlocked only after the visitor has chosen
- * a position and confirmed the transfer, so nobody reaches the form without knowing what to pay.
+ * a position and uploaded receipt(s) that, read on their device, add up to the fee paid into
+ * the official account. This catches honest mistakes; the team still verifies every payment.
  */
 export function RegisterFlow({ formUrl }: { formUrl: string }) {
   const [positionId, setPositionId] = useState<PositionId | null>(null);
-  const [paid, setPaid] = useState(false);
+  const [verdict, setVerdict] = useState<ReceiptVerdict>({ ok: false, totalNaira: 0 });
+  const onVerdict = useCallback((v: ReceiptVerdict) => setVerdict((old) => (old.ok === v.ok && old.totalNaira === v.totalNaira ? old : v)), []);
   const position = POSITIONS.find((p) => p.id === positionId) ?? null;
   const amount = position ? formatNaira(position.feeKobo) ?? "" : null;
-  const ready = Boolean(position && paid);
+  const ready = Boolean(position && verdict.ok);
   const payRef = useRef<HTMLDivElement>(null);
   const firstPick = useRef(true);
 
@@ -148,14 +151,20 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
           <div className="bg-navy p-6 text-white md:p-8">
             <div className="flex items-baseline gap-4">
               <span className="font-display text-4xl italic text-red">03</span>
-              <h2 className="font-display text-3xl">Submit the form</h2>
+              <h2 className="font-display text-3xl">Check your receipt</h2>
             </div>
-            <p className="mt-3 text-sm text-mist">Fill in the official registration form and attach your proof of payment. Your place is confirmed once the team verifies your payment.</p>
+            <p className="mt-3 text-sm text-mist">Upload your transfer receipt. We check that it shows <b className="text-white">{amount ?? "your fee"}</b> paid into the official account before the registration form opens. Your receipt is read on your device and is not uploaded to us.</p>
 
-            <label className={`mt-6 flex items-start gap-3 text-sm ${position ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}>
-              <input type="checkbox" checked={paid} disabled={!position} onChange={(e) => setPaid(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0 accent-[#E31E2D]" />
-              <span>{position ? <>I have transferred <b>{amount}</b> to {BANK_ACCOUNT.bank} {BANK_ACCOUNT.accountNumber} and I have my receipt.</> : "Choose your position first."}</span>
-            </label>
+            <div className="mt-6">
+              {position ? (
+                <ReceiptCheck feeNaira={position.feeKobo / 100} onVerdict={onVerdict} />
+              ) : (
+                <p className="border border-dashed border-white/25 px-4 py-6 text-center text-sm text-mist">Choose your position first.</p>
+              )}
+            </div>
+
+            <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">Then</p>
+            <p className="mt-1 text-sm text-mist">Fill in the official registration form and attach the same receipt(s). Your place is confirmed once the team verifies your payment.</p>
 
             <AnimatePresence mode="wait" initial={false}>
               {ready ? (
@@ -188,7 +197,7 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
               )}
             </AnimatePresence>
             <p className="mt-3 flex items-center gap-2 text-xs text-mist">
-              {ready ? <><CircleCheck size={14} className="text-[#9DB2FF]" aria-hidden="true" /> Opens the official form in a new tab.</> : "The form link unlocks after steps 1 and 2."}
+              {ready ? <><CircleCheck size={14} className="text-[#9DB2FF]" aria-hidden="true" /> Opens the official form in a new tab.</> : "The form link unlocks once your receipt matches your fee."}
             </p>
           </div>
         </div>
