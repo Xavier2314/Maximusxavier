@@ -47,3 +47,10 @@
 ## Register page redesign
 - Fees and the official account now come first; no form button appears above them.
 - Visitors select their position (amount to pay shown in the payment card), tick "I have transferred ₦X", and only then is the "Click here to submit your registration" button unlocked (RegisterFlow.tsx). BankDetails.tsx removed (merged into RegisterFlow).
+
+## Motion pass
+- Motion.tsx: ScrollProgress (red bar at top of every page), Parallax (hero backgrounds), ImageReveal (clip-path wipe), Stagger helpers.
+- Hero images: slow zoom-in on load + parallax on scroll (Home, Events). Founder portrait, Events "moments" and home about image wipe in.
+- Gallery tiles rise in with a staggered clip reveal. Facet graphics float gently. Buttons lift with a light sweep on hover.
+- Register page: fee rows slide in one by one, the selected-row highlight glides between positions, the amount counts up, and the submit button springs in with a pulse once unlocked. On phones the page scrolls to the payment card after the first choice.
+- All motion respects "reduce motion" settings.

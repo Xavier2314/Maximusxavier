@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform, type Variants } from "framer-motion";
 import { ArrowUpRight, Check, CircleCheck, Copy, Landmark, Lock } from "lucide-react";
 import { BANK_ACCOUNT, POSITIONS, type PositionId } from "@/lib/fees";
 import { formatNaira } from "@/lib/tickets";
@@ -20,6 +21,23 @@ function CopyButton({ value, label, tone = "light" }: { value: string; label: st
   );
 }
 
+const EASE = [0.16, 1, 0.3, 1] as const;
+const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.05, delayChildren: 0.15 } } };
+const row: Variants = { hidden: { opacity: 0, x: -24 }, show: { opacity: 1, x: 0, transition: { duration: 0.6, ease: EASE } } };
+
+/** Counts up to the selected amount (in naira). */
+function AnimatedAmount({ naira }: { naira: number }) {
+  const reduce = useReducedMotion();
+  const v = useMotionValue(0);
+  const text = useTransform(v, (x) => `₦${Math.round(x).toLocaleString("en-NG")}`);
+  useEffect(() => {
+    if (reduce) { v.set(naira); return; }
+    const c = animate(v, naira, { duration: 0.9, ease: EASE });
+    return () => c.stop();
+  }, [naira, reduce, v]);
+  return <motion.span>{text}</motion.span>;
+}
+
 /**
  * Registration page flow: fee by position and the official account are shown first.
  * The link to the official registration form is unlocked only after the visitor has chosen
@@ -31,11 +49,22 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
   const position = POSITIONS.find((p) => p.id === positionId) ?? null;
   const amount = position ? formatNaira(position.feeKobo) ?? "" : null;
   const ready = Boolean(position && paid);
+  const payRef = useRef<HTMLDivElement>(null);
+  const firstPick = useRef(true);
+
+  const choose = (id: PositionId) => {
+    setPositionId(id);
+    // On phones the payment card sits below the list: bring it into view after the first choice.
+    if (firstPick.current && window.matchMedia("(max-width: 1023px)").matches) {
+      firstPick.current = false;
+      setTimeout(() => payRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
+    }
+  };
 
   return (
     <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
       {/* Step 1: fees */}
-      <div className="lg:col-span-7">
+      <motion.div className="lg:col-span-7" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: EASE }}>
         <div className="flex items-baseline gap-4">
           <span className="font-display text-4xl italic text-red">01</span>
           <div>
@@ -49,31 +78,32 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
           <div className="grid grid-cols-[1fr_auto] border-b-2 border-navy px-3 pb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate">
             <span>Membership position</span><span>Fee</span>
           </div>
-          <ol>
+          <motion.ol variants={list} initial="hidden" animate="show">
             {POSITIONS.map((p, i) => {
               const on = p.id === positionId;
               return (
-                <li key={p.id}>
-                  <label className={`grid cursor-pointer grid-cols-[1fr_auto] items-center gap-4 border-b px-3 py-3.5 transition-colors ${on ? "border-navy bg-navy text-white" : "border-sand text-navy hover:bg-cream"}`}>
+                <motion.li key={p.id} variants={row} className="relative">
+                  {on && <motion.span layoutId="position-highlight" className="absolute inset-0 bg-navy" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
+                  <label className={`relative grid cursor-pointer grid-cols-[1fr_auto] items-center gap-4 border-b px-3 py-3.5 transition-colors duration-300 ${on ? "border-navy text-white" : "border-sand text-navy hover:bg-cream"}`}>
                     <span className="flex items-center gap-4">
-                      <input type="radio" name="position" value={p.id} checked={on} onChange={() => setPositionId(p.id)} className="sr-only" />
+                      <input type="radio" name="position" value={p.id} checked={on} onChange={() => choose(p.id)} className="sr-only" />
                       <span aria-hidden="true" className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${on ? "border-white" : "border-navy/40"}`}>
-                        {on && <span className="h-2 w-2 rounded-full bg-white" />}
+                        {on && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="h-2 w-2 rounded-full bg-white" />}
                       </span>
                       <span className={`w-6 font-display text-sm italic ${on ? "text-[#9DB2FF]" : "text-red"}`}>{String(i + 1).padStart(2, "0")}</span>
                       <span className="font-display text-lg md:text-xl">{p.name}</span>
                     </span>
                     <span className="font-display text-lg tabular-nums md:text-xl">{formatNaira(p.feeKobo)}</span>
                   </label>
-                </li>
+                </motion.li>
               );
             })}
-          </ol>
+          </motion.ol>
         </fieldset>
-      </div>
+      </motion.div>
 
       {/* Steps 2 and 3: pay, then submit */}
-      <div className="lg:col-span-5">
+      <motion.div ref={payRef} className="scroll-mt-24 lg:col-span-5" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.15, ease: EASE }}>
         <div className="space-y-6 lg:sticky lg:top-28">
           <div className="flex items-baseline gap-4">
             <span className="font-display text-4xl italic text-red">02</span>
@@ -89,12 +119,16 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
               <p className="text-xs font-semibold uppercase tracking-[0.2em]">Official payment account</p>
             </div>
 
-            <div className={`flex flex-wrap items-center justify-between gap-3 px-5 py-5 ${position ? "bg-red text-white" : "bg-cream text-navy"}`} aria-live="polite">
+            <div className={`flex flex-wrap items-center justify-between gap-3 px-5 py-5 transition-colors duration-500 ${position ? "bg-red text-white" : "bg-cream text-navy"}`} aria-live="polite">
               <div>
                 <p className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${position ? "text-white/80" : "text-slate"}`}>Amount to pay</p>
-                <p className="mt-1 text-sm">{position ? position.name : "Choose your position to see your amount"}</p>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.p key={position?.id ?? "none"} className="mt-1 text-sm" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}>
+                    {position ? position.name : "Choose your position to see your amount"}
+                  </motion.p>
+                </AnimatePresence>
               </div>
-              <p className="font-display text-4xl tabular-nums">{amount ?? "₦ —"}</p>
+              <p className="font-display text-4xl tabular-nums">{position ? <AnimatedAmount naira={position.feeKobo / 100} /> : "₦ —"}</p>
             </div>
 
             <dl className="divide-y divide-sand">
@@ -123,21 +157,42 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
               <span>{position ? <>I have transferred <b>{amount}</b> to {BANK_ACCOUNT.bank} {BANK_ACCOUNT.accountNumber} and I have my receipt.</> : "Choose your position first."}</span>
             </label>
 
-            {ready ? (
-              <a href={formUrl} target="_blank" rel="noopener noreferrer" className="btn btn-red mt-6 w-full whitespace-normal text-center">
-                Click here to submit your registration <ArrowUpRight size={16} aria-hidden="true" />
-              </a>
-            ) : (
-              <button type="button" disabled className="btn mt-6 w-full cursor-not-allowed whitespace-normal border border-white/20 bg-white/5 text-center text-white/60">
-                <Lock size={16} aria-hidden="true" /> Click here to submit your registration
-              </button>
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {ready ? (
+                <motion.a
+                  key="open"
+                  href={formUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-red glow-pulse mt-6 w-full whitespace-normal text-center"
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 22 }}
+                >
+                  Click here to submit your registration <ArrowUpRight size={16} aria-hidden="true" />
+                </motion.a>
+              ) : (
+                <motion.button
+                  key="locked"
+                  type="button"
+                  disabled
+                  className="btn mt-6 w-full cursor-not-allowed whitespace-normal border border-white/20 bg-white/5 text-center text-white/60"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Lock size={16} aria-hidden="true" /> Click here to submit your registration
+                </motion.button>
+              )}
+            </AnimatePresence>
             <p className="mt-3 flex items-center gap-2 text-xs text-mist">
               {ready ? <><CircleCheck size={14} className="text-[#9DB2FF]" aria-hidden="true" /> Opens the official form in a new tab.</> : "The form link unlocks after steps 1 and 2."}
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

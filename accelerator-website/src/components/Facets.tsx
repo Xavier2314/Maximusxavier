@@ -8,7 +8,7 @@ export function Facets({ side = "left", className = "", tone = "dark" }: Props) 
   const flip = side === "right" ? "scale(-1,1) translate(-240,0)" : undefined;
   const pale = tone === "dark" ? "#F4F1EA" : "#FFFFFF";
   return (
-    <svg viewBox="0 0 240 520" className={className} aria-hidden="true" focusable="false">
+    <svg viewBox="0 0 240 520" className={`${className} ${side === "right" ? "facet-float-slow" : "facet-float"}`} aria-hidden="true" focusable="false">
       <g transform={flip}>
         <polygon points="0,40 70,110 0,180" fill="#E11E2D" />
         <polygon points="0,180 70,110 120,160 50,230" fill="#1E4BFF" />

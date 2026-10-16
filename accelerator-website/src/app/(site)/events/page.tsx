@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Award, CalendarDays, Clapperboard, GraduationCap, MapPin, Sparkles, Trophy, Users, UserRound } from "lucide-react";
 import { Facets } from "@/components/Facets";
+import { ImageReveal, Parallax } from "@/components/Motion";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
 import { Countdown } from "@/components/Countdown";
@@ -67,7 +68,9 @@ export default async function EventsPage() {
 
       {/* HERO */}
       <section className="grain relative isolate overflow-hidden bg-navy text-white">
-        <Image src="/images/community-white-attire.jpg" alt="Accelerator Community members in white at a past community event" fill priority sizes="100vw" className="-z-20 object-cover opacity-45 mix-blend-luminosity" />
+        <Parallax className="absolute inset-0 -z-20 overflow-hidden mix-blend-luminosity" distance={120}>
+          <Image src="/images/community-white-attire.jpg" alt="Accelerator Community members in white at a past community event" fill priority sizes="100vw" className="ken-burns object-cover opacity-45" />
+        </Parallax>
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,rgba(7,21,48,.97)_0%,rgba(11,30,63,.85)_45%,rgba(11,30,63,.35)_100%)]" />
         <Facets side="right" className="pointer-events-none absolute -right-6 top-24 hidden h-[520px] w-auto md:block" />
         <Facets side="left" className="pointer-events-none absolute -left-10 -bottom-24 hidden h-[360px] w-auto opacity-80 md:block" />
@@ -142,11 +145,13 @@ export default async function EventsPage() {
               { src: "/images/speaker-addressing-audience.jpg", alt: "A speaker in a cream suit addresses a seated audience taking notes", cap: "Training", span: "md:col-span-7 md:row-span-2", h: "h-72 md:h-full" },
               { src: "/images/recognition-medal-winners.jpg", alt: "Award winners with medals on stage with hosts", cap: "Recognition", span: "md:col-span-5", h: "h-64" },
               { src: "/images/changemakers-session.jpg", alt: "Members in Changemaker T-shirts cheering during a session", cap: "Community", span: "md:col-span-5", h: "h-64" },
-            ].map((ph) => (
-              <figure key={ph.src} className={`relative overflow-hidden bg-navy ${ph.span} ${ph.h}`}>
-                <Image src={ph.src} alt={ph.alt} fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" />
+            ].map((ph, i) => (
+              <ImageReveal key={ph.src} delay={i * 0.12} className={`relative overflow-hidden bg-navy ${ph.span} ${ph.h}`}>
+              <figure className="group relative h-full w-full">
+                <Image src={ph.src} alt={ph.alt} fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-[1.05]" />
                 <figcaption className="absolute bottom-0 left-0 bg-navy px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white">{ph.cap}</figcaption>
               </figure>
+              </ImageReveal>
             ))}
           </div>
           <p className="mt-4 text-xs text-slate">Moments from past Accelerator gatherings.</p>

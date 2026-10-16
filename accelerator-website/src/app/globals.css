@@ -46,7 +46,13 @@
   .rule-red { display: block; width: 56px; height: 3px; background: var(--color-red); }
 
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px; font-size: 13px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; transition: background-color .25s, color .25s, border-color .25s, transform .25s var(--ease-out-expo); white-space: nowrap; }
+  .btn { position: relative; overflow: hidden; isolation: isolate; }
+  .btn::after { content: ""; position: absolute; inset: 0 auto 0 -60%; width: 45%; z-index: -1; background: linear-gradient(100deg, transparent, rgba(255,255,255,.28), transparent); transform: skewX(-20deg); transition: left .7s var(--ease-out-expo); pointer-events: none; }
+  .btn:hover::after { left: 120%; }
+  .btn:hover { transform: translateY(-2px); }
   .btn:active { transform: translateY(1px); }
+  .btn:disabled::after { display: none; }
+  .btn:disabled:hover { transform: none; }
   .btn-red { background: var(--color-red); color: #fff; }
   .btn-red:hover { background: #c4101e; }
   .btn-royal { background: var(--color-royal); color: #fff; }
@@ -75,3 +81,15 @@
 
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .animate-marquee { animation: marquee 38s linear infinite; }
+
+/* ---- motion ---------------------------------------------------------------------------- */
+@keyframes facet-float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-14px) rotate(1.2deg); } }
+.facet-float { animation: facet-float 9s ease-in-out infinite; }
+.facet-float-slow { animation: facet-float 13s ease-in-out infinite reverse; }
+
+@keyframes ken-burns { from { transform: scale(1.12); } to { transform: scale(1); } }
+.ken-burns { animation: ken-burns 2.8s cubic-bezier(.16,1,.3,1) both; }
+
+@keyframes glow-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(225,30,45,.55); } 60% { box-shadow: 0 0 0 14px rgba(225,30,45,0); } }
+.glow-pulse { animation: glow-pulse 2.2s ease-out infinite; }
+

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Award, GraduationCap, Users, Clapperboard } from "lucide-react";
 import { Facets } from "@/components/Facets";
+import { ImageReveal, Parallax } from "@/components/Motion";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
 import { Gallery } from "@/components/Gallery";
@@ -31,14 +32,16 @@ export default async function HomePage() {
     <>
       {/* HERO */}
       <section className="grain relative isolate flex min-h-[100svh] items-end overflow-hidden bg-navy text-white">
-        <Image
-          src="/images/community-white-attire.jpg"
-          alt="Accelerator Community members dressed in white at a community gathering"
-          fill
-          priority
-          sizes="100vw"
-          className="-z-20 object-cover object-[50%_60%] opacity-55 mix-blend-luminosity"
-        />
+        <Parallax className="absolute inset-0 -z-20 overflow-hidden mix-blend-luminosity" distance={140}>
+          <Image
+            src="/images/community-white-attire.jpg"
+            alt="Accelerator Community members dressed in white at a community gathering"
+            fill
+            priority
+            sizes="100vw"
+            className="ken-burns object-cover object-[50%_60%] opacity-55"
+          />
+        </Parallax>
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,30,63,.55)_0%,rgba(11,30,63,.35)_35%,rgba(7,21,48,.96)_100%)]" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_15%_85%,rgba(30,75,255,.35),transparent)]" />
         <Facets side="left" className="pointer-events-none absolute -left-28 top-24 hidden h-[380px] w-auto xl:block" />
@@ -96,9 +99,9 @@ export default async function HomePage() {
           </div>
           <div className="relative md:col-span-6">
             <Reveal delay={0.1}>
-              <div className="relative aspect-[4/3] w-full overflow-hidden">
+              <ImageReveal className="relative aspect-[4/3] w-full overflow-hidden">
                 <Image src="/images/community-gathering-steps.jpg" alt="A large group of Accelerator Community members together at the foot of a staircase" fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" />
-              </div>
+              </ImageReveal>
               <div className="absolute -bottom-10 -left-4 w-[46%] border-[6px] border-cream md:-left-12">
                 <div className="relative aspect-[4/3]">
                   <Image src="/images/community-bus-park.jpg" alt="Smiling Accelerator Community members standing together outdoors" fill sizes="25vw" className="object-cover" />
@@ -148,7 +151,9 @@ export default async function HomePage() {
       <section aria-labelledby="featured-event" className="bg-navy-900 text-white">
         <div className="grid lg:grid-cols-2">
           <div className="relative min-h-[380px] lg:min-h-[640px]">
-            <Image src="/images/community-bus-park.jpg" alt="Accelerator Community members in colourful outfits at a community outing" fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
+            <Parallax className="absolute inset-0 overflow-hidden" distance={-60}>
+              <Image src="/images/community-bus-park.jpg" alt="Accelerator Community members in colourful outfits at a community outing" fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
+            </Parallax>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent to-navy-900/70" />
             <Facets side="left" className="absolute -bottom-8 -left-4 h-56 w-auto" />
           </div>

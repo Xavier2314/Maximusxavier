@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, Expand } from "lucide-react";
 
 type Photo = { src: string; width: number; height: number; alt: string; caption: string };
@@ -9,6 +10,7 @@ type Photo = { src: string; width: number; height: number; alt: string; caption:
 export function Gallery({ photos }: { photos: Photo[] }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [index, setIndex] = useState<number | null>(null);
+  const reduce = useReducedMotion();
 
   const open = (i: number) => { setIndex(i); ref.current?.showModal(); };
   const close = () => { ref.current?.close(); setIndex(null); };
@@ -30,9 +32,13 @@ export function Gallery({ photos }: { photos: Photo[] }) {
     <>
       <div className="grid auto-rows-[240px] gap-3 sm:grid-cols-2 md:grid-cols-12 md:auto-rows-[280px] md:grid-flow-dense">
         {photos.map((p, i) => (
-          <button
+          <motion.button
             key={p.src}
             type="button"
+            initial={reduce ? false : { opacity: 0, y: 40, clipPath: "inset(12% 6% 0% 6%)" }}
+            whileInView={{ opacity: 1, y: 0, clipPath: "inset(0% 0% 0% 0%)" }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.9, delay: (i % 3) * 0.1, ease: [0.16, 1, 0.3, 1] }}
             onClick={() => open(i)}
             className={`group relative overflow-hidden bg-navy text-left ${layout[i % layout.length]}`}
             aria-label={`Open photo: ${p.caption}`}
@@ -43,7 +49,7 @@ export function Gallery({ photos }: { photos: Photo[] }) {
               <span className="text-xs font-semibold uppercase tracking-[0.22em]">{p.caption}</span>
               <Expand size={18} aria-hidden="true" className="opacity-0 transition-opacity group-hover:opacity-100" />
             </span>
-          </button>
+          </motion.button>
         ))}
       </div>
 
