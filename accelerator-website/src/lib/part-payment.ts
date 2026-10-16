@@ -24,6 +24,8 @@ export type PartPayment = {
 export const BALANCE_LAST_DATE = "2026-12-04";
 
 export const naira = (n: number) => `₦${Math.round(n).toLocaleString("en-NG")}`;
+/** The PDF's built-in Helvetica has no ₦ glyph, so amounts in the letter use "NGN". */
+const ngn = (n: number) => `NGN ${Math.round(n).toLocaleString("en-NG")}`;
 export const longDate = (iso: string) =>
   new Date(iso.length === 10 ? `${iso}T12:00:00` : iso).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
@@ -80,8 +82,8 @@ export async function buildPartPaymentLetter(p: PartPayment): Promise<Blob> {
   // Summary table
   const rows: [string, string][] = [
     ["Full name", p.fullName], ["Phone / WhatsApp", p.phone], ["Email", p.email || "-"], ["Membership position", p.position],
-    ["Registration fee", naira(p.feeNaira)], ["Amount paid", `${naira(p.paidNaira)}  (${p.receipts} receipt${p.receipts === 1 ? "" : "s"})`],
-    ["Balance to pay", naira(p.balanceNaira)], ["Balance due on or before", longDate(p.balanceDate)],
+    ["Registration fee", ngn(p.feeNaira)], ["Amount paid", `${ngn(p.paidNaira)}  (${p.receipts} receipt${p.receipts === 1 ? "" : "s"})`],
+    ["Balance to pay", ngn(p.balanceNaira)], ["Balance due on or before", longDate(p.balanceDate)],
   ];
   const top = y;
   fill(CREAM); doc.rect(M, top, W - 2 * M, rows.length * 9 + 6, "F");
