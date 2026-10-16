@@ -22,9 +22,45 @@ export const site = {
     registeredAddress: null as string | null,
   },
 
-  mission: null as string | null,
-  vision: null as string | null,
+  // Source: "Vision & Mission Statement", Official Charter AB/VM/001, Office of the Founder & CEO, October 2026.
+  // `mission` and `vision` are the charter's own short "website versions".
+  mission: "We equip young people with mastery of tech skills and monetisation, connect them to a network of proven leaders, and build the infrastructure for meaningful, purpose-driven work." as string | null,
+  vision: "To raise generations of skilled, purposeful leaders — from Africa to the world — who master technology and enterprise to solve real human problems, for the glory of God." as string | null,
   story: null as string | null,
+  charter: {
+    pdf: "/downloads/Accelerators_Billionaires_Vision_Mission_Charter.pdf",
+    reference: "AB/VM/001",
+    edition: "October 2026",
+    fullVision:
+      "To become the world’s foremost youth-development ecosystem — raising generations of skilled, resourceful and purposeful leaders, from Africa to every nation, who master technology and enterprise to solve real human problems with excellence, and whose work builds a legacy that blesses generation after generation, for the revelation of the glory and wisdom of God.",
+    fullMission:
+      "To equip young people across Africa and beyond with mastery of technology skills and the art of monetisation; to connect them into a global network of resourceful leaders and business builders; and to build the infrastructure that enables them to do meaningful work, scale enterprises, and still make time to live out their God-given passions.",
+    horizons: [
+      { n: "I", term: "Short-term vision", title: "The Snowball", stat: "1,000,000", statLabel: "young Africans", text: "Grow into a gigantic technology and entrepreneurship development engine that impacts no fewer than one million young people across Africa — equipping them to pick up tech skills, become masters of those skills, and become masters of monetisation." },
+      { n: "II", term: "Mid- to long-term vision", title: "The Global Ecosystem", text: "Become the largest youth-impacting ecosystem and company in the world — building and teaching excellence and mastery of skills, applying technology across every field to solve real human problems at the highest level, and forming a strong, interconnected network of valuable, resourceful leaders who have built and scaled network-marketing and serial businesses across the world." },
+      { n: "III", term: "Long-term vision", title: "The Infrastructure", text: "Spearhead infrastructure for technology development — starting with Africa and expanding across the world. Help people grow, find purpose in their work and do meaningful work; and raise them to be so resourceful that they scale businesses while making time to live out their righteous, God-given passions." },
+      { n: "IV", term: "Transgenerational vision", title: "The Legacy", text: "Ensure that the impact created and the infrastructure built in one generation carries into the next — an enduring blessing passed from generation to generation, for the revelation of the glory of God and the wisdom of God." },
+    ] as { n: string; term: string; title: string; stat?: string; statLabel?: string; text: string }[],
+    storyIntro: "Talent is spread evenly across Africa. Opportunity is not. Accelerators Billionaires exists to close that gap — and then to build something far bigger than the gap itself.",
+    story: [
+      { title: "A conviction", text: "Across the continent, millions of young people are bright, hungry and capable. Many have never been shown how to turn a skill into a livelihood, or a livelihood into a legacy. Our founder, Chukwuemeka (Peter) Muoneke, saw this first-hand while leading teams that deliver automation, marketing, design and software for brands — and he set out to change it." },
+      { title: "It starts as a snowball", text: "Every movement begins small. Ours begins like a snowball: deliberate, gathering momentum with every turn. Our first horizon is clear and measurable — one million young Africans equipped with technology skills, mastering them, and mastering the art of monetisation. We do not stop at teaching people to code, design, automate or market. We teach them to earn, to build and to lead." },
+      { title: "Then it becomes an ecosystem", text: "As the momentum grows, so does the ambition. We are building toward the largest youth-impacting ecosystem in the world: a place where excellence is taught as a discipline, mastery is the standard, and technology is applied across every field to solve real human problems at the highest level. Around that work we are forming a network of resourceful leaders — people who have built and scaled network-marketing organisations and serial businesses across the world — so that no young person has to grow alone." },
+      { title: "Then it becomes infrastructure", text: "Programmes change lives; infrastructure changes nations. Our long-term horizon is to spearhead the infrastructure for technology development, beginning in Africa and extending to the world. Infrastructure that helps people find purpose in their work and do work that matters. We want people to become so resourceful that they can scale their businesses and still have time to live out their righteous, God-given passions — because success that consumes the whole person is not the success we teach." },
+      { title: "And it outlives us", text: "What one generation builds should lift the next. The skills we teach, the leaders we raise and the infrastructure we lay are designed to compound — to bless children and their children after them." },
+      { title: "Why we do it", text: "Underneath every horizon is a single purpose. This work is for the revelation of the glory of God and the wisdom of God. We believe excellence honours Him, that resourcefulness is stewardship, and that a life of purposeful work is one of the clearest ways His wisdom is seen in the world." },
+    ],
+    storyClose: "We are not building for a season. We are building for generations.",
+    commitments: [
+      { title: "Excellence", text: "We teach and deliver at the highest standard, in every field we touch." },
+      { title: "Mastery", text: "Not exposure to skills, but command of them — deep, practised and proven." },
+      { title: "Monetisation", text: "Skill must become income. We teach people to earn, build and scale." },
+      { title: "Network", text: "A strong, interconnected community of resourceful leaders and builders." },
+      { title: "Purpose", text: "Meaningful work, with time left to live out righteous, God-given passions." },
+      { title: "Legacy", text: "What we build in one generation is designed to bless the next." },
+    ],
+    closing: "All of this is for the revelation of the glory and the wisdom of God — an eternal work, and a blessing from one generation to another.",
+  },
 
   // Pillars as they appear on the official brand materials (roll-up banner).
   pillars: [
@@ -47,7 +83,8 @@ export const site = {
       "He holds a Bachelor of Science degree in Agricultural Extension from Obafemi Awolowo University, where he learned the fundamentals of communication ethics, presentations and Zoho CRM.",
       "Since January 2020 he has also served as Director and Team Leader at Faith Heroic Generation. His work draws on tools such as HubSpot, Salesforce and Zoho CRM.",
     ] as string[] | null,
-    vision: null as string | null,
+    // Source: Vision & Mission charter AB/VM/001, "Meet the founder".
+    vision: "The vision set out in the Accelerators Billionaires charter is his: a conviction that Africa’s young people can become masters of skill, technology and enterprise — and that what they build in this generation can bless the next." as string | null,
     philosophy:
       "I am passionate about learning new skills, engaging with entrepreneurs, and delivering high-quality results. My goal is to build long-term relationships with clients who can trust us to take some burden off their shoulders by outsourcing parts of their process tasks to us." as string | null,
     message: null as string | null,

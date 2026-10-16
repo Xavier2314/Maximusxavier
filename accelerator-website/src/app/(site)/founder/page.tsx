@@ -1,7 +1,8 @@
 import { ImageReveal } from "@/components/Motion";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ArrowUpRight, Quote } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ArrowUpRight, Download, Quote } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
 import { Logo } from "@/components/Logo";
@@ -78,7 +79,11 @@ export default function FounderPage() {
                 </div>
               )}
             </Reveal>
-            <Block eyebrow="The vision" title="The vision behind Accelerator" text={f.vision} pending="Founder's vision for Accelerator" />
+            <Block eyebrow="The vision" title="The vision-bearer" text={f.vision} pending="Founder's vision for Accelerator" />
+            <Reveal className="-mt-8 flex flex-wrap gap-3">
+              <Link href="/about#vision" className="btn btn-navy">Our vision &amp; mission <ArrowRight size={16} aria-hidden="true" /></Link>
+              <a href={site.charter.pdf} download className="btn btn-ghost-dark"><Download size={16} aria-hidden="true" /> Download the charter</a>
+            </Reveal>
             <Block eyebrow="In his words" title="What drives him" text={f.philosophy ? `\u201C${f.philosophy}\u201D` : null} pending="Leadership philosophy" />
             <Block eyebrow="A message" title="A message from the founder" text={f.message} pending="Founder's message" />
           </div>
