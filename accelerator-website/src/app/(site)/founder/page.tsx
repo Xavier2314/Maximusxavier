@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Quote } from "lucide-react";
+import { ArrowUpRight, Quote } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
 import { Logo } from "@/components/Logo";
@@ -8,8 +8,8 @@ import { Facets } from "@/components/Facets";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Founder",
-  description: "Meet the founder of Accelerator Community and the vision behind it.",
+  title: "Chukwuemeka (Peter) Muoneke, Founder",
+  description: "Meet Chukwuemeka (Peter) Muoneke, founder and CEO of the Accelerator Billionaires Team and founder of Accelerator Community.",
   alternates: { canonical: "/founder" },
 };
 
@@ -35,6 +35,14 @@ export default function FounderPage() {
               <p className="eyebrow">Meet the founder</p>
               <h1 className="display-xl mt-6">{f.name ?? <>Founder&rsquo;s name <span className="block text-2xl font-sans not-italic"><Pending label="To be supplied" className="mt-4 text-mist" /></span></>}</h1>
               <p className="mt-6 text-sm font-semibold uppercase tracking-[0.24em] text-mist">{f.title}, Accelerator Community</p>
+              {f.shortIntro && <p className="lead mt-8 max-w-xl text-mist">{f.shortIntro}</p>}
+              {f.links.length > 0 && (
+                <ul className="mt-8 flex flex-wrap gap-3">
+                  {f.links.map((l) => (
+                    <li key={l.name}><a href={l.href} target="_blank" rel="noopener noreferrer" className="btn btn-ghost-light min-h-11 px-5">{l.name} <ArrowUpRight size={15} aria-hidden="true" /></a></li>
+                  ))}
+                </ul>
+              )}
             </Reveal>
           </div>
           <div className="md:col-span-5 md:col-start-8">
@@ -69,13 +77,13 @@ export default function FounderPage() {
                 </div>
               )}
             </Reveal>
-            <Block eyebrow="The vision" title="The vision behind Accelerator" text={f.vision} pending="Founder's vision statement" />
-            <Block eyebrow="Leadership" title="Leadership philosophy" text={f.philosophy} pending="Leadership philosophy" />
+            <Block eyebrow="The vision" title="The vision behind Accelerator" text={f.vision} pending="Founder's vision for Accelerator" />
+            <Block eyebrow="In his words" title="What drives him" text={f.philosophy ? `\u201C${f.philosophy}\u201D` : null} pending="Leadership philosophy" />
             <Block eyebrow="A message" title="A message from the founder" text={f.message} pending="Founder's message" />
           </div>
           <aside className="lg:col-span-4 lg:col-start-9">
             <div className="lg:sticky lg:top-28">
-              <p className="eyebrow">Achievements</p>
+              <p className="eyebrow">Roles, education &amp; certifications</p>
               {f.achievements?.length ? (
                 <ul className="mt-6 space-y-4">{f.achievements.map((a) => <li key={a} className="border-l-2 border-red pl-4 text-ink/80">{a}</li>)}</ul>
               ) : (

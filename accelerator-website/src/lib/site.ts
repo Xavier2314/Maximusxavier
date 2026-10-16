@@ -34,17 +34,34 @@ export const site = {
     { title: "Impact", text: "We measure success by what our members build and give back." },
   ],
 
+  // Source: the founder's LinkedIn profile, supplied by Accelerator Community (October 2026).
   founder: {
-    name: null as string | null,
-    title: "Founder",
-    photo: null as string | null, // e.g. "/images/founder.jpg"
-    shortIntro: null as string | null,
-    biography: null as string[] | null,
+    name: "Chukwuemeka (Peter) Muoneke" as string | null,
+    title: "Founder & CEO",
+    photo: null as string | null, // awaiting a high-resolution portrait, e.g. "/images/founder.jpg"
+    shortIntro:
+      "Chukwuemeka (Peter) Muoneke is the founder and CEO of the Accelerator Billionaires Team, where he leads a team of freelancers providing business automation, email marketing, copywriting, website design, software development and marketing for brands." as string | null,
+    biography: [
+      "Chukwuemeka (Peter) Muoneke is the founder and CEO of the Accelerator Billionaires Team. He leads a team of 100 freelancers who provide digital marketing and virtual assistant services to clients across various industries, specialising in business automation, email marketing, copywriting, website design, software development and marketing for brands.",
+      "He holds a Bachelor of Science degree in Agricultural Extension from Obafemi Awolowo University, where he learned the fundamentals of communication ethics, presentations and Zoho CRM.",
+      "Since January 2020 he has also served as Director and Team Leader at Faith Heroic Generation. His work draws on tools such as HubSpot, Salesforce and Zoho CRM.",
+    ] as string[] | null,
     vision: null as string | null,
-    philosophy: null as string | null,
+    philosophy:
+      "I am passionate about learning new skills, engaging with entrepreneurs, and delivering high-quality results. My goal is to build long-term relationships with clients who can trust us to take some burden off their shoulders by outsourcing parts of their process tasks to us." as string | null,
     message: null as string | null,
-    quote: null as string | null,
-    achievements: null as string[] | null,
+    quote: "Set your goals." as string | null,
+    achievements: [
+      "Founder & CEO, Accelerator Billionaires Team",
+      "Director and Team Leader, Faith Heroic Generation (since January 2020)",
+      "B.Sc. Agricultural and Extension Education, Obafemi Awolowo University",
+      "LinkedIn certification: Marketing Tools: Automation (March 2023)",
+      "LinkedIn certification: Influence versus Manipulation: The Ethics of Persuasion (February 2022)",
+    ] as string[] | null,
+    links: [
+      { name: "LinkedIn", href: "https://www.linkedin.com/in/chukwuemeka-muoneke/" },
+      { name: "TikTok", href: "https://www.tiktok.com/@chukwuemekamuonek" },
+    ],
   },
 
   // Only verified figures. Leave value null until confirmed.
