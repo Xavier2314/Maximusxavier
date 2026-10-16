@@ -45,7 +45,8 @@ async function prepare(file: File): Promise<Blob> {
   }
 }
 
-export type ReceiptVerdict = { ok: boolean; totalNaira: number };
+/** `partial`: every receipt is valid and paid into the official account, but together they are below the fee. */
+export type ReceiptVerdict = { ok: boolean; partial: boolean; totalNaira: number; receipts: number };
 
 /**
  * Reads uploaded transfer receipts and checks that, together, they show at least the fee
@@ -64,7 +65,8 @@ export function ReceiptCheck({ feeNaira, onVerdict }: { feeNaira: number; onVerd
   const ok = !reading && invalid.length === 0 && valid.length > 0 && total >= feeNaira;
   const pct = Math.min(100, feeNaira ? (total / feeNaira) * 100 : 0);
 
-  useEffect(() => { onVerdict({ ok, totalNaira: total }); }, [ok, total, onVerdict]);
+  const partial = !reading && invalid.length === 0 && valid.length > 0 && total > 0 && total < feeNaira;
+  useEffect(() => { onVerdict({ ok, partial, totalNaira: total, receipts: valid.length }); }, [ok, partial, total, valid.length, onVerdict]);
   useEffect(() => () => items.forEach((i) => URL.revokeObjectURL(i.preview)), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const update = (id: string, patch: Partial<Item>) => setItems((list) => list.map((i) => (i.id === id ? { ...i, ...patch } : i)));
@@ -153,7 +155,7 @@ export function ReceiptCheck({ feeNaira, onVerdict }: { feeNaira: number; onVerd
       {!reading && valid.length > 0 && total < feeNaira && (
         <p className="mt-3 flex items-start gap-2 border border-[#FF6B76]/60 bg-[#E11E2D]/15 p-3 text-sm" role="alert">
           <TriangleAlert size={18} className="mt-0.5 shrink-0 text-[#FF6B76]" aria-hidden="true" />
-          <span>Your receipts add up to <b>{naira(total)}</b>, which is <b>{naira(feeNaira - total)} short</b> of the {naira(feeNaira)} fee. Transfer the remaining <b>{naira(feeNaira - total)}</b> to the official account and upload that receipt too.</span>
+          <span>Your receipts add up to <b>{naira(total)}</b>, which is <b>{naira(feeNaira - total)} short</b> of the {naira(feeNaira)} fee. Transfer the remaining <b>{naira(feeNaira - total)}</b> and upload that receipt too, or continue with a <b>part payment</b> below by signing a balance commitment letter.</span>
         </p>
       )}
       {!reading && invalid.length > 0 && (

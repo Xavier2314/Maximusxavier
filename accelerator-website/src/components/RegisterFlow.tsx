@@ -5,6 +5,8 @@ import { ArrowUpRight, Check, CircleCheck, Copy, Landmark, Lock } from "lucide-r
 import { BANK_ACCOUNT, POSITIONS, type PositionId } from "@/lib/fees";
 import { formatNaira } from "@/lib/tickets";
 import { ReceiptCheck, type ReceiptVerdict } from "./ReceiptCheck";
+import { PartPaymentLetter } from "./PartPaymentLetter";
+import type { PartPayment } from "@/lib/part-payment";
 
 function CopyButton({ value, label, tone = "light" }: { value: string; label: string; tone?: "light" | "dark" }) {
   const [done, setDone] = useState(false);
@@ -47,11 +49,15 @@ function AnimatedAmount({ naira }: { naira: number }) {
  */
 export function RegisterFlow({ formUrl }: { formUrl: string }) {
   const [positionId, setPositionId] = useState<PositionId | null>(null);
-  const [verdict, setVerdict] = useState<ReceiptVerdict>({ ok: false, totalNaira: 0 });
-  const onVerdict = useCallback((v: ReceiptVerdict) => setVerdict((old) => (old.ok === v.ok && old.totalNaira === v.totalNaira ? old : v)), []);
+  const [verdict, setVerdict] = useState<ReceiptVerdict>({ ok: false, partial: false, totalNaira: 0, receipts: 0 });
+  const onVerdict = useCallback((v: ReceiptVerdict) => setVerdict((old) => (old.ok === v.ok && old.partial === v.partial && old.totalNaira === v.totalNaira && old.receipts === v.receipts ? old : v)), []);
+  const [signed, setSigned] = useState<PartPayment | null>(null);
+  const onSigned = useCallback((p: PartPayment | null) => setSigned(p), []);
   const position = POSITIONS.find((p) => p.id === positionId) ?? null;
   const amount = position ? formatNaira(position.feeKobo) ?? "" : null;
-  const ready = Boolean(position && verdict.ok);
+  const feeNaira = position ? position.feeKobo / 100 : 0;
+  const partSigned = Boolean(position && verdict.partial && signed && signed.position === position.name && signed.paidNaira === verdict.totalNaira);
+  const ready = Boolean(position && (verdict.ok || partSigned));
   const payRef = useRef<HTMLDivElement>(null);
   const firstPick = useRef(true);
 
@@ -157,14 +163,19 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
 
             <div className="mt-6">
               {position ? (
-                <ReceiptCheck feeNaira={position.feeKobo / 100} onVerdict={onVerdict} />
+                <>
+                  <ReceiptCheck feeNaira={feeNaira} onVerdict={onVerdict} />
+                  {verdict.partial && (
+                    <PartPaymentLetter key={position.id} position={position.name} feeNaira={feeNaira} paidNaira={verdict.totalNaira} receipts={verdict.receipts} onSigned={onSigned} />
+                  )}
+                </>
               ) : (
                 <p className="border border-dashed border-white/25 px-4 py-6 text-center text-sm text-mist">Choose your position first.</p>
               )}
             </div>
 
             <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">Then</p>
-            <p className="mt-1 text-sm text-mist">Fill in the official registration form and attach the same receipt(s). Your place is confirmed once the team verifies your payment.</p>
+            <p className="mt-1 text-sm text-mist">Fill in the official registration form and attach the same receipt(s){partSigned ? " and your signed part-payment letter" : ""}. Your place is confirmed once the team verifies your payment.</p>
 
             <AnimatePresence mode="wait" initial={false}>
               {ready ? (
@@ -197,7 +208,7 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
               )}
             </AnimatePresence>
             <p className="mt-3 flex items-center gap-2 text-xs text-mist">
-              {ready ? <><CircleCheck size={14} className="text-[#9DB2FF]" aria-hidden="true" /> Opens the official form in a new tab.</> : "The form link unlocks once your receipt matches your fee."}
+              {ready ? <><CircleCheck size={14} className="text-[#9DB2FF]" aria-hidden="true" /> Opens the official form in a new tab.</> : "The form link unlocks once your receipt matches your fee, or after you sign a part-payment letter."}
             </p>
           </div>
         </div>
