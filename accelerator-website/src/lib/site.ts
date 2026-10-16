@@ -107,6 +107,8 @@ export const gallery = [
   { src: "/images/recognition-medal-winners.jpg", width: 2000, height: 1333, alt: "Award winners wearing medals stand on stage with hosts in front of a balloon arch", caption: "Recognition and awards" },
   { src: "/images/seminar-audience.jpg", width: 2000, height: 1333, alt: "View from above of a full hall of attendees seated in rows facing a presentation screen", caption: "Learning together" },
   { src: "/images/changemakers-group.jpg", width: 2000, height: 1333, alt: "Group photo of members in Changemaker T-shirts and caps posing on stage", caption: "Changemakers" },
+  { src: "/images/community-yellow-jerseys.jpg", width: 2000, height: 1506, alt: "A large group of Accelerator Community members in matching yellow jerseys posing together in a hall", caption: "One team" },
+  { src: "/images/team-burgundy-attire.jpg", width: 1506, height: 2000, alt: "Six smiling members in matching burgundy and white outfits standing together outdoors", caption: "Dressed for the occasion" },
   { src: "/images/community-gathering-steps.jpg", width: 1500, height: 1125, alt: "A large group of Accelerator Community members posing together at the foot of a staircase", caption: "Members together" },
   { src: "/images/community-bus-park.jpg", width: 2000, height: 1500, alt: "Smiling Accelerator Community members in colourful outfits standing together outdoors in front of buses", caption: "On the road together" },
 ];

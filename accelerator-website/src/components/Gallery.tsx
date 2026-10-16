@@ -24,7 +24,7 @@ export function Gallery({ photos }: { photos: Photo[] }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [index, step]);
 
-  const layout = ["md:col-span-7 md:row-span-2", "md:col-span-5", "md:col-span-5", "md:col-span-4", "md:col-span-4", "md:col-span-4", "md:col-span-6", "md:col-span-6"];
+  const layout = ["md:col-span-7 md:row-span-2", "md:col-span-5", "md:col-span-5", "md:col-span-4", "md:col-span-4", "md:col-span-4", "md:col-span-8 md:row-span-2", "md:col-span-4 md:row-span-2", "md:col-span-6", "md:col-span-6"];
 
   return (
     <>
