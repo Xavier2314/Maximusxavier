@@ -24,6 +24,8 @@ export function Header() {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  const onSponsor = pathname.startsWith("/sponsorship");
+  const cta = onSponsor ? { href: "/sponsorship#sponsor-form", short: "Sponsor form", long: "Fill the sponsor form" } : { href: "/events#tickets", short: "Register", long: "Register for Events 2026" };
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
@@ -51,7 +53,7 @@ export function Header() {
           </ul>
         </nav>
         <div className="flex items-center gap-3">
-          <Link href="/events#tickets" className="btn btn-red hidden min-h-11 px-5 sm:inline-flex">Register</Link>
+          <Link href={cta.href} className="btn btn-red hidden min-h-11 px-5 sm:inline-flex">{cta.short}</Link>
           <button
             type="button"
             className="inline-flex h-11 w-11 items-center justify-center text-white xl:hidden"
@@ -87,7 +89,7 @@ export function Header() {
                   <span className="font-sans text-xs tracking-[0.2em] text-red">0{i + 1}</span>
                 </Link>
               ))}
-              <Link href="/events#tickets" className="btn btn-red mt-8 w-full">Register for Events 2026</Link>
+              <Link href={cta.href} className="btn btn-red mt-8 w-full">{cta.long}</Link>
             </nav>
           </motion.div>
         )}

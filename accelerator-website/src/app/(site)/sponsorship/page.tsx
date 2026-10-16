@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, Download, Gift, Mail, MessageCircle, Mic, Store, Users } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Download, Gift, Mail, MessageCircle, Mic, Store, Users } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Stagger, StaggerItem } from "@/components/Motion";
 import { sponsorship } from "@/lib/site";
+import { SponsorForm } from "@/components/SponsorForm";
 
 export const metadata: Metadata = {
   title: "Sponsorship",
@@ -34,8 +35,8 @@ export default function SponsorshipPage() {
         intro={<>Saturday 5 December 2026 · Ibadan. Put your products in front of <b className="text-white">500 to 1,000 guests</b>: exhibit, speak on stage, answer questions and gift our audience.</>}
       >
         <div className="flex flex-col gap-3 sm:flex-row">
-          <a href={s.whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-red">Partner with us on WhatsApp <ArrowUpRight size={16} aria-hidden="true" /></a>
-          <a href={s.proposalPdf} download className="btn btn-ghost-light"><Download size={16} aria-hidden="true" /> Download the proposal (PDF)</a>
+          <a href="#sponsor-form" className="btn btn-red">Fill the sponsor form <ArrowDown size={16} aria-hidden="true" /></a>
+          <a href={s.whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost-light">Chat on WhatsApp <ArrowUpRight size={16} aria-hidden="true" /></a>
         </div>
       </PageHero>
 
@@ -105,6 +106,23 @@ export default function SponsorshipPage() {
         </div>
       </section>
 
+      {/* Sponsor form */}
+      <section id="sponsor-form" className="scroll-mt-24 bg-white py-24 md:py-32">
+        <div className="container-x grid grid-cols-1 gap-12 lg:grid-cols-12">
+          <Reveal className="min-w-0 lg:col-span-4">
+            <p className="eyebrow">Sponsor form</p>
+            <h2 className="display-md mt-4 text-navy">Register your brand as a partner.</h2>
+            <p className="mt-5 text-ink/75">Fill in the form and your <b>personalised sponsorship proposal PDF</b> is created instantly, with your brand name and every answer you give.</p>
+            <ol className="mt-8 space-y-4 text-sm text-ink/80">
+              {["Fill in your details", "Download your personalised PDF", "Send it to us on WhatsApp or email", "We confirm your partnership"].map((t, i) => (
+                <li key={t} className="flex items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red font-semibold text-white">{i + 1}</span>{t}</li>
+              ))}
+            </ol>
+          </Reveal>
+          <div className="min-w-0 lg:col-span-8"><SponsorForm /></div>
+        </div>
+      </section>
+
       {/* Contact */}
       <section className="grain relative isolate overflow-hidden bg-navy py-24 text-white md:py-28">
         <div className="container-x grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
@@ -123,7 +141,7 @@ export default function SponsorshipPage() {
                 <a href={`mailto:${s.email}?subject=${encodeURIComponent("Sponsorship: Accelerators Events 2026")}`} className="flex min-h-[44px] items-center gap-3 break-all font-semibold hover:text-red"><Mail size={20} className="shrink-0 text-red" aria-hidden="true" />{s.email}</a>
               </div>
               <div className="mt-6 flex flex-col gap-3">
-                <a href={s.whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-red w-full">Chat on WhatsApp <ArrowUpRight size={16} aria-hidden="true" /></a>
+                <a href="#sponsor-form" className="btn btn-red w-full">Fill the sponsor form <ArrowUpRight size={16} aria-hidden="true" /></a>
                 <a href={s.proposalPdf} download className="btn btn-ghost-dark w-full"><Download size={16} aria-hidden="true" /> Download the proposal</a>
               </div>
             </div>

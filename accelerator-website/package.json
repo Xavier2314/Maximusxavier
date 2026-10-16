@@ -17,7 +17,8 @@
     "react-dom": "^19.1.0",
     "zod": "^3.23.8",
     "server-only": "^0.0.1",
-    "tesseract.js": "5.1.1"
+    "tesseract.js": "5.1.1",
+    "jspdf": "2.5.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
