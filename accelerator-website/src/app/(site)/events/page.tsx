@@ -128,6 +128,25 @@ export default async function EventsPage() {
         </div>
       </section>
 
+      {/* MOMENTS */}
+      <section aria-label="Moments from past gatherings" className="bg-cream pb-24 md:pb-32">
+        <div className="container-x">
+          <div className="grid gap-3 md:grid-cols-12">
+            {[
+              { src: "/images/speaker-addressing-audience.jpg", alt: "A speaker in a cream suit addresses a seated audience taking notes", cap: "Training", span: "md:col-span-7 md:row-span-2", h: "h-72 md:h-full" },
+              { src: "/images/recognition-medal-winners.jpg", alt: "Award winners with medals on stage with hosts", cap: "Recognition", span: "md:col-span-5", h: "h-64" },
+              { src: "/images/changemakers-session.jpg", alt: "Members in Changemaker T-shirts cheering during a session", cap: "Community", span: "md:col-span-5", h: "h-64" },
+            ].map((ph) => (
+              <figure key={ph.src} className={`relative overflow-hidden bg-navy ${ph.span} ${ph.h}`}>
+                <Image src={ph.src} alt={ph.alt} fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" />
+                <figcaption className="absolute bottom-0 left-0 bg-navy px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white">{ph.cap}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-slate">Moments from past Accelerator gatherings.</p>
+        </div>
+      </section>
+
       {/* HIGHLIGHTS */}
       <section className="bg-navy-900 text-white">
         <div className="grid lg:grid-cols-5">
@@ -151,7 +170,7 @@ export default async function EventsPage() {
               <p className="eyebrow">Registration</p>
               <h2 className="display-lg mt-5 text-navy">Secure your place.</h2>
               <p className="mt-6 leading-relaxed text-ink/75">Early Bird registration is open until 31 October 2026 at 11:59 PM (Lagos time). Late Registration opens automatically on 1 November 2026.</p>
-              <p className="mt-6 text-sm text-slate">Your fee depends on your membership position. Pay by bank transfer to the official account shown during registration, using your registration reference. Your place is confirmed once the team verifies your payment.</p>
+              <p className="mt-6 text-sm text-slate">Your fee depends on your membership position. Pay by bank transfer to the official account, then submit the official registration form with your proof of payment. Your place is confirmed once the team verifies your payment.</p>
             </Reveal>
             <div className="lg:col-span-8">
               <TicketCards tickets={tickets} serverNow={now} feeLabel={`${formatNaira(MIN_FEE_KOBO)} \u2013 ${formatNaira(MAX_FEE_KOBO)}`} />

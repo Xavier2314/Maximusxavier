@@ -88,9 +88,8 @@ export const site = {
     { name: "YouTube", href: null as string | null },
   ],
 
-  // The official registration form currently lives on Google Forms. The site form is a draft
-  // until the exact questions are supplied.
-  googleFormUrl: "https://forms.gle/peNoH4sLD8t12vjm9",
+  // Official registration form (Google Forms). All "submit registration" buttons open this link.
+  registrationFormUrl: "https://forms.gle/q4Ah1D8sQVtc8uwA9",
 };
 
 export const nav = [
@@ -102,25 +101,12 @@ export const nav = [
 ];
 
 export const gallery = [
-  {
-    src: "/images/community-white-attire.jpg",
-    width: 1280,
-    height: 960,
-    alt: "Accelerator Community members dressed in white, gathered on the lawn in front of a large event marquee",
-    caption: "Community gathering",
-  },
-  {
-    src: "/images/community-gathering-steps.jpg",
-    width: 1500,
-    height: 1125,
-    alt: "A large group of Accelerator Community members posing together at the foot of a staircase",
-    caption: "Members together",
-  },
-  {
-    src: "/images/community-bus-park.jpg",
-    width: 2000,
-    height: 1500,
-    alt: "Smiling Accelerator Community members in colourful outfits standing together outdoors in front of buses",
-    caption: "On the road together",
-  },
+  { src: "/images/community-white-attire.jpg", width: 1280, height: 960, alt: "Accelerator Community members dressed in white, gathered on the lawn in front of a large event marquee", caption: "Community gathering" },
+  { src: "/images/speaker-addressing-audience.jpg", width: 2000, height: 1333, alt: "A speaker in a cream suit addresses a seated audience of young members taking notes", caption: "Leadership training" },
+  { src: "/images/changemakers-session.jpg", width: 2000, height: 1333, alt: "Members in blue and white Changemaker T-shirts and caps cheering during a session", caption: "Changemakers session" },
+  { src: "/images/recognition-medal-winners.jpg", width: 2000, height: 1333, alt: "Award winners wearing medals stand on stage with hosts in front of a balloon arch", caption: "Recognition and awards" },
+  { src: "/images/seminar-audience.jpg", width: 2000, height: 1333, alt: "View from above of a full hall of attendees seated in rows facing a presentation screen", caption: "Learning together" },
+  { src: "/images/changemakers-group.jpg", width: 2000, height: 1333, alt: "Group photo of members in Changemaker T-shirts and caps posing on stage", caption: "Changemakers" },
+  { src: "/images/community-gathering-steps.jpg", width: 1500, height: 1125, alt: "A large group of Accelerator Community members posing together at the foot of a staircase", caption: "Members together" },
+  { src: "/images/community-bus-park.jpg", width: 2000, height: 1500, alt: "Smiling Accelerator Community members in colourful outfits standing together outdoors in front of buses", caption: "On the road together" },
 ];
