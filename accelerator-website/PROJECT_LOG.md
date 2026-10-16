@@ -72,3 +72,9 @@
 - Official submission form: https://forms.gle/9dVyUQMhhzQuD1JZ7 (DEFAULT_CONTESTS.submission_url).
 - Challenge page: "The countdown is on! Who's taking home the ₦100,000?", live countdown to 31 Oct 23:59 Lagos, "Submit your entry" buttons (hero, rules box, closing banner). Buttons hide automatically after the deadline.
 - Events page contest card shows "Submit entry".
+
+## Motion graphics (inspired by prompt-motion.com first-page styles)
+- prompt-motion.com is behind Cloudflare bot protection; videos could not be viewed. Styles recreated from the first-page titles (kinetic type, shape morphing, abstract motion, dot motion system) in our own brand, as code (HeroMotion.tsx). No third-party videos used.
+- Home hero: KineticHeadline (words rise from masks), WordCycler (theme tagline phrases), MorphShape (brand gradient shape morphing diamond/square/octagon/triangle with orbiting dots, desktop), ParticleField (canvas, pauses off-screen).
+- KineticBand: scroll-driven giant type rows before the gallery.
+- All respect reduced-motion.

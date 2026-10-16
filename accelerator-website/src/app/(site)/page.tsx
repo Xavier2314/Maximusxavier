@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Award, GraduationCap, Users, Clapperboard } from "lucide-react";
 import { Facets } from "@/components/Facets";
 import { ImageReveal, Parallax } from "@/components/Motion";
+import { KineticBand, KineticHeadline, MorphShape, ParticleField, WordCycler } from "@/components/HeroMotion";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
 import { Gallery } from "@/components/Gallery";
@@ -44,19 +45,24 @@ export default async function HomePage() {
         </Parallax>
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,30,63,.55)_0%,rgba(11,30,63,.35)_35%,rgba(7,21,48,.96)_100%)]" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_15%_85%,rgba(30,75,255,.35),transparent)]" />
+        <ParticleField className="absolute inset-0 -z-10 h-full w-full" />
+        <MorphShape className="absolute right-[5%] top-[18%] hidden w-[min(32vw,440px)] lg:block" />
         <Facets side="left" className="pointer-events-none absolute -left-28 top-24 hidden h-[380px] w-auto xl:block" />
-        <Facets side="right" className="pointer-events-none absolute -right-8 top-24 h-[150px] w-auto opacity-90 md:h-[420px]" />
+        <Facets side="right" className="pointer-events-none absolute -right-8 top-24 h-[150px] w-auto opacity-90 md:h-[420px] lg:hidden" />
 
         <div className="container-x relative pb-16 pt-40 md:pb-24">
           <Reveal>
             <p className="eyebrow">Accelerator Community</p>
           </Reveal>
-          <Reveal delay={0.08}>
-            <h1 className="mt-6 font-display text-[clamp(2.5rem,6vw,5.25rem)] font-medium leading-[1.02] tracking-[-0.015em]">
-              <span className="block">Accelerating people.</span>
-              <em className="block font-normal italic text-[#9DB2FF]">Building leaders.</em>
-              <span className="block">Celebrating excellence.</span>
-            </h1>
+          <KineticHeadline
+            className="mt-6 font-display text-[clamp(2.5rem,6vw,5.25rem)] font-medium leading-[1.02] tracking-[-0.015em] lg:max-w-[64%]"
+            lines={[{ text: "Accelerating people." }, { text: "Building leaders.", className: "italic font-normal text-[#9DB2FF]" }, { text: "Celebrating excellence." }]}
+          />
+          <Reveal delay={0.7}>
+            <p className="mt-6 flex flex-wrap items-baseline gap-x-3 font-display text-xl md:text-2xl">
+              <span className="text-mist">{event.theme ?? "The Summit of Excellence"}:</span>
+              <WordCycler className="italic text-red" words={["Rise with Purpose.", "Lead with Power.", "Reign with Excellence."]} />
+            </p>
           </Reveal>
           <Reveal delay={0.16}>
             <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-12 md:items-end">
@@ -200,6 +206,13 @@ export default async function HomePage() {
       </section>
 
       {/* GALLERY */}
+      <KineticBand
+        rows={[
+          [<span key="a">The Summit</span>, <em key="b" className="font-normal italic text-red">of Excellence</em>, <span key="c" className="text-stroke">Ibadan 2026</span>],
+          [<span key="d" className="text-stroke">Rise with Purpose</span>, <span key="e">Lead with Power</span>, <em key="f" className="font-normal italic text-royal">Reign with Excellence</em>],
+        ]}
+      />
+
       <section className="bg-cream py-24 md:py-32" aria-labelledby="gallery-title">
         <div className="container-x">
           <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
