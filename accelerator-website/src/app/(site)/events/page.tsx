@@ -67,7 +67,7 @@ export default async function EventsPage() {
       <section className="grain relative isolate overflow-hidden bg-navy text-white">
         <Image src="/images/community-white-attire.jpg" alt="Accelerator Community members in white at a past community event" fill priority sizes="100vw" className="-z-20 object-cover opacity-45 mix-blend-luminosity" />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,rgba(7,21,48,.97)_0%,rgba(11,30,63,.85)_45%,rgba(11,30,63,.35)_100%)]" />
-        <Facets side="right" className="pointer-events-none absolute -right-6 top-24 h-[340px] w-auto md:h-[520px]" />
+        <Facets side="right" className="pointer-events-none absolute -right-6 top-24 hidden h-[520px] w-auto md:block" />
         <Facets side="left" className="pointer-events-none absolute -left-10 -bottom-24 hidden h-[360px] w-auto opacity-80 md:block" />
 
         <div className="container-x relative pb-16 pt-36 md:pb-24 md:pt-48">

@@ -40,16 +40,18 @@ export default async function HomePage() {
         />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,30,63,.55)_0%,rgba(11,30,63,.35)_35%,rgba(7,21,48,.96)_100%)]" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_15%_85%,rgba(30,75,255,.35),transparent)]" />
-        <Facets side="left" className="pointer-events-none absolute -left-6 top-28 h-[300px] w-auto md:h-[460px]" />
-        <Facets side="right" className="pointer-events-none absolute -right-6 bottom-40 hidden h-[420px] w-auto lg:block" />
+        <Facets side="left" className="pointer-events-none absolute -left-28 top-24 hidden h-[380px] w-auto xl:block" />
+        <Facets side="right" className="pointer-events-none absolute -right-8 top-24 h-[150px] w-auto opacity-90 md:h-[420px]" />
 
         <div className="container-x relative pb-16 pt-40 md:pb-24">
           <Reveal>
             <p className="eyebrow">Accelerator Community</p>
           </Reveal>
           <Reveal delay={0.08}>
-            <h1 className="display-xl mt-6 max-w-5xl">
-              Accelerating people. <em className="font-normal italic text-[#9DB2FF]">Building leaders.</em> Celebrating excellence.
+            <h1 className="mt-6 font-display text-[clamp(2.5rem,6vw,5.25rem)] font-medium leading-[1.02] tracking-[-0.015em]">
+              <span className="block">Accelerating people.</span>
+              <em className="block font-normal italic text-[#9DB2FF]">Building leaders.</em>
+              <span className="block">Celebrating excellence.</span>
             </h1>
           </Reveal>
           <Reveal delay={0.16}>
