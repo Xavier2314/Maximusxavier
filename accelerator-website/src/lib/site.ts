@@ -130,7 +130,7 @@ export const site = {
     { name: "Facebook", href: null as string | null },
     { name: "X", href: null as string | null },
     { name: "LinkedIn", href: null as string | null },
-    { name: "YouTube", href: null as string | null },
+    { name: "YouTube", href: "https://www.youtube.com/channel/UCP9ufNqTD5C7M_fLDkAT4WQ" as string | null },
   ],
 
   // Official registration form (Google Forms). All "submit registration" buttons open this link.
