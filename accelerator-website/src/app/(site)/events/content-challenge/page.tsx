@@ -55,13 +55,13 @@ export default async function ContentChallengePage() {
 
       {/* Key dates */}
       <section className="bg-red text-white">
-        <div className="container-x grid gap-px bg-white/20 sm:grid-cols-3">
+        <div className="container-x grid divide-y divide-white/25 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           {[
             { Icon: CalendarDays, k: "Challenge kicks off", v: formatLagosDate(c.starts_at) ?? "-" },
             { Icon: Hourglass, k: "Entry deadline", v: c.deadline ? `${formatLagosDate(c.deadline)}, 11:59 pm` : "-" },
             { Icon: Trophy, k: "Who will win?", v: status === "open" && daysLeft !== null && daysLeft > 0 ? `${daysLeft} day${daysLeft === 1 ? "" : "s"} left to enter` : "You?" },
           ].map(({ Icon, k, v }) => (
-            <div key={k} className="flex items-center gap-4 bg-red px-2 py-7 sm:px-6">
+            <div key={k} className="flex items-center gap-4 py-7 sm:px-6 sm:first:pl-0">
               <Icon size={30} strokeWidth={1.5} aria-hidden="true" />
               <div><p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/80">{k}</p><p className="mt-1 font-display text-2xl">{v}</p></div>
             </div>

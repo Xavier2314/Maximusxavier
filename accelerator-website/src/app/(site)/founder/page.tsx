@@ -33,7 +33,7 @@ export default function FounderPage() {
           <div className="md:col-span-6">
             <Reveal>
               <p className="eyebrow">Meet the founder</p>
-              <h1 className="display-xl mt-6">{f.name ?? <>Founder&rsquo;s name <span className="block text-2xl font-sans not-italic"><Pending label="To be supplied" className="mt-4 text-mist" /></span></>}</h1>
+              <h1 className="display-lg mt-6">{f.name ?? <>Founder&rsquo;s name <span className="block text-2xl font-sans not-italic"><Pending label="To be supplied" className="mt-4 text-mist" /></span></>}</h1>
               <p className="mt-6 text-sm font-semibold uppercase tracking-[0.24em] text-mist">{f.title}, Accelerator Community</p>
               {f.shortIntro && <p className="lead mt-8 max-w-xl text-mist">{f.shortIntro}</p>}
               {f.links.length > 0 && (
