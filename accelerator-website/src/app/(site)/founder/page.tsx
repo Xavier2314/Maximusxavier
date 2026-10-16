@@ -85,7 +85,7 @@ export default function FounderPage() {
               <a href={site.charter.pdf} download className="btn btn-ghost-dark"><Download size={16} aria-hidden="true" /> Download the charter</a>
             </Reveal>
             <Block eyebrow="In his words" title="What drives him" text={f.philosophy ? `\u201C${f.philosophy}\u201D` : null} pending="Leadership philosophy" />
-            <Block eyebrow="A message" title="A message from the founder" text={f.message} pending="Founder's message" />
+            {f.message && <Block eyebrow="A message" title="A message from the founder" text={f.message} pending="Founder's message" />}
           </div>
           <aside className="lg:col-span-4 lg:col-start-9">
             <div className="lg:sticky lg:top-28">

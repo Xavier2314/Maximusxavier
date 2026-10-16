@@ -31,13 +31,15 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
               <ul className="space-y-8">
                 <li className="flex gap-4"><Mail className="mt-1 shrink-0 text-red" aria-hidden="true" /><div className="min-w-0"><p className="field-label">General enquiries</p>{site.contact.email ? <a href={`mailto:${site.contact.email}`} className="break-all text-lg text-navy underline-offset-4 hover:underline">{site.contact.email}</a> : <Pending label="Official email" className="text-slate" />}</div></li>
                 {site.contact.adminEmail && <li className="flex gap-4"><Mail className="mt-1 shrink-0 text-red" aria-hidden="true" /><div className="min-w-0"><p className="field-label">Admin &amp; registration</p><a href={`mailto:${site.contact.adminEmail}`} className="break-all text-lg text-navy underline-offset-4 hover:underline">{site.contact.adminEmail}</a></div></li>}
-                <li className="flex gap-4"><Phone className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><p className="field-label">Phone</p>{site.contact.phone ? <a href={`tel:${site.contact.phone}`} className="text-lg text-navy">{site.contact.phone}</a> : <Pending label="Official phone" className="text-slate" />}</div></li>
-                <li className="flex gap-4"><MapPin className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><p className="field-label">Address</p>{site.contact.address ? <p className="text-lg text-navy">{site.contact.address}</p> : <Pending label="Official address" className="text-slate" />}</div></li>
+                {site.contact.phone && <li className="flex gap-4"><Phone className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><p className="field-label">Phone</p><a href={`tel:${site.contact.phone}`} className="text-lg text-navy">{site.contact.phone}</a></div></li>}
+                {site.contact.address && <li className="flex gap-4"><MapPin className="mt-1 shrink-0 text-red" aria-hidden="true" /><div><p className="field-label">Address</p><p className="text-lg text-navy">{site.contact.address}</p></div></li>}
               </ul>
-              <div className="mt-12 border-t border-sand pt-8">
-                <p className="field-label">Social</p>
-                {socials.length ? <ul className="mt-3 flex flex-wrap gap-4">{socials.map((s) => <li key={s.name}><a href={s.href!} target="_blank" rel="noopener noreferrer" className="link-arrow">{s.name}</a></li>)}</ul> : <Pending label="Social media links" className="mt-2 text-slate" />}
-              </div>
+              {socials.length > 0 && (
+                <div className="mt-12 border-t border-sand pt-8">
+                  <p className="field-label">Social</p>
+                  <ul className="mt-3 flex flex-wrap gap-4">{socials.map((s) => <li key={s.name}><a href={s.href!} target="_blank" rel="noopener noreferrer" className="link-arrow">{s.name}</a></li>)}</ul>
+                </div>
+              )}
               <div className="mt-12 space-y-6 border-t border-sand pt-8">
                 {channels.map((c) => (
                   <div key={c.title}><h2 className="font-display text-2xl text-navy">{c.title}</h2><p className="mt-1 text-sm text-slate">{c.text}</p></div>

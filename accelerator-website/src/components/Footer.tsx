@@ -27,7 +27,7 @@ export function Footer() {
           <ul className="space-y-3 text-sm text-white/80">
             <li>{site.contact.email ? <a href={`mailto:${site.contact.email}`} className="break-all hover:text-white">{site.contact.email}</a> : <Pending label="Official email" />}</li>
             {site.contact.adminEmail && <li><a href={`mailto:${site.contact.adminEmail}`} className="break-all hover:text-white">{site.contact.adminEmail}</a></li>}
-            <li>{site.contact.phone ? <a href={`tel:${site.contact.phone}`} className="hover:text-white">{site.contact.phone}</a> : <Pending label="Official phone" />}</li>
+            {site.contact.phone && <li><a href={`tel:${site.contact.phone}`} className="hover:text-white">{site.contact.phone}</a></li>}
             <li className="pt-2"><Link href="/contact" className="link-arrow !text-white">Send a message</Link></li>
           </ul>
         </div>
@@ -40,7 +40,7 @@ export function Footer() {
               ))}
             </ul>
           ) : (
-            <Pending label="Social links" />
+            <p className="text-sm text-white/70">Follow our announcements in the community channels. Questions? <Link href="/contact" className="underline hover:text-white">Contact us</Link>.</p>
           )}
         </div>
       </div>

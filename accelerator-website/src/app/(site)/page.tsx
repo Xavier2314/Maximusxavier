@@ -99,7 +99,7 @@ export default async function HomePage() {
               <h2 className="display-lg mt-5 text-navy">A community where people grow, lead and are celebrated.</h2>
               <span className="rule-red mt-8" />
               <p className="lead mt-8 max-w-xl text-ink/80">{site.shortDescription}</p>
-              {!site.story && <p className="mt-6"><Pending label="Official community story to be supplied" className="text-slate" /></p>}
+              <p className="mt-6 max-w-xl leading-relaxed text-ink/70">{site.charter.storyIntro}</p>
               <Link href="/about" className="link-arrow mt-10">About Accelerator <ArrowRight size={16} aria-hidden="true" /></Link>
             </Reveal>
           </div>
@@ -266,12 +266,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* IMPACT */}
+      {/* IMPACT (shown once verified figures exist) */}
+      {site.impact.some((s) => s.value) && (
       <section className="border-y border-sand bg-cream py-20" aria-labelledby="impact-title">
         <div className="container-x">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <h2 id="impact-title" className="display-md text-navy">Community impact</h2>
-            {site.impact.every((s) => !s.value) && <Pending label="Verified figures to be supplied" className="text-slate" />}
           </div>
           <dl className="mt-12 grid grid-cols-2 gap-px bg-sand lg:grid-cols-4">
             {site.impact.map((s) => (
@@ -283,6 +283,7 @@ export default async function HomePage() {
           </dl>
         </div>
       </section>
+      )}
 
       {/* FINAL CTA */}
       <section className="relative isolate overflow-hidden bg-royal py-24 text-white md:py-32">
