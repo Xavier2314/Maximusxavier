@@ -5,7 +5,6 @@ import { ArrowRight, Download } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
-import { Facets } from "@/components/Facets";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -130,25 +129,6 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Journey & achievements */}
-      <section className="grain relative overflow-hidden bg-navy py-24 text-white md:py-32">
-        <Facets side="right" className="pointer-events-none absolute -right-8 top-10 hidden h-96 w-auto md:block" />
-        <div className="container-x grid gap-16 md:grid-cols-2">
-          <Reveal>
-            <p className="eyebrow">Our journey</p>
-            <h2 className="display-md mt-5">Milestones</h2>
-            <p className="mt-6 max-w-md text-mist">A timeline of key moments, from the first meeting to today, will be built from the official records.</p>
-            <Pending label="Timeline dates and milestones" className="mt-6 text-mist" />
-          </Reveal>
-          <Reveal delay={0.08}>
-            <p className="eyebrow">Our achievements</p>
-            <h2 className="display-md mt-5">What we have built together</h2>
-            <p className="mt-6 max-w-md text-mist">Verified achievements, programmes and recognitions will be listed here. We only publish figures that have been confirmed.</p>
-            <Pending label="Verified achievements" className="mt-6 text-mist" />
-          </Reveal>
         </div>
       </section>
 
