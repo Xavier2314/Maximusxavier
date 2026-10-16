@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Logo } from "./Logo";
-import { nav } from "@/lib/site";
+import { nav, site } from "@/lib/site";
+import { SocialIcon } from "./SocialIcon";
 
 export function Header() {
   const pathname = usePathname();
@@ -90,6 +91,11 @@ export function Header() {
                 </Link>
               ))}
               <Link href={cta.href} className="btn btn-red mt-8 w-full">{cta.long}</Link>
+              <div className="mt-8 flex items-center gap-3">
+                {site.social.filter((x) => x.href).map((x) => (
+                  <a key={x.name} href={x.href!} target="_blank" rel="noopener noreferrer" aria-label={x.name} className="flex h-12 w-12 items-center justify-center rounded-full border border-white/25 text-white hover:border-red hover:bg-red"><SocialIcon name={x.name} /></a>
+                ))}
+              </div>
             </nav>
           </motion.div>
         )}

@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { ContactForm } from "@/components/ContactForm";
 import { Pending } from "@/components/Pending";
+import { SocialIcon } from "@/components/SocialIcon";
 import { Reveal } from "@/components/Reveal";
 import { site } from "@/lib/site";
 
@@ -37,7 +38,12 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
               {socials.length > 0 && (
                 <div className="mt-12 border-t border-sand pt-8">
                   <p className="field-label">Social</p>
-                  <ul className="mt-3 flex flex-wrap gap-4">{socials.map((s) => <li key={s.name}><a href={s.href!} target="_blank" rel="noopener noreferrer" className="link-arrow">{s.name}</a></li>)}</ul>
+                  <ul className="mt-4 space-y-3">{socials.map((s) => (
+                    <li key={s.name}><a href={s.href!} target="_blank" rel="noopener noreferrer" className="group inline-flex min-h-[44px] items-center gap-3 text-navy hover:text-red">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-navy text-white transition-colors group-hover:bg-red"><SocialIcon name={s.name} /></span>
+                      <span><span className="block font-semibold">{s.name}</span>{s.handle && <span className="block text-sm text-slate">{s.handle}</span>}</span>
+                    </a></li>
+                  ))}</ul>
                 </div>
               )}
               <div className="mt-12 space-y-6 border-t border-sand pt-8">

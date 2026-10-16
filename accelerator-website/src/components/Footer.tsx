@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 import { FacetStrip } from "./Facets";
 import { Pending } from "./Pending";
+import { SocialIcon } from "./SocialIcon";
 import { nav, site } from "@/lib/site";
 
 export function Footer() {
@@ -34,9 +35,14 @@ export function Footer() {
         <div className="md:col-span-3">
           <h2 className="eyebrow mb-5">Follow</h2>
           {socials.length ? (
-            <ul className="space-y-1 text-sm">
+            <ul className="space-y-3 text-sm">
               {socials.map((s) => (
-                <li key={s.name}><a href={s.href!} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[40px] items-center text-white/80 hover:text-white">{s.name}</a></li>
+                <li key={s.name}>
+                  <a href={s.href!} target="_blank" rel="noopener noreferrer" className="group inline-flex min-h-[44px] items-center gap-3 text-white/85 hover:text-white">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 transition-colors group-hover:border-red group-hover:bg-red"><SocialIcon name={s.name} /></span>
+                    <span><span className="block font-semibold">{s.name}</span>{s.handle && <span className="block text-xs text-white/60">{s.handle}</span>}</span>
+                  </a>
+                </li>
               ))}
             </ul>
           ) : (

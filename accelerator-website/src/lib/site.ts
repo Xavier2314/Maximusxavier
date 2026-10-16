@@ -126,11 +126,11 @@ export const site = {
   },
 
   social: [
-    { name: "Instagram", href: null as string | null },
-    { name: "Facebook", href: null as string | null },
-    { name: "X", href: null as string | null },
-    { name: "LinkedIn", href: null as string | null },
-    { name: "YouTube", href: "https://www.youtube.com/channel/UCP9ufNqTD5C7M_fLDkAT4WQ" as string | null },
+    { name: "Instagram", href: "https://www.instagram.com/acceleratorsbillionaires/" as string | null, handle: "@acceleratorsbillionaires" as string | null },
+    { name: "Facebook", href: null as string | null, handle: null as string | null },
+    { name: "X", href: null as string | null, handle: null as string | null },
+    { name: "LinkedIn", href: null as string | null, handle: null as string | null },
+    { name: "YouTube", href: "https://www.youtube.com/channel/UCP9ufNqTD5C7M_fLDkAT4WQ" as string | null, handle: "Accelerators Billionaires" as string | null },
   ],
 
   // Official registration form (Google Forms). All "submit registration" buttons open this link.

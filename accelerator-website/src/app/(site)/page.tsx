@@ -6,6 +6,7 @@ import { ImageReveal, Parallax } from "@/components/Motion";
 import { KineticBand, KineticHeadline, LogoMotion, ParticleField, WordCycler } from "@/components/HeroMotion";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
+import { SocialIcon } from "@/components/SocialIcon";
 import { Gallery } from "@/components/Gallery";
 import { Countdown } from "@/components/Countdown";
 import { Logo } from "@/components/Logo";
@@ -283,6 +284,24 @@ export default async function HomePage() {
           </dl>
         </div>
       </section>
+      )}
+
+      {/* FOLLOW US */}
+      {site.social.some((s) => s.href) && (
+        <section className="bg-white py-16 md:py-20">
+          <div className="container-x flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+            <Reveal>
+              <p className="eyebrow">Follow us</p>
+              <h2 className="display-md mt-4 text-navy">Stay close to the community.</h2>
+              <p className="mt-3 max-w-xl text-ink/70">Event updates, highlights and announcements, as they happen.</p>
+            </Reveal>
+            <Reveal delay={0.08} className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              {site.social.filter((s) => s.href).map((s) => (
+                <a key={s.name} href={s.href!} target="_blank" rel="noopener noreferrer" className="btn btn-navy w-full sm:w-auto"><SocialIcon name={s.name} size={18} /> {s.name}</a>
+              ))}
+            </Reveal>
+          </div>
+        </section>
       )}
 
       {/* FINAL CTA */}
