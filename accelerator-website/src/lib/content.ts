@@ -84,13 +84,14 @@ export const DEFAULT_CONTESTS: Contest[] = [
   {
     id: "inter-office-100k-content-challenge",
     title: "Accelerator Inter-Office \u20A6100K Content Challenge",
-    description: "Unleash your creativity. Edit with impact. Win big. Inspire more. Create and edit standout video content and compete for a share of \u20A6100,000.",
+    description: "The countdown is on! Every office: unleash your creativity, showcase your talent and compete for \u20A6100,000 and the ultimate bragging rights. Create and edit standout video content before the deadline.",
     requirements: null,
     starts_at: "2026-10-11T23:00:00.000Z", // 12 Oct 2026, 00:00 Lagos
     deadline: "2026-10-31T22:59:59.999Z", // 31 Oct 2026, 23:59 Lagos
     status: "open",
     prize: "1st place \u20A650,000 \u00B7 2nd place \u20A630,000 \u00B7 3rd place \u20A620,000",
-    submission_url: null,
+    // Official submission form, supplied by Accelerator Community (October 2026).
+    submission_url: "https://forms.gle/9dVyUQMhhzQuD1JZ7",
     rules: null,
     winners: null,
     sort_order: 0,

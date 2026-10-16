@@ -7,7 +7,7 @@ function parts(ms: number) {
 }
 
 /** Counts down to an absolute instant. `serverNow` corrects for an inaccurate device clock. */
-export function Countdown({ target, serverNow, label }: { target: string; serverNow: number; label?: string }) {
+export function Countdown({ target, serverNow, label, doneText }: { target: string; serverNow: number; label?: string; doneText?: string }) {
   const [offset] = useState(() => serverNow - Date.now());
   const [now, setNow] = useState(serverNow);
   useEffect(() => {
@@ -16,7 +16,7 @@ export function Countdown({ target, serverNow, label }: { target: string; server
   }, [offset]);
   const left = Date.parse(target) - now;
   const p = parts(left);
-  if (left <= 0) return <p className="font-display text-2xl">{label ? `${label}: it's event day` : "It's event day"}</p>;
+  if (left <= 0) return <p className="font-display text-2xl">{doneText ? doneText : label ? `${label}: it's event day` : "It's event day"}</p>;
   const cells: [string, number][] = [["Days", p.days], ["Hours", p.hours], ["Minutes", p.minutes], ["Seconds", p.seconds]];
   return (
     <div role="timer" aria-label={`${p.days} days, ${p.hours} hours and ${p.minutes} minutes to go`} className="grid grid-cols-4 gap-px bg-white/15">

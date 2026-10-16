@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, CalendarDays, Clapperboard, Film, Hourglass, Sparkles, Trophy } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CalendarDays, Clapperboard, Film, Hourglass, Sparkles, Trophy } from "lucide-react";
 import { Facets } from "@/components/Facets";
 import { Reveal } from "@/components/Reveal";
 import { Pending } from "@/components/Pending";
+import { Countdown } from "@/components/Countdown";
 import { CONTEST_STATUS_LABEL, getContest } from "@/lib/content";
 import { formatLagos, formatLagosDate } from "@/lib/tickets";
 
@@ -25,7 +26,9 @@ export default async function ContentChallengePage() {
   const c = await getContest("inter-office-100k-content-challenge");
   if (!c) notFound();
   const status = c.status;
-  const daysLeft = c.deadline ? Math.ceil((Date.parse(c.deadline) - Date.now()) / 86_400_000) : null;
+  const now = Date.now();
+  const daysLeft = c.deadline ? Math.ceil((Date.parse(c.deadline) - now) / 86_400_000) : null;
+  const canSubmit = status === "open" && Boolean(c.submission_url);
 
   return (
     <>
@@ -47,9 +50,21 @@ export default async function ContentChallengePage() {
             </h1>
           </Reveal>
           <Reveal delay={0.12}>
-            <p className="lead mt-8 max-w-2xl text-mist">Unleash your creativity. Edit with impact. Win big. Inspire more.</p>
+            <p className="mt-8 font-display text-2xl italic text-white md:text-3xl">The countdown is on! Who&rsquo;s taking home the ₦100,000?</p>
+            <p className="lead mt-4 max-w-2xl text-mist">Every office: unleash your creativity, showcase your talent and compete for the ultimate bragging rights. Every edit counts.</p>
             <p className="mt-4 text-xs font-semibold uppercase tracking-[0.4em] text-white">Edit &middot; Impact &middot; Inspire</p>
           </Reveal>
+          {c.deadline && status === "open" && (
+            <Reveal delay={0.18}>
+              <div className="mt-10 grid max-w-3xl grid-cols-1 gap-6 border-t border-white/15 pt-8 md:grid-cols-[1fr_auto] md:items-end">
+                <div>
+                  <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-mist">Time left to submit</p>
+                  <Countdown target={c.deadline} serverNow={now} doneText="Submissions are now closed" />
+                </div>
+                {canSubmit && <a href={c.submission_url!} target="_blank" rel="noopener noreferrer" className="btn btn-red">Submit your entry <ArrowUpRight size={16} aria-hidden="true" /></a>}
+              </div>
+            </Reveal>
+          )}
         </div>
       </section>
 
@@ -98,6 +113,7 @@ export default async function ContentChallengePage() {
             <p className="eyebrow">How it works</p>
             <h2 className="display-lg mt-5 text-navy">Create. Edit. Submit.</h2>
             <p className="lead mt-6 text-ink/75">An inter-office challenge for the Accelerator community: show what you can create, edit it with impact, and put your best work forward.</p>
+            <p className="mt-4 text-ink/75">As we build the excitement towards Accelerator Events 2026, let&rsquo;s make the energy louder, the creativity bigger and the competition unforgettable. Offices, are you ready? Represent your team and make history.</p>
           </Reveal>
           <div className="lg:col-span-6 lg:col-start-7">
             <ol className="divide-y divide-sand border-y border-sand">
@@ -114,17 +130,14 @@ export default async function ContentChallengePage() {
             </ol>
             <div className="mt-10 border-l-4 border-gold bg-cream p-6">
               <p className="font-semibold text-navy">Entry rules and how to submit</p>
-              {c.rules || c.submission_url ? (
+              {c.rules ? <p className="mt-2 whitespace-pre-line text-sm text-ink/80">{c.rules}</p> : (
                 <>
-                  {c.rules && <p className="mt-2 whitespace-pre-line text-sm text-ink/80">{c.rules}</p>}
-                  {c.submission_url && status === "open" && <a href={c.submission_url} target="_blank" rel="noopener noreferrer" className="btn btn-red mt-5">Submit your entry</a>}
-                </>
-              ) : (
-                <>
-                  <p className="mt-2 text-sm text-ink/80">The submission link, video length and format, and judging criteria will be shared here and with each office.</p>
-                  <Pending label="Submission link and rules" className="mt-4 text-slate" />
+                  <p className="mt-2 text-sm text-ink/80">Submit your entry through the official submission form before the deadline. Video length and format, and judging criteria will be shared here and with each office.</p>
+                  <Pending label="Video format and judging criteria" className="mt-3 text-slate" />
                 </>
               )}
+              {canSubmit && <a href={c.submission_url!} target="_blank" rel="noopener noreferrer" className="btn btn-red mt-5">Submit your entry <ArrowUpRight size={16} aria-hidden="true" /></a>}
+              {status === "closed" && <p className="mt-4 text-sm font-semibold text-red">Submissions are closed.</p>}
             </div>
           </div>
         </div>
@@ -135,7 +148,8 @@ export default async function ContentChallengePage() {
         <div className="container-x flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <h2 className="display-lg max-w-2xl">Part of Accelerators Events 2026, Ibadan.</h2>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link href="/events/register" className="btn btn-red">Register for the event <ArrowRight size={16} aria-hidden="true" /></Link>
+            {canSubmit && <a href={c.submission_url!} target="_blank" rel="noopener noreferrer" className="btn btn-red">Submit your entry <ArrowUpRight size={16} aria-hidden="true" /></a>}
+            <Link href="/events/register" className={`btn ${canSubmit ? "btn-ghost-light" : "btn-red"}`}>Register for the event <ArrowRight size={16} aria-hidden="true" /></Link>
             <Link href="/contact?topic=Event%20enquiry" className="btn btn-ghost-light">Ask about the challenge</Link>
           </div>
         </div>

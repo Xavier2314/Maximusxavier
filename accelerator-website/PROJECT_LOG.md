@@ -67,3 +67,8 @@
 - Fixed: 7px sideways scroll on /events/register at 320px (grid columns now shrink, step headings wrap); 10px sideways scroll on /events at 1024px (html/body overflow-x: clip site-wide).
 - Bigger tap targets: Copy buttons, footer links, "link-arrow" links and header nav (44px where possible). Tap highlight in brand red; no double-tap zoom delay.
 - All 12-column layouts use grid-cols-1 on phones so long content can't push the page wider.
+
+## 100K Content Challenge: submission form live
+- Official submission form: https://forms.gle/9dVyUQMhhzQuD1JZ7 (DEFAULT_CONTESTS.submission_url).
+- Challenge page: "The countdown is on! Who's taking home the ₦100,000?", live countdown to 31 Oct 23:59 Lagos, "Submit your entry" buttons (hero, rules box, closing banner). Buttons hide automatically after the deadline.
+- Events page contest card shows "Submit entry".
