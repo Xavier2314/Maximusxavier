@@ -35,7 +35,7 @@ export function Header() {
         <Link href="/" aria-label="Accelerator Community home" className="shrink-0">
           <Logo variant="horizontal-reversed" width={scrolled ? 150 : 176} className="h-auto transition-[width] duration-500" priority />
         </Link>
-        <nav aria-label="Main" className="hidden lg:block">
+        <nav aria-label="Main" className="hidden xl:block">
           <ul className="flex items-center gap-9">
             {nav.slice(1).map((n) => (
               <li key={n.href}>
@@ -54,7 +54,7 @@ export function Header() {
           <Link href="/events#tickets" className="btn btn-red hidden min-h-11 px-5 sm:inline-flex">Register</Link>
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center text-white lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center text-white xl:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -73,7 +73,7 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.3 }}
-            className="h-[calc(100dvh-64px)] overflow-y-auto bg-navy lg:hidden"
+            className="h-[calc(100dvh-64px)] overflow-y-auto bg-navy xl:hidden"
           >
             <nav aria-label="Mobile" className="container-x flex flex-col py-8">
               {nav.map((n, i) => (

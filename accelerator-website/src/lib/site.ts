@@ -92,11 +92,22 @@ export const site = {
   registrationFormUrl: "https://forms.gle/q4Ah1D8sQVtc8uwA9",
 };
 
+// Sponsorship contact, supplied by Accelerator Community (October 2026).
+export const sponsorship = {
+  contactName: "Aluele Valentine",
+  contactOrg: "Accelerators Community",
+  whatsappDisplay: "08115774517",
+  whatsappUrl: "https://wa.me/2348115774517?text=" + encodeURIComponent("Hello, I'm interested in sponsoring Accelerators Events 2026."),
+  email: "xavierlevi485@gmail.com",
+  proposalPdf: "/downloads/Accelerators_Events_2026_Sponsorship_Proposal.pdf",
+};
+
 export const nav = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/founder", label: "Founder" },
   { href: "/events", label: "Events 2026" },
+  { href: "/sponsorship", label: "Sponsorship" },
   { href: "/contact", label: "Contact" },
 ];
 

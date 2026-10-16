@@ -80,3 +80,7 @@
 - All respect reduced-motion.
 - Hero centrepiece is now the animated brand mark (LogoMotion) instead of the abstract morph shape: the logo is split into its blue "A" and red "B" (public/brand/icon-part-a.png / -b.png), which fly in and lock together, then float/sway in 3D with pointer tilt, a masked light gleam, pulsing glow, rotating dashed ring and orbiting dots. Shown on all screen sizes (smaller on phones).
 - Fix: hero logo/morph positioned correctly (base `relative` class was overriding the `absolute` position passed in). Logo brightened: "A" recoloured to bright royal #3A63FF, "B" to #F02434, white rim glow + brighter pulsing halo.
+
+## Sponsorship
+- New page /sponsorship: opportunity (showcase, speak on stage, live Q&A, gifts), what we ask (tote bags, power banks, earpieces, cash or mix), three partnership options, contact (Aluele Valentine, WhatsApp only 08115774517, xavierlevi485@gmail.com), download of the general proposal PDF (public/downloads). Added to nav, footer and sitemap. Desktop nav now shows from xl (1280px); menu button below that (6 links).
+- Personalised proposal PDFs (THESPURHUB, DELL SURVIVE, WOLE MUSIC, Dove PhoneWorld) in deliverables/Sponsorship_Proposals.
