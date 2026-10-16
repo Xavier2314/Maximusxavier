@@ -14,6 +14,7 @@ export default async function EventSettingsPage() {
       <form action={updateEvent} className="mt-8 max-w-3xl space-y-5 bg-white p-6">
         {f("name", "Event name")}
         {f("theme", "Official theme")}
+        {f("themeTagline", "Theme tagline")}
         <div className="grid gap-4 sm:grid-cols-2">{f("startsAt", "Starts", "datetime-local")}{f("endsAt", "Ends", "datetime-local")}</div>
         <label className="flex items-center gap-3 text-sm"><input type="checkbox" name="timeConfirmed" defaultChecked={e.timeConfirmed} className="h-5 w-5" /> Start time is confirmed (otherwise only the date is shown)</label>
         {f("venueName", "Venue name")}

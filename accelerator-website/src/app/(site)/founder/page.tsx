@@ -58,7 +58,6 @@ export default function FounderPage() {
                 )}
                 <span className="absolute -bottom-0 right-0 h-2 w-2/3 bg-red" />
               </div>
-              {f.photo && f.photoCredit && <p className="mt-3 text-right text-[11px] uppercase tracking-[0.18em] text-mist">Photo: {f.photoCredit}</p>}
             </Reveal>
           </div>
         </div>

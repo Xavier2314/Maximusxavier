@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const e = await getEventSettings();
   return {
     title: e.name,
-    description: `${e.name}: recognition, awards, leadership training, inspiring speakers, networking and video competitions. Register now.`,
+    description: `${e.name}${e.theme ? ` — ${e.theme}` : ""}: recognition, awards, leadership training, inspiring speakers, networking and video competitions. Register now.`,
     alternates: { canonical: "/events" },
     openGraph: { title: e.name, description: "Celebrate excellence. Learn from exceptional trainers. Connect with leaders." },
   };
@@ -80,7 +80,13 @@ export default async function EventsPage() {
             </h1>
           </Reveal>
           <Reveal delay={0.12}>
-            {event.theme ? <p className="mt-8 font-display text-2xl italic md:text-3xl">&ldquo;{event.theme}&rdquo;</p> : <Pending label="Official theme to be announced" className="mt-8 text-mist" />}
+            {event.theme ? (
+              <div className="mt-8 max-w-3xl border-l-2 border-red pl-5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-mist">Theme</p>
+                <p className="mt-2 font-display text-3xl italic text-[#9DB2FF] md:text-5xl">{event.theme}</p>
+                {event.themeTagline && <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-white/90 md:text-base">{event.themeTagline}</p>}
+              </div>
+            ) : <Pending label="Official theme to be announced" className="mt-8 text-mist" />}
           </Reveal>
 
           <Reveal delay={0.18}>

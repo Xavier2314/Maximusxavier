@@ -35,6 +35,7 @@ export default async function RegisterPage() {
         <div className="container-x relative pb-16 pt-36 md:pb-20 md:pt-44">
           <p className="eyebrow">Registration</p>
           <h1 className="display-lg mt-5 max-w-3xl">Register for {event.name}</h1>
+          {event.theme && <p className="mt-4 font-display text-2xl italic text-[#9DB2FF]">{event.theme}</p>}
           <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-mist">
             <span className="inline-flex items-center gap-2"><CalendarDays size={18} className="text-red" aria-hidden="true" />{formatLagosDate(event.startsAt, true)}</span>
             {event.city && <span className="inline-flex items-center gap-2"><MapPin size={18} className="text-red" aria-hidden="true" />{event.city}</span>}

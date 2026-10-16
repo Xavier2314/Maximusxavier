@@ -74,7 +74,7 @@ export default async function HomePage() {
             <div key={k} className="flex gap-12" aria-hidden={k === 1}>
               <span>{event.name}</span><span>&#9670;</span>
               <span>{open ? `${open.name} registration now open${open.salesEnd ? ` until ${formatLagos(open.salesEnd)} WAT` : ""}` : "Registration details coming soon"}</span><span>&#9670;</span>
-              <span>{formatLagosDate(event.startsAt, true)}{event.city ? ` \u00b7 ${event.city}` : ""}</span><span>&#9670;</span><span>Registration from {formatNaira(MIN_FEE_KOBO)}</span><span>&#9670;</span><span>₦100K Content Challenge</span><span>&#9670;</span>
+              <span>{formatLagosDate(event.startsAt, true)}{event.city ? ` \u00b7 ${event.city}` : ""}</span><span>&#9670;</span>{event.theme && <><span>{event.theme}</span><span>&#9670;</span></>}<span>Registration from {formatNaira(MIN_FEE_KOBO)}</span><span>&#9670;</span><span>₦100K Content Challenge</span><span>&#9670;</span>
               <span>Recognition</span><span>&#9670;</span><span>Training</span><span>&#9670;</span><span>Networking</span><span>&#9670;</span><span>Competitions</span><span>&#9670;</span>
             </div>
           ))}
@@ -156,7 +156,13 @@ export default async function HomePage() {
             <Reveal>
               <p className="eyebrow">Featured event</p>
               <h2 id="featured-event" className="display-lg mt-5">{event.name}</h2>
-              {event.theme ? <p className="mt-4 font-display text-2xl italic text-[#9DB2FF]">&ldquo;{event.theme}&rdquo;</p> : <Pending label="Theme to be announced" className="mt-5 text-mist" />}
+              {event.theme ? (
+                <div className="mt-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-mist">Theme</p>
+                  <p className="mt-2 font-display text-3xl italic text-[#9DB2FF]">{event.theme}</p>
+                  {event.themeTagline && <p className="mt-3 text-sm font-semibold uppercase tracking-[0.14em] text-white/85">{event.themeTagline}</p>}
+                </div>
+              ) : <Pending label="Theme to be announced" className="mt-5 text-mist" />}
               <p className="lead mt-8 max-w-lg text-mist">
                 A celebration of achievement and growth: recognition for outstanding members, leadership training, inspiring speakers, networking and video competitions.
               </p>

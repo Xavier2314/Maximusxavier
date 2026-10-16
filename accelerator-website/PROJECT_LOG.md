@@ -38,3 +38,8 @@
 - Draft registration fields are used until the official form is supplied.
 - Pillars (People, Growth, Opportunity, Impact) come from the brand's roll-up banner.
 - Headline "Accelerating people. Building leaders. Celebrating excellence." is the brief's working direction, not an approved slogan.
+
+## Theme, photos, founder credit
+- Official theme confirmed: "The Summit of Excellence" with tagline "Rise with Purpose. Lead with Power. Reign with Excellence." (DEFAULT_EVENT.theme / themeTagline; editable in admin).
+- Two more community photos added to the gallery (yellow jerseys group, burgundy attire).
+- Photo credit line removed from under the founder portrait, at the client's request.

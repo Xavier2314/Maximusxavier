@@ -67,6 +67,7 @@ export async function updateEvent(form: FormData) {
   const value = {
     name: s(form, "name") ?? "Accelerators Events 2026",
     theme: s(form, "theme"),
+    themeTagline: s(form, "themeTagline"),
     startsAt: lagosLocalToIso(String(form.get("startsAt") ?? "")),
     timeConfirmed: b(form, "timeConfirmed"),
     endsAt: lagosLocalToIso(String(form.get("endsAt") ?? "")),
