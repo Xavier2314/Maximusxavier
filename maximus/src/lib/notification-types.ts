@@ -1,6 +1,7 @@
 /** Every notification type the platform sends, grouped for the preferences screen. */
 export const NOTIFICATION_TYPES = [
   { key: "goal_submitted", label: "New goal submissions from your team", group: "Team" },
+  { key: "growth_focus", label: "Weekly growth focus (what to work on)", group: "Growth" },
   { key: "sponsor_feedback", label: "Feedback from your sponsor", group: "Growth" },
   { key: "evaluation_reminder", label: "Evaluation reminders", group: "Reminders" },
   { key: "goal_reminder", label: "Monthly goal-setting reminders", group: "Reminders" },

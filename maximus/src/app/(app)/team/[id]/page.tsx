@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, CalendarCheck, ClipboardCheck, Flame, History, Mail, Phone, ShoppingBag, Target } from "lucide-react";
+import { ArrowLeft, CalendarCheck, Compass, ClipboardCheck, Flame, History, Mail, Phone, ShoppingBag, Target } from "lucide-react";
 import { TrendLines } from "@/components/charts";
+import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, Progress, StatCard } from "@/components/ui/misc";
 import { ATTENDANCE_LABELS, AttendanceBadge } from "@/components/attendance-badge";
 import { ROLE_LABELS, requireViewer } from "@/lib/auth";
+import { topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
 import type { Attendance, Evaluation, GoalProgress, MonthlyGoal, Order, Profile, RoleKey } from "@/lib/types";
 import { formatDate, formatMoney, formatRelative, formatTime, monthStart, percent, todayIn } from "@/lib/utils";
@@ -21,14 +23,19 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
   if (!member) notFound();
 
   const month = monthStart(todayIn());
-  const [{ data: roles }, { data: attendance }, { data: goal }, { data: evaluations }, { data: orders }, { data: streak }] = await Promise.all([
+  const [{ data: roles }, { data: attendance }, { data: goal }, { data: evaluations }, { data: orders }, { data: streak }, { data: focusData }] = await Promise.all([
     supabase.from("user_roles").select("roles(key)").eq("user_id", id),
     supabase.from("attendance").select("*").eq("user_id", id).order("check_in_at", { ascending: false }).limit(8).returns<Attendance[]>(),
     supabase.from("monthly_goals").select("*").eq("user_id", id).eq("month", month).maybeSingle<MonthlyGoal>(),
     supabase.from("evaluations").select("*").eq("user_id", id).order("period_date", { ascending: false }).limit(8).returns<Evaluation[]>(),
     supabase.from("orders").select("*").eq("member_id", id).order("order_date", { ascending: false }).limit(5).returns<Order[]>(),
     supabase.rpc("attendance_streak", { p_user: id }),
+    supabase.rpc("growth_focus", { p_user: id }),
   ]);
+  const growth = focusData as GrowthFocus | null;
+  const focusTop = topFocus(growth);
+  const focusCourses = await coursesForFocus(supabase, focusTop);
+  const firstName = member.full_name.split(" ")[0];
   const progress = goal ? ((await supabase.rpc("goal_progress", { p_goal: goal.id })).data as GoalProgress | null) : null;
   // Activity is only returned by RLS to authorised leaders; a member viewing their sponsor sees the profile only.
   const canSeeActivity = streak !== null;
@@ -80,6 +87,19 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
             <StatCard label="Goal status" value={goal ? goal.status.replace("_", " ") : "Not set"} icon={<Target className="size-4" />} tone="navy" />
             <StatCard label="Recent orders" value={formatMoney((orders ?? []).reduce((a, o) => a + Number(o.amount), 0))} hint={`${orders?.length ?? 0} orders`} icon={<ShoppingBag className="size-4" />} tone="green" />
           </section>
+
+          {growth && (
+            <Card className="mt-6">
+              <CardHeader title={`What ${firstName} should work on`} icon={<Compass className="size-4" />}
+                description="Coach them on these areas first. Share the lessons with them." />
+              <CardBody className="space-y-5">
+                <DuplicationSummary focus={growth} who={firstName} />
+                {focusTop.length > 0
+                  ? <FocusList areas={focusTop} who={firstName} courses={focusCourses} />
+                  : <p className="text-sm text-fg-muted">{firstName} is on target in every area. Recognise them!</p>}
+              </CardBody>
+            </Card>
+          )}
 
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
             <Card>

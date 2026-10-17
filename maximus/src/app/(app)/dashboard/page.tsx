@@ -1,13 +1,16 @@
 import Link from "next/link";
 import {
-  ArrowRight, Bell, Cake, CalendarClock, ClipboardCheck, Flame, GraduationCap, MapPin, PiggyBank, Sparkles,
+  ArrowRight, Bell, Cake, Compass, CalendarClock, ClipboardCheck, Flame, GraduationCap, MapPin, PiggyBank, Sparkles,
   Target, TrendingUp, TriangleAlert, Users,
 } from "lucide-react";
 import { TrendArea } from "@/components/charts";
+import { FocusPopup } from "@/components/focus-popup";
+import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, Progress, ProgressRing, StatCard } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
+import { FOCUS, topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
 import type { AccountBalance, Attendance, GoalProgress, MonthlyGoal, Notification, TeamMemberStat } from "@/lib/types";
 import {
@@ -16,6 +19,13 @@ import {
 } from "@/lib/utils";
 
 export const metadata = { title: "Dashboard" };
+
+function isoWeek(day: string) {
+  const d = new Date(`${day}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const week = Math.ceil(((d.getTime() - Date.UTC(d.getUTCFullYear(), 0, 1)) / 86400000 + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+}
 
 function greeting(tz: string) {
   const h = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: tz }).format(new Date()));
@@ -32,7 +42,7 @@ export default async function DashboardPage() {
 
   const [
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { data: balances },
-    { data: notifications }, { data: birthdays }, { data: lessonsDone }, { data: publishedLessons },
+    { data: notifications }, { data: birthdays }, { data: lessonsDone }, { data: publishedLessons }, { data: focusData },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -45,7 +55,12 @@ export default async function DashboardPage() {
     supabase.rpc("upcoming_birthdays", { p_days: 14 }),
     supabase.from("course_progress").select("lesson_id").eq("user_id", viewer.id),
     supabase.from("lessons").select("id", { count: "exact", head: false }),
+    supabase.rpc("growth_focus"),
   ]);
+  const growth = focusData as GrowthFocus | null;
+  const focusTop = topFocus(growth);
+  const focusCourses = await coursesForFocus(supabase, focusTop);
+  const focusWeek = isoWeek(today);
 
   const progress = goal ? ((await supabase.rpc("goal_progress", { p_goal: goal.id })).data as GoalProgress | null) : null;
   const savings = balances?.find((b) => b.kind === "savings");
@@ -107,6 +122,10 @@ export default async function DashboardPage() {
         </div>
       </section>
 
+      <FocusPopup week={focusWeek} areas={focusTop.map((a) => ({
+        key: a.key, title: FOCUS[a.key].title, why: FOCUS[a.key].why(a, "You"), tip: FOCUS[a.key].tips[0],
+      }))} />
+
       {/* Personal stats */}
       <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Your numbers this month">
         <StatCard label="Earnings entered" value={formatMoney(progress?.income ?? 0)} hint="From your evaluations this month" icon={<TrendingUp className="size-4" />} />
@@ -117,6 +136,18 @@ export default async function DashboardPage() {
           icon={<ClipboardCheck className="size-4" />} tone={evaluation ? "green" : "lime"} />
         <StatCard label="Learning" value={`${learningPct}%`} hint={`${lessonsDone?.length ?? 0} lessons completed`} icon={<GraduationCap className="size-4" />} tone="navy" />
       </section>
+
+      {growth && focusTop.length > 0 && (
+        <Card>
+          <CardHeader title="Your focus this week" icon={<Compass className="size-4" />}
+            description="The three areas that will grow you and your team the most right now"
+            action={<Link href="/growth" className="text-sm font-medium text-primary hover:underline">Open</Link>} />
+          <CardBody className="space-y-5">
+            <DuplicationSummary focus={growth} />
+            <FocusList areas={focusTop} courses={focusCourses} compact />
+          </CardBody>
+        </Card>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Goals */}

@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ChevronRight, List, Network, Search } from "lucide-react";
+import { ChevronRight, List, Network, Search, Workflow } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/form";
 import { Avatar, Badge } from "@/components/ui/misc";
+import type { FocusKey } from "@/lib/growth";
 import type { TeamMemberStat } from "@/lib/types";
 import { cn, formatMoney, formatRelative } from "@/lib/utils";
+import { OrgChart } from "./org-chart";
 
 type Node = TeamMemberStat & { children: Node[] };
 
@@ -70,10 +72,17 @@ function TreeNode({ node, level }: { node: Node; level: number }) {
   );
 }
 
-export function TeamExplorer({ rootId, rootName, rootAvatar, members }: {
-  rootId: string; rootName: string; rootAvatar: string | null; members: TeamMemberStat[];
+const VIEWS = [
+  { key: "chart", label: "Chart view", icon: Workflow },
+  { key: "tree", label: "Tree view", icon: Network },
+  { key: "list", label: "List view", icon: List },
+] as const;
+
+export function TeamExplorer({ rootId, rootName, rootCode, rootAvatar, members, focus, target }: {
+  rootId: string; rootName: string; rootCode: string; rootAvatar: string | null; members: TeamMemberStat[];
+  focus: Record<string, FocusKey[]>; target: number;
 }) {
-  const [view, setView] = useState<"tree" | "list">("tree");
+  const [view, setView] = useState<(typeof VIEWS)[number]["key"]>("chart");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"all" | "active" | "inactive">("all");
   const [level, setLevel] = useState("all");
@@ -104,18 +113,20 @@ export function TeamExplorer({ rootId, rootName, rootAvatar, members }: {
             {Array.from({ length: maxDepth }, (_, i) => <option key={i} value={i + 1}>Level {i + 1}</option>)}
           </Select>
           <div className="flex rounded-xl bg-surface-muted p-1" role="group" aria-label="View">
-            {(["tree", "list"] as const).map((v) => (
-              <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v}
-                className={cn("grid size-9 place-items-center rounded-lg", view === v ? "bg-surface text-primary shadow-sm" : "text-fg-subtle")}
-                aria-label={v === "tree" ? "Tree view" : "List view"}>
-                {v === "tree" ? <Network className="size-4" /> : <List className="size-4" />}
+            {VIEWS.map((v) => (
+              <button key={v.key} type="button" onClick={() => setView(v.key)} aria-pressed={view === v.key}
+                className={cn("grid size-9 place-items-center rounded-lg", view === v.key ? "bg-surface text-primary shadow-sm" : "text-fg-subtle")}
+                aria-label={v.label} title={v.label}>
+                <v.icon className="size-4" />
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {view === "tree" && !filtering ? (
+      {view === "chart" && !filtering ? (
+        <OrgChart rootId={rootId} rootName={rootName} rootCode={rootCode} rootAvatar={rootAvatar} members={members} focus={focus} target={target} />
+      ) : view === "tree" && !filtering ? (
         <div className="overflow-x-auto p-4">
           <div className="mb-2 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-brand-navy to-[#1e3a8a] px-3 py-2.5 text-white">
             <Avatar name={rootName} src={rootAvatar} size={38} className="ring-white/20" />

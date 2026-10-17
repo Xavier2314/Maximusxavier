@@ -385,6 +385,30 @@ do $$ declare r jsonb; r2 jsonb; begin
   raise notice 'PASS: daily reminders % / rerun %', r, r2;
 end $$;
 
+-- Growth focus
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a1');
+do $$ declare f jsonb; begin
+  f := public.growth_focus();
+  assert (f ->> 'directs')::int = 1 and (f ->> 'team_size')::int = 3, 'leader focus counts directs and team';
+  assert (f -> 'areas' -> 0 ->> 'key') in ('duplication', 'recruiting', 'team_prospecting', 'prospecting'), 'most urgent area first';
+  assert public.growth_focus('00000000-0000-0000-0000-0000000000d1') is not null, 'leader may see a downline focus';
+  assert (select count(*) from public.team_focus()) = 3, 'team focus covers the branch';
+  raise notice 'PASS: growth focus for leader';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c1');
+select pg_temp.expect_error($$select public.growth_focus('00000000-0000-0000-0000-0000000000b1')$$, 'member reads sponsor growth focus');
+select pg_temp.expect_error($$select public.run_weekly_growth_focus()$$, 'member triggers weekly focus job');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+select pg_temp.expect_error($$select * from public.team_focus('00000000-0000-0000-0000-0000000000a1')$$, 'outsider reads leader team focus');
+select pg_temp.act_as(null);
+update public.profiles set joined_at = now() - interval '10 days';
+do $$ declare n int; n2 int; begin
+  n := public.run_weekly_growth_focus();
+  n2 := public.run_weekly_growth_focus();
+  assert n > 0 and n2 = 0, 'weekly focus notifies once per week';
+  raise notice 'PASS: weekly growth focus % / rerun %', n, n2;
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
