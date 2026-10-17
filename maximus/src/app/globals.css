@@ -35,6 +35,11 @@
   --danger-soft: #fee2e2;
   --ring: #305ee6;
   --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12);
+  /* Chart series (validated for CVD separation and contrast on each surface) */
+  --chart-1: #305ee6;
+  --chart-2: #4f9a10;
+  --chart-grid: #e7ebf3;
+  --chart-axis: #8792a8;
 }
 
 .dark {
@@ -58,6 +63,10 @@
   --danger-soft: #3b1414;
   --ring: #6489f3;
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(0 0 0 / 0.6);
+  --chart-1: #6489f3;
+  --chart-2: #5fa81a;
+  --chart-grid: #1d2942;
+  --chart-axis: #6f7d99;
 }
 
 @theme inline {
