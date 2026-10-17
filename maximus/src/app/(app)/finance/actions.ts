@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { dispatchPushSoon } from "@/lib/push";
 import { friendlyError } from "@/lib/utils";
 
 export type FinanceState = { ok: boolean; message: string; errors?: Record<string, string[] | undefined> } | null;
@@ -80,6 +81,7 @@ export async function decideTransactionAction(id: string, approve: boolean, reas
   const { error } = await supabase.rpc("decide_transaction", { p_id: id, p_approve: approve, p_reason: reason || null });
   if (error) return { ok: false, message: friendlyError(error) };
   revalidatePath("/admin/approvals");
+  dispatchPushSoon();
   return { ok: true, message: approve ? "Confirmed." : "Rejected." };
 }
 
@@ -102,5 +104,6 @@ export async function recordAdjustmentAction(_prev: FinanceState, formData: Form
   });
   if (error) return { ok: false, message: friendlyError(error) };
   revalidatePath("/admin/approvals");
+  dispatchPushSoon();
   return { ok: true, message: "Adjustment recorded in the ledger and audit log." };
 }

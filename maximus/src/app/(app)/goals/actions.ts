@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { dispatchPushSoon } from "@/lib/push";
 import { friendlyError } from "@/lib/utils";
 
 export type GoalFormState = { ok: boolean; message: string; errors?: Record<string, string[] | undefined> } | null;
@@ -62,6 +63,7 @@ export async function saveGoalAction(_prev: GoalFormState, formData: FormData): 
   if (error) return { ok: false, message: friendlyError(error) };
   revalidatePath("/goals");
   revalidatePath("/dashboard");
+  dispatchPushSoon();
   redirect(`/goals/${data.id}?saved=${v.intent}`);
 }
 
@@ -84,6 +86,7 @@ export async function reviewGoalAction(_prev: GoalFormState, formData: FormData)
   });
   if (error) return { ok: false, message: friendlyError(error) };
   revalidatePath(`/goals/${v.goal_id}`);
+  dispatchPushSoon();
   return { ok: true, message: v.action === "approve" ? "Goals approved. The member has been notified." : v.action === "request_revision" ? "Revision requested. The member has been notified." : "Feedback sent." };
 }
 

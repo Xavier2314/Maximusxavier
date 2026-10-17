@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { dispatchPushSoon } from "@/lib/push";
 import { friendlyError } from "@/lib/utils";
 
 export type OrderState = { ok: boolean; message: string; errors?: Record<string, string[] | undefined> } | null;
@@ -36,6 +37,7 @@ export async function recordOrderAction(_prev: OrderState, formData: FormData): 
   if (error) return { ok: false, message: friendlyError(error) };
   revalidatePath("/orders");
   revalidatePath("/dashboard");
+  dispatchPushSoon();
   return { ok: true, message: "Order recorded. Your sponsor has been notified." };
 }
 

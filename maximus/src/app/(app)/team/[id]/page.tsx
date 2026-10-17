@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, CalendarCheck, ClipboardCheck, Flame, Mail, Phone, ShoppingBag, Target } from "lucide-react";
+import { ArrowLeft, CalendarCheck, ClipboardCheck, Flame, History, Mail, Phone, ShoppingBag, Target } from "lucide-react";
 import { TrendLines } from "@/components/charts";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, Progress, StatCard } from "@/components/ui/misc";
-import { AttendanceBadge } from "@/components/attendance-badge";
+import { ATTENDANCE_LABELS, AttendanceBadge } from "@/components/attendance-badge";
 import { ROLE_LABELS, requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { Attendance, Evaluation, GoalProgress, MonthlyGoal, Order, Profile, RoleKey } from "@/lib/types";
-import { formatDate, formatMoney, formatTime, monthStart, percent, todayIn } from "@/lib/utils";
+import { formatDate, formatMoney, formatRelative, formatTime, monthStart, percent, todayIn } from "@/lib/utils";
 
 export const metadata = { title: "Team member" };
 
@@ -33,6 +33,13 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
   // Activity is only returned by RLS to authorised leaders; a member viewing their sponsor sees the profile only.
   const canSeeActivity = streak !== null;
   const roleKeys = ((roles ?? []) as unknown as { roles: { key: RoleKey } | null }[]).map((r) => r.roles?.key).filter(Boolean) as RoleKey[];
+  const timeline = [
+    { key: `joined`, at: member.joined_at, title: "Joined Maximus", dot: "bg-brand-lime" },
+    ...(attendance ?? []).map((a) => ({ key: `a${a.id}`, at: a.check_in_at, title: "Checked in", detail: ATTENDANCE_LABELS[a.status], dot: "bg-brand-blue" })),
+    ...(evaluations ?? []).map((e) => ({ key: `e${e.id}`, at: e.submitted_at, title: `Completed the ${formatDate(e.period_date, { day: "numeric", month: "short" })} evaluation`, detail: `${e.prospects} prospects`, dot: "bg-brand-green" })),
+    ...(orders ?? []).map((o) => ({ key: `o${o.id}`, at: o.created_at, title: "Recorded an order", detail: formatMoney(o.amount), dot: "bg-[#0e7490]" })),
+    ...(goal?.submitted_at ? [{ key: "g", at: goal.submitted_at, title: `Submitted ${formatDate(goal.month, { month: "long" })} goals`, dot: "bg-brand-navy dark:bg-white" }] : []),
+  ].map((t) => ({ detail: undefined as string | undefined, ...t })).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 12);
   const trend = [...(evaluations ?? [])].reverse().map((e) => ({
     period: formatDate(e.period_date, { day: "numeric", month: "short" }), prospects: e.prospects, followups: e.follow_ups,
   }));
@@ -122,6 +129,22 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                   ))}
                 </ul>
               ) : <p className="py-6 text-center text-sm text-fg-muted">No attendance recorded yet.</p>}
+            </CardBody>
+          </Card>
+          <Card className="mt-6">
+            <CardHeader title="Activity timeline" icon={<History className="size-4" />} />
+            <CardBody className="pt-3">
+              {timeline.length > 0 ? (
+                <ol className="relative ml-2 space-y-4 border-l-2 border-border pl-5">
+                  {timeline.map((t) => (
+                    <li key={t.key} className="relative">
+                      <span className={`absolute -left-[27px] top-1 size-3 rounded-full ring-4 ring-surface ${t.dot}`} aria-hidden />
+                      <p className="text-sm font-medium">{t.title}</p>
+                      <p className="text-xs text-fg-subtle">{formatRelative(t.at)}{t.detail ? ` · ${t.detail}` : ""}</p>
+                    </li>
+                  ))}
+                </ol>
+              ) : <p className="py-6 text-center text-sm text-fg-muted">No activity yet.</p>}
             </CardBody>
           </Card>
           {member.bio && <Card className="mt-6"><CardBody><p className="text-sm text-fg-muted">“{member.bio}”</p></CardBody></Card>}

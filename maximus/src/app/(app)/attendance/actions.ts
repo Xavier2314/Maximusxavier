@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { dispatchPushSoon } from "@/lib/push";
 import { friendlyError } from "@/lib/utils";
 import type { Attendance } from "@/lib/types";
 
@@ -72,5 +73,6 @@ export async function reviewCorrectionAction(id: string, approve: boolean, note?
   if (error) return { ok: false, message: friendlyError(error) };
   revalidatePath("/admin/approvals");
   revalidatePath("/attendance/live");
+  dispatchPushSoon();
   return { ok: true, message: approve ? "Correction approved." : "Correction rejected." };
 }

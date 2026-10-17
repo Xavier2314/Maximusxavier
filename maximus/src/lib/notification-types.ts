@@ -1,0 +1,20 @@
+/** Every notification type the platform sends, grouped for the preferences screen. */
+export const NOTIFICATION_TYPES = [
+  { key: "goal_submitted", label: "New goal submissions from your team", group: "Team" },
+  { key: "sponsor_feedback", label: "Feedback from your sponsor", group: "Growth" },
+  { key: "evaluation_reminder", label: "Evaluation reminders", group: "Reminders" },
+  { key: "goal_reminder", label: "Monthly goal-setting reminders", group: "Reminders" },
+  { key: "evaluation_completed", label: "Team member completed an evaluation", group: "Team" },
+  { key: "team_registration", label: "New team registrations", group: "Team" },
+  { key: "order_recorded", label: "Team orders", group: "Team" },
+  { key: "order_milestone", label: "Sales milestones", group: "Growth" },
+  { key: "fund_update", label: "Savings and payment updates", group: "Finance" },
+  { key: "attendance_update", label: "Attendance correction decisions", group: "Growth" },
+  { key: "birthday", label: "Birthdays", group: "Community" },
+  { key: "anniversary", label: "Membership anniversaries", group: "Community" },
+  { key: "recognition", label: "Recognition posts", group: "Community" },
+  { key: "training_announcement", label: "Training announcements", group: "Community" },
+  { key: "admin_announcement", label: "Administrative announcements", group: "Community" },
+] as const;
+
+export type NotificationTypeKey = (typeof NOTIFICATION_TYPES)[number]["key"];

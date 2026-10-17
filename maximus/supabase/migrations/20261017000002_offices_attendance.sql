@@ -249,6 +249,11 @@ begin
     reviewer_id = auth.uid(), reviewer_note = nullif(trim(p_note), ''), reviewed_at = now()
   where id = p_id returning * into v_c;
 
+  -- notify() is defined in migration 0003; plpgsql resolves it at call time.
+  perform notify(v_c.user_id, 'attendance_update',
+    case when p_approve then 'Attendance correction approved' else 'Attendance correction declined' end,
+    coalesce(nullif(trim(p_note), ''), to_char(v_c.requested_date, 'FMDDth Mon')), '/attendance',
+    jsonb_build_object('correction_id', p_id));
   perform write_audit(case when p_approve then 'attendance_correction_approved' else 'attendance_correction_rejected' end,
                       'attendance_correction', p_id::text, jsonb_build_object('member', v_c.user_id));
   return v_c;

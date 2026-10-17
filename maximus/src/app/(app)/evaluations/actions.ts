@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { dispatchPushSoon } from "@/lib/push";
 import { friendlyError } from "@/lib/utils";
 
 export type EvalFormState = { ok: boolean; message: string; errors?: Record<string, string[] | undefined> } | null;
@@ -45,6 +46,7 @@ export async function saveEvaluationAction(_prev: EvalFormState, formData: FormD
   }
   revalidatePath("/evaluations");
   revalidatePath("/dashboard");
+  dispatchPushSoon();
   redirect(`/evaluations/${data.id}?saved=1`);
 }
 
@@ -57,5 +59,6 @@ export async function addEvaluationFeedbackAction(_prev: EvalFormState, formData
   const { error } = await supabase.from("evaluation_feedback").insert({ ...parsed.data, author_id: user?.id });
   if (error) return { ok: false, message: friendlyError(error) };
   revalidatePath(`/evaluations/${parsed.data.evaluation_id}`);
+  dispatchPushSoon();
   return { ok: true, message: "Feedback sent." };
 }
