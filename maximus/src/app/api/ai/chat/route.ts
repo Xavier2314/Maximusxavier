@@ -99,8 +99,8 @@ export async function POST(request: NextRequest) {
           model: AI_MODEL,
           max_tokens: 4000,
           betas: ["server-side-fallback-2026-07-01"],
-          fallbacks: "default",
-          output_config: { effort: "medium" },
+          // Newer request fields, spread so older SDK type definitions still compile.
+          ...({ fallbacks: "default", output_config: { effort: "medium" } } as Record<string, unknown>),
           system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
           messages: messages as Anthropic.Beta.BetaMessageParam[],
         });

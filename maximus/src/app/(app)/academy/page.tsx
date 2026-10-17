@@ -18,7 +18,11 @@ export default async function AcademyPage() {
   const doneSet = new Set((done ?? []).map((d) => d.lesson_id as string));
   const cards: (CourseCardData & { id: string })[] = (courses ?? []).map((c) => {
     const ls = (lessons ?? []).filter((l) => l.course_id === c.id);
-    return { ...(c as CourseCardData & { id: string }), lessons: ls.length, completed: ls.filter((l) => doneSet.has(l.id as string)).length };
+    return {
+      id: c.id as string, slug: c.slug as string, title: c.title as string, description: (c.description as string | null) ?? null,
+      category: c.category as string, status: c.status as string, thumbnail_url: (c.thumbnail_url as string | null) ?? null,
+      level: (c.level as string | null) ?? null, lessons: ls.length, completed: ls.filter((l) => doneSet.has(l.id as string)).length,
+    };
   });
   const total = cards.reduce((a, c) => a + c.lessons, 0);
   const completed = cards.reduce((a, c) => a + c.completed, 0);
