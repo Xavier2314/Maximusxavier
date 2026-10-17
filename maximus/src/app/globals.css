@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+/* Dark mode follows the `.dark` class on <html> (set by ThemeScript). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* -----------------------------------------------------------------------------
+   Maximus brand tokens — from the official logo manual
+   Main:   Blue  #305EE6   Green #7ED321
+   Accent: Lime  #B5F44A   Navy  #0F172A
+   Typeface: Futura (Jost is used as the web fallback, see layout.tsx)
+----------------------------------------------------------------------------- */
+:root {
+  --brand-blue: #305ee6;
+  --brand-green: #7ed321;
+  --brand-lime: #b5f44a;
+  --brand-navy: #0f172a;
+
+  --bg: #f4f6fb;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-muted: #eef1f8;
+  --border: #e2e7f1;
+  --fg: #0f172a;
+  --fg-muted: #55617a;
+  --fg-subtle: #8792a8;
+  --primary: #305ee6;
+  --primary-hover: #244fd0;
+  --primary-fg: #ffffff;
+  --primary-soft: #e8eefd;
+  --success: #4f9a10;          /* darker green for text contrast on light */
+  --success-soft: #ecf9dc;
+  --warning: #b45309;
+  --warning-soft: #fef3c7;
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+  --ring: #305ee6;
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12);
+}
+
+.dark {
+  --bg: #0a0f1d;
+  --bg-elevated: #0f172a;
+  --surface: #111a2e;
+  --surface-muted: #17223a;
+  --border: #22304d;
+  --fg: #eef2fb;
+  --fg-muted: #a3afc7;
+  --fg-subtle: #6f7d99;
+  --primary: #4d76f0;
+  --primary-hover: #6489f3;
+  --primary-fg: #ffffff;
+  --primary-soft: #1a2a55;
+  --success: #8fe03a;
+  --success-soft: #1c3312;
+  --warning: #fbbf24;
+  --warning-soft: #3a2a0a;
+  --danger: #f87171;
+  --danger-soft: #3b1414;
+  --ring: #6489f3;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(0 0 0 / 0.6);
+}
+
+@theme inline {
+  --font-sans: var(--font-jost), "Futura", "Century Gothic", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-green: var(--brand-green);
+  --color-brand-lime: var(--brand-lime);
+  --color-brand-navy: var(--brand-navy);
+
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-ring: var(--ring);
+
+  --shadow-card: var(--shadow-card);
+  --radius-card: 1.25rem;
+
+  --animate-rise: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-fade: fade 0.3s ease-out both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-feature-settings: "ss01";
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--brand-lime) 70%, transparent);
+    color: var(--brand-navy);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  input, select, textarea, button { font: inherit; }
+}
+
+@layer components {
+  /* The signature Maximus hero: navy → blue with the trophy-wedge glow. */
+  .hero-gradient {
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgb(126 211 33 / 0.28) 0%, transparent 45%),
+      radial-gradient(90% 120% at 0% 100%, rgb(48 94 230 / 0.55) 0%, transparent 60%),
+      linear-gradient(135deg, #0f172a 0%, #172554 55%, #305ee6 130%);
+  }
+  .auth-gradient {
+    background:
+      radial-gradient(60% 50% at 85% 10%, rgb(181 244 74 / 0.22) 0%, transparent 60%),
+      radial-gradient(70% 60% at 10% 90%, rgb(48 94 230 / 0.5) 0%, transparent 65%),
+      #0f172a;
+  }
+  /* Wedge = the green "fan" from the logo, used as a decorative motif. */
+  .wedge {
+    clip-path: path("M4 6 C 30 -2, 70 -2, 96 6 C 99 7, 100 10, 98 13 C 80 42, 62 62, 52 72 C 50.5 73.5, 49.5 73.5, 48 72 C 38 62, 20 42, 2 13 C 0 10, 1 7, 4 6 Z");
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface-muted) 25%, var(--border) 37%, var(--surface-muted) 63%);
+    background-size: 400% 100%;
+    animation: var(--animate-shimmer);
+    border-radius: 0.75rem;
+  }
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

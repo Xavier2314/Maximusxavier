@@ -1,0 +1,142 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { z } from "zod";
+import { createClient } from "@/lib/supabase/server";
+import { env } from "@/lib/env";
+
+export type AuthState = { ok?: boolean; message?: string; errors?: Record<string, string[] | undefined> } | null;
+
+const phone = z.string().trim().regex(/^\+?[0-9\s-]{7,20}$/, "Enter a valid phone number");
+
+const registerSchema = z.object({
+  full_name: z.string().trim().min(2, "Enter your full name").max(120),
+  email: z.string().trim().toLowerCase().email("Enter a valid email address"),
+  phone,
+  whatsapp: phone,
+  date_of_birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Enter your date of birth").refine((d) => {
+    const age = (Date.now() - new Date(d).getTime()) / 31557600000;
+    return age >= 16 && age <= 100;
+  }, "You must be at least 16 years old"),
+  gender: z.enum(["female", "male", "other", "prefer_not_to_say", ""]).optional(),
+  office_id: z.string().uuid("Choose your office"),
+  referral_code: z.string().trim().max(20).optional(),
+  upline_member_id: z.string().trim().max(20).optional(),
+  password: z.string().min(8, "Use at least 8 characters").regex(/[A-Za-z]/, "Include a letter").regex(/[0-9]/, "Include a number"),
+  confirm_password: z.string(),
+  privacy: z.literal("on", { errorMap: () => ({ message: "You must accept the privacy policy" }) }),
+  celebrate_birthday: z.string().optional(),
+  timezone: z.string().max(64).optional(),
+}).refine((v) => v.password === v.confirm_password, { path: ["confirm_password"], message: "Passwords do not match" });
+
+export async function registerAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const parsed = registerSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    return { message: "Please fix the highlighted fields.", errors: parsed.error.flatten().fieldErrors };
+  }
+  const v = parsed.data;
+  const supabase = await createClient();
+
+  if (v.referral_code) {
+    const { data } = await supabase.rpc("lookup_sponsor", { code: v.referral_code });
+    if (!data || (data as unknown[]).length === 0) {
+      return { message: "We couldn't find that sponsor.", errors: { referral_code: ["Unknown referral code or member ID"] } };
+    }
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email: v.email,
+    password: v.password,
+    options: {
+      emailRedirectTo: `${env.siteUrl}/auth/callback?next=/onboarding`,
+      data: {
+        full_name: v.full_name,
+        phone: v.phone,
+        whatsapp: v.whatsapp,
+        date_of_birth: v.date_of_birth,
+        gender: v.gender || null,
+        office_id: v.office_id,
+        referral_code: v.referral_code || null,
+        upline_member_id: v.upline_member_id || null,
+        privacy_accepted_at: new Date().toISOString(),
+        birthday_visibility: v.celebrate_birthday === "on" ? "day_month" : "private",
+        timezone: v.timezone || "Africa/Lagos",
+      },
+    },
+  });
+
+  if (error) {
+    if (/already registered|already exists/i.test(error.message)) {
+      return { message: "An account with this email already exists. Try signing in.", errors: { email: ["Email already registered"] } };
+    }
+    if (/sponsor|referral/i.test(error.message)) {
+      return { message: "We couldn't find that sponsor.", errors: { referral_code: ["Unknown referral code or member ID"] } };
+    }
+    return { message: error.message };
+  }
+
+  // Optional profile picture: only possible right away if email confirmation is off.
+  const photo = formData.get("avatar");
+  if (data.session && photo instanceof File && photo.size > 0 && data.user) {
+    const ext = photo.type === "image/png" ? "png" : photo.type === "image/webp" ? "webp" : "jpg";
+    const path = `${data.user.id}/avatar-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("avatars").upload(path, photo, { contentType: photo.type, upsert: true });
+    if (!upErr) {
+      const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+      await supabase.from("profiles").update({ avatar_url: pub.publicUrl }).eq("id", data.user.id);
+    }
+  }
+
+  if (data.session) redirect("/onboarding");
+  return {
+    ok: true,
+    message: `Almost there! We sent a confirmation link to ${v.email}. Open it to activate your account — you can add your profile photo after signing in.`,
+  };
+}
+
+const loginSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Enter a valid email address"),
+  password: z.string().min(1, "Enter your password"),
+  next: z.string().optional(),
+});
+
+export async function loginAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const parsed = loginSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { message: "Please fix the highlighted fields.", errors: parsed.error.flatten().fieldErrors };
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email: parsed.data.email, password: parsed.data.password });
+  if (error) {
+    if (/confirm/i.test(error.message)) return { message: "Please confirm your email first — check your inbox for the link." };
+    return { message: "Incorrect email or password." };
+  }
+  const next = parsed.data.next && parsed.data.next.startsWith("/") && !parsed.data.next.startsWith("//") ? parsed.data.next : "/dashboard";
+  redirect(next);
+}
+
+export async function forgotPasswordAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const email = z.string().trim().toLowerCase().email().safeParse(formData.get("email"));
+  if (!email.success) return { message: "Enter a valid email address.", errors: { email: ["Enter a valid email address"] } };
+  const supabase = await createClient();
+  await supabase.auth.resetPasswordForEmail(email.data, { redirectTo: `${env.siteUrl}/auth/callback?next=/reset-password` });
+  // Same response whether or not the account exists, to avoid revealing members' emails.
+  return { ok: true, message: "If an account exists for that email, a reset link is on its way." };
+}
+
+export async function resetPasswordAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const schema = z.object({
+    password: z.string().min(8, "Use at least 8 characters").regex(/[A-Za-z]/, "Include a letter").regex(/[0-9]/, "Include a number"),
+    confirm_password: z.string(),
+  }).refine((v) => v.password === v.confirm_password, { path: ["confirm_password"], message: "Passwords do not match" });
+  const parsed = schema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { message: "Please fix the highlighted fields.", errors: parsed.error.flatten().fieldErrors };
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+  if (error) return { message: "This reset link has expired. Request a new one." };
+  redirect("/dashboard?password=updated");
+}
+
+export async function signOutAction() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/login");
+}
