@@ -21,7 +21,7 @@ Only **two accounts** are required to run it: Supabase and Vercel. Claude (AI) a
 ## 1. Set up Supabase
 
 1. Create a project at [supabase.com](https://supabase.com) (choose a region near Lagos, e.g. EU West).
-2. **Run the migrations** — in *SQL Editor*, run each file in `supabase/migrations/` **in order** (0001 → 0008). Or with the Supabase CLI: `supabase link` then `supabase db push`.
+2. **Run the migrations** — in *SQL Editor*, run each file in `supabase/migrations/` **in order** (0001 → 0009). Or with the Supabase CLI: `supabase link` then `supabase db push`.
 3. **Auth settings** — *Authentication → URL Configuration*:
    - Site URL: your Vercel URL (e.g. `https://maximus.vercel.app`)
    - Redirect URLs: add `https://YOUR-DOMAIN/auth/callback`
