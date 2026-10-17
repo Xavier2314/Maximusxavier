@@ -4,8 +4,10 @@
 -- app settings and audit logging.
 -- =============================================================================
 
-create extension if not exists pgcrypto;
-create extension if not exists pg_trgm;
+-- Supabase keeps extensions in the `extensions` schema.
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
+create extension if not exists pg_trgm with schema extensions;
 
 -- -----------------------------------------------------------------------------
 -- Shared helpers
@@ -81,7 +83,7 @@ create table public.profiles (
 create index profiles_sponsor_idx on public.profiles (sponsor_id);
 create index profiles_upline_idx on public.profiles (upline_id);
 create index profiles_office_idx on public.profiles (office_id);
-create index profiles_name_trgm_idx on public.profiles using gin (full_name gin_trgm_ops);
+create index profiles_name_trgm_idx on public.profiles using gin (full_name extensions.gin_trgm_ops);
 create index profiles_dob_md_idx on public.profiles ((extract(month from date_of_birth)), (extract(day from date_of_birth)));
 
 create trigger profiles_updated_at before update on public.profiles
