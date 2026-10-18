@@ -18,6 +18,7 @@ export const NAV: NavSection[] = [
     items: [
       { href: "/dashboard", label: "Home", icon: "home" },
       { href: "/planner", label: "Daily planner", icon: "list-checks" },
+      { href: "/tools", label: "Tools", icon: "timer" },
       { href: "/attendance", label: "Check in", icon: "map-pin" },
       { href: "/goals", label: "Goals", icon: "target" },
       { href: "/evaluations", label: "Evaluations", icon: "clipboard" },
@@ -98,7 +99,7 @@ export const BOTTOM_NAV: NavItem[] = [
   { href: "/dashboard", label: "Home", icon: "home" },
   { href: "/planner", label: "Planner", icon: "list-checks" },
   { href: "/attendance", label: "Check in", icon: "map-pin" },
-  { href: "/prospects", label: "Prospects", icon: "funnel" },
+  { href: "/tools", label: "Tools", icon: "timer" },
 ];
 
 export const OFFICE_BOTTOM_NAV: NavItem[] = [
@@ -134,6 +135,8 @@ export const QUICK_ACTIONS: { href: string; label: string; icon: string; keyword
   { href: "/attendance", label: "Check in", icon: "map-pin", keywords: "attendance office arrive" },
   { href: "/planner", label: "Add a task", icon: "list-checks", keywords: "todo plan today reminder" },
   { href: "/why", label: "My Why", icon: "heart", keywords: "motivation reason dream family" },
+  { href: "/tools/pomodoro", label: "Start a focus timer", icon: "timer", keywords: "pomodoro focus deep work countdown stopwatch" },
+  { href: "/tools/habits", label: "Tick a habit", icon: "timer", keywords: "habit streak routine" },
   { href: "/prospects", label: "Add a prospect", icon: "funnel", keywords: "lead contact invite" },
   { href: "/orders", label: "Record an order", icon: "bag", keywords: "fiverr upwork sale screenshot" },
   { href: "/evaluations/new", label: "Complete evaluation", icon: "clipboard", keywords: "5 day report" },

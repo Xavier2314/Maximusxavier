@@ -787,6 +787,36 @@ do $$ begin
   assert (select sponsor_id from public.profiles where id = '00000000-0000-0000-0000-0000000000a1') = '00000000-0000-0000-0000-0000000000f9', 'founder placed under sponsor';
 end $$;
 
+-- ---------------------------------------------------------------------------
+-- Tools: productivity foundation (0027)
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+insert into public.tool_goals (title, target, unit) values ('Contact 20 prospects', 20, 'prospects');
+insert into public.focus_sessions (kind, planned_seconds, started_at, ended_at, status, goal_id)
+  select 'pomodoro', 1500, now() - interval '30 minutes', now() - interval '5 minutes', 'completed', id from public.tool_goals limit 1;
+select pg_temp.expect_error($$insert into public.focus_sessions (kind) values ('stopwatch'); insert into public.focus_sessions (kind) values ('countdown')$$, 'two running timers at once');
+insert into public.habits (name) values ('Read 10 pages');
+insert into public.habit_checks (habit_id, check_date) select id, current_date from public.habits;
+do $$ declare s jsonb; begin
+  perform public.record_goal_progress((select id from public.tool_goals limit 1), 12, 'after focus', (select id from public.focus_sessions limit 1));
+  assert (select progress from public.tool_goals limit 1) = 12, 'progress recorded';
+  assert (select status from public.tool_goals limit 1) = 'active', 'not complete at 12/20';
+  perform public.record_goal_progress((select id from public.tool_goals limit 1), 20);
+  assert (select status from public.tool_goals limit 1) = 'completed', 'complete at 20/20';
+  assert (select public.focus_seconds(f) from public.focus_sessions f limit 1) = 1500, 'focus seconds from timestamps';
+  s := public.productivity_score();
+  assert (s ->> 'score') is not null and (s ->> 'focus_minutes')::int = 25, 'score computed';
+  raise notice 'PASS: timers, goals, habits and productivity score';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+do $$ begin
+  assert (select count(*) from public.tool_goals) = 0, 'sponsor cannot see private tool goals';
+  assert (select count(*) from public.focus_sessions) = 0, 'sponsor cannot see focus sessions';
+  raise notice 'PASS: tools data private to its owner';
+end $$;
+select pg_temp.expect_error($$select public.record_goal_progress((select id from public.tool_goals limit 1), 5)$$, 'update someone else goal');
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
