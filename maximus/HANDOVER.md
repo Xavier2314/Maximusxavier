@@ -1,0 +1,62 @@
+# Maximus — handover notes
+
+Live app: https://maximus-nine-sepia.vercel.app (Vercel project `maximus`, team `bridgepoint010-9599`).
+Code: this folder, branch `claude/busy-brown-w2nxvn` of `Xavier2314/Maximusxavier`.
+Database: Supabase project `ngbjtfyctxgteebiinjn`. Owner / Super Admin: Valentine Aluele (MX-001001).
+
+## Stack
+- Next.js 15 (App Router, server actions) on Vercel; Tailwind v4; Recharts.
+- Supabase Postgres with Row Level Security on every table. Access rules live in SQL
+  (`supabase/migrations/*.sql`), not only in the UI. Read `can_view_team_data`,
+  `can_manage_office` and `manages_office_of` first.
+- Claude (Anthropic SDK) for Maximus AI, form "talk to AI" modes, receipt checks and report fill-in.
+- Vercel Cron: `/api/cron/daily` (06:00 UTC) and `/api/cron/followups` (09:00 UTC).
+
+## Running the database tests
+```
+service postgresql start
+sudo -u postgres createdb mx_test
+cat supabase/tests/00_supabase_stub.sql supabase/migrations/*.sql \
+  <(grep -v "streak counts today" supabase/tests/01_security_tests.sql) \
+  | sudo -u postgres env PGTZ=Africa/Lagos psql -v ON_ERROR_STOP=1 -q -d mx_test -f -
+```
+A clean run ends with `ALL SECURITY TESTS PASSED`. Add a test for every new rule.
+
+## Applying migrations
+All migrations up to `0025_business_status` are applied to the live database.
+The Supabase MCP connection times out on large scripts and on anything containing a
+DELETE statement (it waits for a confirmation). Apply big migrations in pieces, or paste
+them into Supabase > SQL Editor.
+
+## What the app does (main areas)
+- My view vs Office view (office managers) / Team view (sponsors and leaders); the
+  switch is in the sidebar. Nav lives in `src/components/shell/nav.ts`.
+- Team tree (closure table `team_relationships`), sponsor line sees everything below,
+  never above. Uplines can add photos for, and remove, people who left (`remove_from_team`).
+- Roles: Member, Team Leader, Director, Office Admin, Admin (executive_admin), Super Admin,
+  plus Earnings Manager. Switch roles from a member's page or Members & roles.
+- Business status (Newbie … Five Diamond Director) on profiles; NeoLife ID in
+  `member_private` (visible up the line and to admins only).
+- Attendance (GPS + rotating QR), register, reports (CSV / print-to-PDF), coaching alerts.
+- Goals, evaluations, orders, savings/payments ledger, prospects with AI follow-up,
+  My Why, Daily Planner, Academy, announcements, support tickets.
+- Office branding (logo, colours, name) per office; platform white-label for Super Admin.
+  Removing "Powered by" costs a one-off ₦5,000 (bank details in `app_settings.white_label_fee`);
+  offices upload a receipt, Claude pre-checks it, a Super Admin approves in
+  Organisation > White-label payments.
+- Weekly office report (Office view > Weekly office report): AI or form, last weeks carried
+  over, branded printable PDF at `/print/office-report/[id]`.
+
+## Known follow-ups
+- Registration now creates confirmed accounts on the server (no confirmation email), so the
+  Supabase email rate limit can't block sign-ups. Password-reset emails still use Supabase's
+  built-in email service, which allows only a few emails per hour. For real volume, set up
+  custom SMTP (e.g. Resend or Brevo) in Supabase > Authentication > Emails > SMTP settings.
+- Ascend Foundation, Supermind and Richies-Blazers have no GPS coordinates yet
+  (set them in Office view > Office setup & QR) so their check-ins can't be location-verified.
+- Login/registration pages and the installed-app icon still use the Maximus brand.
+- Maximus Bank is a "coming soon" page; it needs a licensed partner (e.g. Paystack) and keys.
+- `npm` registry is blocked in the build sandbox used so far, so type-checking happened on
+  Vercel builds. Run `npm ci && npx tsc --noEmit && npx next lint` locally when you can.
+- Browser errors are reported to `/api/client-error` and appear in Vercel runtime logs as
+  `[client-error]`.

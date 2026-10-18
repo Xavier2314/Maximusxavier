@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient, createClient } from "@/lib/supabase/server";
 import { env } from "@/lib/env";
 
 export type AuthState = { ok?: boolean; message?: string; errors?: Record<string, string[] | undefined> } | null;
@@ -44,33 +44,57 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
     }
   }
 
-  const { data, error } = await supabase.auth.signUp({
-    email: v.email,
-    password: v.password,
-    options: {
-      emailRedirectTo: `${env.siteUrl}/auth/callback?next=/onboarding`,
-      data: {
-        full_name: v.full_name,
-        phone: v.phone,
-        whatsapp: v.whatsapp,
-        date_of_birth: v.date_of_birth,
-        gender: v.gender || null,
-        office_id: v.office_id,
-        referral_code: v.referral_code || null,
-        upline_member_id: v.upline_member_id || null,
-        privacy_accepted_at: new Date().toISOString(),
-        birthday_visibility: v.celebrate_birthday === "on" ? "day_month" : "private",
-        timezone: v.timezone || "Africa/Lagos",
-      },
-    },
-  });
+  const metadata = {
+    full_name: v.full_name,
+    phone: v.phone,
+    whatsapp: v.whatsapp,
+    date_of_birth: v.date_of_birth,
+    gender: v.gender || null,
+    office_id: v.office_id,
+    referral_code: v.referral_code || null,
+    upline_member_id: v.upline_member_id || null,
+    privacy_accepted_at: new Date().toISOString(),
+    birthday_visibility: v.celebrate_birthday === "on" ? "day_month" : "private",
+    timezone: v.timezone || "Africa/Lagos",
+  };
+
+  // Create the account on the server, already confirmed, then sign in. This sends no
+  // confirmation email, so Supabase's email rate limit can never block registration.
+  let data: { user: { id: string } | null; session: unknown } = { user: null, session: null };
+  let error: { message: string } | null = null;
+  let createdConfirmed = false;
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const created = await createAdminClient().auth.admin.createUser({
+      email: v.email, password: v.password, email_confirm: true, user_metadata: metadata,
+    });
+    if (created.error) {
+      error = created.error;
+    } else {
+      createdConfirmed = true;
+      const signedIn = await supabase.auth.signInWithPassword({ email: v.email, password: v.password });
+      data = { user: created.data.user, session: signedIn.data.session };
+    }
+  } else {
+    const res = await supabase.auth.signUp({
+      email: v.email, password: v.password,
+      options: { emailRedirectTo: `${env.siteUrl}/auth/callback?next=/onboarding`, data: metadata },
+    });
+    data = res.data;
+    error = res.error;
+  }
 
   if (error) {
-    if (/already registered|already exists/i.test(error.message)) {
+    if (/already (been )?registered|already exists/i.test(error.message)) {
       return { message: "An account with this email already exists. Try signing in.", errors: { email: ["Email already registered"] } };
     }
     if (/sponsor|referral/i.test(error.message)) {
       return { message: "We couldn't find that sponsor.", errors: { referral_code: ["Unknown referral code or member ID"] } };
+    }
+    if (/rate limit/i.test(error.message)) {
+      return { message: "Too many sign-ups at once. Please wait a minute and try again." };
+    }
+    if (/database error/i.test(error.message)) {
+      return { message: "We couldn't create your account. Check your sponsor's code and office, then try again." };
     }
     return { message: error.message };
   }
@@ -88,6 +112,7 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   }
 
   if (data.session) redirect("/onboarding");
+  if (createdConfirmed) return { ok: true, message: "Your account is ready. Sign in with your email and password to continue." };
   return {
     ok: true,
     message: `Almost there! We sent a confirmation link to ${v.email}. Open it to activate your account — you can add your profile photo after signing in.`,
@@ -106,7 +131,7 @@ export async function loginAction(_prev: AuthState, formData: FormData): Promise
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email: parsed.data.email, password: parsed.data.password });
   if (error) {
-    if (/confirm/i.test(error.message)) return { message: "Please confirm your email first — check your inbox for the link." };
+    if (/confirm/i.test(error.message)) return { message: "Please confirm your email first. Check your inbox for the link." };
     return { message: "Incorrect email or password." };
   }
   const next = parsed.data.next && parsed.data.next.startsWith("/") && !parsed.data.next.startsWith("//") ? parsed.data.next : "/dashboard";
