@@ -67,3 +67,73 @@ export async function settlePayment(opts: { txRef?: string | null; transactionId
   if (error) throw new Error(`apply_online_payment: ${error.message}`);
   return { result: String(data), txRef: tx.tx_ref };
 }
+
+// ---------------------------------------------------------------------------
+// Payouts (transfers to bank accounts)
+// ---------------------------------------------------------------------------
+export type Bank = { code: string; name: string };
+
+export async function listBanks(): Promise<Bank[]> {
+  const res = await fetch(`${BASE}/banks/NG`, { headers: { Authorization: `Bearer ${secretKey()}` }, next: { revalidate: 86400 } });
+  const json = (await res.json().catch(() => null)) as { status?: string; data?: { code: string; name: string }[] } | null;
+  if (!res.ok || json?.status !== "success" || !json.data) return [];
+  return json.data.map((b) => ({ code: b.code, name: b.name })).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** Ask the bank for the account holder's name before money is sent. */
+export async function resolveAccount(accountNumber: string, bankCode: string): Promise<string | null> {
+  try {
+    const json = await flw<{ status: string; data?: { account_name?: string } }>("/accounts/resolve", {
+      method: "POST", body: JSON.stringify({ account_number: accountNumber, account_bank: bankCode }),
+    });
+    return json.status === "success" ? json.data?.account_name ?? null : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function createTransfer(input: { reference: string; bankCode: string; accountNumber: string; amount: number; narration: string }) {
+  const res = await fetch(`${BASE}/transfers`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${secretKey()}`, "Content-Type": "application/json" },
+    cache: "no-store",
+    body: JSON.stringify({
+      account_bank: input.bankCode, account_number: input.accountNumber, amount: input.amount, currency: "NGN", debit_currency: "NGN",
+      narration: input.narration.slice(0, 80), reference: input.reference,
+    }),
+  });
+  const json = (await res.json().catch(() => null)) as { status?: string; message?: string; data?: { id?: number; status?: string } } | null;
+  return { ok: res.ok && json?.status === "success", id: json?.data?.id ?? null, status: json?.data?.status ?? null, message: json?.message ?? `HTTP ${res.status}` };
+}
+
+/** Re-check a transfer with Flutterwave and settle the payout. Safe to call more than once. */
+export async function settleTransfer(opts: { reference: string; transferId?: number | null }) {
+  let id = opts.transferId ?? null;
+  let status: string | null = null, message: string | null = null;
+  if (id) {
+    const json = await flw<{ status: string; data?: { id: number; status: string; reference: string; complete_message?: string } }>(`/transfers/${id}`);
+    if (json.data?.reference !== opts.reference) return "mismatch";
+    status = json.data?.status ?? null; message = json.data?.complete_message ?? null;
+  } else {
+    const json = await flw<{ status: string; data?: { id: number; status: string; reference: string; complete_message?: string }[] }>(`/transfers?reference=${encodeURIComponent(opts.reference)}`);
+    const t = json.data?.find((x) => x.reference === opts.reference);
+    if (!t) return "not_found";
+    id = t.id; status = t.status; message = t.complete_message ?? null;
+  }
+  if (status !== "SUCCESSFUL" && status !== "FAILED") return "pending";
+  const { data, error } = await createAdminClient().rpc("finish_payout", {
+    p_reference: opts.reference, p_success: status === "SUCCESSFUL", p_provider_id: id, p_message: message,
+  });
+  if (error) throw new Error(`finish_payout: ${error.message}`);
+  return String(data);
+}
+
+/** Money available in the Flutterwave account for payouts (NGN). */
+export async function payoutBalance(): Promise<number | null> {
+  try {
+    const json = await flw<{ status: string; data?: { available_balance?: number } }>("/balances/NGN");
+    return json.status === "success" ? Number(json.data?.available_balance ?? 0) : null;
+  } catch {
+    return null;
+  }
+}

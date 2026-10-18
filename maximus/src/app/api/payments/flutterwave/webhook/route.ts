@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { isFlutterwaveConfigured, settlePayment } from "@/lib/flutterwave";
+import { isFlutterwaveConfigured, settlePayment, settleTransfer } from "@/lib/flutterwave";
 
 export const dynamic = "force-dynamic";
 
@@ -16,8 +16,19 @@ export async function POST(request: Request) {
   if (!expected || !got || !sameSecret(got, expected)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!isFlutterwaveConfigured()) return NextResponse.json({ error: "Not configured" }, { status: 503 });
 
-  const body = (await request.json().catch(() => null)) as { event?: string; data?: { id?: number; tx_ref?: string } } | null;
+  const body = (await request.json().catch(() => null)) as { event?: string; "event.type"?: string; data?: { id?: number; tx_ref?: string; reference?: string } } | null;
   const data = body?.data;
+  // Payouts we sent (references start with MXP-).
+  if (data?.reference?.startsWith("MXP-") || body?.event?.startsWith("transfer") || body?.["event.type"] === "Transfer") {
+    if (!data?.reference?.startsWith("MXP-")) return NextResponse.json({ ok: true, ignored: true });
+    try {
+      const r = await settleTransfer({ reference: data.reference, transferId: data.id ?? null });
+      return NextResponse.json({ ok: true, result: r });
+    } catch (e) {
+      console.error("[flutterwave-webhook transfer]", e);
+      return NextResponse.json({ error: "Could not process" }, { status: 500 });
+    }
+  }
   if (!data?.id && !data?.tx_ref) return NextResponse.json({ ok: true, ignored: true });
   try {
     const r = await settlePayment({ transactionId: data.id ?? null, txRef: data.tx_ref ?? null });

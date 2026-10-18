@@ -1,22 +1,21 @@
 import Link from "next/link";
-import { ArrowDownLeft, ArrowUpRight, BadgeCheck, CreditCard, HandCoins, Landmark, PiggyBank, Receipt, Send, ShieldCheck, Users } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, BadgeCheck, CreditCard, HandCoins, KeyRound, Landmark, Lock, PiggyBank, Receipt, Send, ShieldCheck, Users } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge, EmptyState, PageHeader } from "@/components/ui/misc";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { requireViewer } from "@/lib/auth";
-import { isFlutterwaveConfigured } from "@/lib/flutterwave";
+import { isFlutterwaveConfigured, listBanks } from "@/lib/flutterwave";
 import { createClient } from "@/lib/supabase/server";
 import type { AccountBalance } from "@/lib/types";
 import { formatDate, formatMoney, todayIn } from "@/lib/utils";
 import { PayOnline } from "../payments/pay-online";
 import { joinBankWaitlistAction, leaveBankWaitlistAction } from "./actions";
-import { WithdrawForm } from "./withdraw-form";
+import { MoneyOut, PayoutRow, PinSetup, VaultForm, type Payout } from "./wallet-ui";
 
 export const metadata = { title: "Maximus Bank" };
 
 const LATER = [
   { key: "account", icon: Landmark, title: "Your own account number", text: "A dedicated Naira account number for receiving transfers." },
-  { key: "transfers", icon: Send, title: "Instant transfers", text: "Send Naira to any bank or Maximus member in seconds." },
   { key: "commissions", icon: Users, title: "Earnings paid in-app", text: "Commissions and team payouts straight to your wallet." },
   { key: "bills", icon: Receipt, title: "Airtime, data & bills", text: "Top up and pay bills without leaving the app." },
   { key: "cards", icon: CreditCard, title: "Maximus debit card", text: "Spend your balance anywhere with a Naira card." },
@@ -29,19 +28,26 @@ export default async function BankPage() {
   const live = isFlutterwaveConfigured();
   const today = todayIn(viewer.profile.timezone);
   const supabase = await createClient();
-  const [{ data: balances }, { data: txns }, { data: me }] = await Promise.all([
+  const [{ data: balances }, { data: txns }, { data: me }, { data: summary }, { data: payouts }, { data: locks }, banks] = await Promise.all([
     supabase.from("financial_account_balances").select("*").eq("user_id", viewer.id).returns<AccountBalance[]>(),
     supabase.from("financial_transactions").select("id, kind, direction, amount, status, source, occurred_on, created_at, financial_accounts(kind)")
       .eq("user_id", viewer.id).order("created_at", { ascending: false }).limit(15).returns<Tx[]>(),
     supabase.from("bank_waitlist").select("interests").eq("user_id", viewer.id).maybeSingle(),
+    supabase.rpc("wallet_summary"),
+    supabase.from("payout_requests").select("id, amount, bank_name, account_name, account_number, status, created_at, review_note, provider_message")
+      .eq("user_id", viewer.id).order("created_at", { ascending: false }).limit(10).returns<Payout[]>(),
+    supabase.from("savings_locks").select("id, amount, unlock_on, reason").eq("user_id", viewer.id).gt("unlock_on", today).order("unlock_on"),
+    live ? listBanks() : Promise.resolve([]),
   ]);
+  const w = (summary ?? {}) as { savings_available?: number; contributions_available?: number; locked?: number; on_hold?: number; has_pin?: boolean };
+  const available = { savings: Number(w.savings_available ?? 0), contributions: Number(w.contributions_available ?? 0) };
   const total = (balances ?? []).reduce((a, b) => a + Number(b.confirmed_balance), 0);
   const pendingIn = (balances ?? []).reduce((a, b) => a + Number(b.pending_in), 0);
   const pendingOut = (balances ?? []).reduce((a, b) => a + Number(b.pending_out), 0);
 
   return (
     <>
-      <PageHeader eyebrow="Maximus Bank" title="Your Maximus wallet" description="Add money with card, bank transfer or USSD, track your savings and contributions, and request withdrawals. Naira (₦) only." />
+      <PageHeader eyebrow="Maximus Bank" title="Your Maximus wallet" description="Add money, send to any bank or member, withdraw and lock savings. Naira (₦) only." />
 
       <section className="mb-6 overflow-hidden rounded-[1.75rem] bg-brand-navy p-6 text-white shadow-lg sm:p-8">
         <div className="grid gap-6 lg:grid-cols-2 lg:items-center">
@@ -55,6 +61,11 @@ export default async function BankPage() {
               {pendingIn > 0 && <>+{formatMoney(pendingIn)} waiting for approval · </>}
               {pendingOut > 0 && <>−{formatMoney(pendingOut)} withdrawal pending · </>}
               Confirmed balance
+            </p>
+            <p className="mt-3 flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full bg-brand-lime px-2.5 py-1 font-semibold text-brand-navy">Available {formatMoney(available.savings + available.contributions)}</span>
+              {Number(w.locked ?? 0) > 0 && <span className="rounded-full bg-white/15 px-2.5 py-1"><Lock className="mr-1 inline size-3" aria-hidden />Locked {formatMoney(w.locked)}</span>}
+              {Number(w.on_hold ?? 0) > 0 && <span className="rounded-full bg-white/15 px-2.5 py-1">On hold {formatMoney(w.on_hold)}</span>}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -99,6 +110,12 @@ export default async function BankPage() {
             </CardBody>
           </Card>
 
+          {(payouts ?? []).length > 0 && (
+            <Card>
+              <CardHeader title="Withdrawals & bank transfers" icon={<Send className="size-4" />} />
+              <CardBody className="pt-0"><ul className="divide-y divide-border">{(payouts ?? []).map((p) => <PayoutRow key={p.id} p={p} />)}</ul></CardBody>
+            </Card>
+          )}
           <Card>
             <CardHeader title="Coming next" description="These need extra approvals from our payment partner and a licensed bank." icon={<Landmark className="size-4" />} />
             <CardBody>
@@ -130,9 +147,29 @@ export default async function BankPage() {
               )}
             </CardBody>
           </Card>
+          <Card className="border-2 border-primary/40">
+            <CardHeader title="Send & withdraw" icon={<ArrowUpRight className="size-4" />} description="To your bank, anyone's bank, or a Maximus member." />
+            <CardBody><MoneyOut banks={banks} available={available} hasPin={Boolean(w.has_pin)} transfersOn={live} /></CardBody>
+          </Card>
           <Card>
-            <CardHeader title="Withdraw" icon={<ArrowUpRight className="size-4" />} description="To your own bank account." />
-            <CardBody><WithdrawForm today={today} /></CardBody>
+            <CardHeader title={w.has_pin ? "Wallet PIN" : "Set your wallet PIN"} icon={<KeyRound className="size-4" />} />
+            <CardBody><PinSetup hasPin={Boolean(w.has_pin)} /></CardBody>
+          </Card>
+          <Card>
+            <CardHeader title="Savings vault" icon={<Lock className="size-4" />} description="Lock money you don't want to touch until a date." />
+            <CardBody className="space-y-4">
+              {(locks ?? []).length > 0 && (
+                <ul className="space-y-2">
+                  {(locks ?? []).map((l) => (
+                    <li key={l.id as string} className="flex items-center justify-between rounded-xl bg-surface-muted px-3 py-2 text-sm">
+                      <span><span className="font-semibold">{formatMoney(l.amount as number)}</span>{l.reason ? ` · ${l.reason}` : ""}</span>
+                      <span className="text-xs text-fg-muted">until {formatDate(l.unlock_on as string, { day: "numeric", month: "short", year: "numeric" })}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <VaultForm today={today} />
+            </CardBody>
           </Card>
           <p className="flex gap-2 px-1 text-xs text-fg-subtle"><ShieldCheck className="size-4 shrink-0" aria-hidden />
             Payments are processed by Flutterwave, a CBN-licensed payment company. Your wallet is a record of what you&apos;ve paid into Maximus. It isn&apos;t a bank deposit account.</p>

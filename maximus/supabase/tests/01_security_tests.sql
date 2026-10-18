@@ -963,6 +963,53 @@ do $$ begin
 end $$;
 select pg_temp.act_as(null);
 
+-- ---------------------------------------------------------------------------
+-- Wallet: PIN, savings vault, payouts, member transfers (0036)
+-- ---------------------------------------------------------------------------
+create temp table w_ctx as select member_id as c2_code from public.profiles where id = '00000000-0000-0000-0000-0000000000c2';
+grant select on w_ctx to public;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+select pg_temp.expect_error($$select public.set_wallet_pin('1234')$$, 'easy PIN');
+select public.set_wallet_pin('4826');
+select pg_temp.expect_error($$select public.set_wallet_pin('5937', '0000')$$, 'change PIN with wrong old PIN');
+create temp table w_avail as select (public.wallet_summary() ->> 'savings_available')::numeric as before;
+grant select on w_avail to public;
+select public.lock_savings(1000, current_date + 30, 'School fees');
+select pg_temp.expect_error($$select public.request_payout('savings', (select before from w_avail), 'self', '011', 'First Bank', '3095342378', 'Test Member', null, '4826')$$, 'payout over available (locked)');
+select pg_temp.expect_error($$select public.request_payout('savings', 500, 'self', '011', 'First Bank', '3095342378', 'Test Member', null, '9999')$$, 'wrong PIN');
+create temp table w_pay as select public.request_payout('savings', 500, 'self', '011', 'First Bank', '3095342378', 'Test Member', 'Rent', '4826') as id;
+grant select on w_pay to public;
+do $$ begin
+  assert (public.wallet_summary() ->> 'on_hold')::numeric = 500, 'amount on hold';
+  assert (public.wallet_summary() ->> 'savings_available')::numeric = (select before from w_avail) - 1500, 'available excludes lock and hold';
+end $$;
+select pg_temp.expect_error($$select public.decide_payout((select id from w_pay), true)$$, 'member approves own payout');
+select pg_temp.expect_error($$select public.finish_payout((select reference from public.payout_requests limit 1), true, 1)$$, 'member finishes payout');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin assert (select count(*) from public.payout_requests) = 0, 'others cannot see payouts'; end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+select public.decide_payout((select id from w_pay), true, 'ok');
+select pg_temp.act_as(null);
+do $$ declare r text; v_ref text; begin
+  select reference into v_ref from public.payout_requests where id = (select id from w_pay);
+  assert public.finish_payout(v_ref, true, 999, 'SUCCESSFUL') = 'successful', 'payout finished';
+  assert public.finish_payout(v_ref, true, 999, 'SUCCESSFUL') = 'already', 'finish idempotent';
+  assert exists (select 1 from public.financial_transactions where source = 'payout' and amount = 500 and status = 'confirmed' and direction = -1), 'ledger debited on success';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+do $$ begin
+  assert (public.wallet_summary() ->> 'on_hold')::numeric = 0, 'hold released after payout';
+  assert (public.wallet_summary() ->> 'savings_available')::numeric = (select before from w_avail) - 1500, 'available reduced by payout and lock';
+  assert public.send_to_member((select c2_code from w_ctx), 200, 'savings', 'Thanks', '4826') is not null, 'member transfer';
+end $$;
+select pg_temp.expect_error($$select public.send_to_member((select c2_code from w_ctx), 100000000, 'savings', null, '4826')$$, 'transfer more than balance');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert exists (select 1 from public.financial_transactions where source = 'internal_transfer' and direction = 1 and amount = 200), 'recipient credited';
+  raise notice 'PASS: wallet PIN, vault, payouts and member transfers';
+end $$;
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
