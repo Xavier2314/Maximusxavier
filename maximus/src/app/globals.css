@@ -198,6 +198,9 @@
   .scrollbar-none { scrollbar-width: none; }
   .scrollbar-none::-webkit-scrollbar { display: none; }
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  /* Bars pinned to the bottom of the screen (see ViewportFix). */
+  .bottom-bar { transform: translate3d(0, var(--vv-shift, 0px), 0); }
+  html[data-typing] .bottom-bar { visibility: hidden; }
 
   /* Top-down org chart: each ul is a row of children joined by elbow connectors. */
   .org-tree ul { display: flex; justify-content: center; position: relative; padding-top: 24px; }

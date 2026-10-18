@@ -14,6 +14,7 @@ import { CommandPalette } from "./command-palette";
 import { BOTTOM_NAV, OFFICE_BOTTOM_NAV, isOfficePath, type NavItem, type NavSection } from "./nav";
 import { NAV_ICONS } from "./nav-icons";
 import { NotificationBell } from "./notification-bell";
+import { ViewportFix } from "./viewport-fix";
 import { QuickAdd } from "./quick-add";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -190,9 +191,10 @@ export function AppShell({ sections: memberSections, office = null, brands, plat
 
       <main id="main" className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:pb-12"><PushPrompt />{children}</main>
       <CommandPalette sections={allSections} />
+      <ViewportFix />
 
       {/* Mobile bottom navigation */}
-      <nav aria-label="Quick" className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-bg-elevated/90 backdrop-blur-xl lg:hidden">
+      <nav aria-label="Quick" className="bottom-bar safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-bg-elevated/90 backdrop-blur-xl lg:hidden">
         <ul className="mx-auto grid max-w-md grid-cols-5">
           {bottom.map((item) => {
             const Icon = NAV_ICONS[item.icon];
