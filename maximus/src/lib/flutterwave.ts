@@ -8,7 +8,8 @@ import { createAdminClient } from "@/lib/supabase/server";
  */
 const BASE = "https://api.flutterwave.com/v3";
 
-const secretKey = () => process.env.FLUTTERWAVE_SECRET_KEY ?? "";
+// Accepts the name used in this project's Vercel settings ("Secret__key") as well as the standard one.
+const secretKey = () => (process.env.FLUTTERWAVE_SECRET_KEY || process.env.Secret__key || "").trim();
 export const isFlutterwaveConfigured = () => secretKey().startsWith("FLWSECK");
 
 async function flw<T>(path: string, init?: RequestInit): Promise<T> {
