@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Building2, LogOut, Menu, Search, Settings, User, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { brandVars, type Brand } from "@/lib/branding";
 import { Avatar } from "@/components/ui/misc";
 import { cn } from "@/lib/utils";
 import { AnnouncementBar, type BarAnnouncement } from "./announcement-bar";
@@ -16,6 +17,26 @@ import { QuickAdd } from "./quick-add";
 import { ThemeToggle } from "./theme-toggle";
 
 type ShellUser = { id: string; name: string; avatar: string | null; role: string; memberId: string };
+
+/** The brand's logo: the official Maximus logo, an uploaded logo, or the brand name. */
+function BrandMark({ brand, compact = false, onDark = true }: { brand: Brand; compact?: boolean; onDark?: boolean }) {
+  if (brand.isDefault) return compact ? <Logo variant="mark" className="h-8 w-auto" /> : <Logo className={cn("h-8 w-auto", onDark ? "text-white" : "")} />;
+  if (brand.logo) {
+    return (
+      <span className="flex min-w-0 items-center gap-2.5">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={brand.logo} alt={brand.name} className={cn("w-auto object-contain", compact ? "h-8 max-w-[120px]" : "h-9 max-w-[150px]")} />
+        {!compact && <span className={cn("truncate text-base font-bold tracking-tight", onDark ? "text-white" : "")}>{brand.name}</span>}
+      </span>
+    );
+  }
+  return (
+    <span className="flex min-w-0 items-center gap-2.5">
+      <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-brand-lime font-bold text-brand-navy">{brand.name.slice(0, 1).toUpperCase()}</span>
+      {!compact && <span className={cn("truncate text-lg font-bold tracking-tight", onDark ? "text-white" : "")}>{brand.name}</span>}
+    </span>
+  );
+}
 
 /** Where the Office view starts and what it is called for this member. */
 export type OfficeView = { home: string; label: string; officeName?: string; sections: NavSection[]; bottom: NavItem[] } | null;
@@ -89,11 +110,14 @@ function UserCard({ user, signOut }: { user: ShellUser; signOut: () => void }) {
   );
 }
 
-export function AppShell({ sections: memberSections, office = null, user, unread, signOut, announcements = [], children }: {
-  sections: NavSection[]; office?: OfficeView; user: ShellUser; unread: number; signOut: () => void; announcements?: BarAnnouncement[]; children: ReactNode;
+export function AppShell({ sections: memberSections, office = null, brands, platformName, user, unread, signOut, announcements = [], children }: {
+  sections: NavSection[]; office?: OfficeView; brands: { me: Brand; office: Brand }; platformName: string;
+  user: ShellUser; unread: number; signOut: () => void; announcements?: BarAnnouncement[]; children: ReactNode;
 }) {
   const pathname = usePathname();
   const mode: "me" | "office" = office && isOfficePath(pathname) ? "office" : "me";
+  // Office view wears the office's brand; My view wears the member's own brand (platform, or their office's).
+  const brand = mode === "office" ? brands.office : brands.me;
   const sections = mode === "office" && office ? office.sections : memberSections;
   const bottom = mode === "office" && office ? office.bottom : BOTTOM_NAV;
   const allSections = office ? [...memberSections, ...office.sections] : memberSections;
@@ -107,14 +131,15 @@ export function AppShell({ sections: memberSections, office = null, user, unread
   }, [menuOpen]);
 
   return (
-    <div className="min-h-dvh lg:pl-72">
+    <div className="branded min-h-dvh lg:pl-72" style={brandVars(brand) as React.CSSProperties}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-white">
         Skip to content
       </a>
 
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col bg-brand-navy px-4 pb-4 pt-6 lg:flex">
-        <Link href="/dashboard" className="px-3"><Logo className="h-8 w-auto text-white" /></Link>
+        <Link href="/dashboard" className="px-3"><BrandMark brand={brand} /></Link>
+        {brand.tagline && <p className="mt-2 truncate px-3 text-xs text-white/50">{brand.tagline}</p>}
         {office && <ViewSwitch office={office} mode={mode} dark className="mt-6" />}
         {mode === "office" && office?.officeName && (
           <p className="mt-3 truncate px-3 text-xs text-white/50">Managing <span className="font-medium text-white/80">{office.officeName}</span></p>
@@ -123,6 +148,9 @@ export function AppShell({ sections: memberSections, office = null, user, unread
           <NavLinks sections={sections} pathname={pathname} />
         </div>
         <UserCard user={user} signOut={signOut} />
+        {!brand.isDefault && !brand.whiteLabel && brand.name !== platformName && (
+          <p className="mt-3 text-center text-[11px] text-white/35">Powered by {platformName}</p>
+        )}
       </aside>
 
       {/* Top bar */}
@@ -134,7 +162,7 @@ export function AppShell({ sections: memberSections, office = null, user, unread
           </div>
         )}
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
-          <Link href="/dashboard" className="lg:hidden"><Logo variant="mark" className="h-8 w-auto" /></Link>
+          <Link href="/dashboard" className="lg:hidden"><BrandMark brand={brand} compact onDark={false} /></Link>
           <p className="hidden min-w-0 truncate text-sm font-semibold text-fg-muted md:block">{current?.label}</p>
           <button type="button" onClick={() => window.dispatchEvent(new Event("maximus:search"))}
             className="ml-auto flex h-10 min-w-0 items-center gap-2 rounded-xl border border-border bg-surface px-3 text-sm text-fg-subtle hover:border-primary/40 sm:w-64 md:ml-6"
@@ -198,7 +226,7 @@ export function AppShell({ sections: memberSections, office = null, user, unread
           <button type="button" className="absolute inset-0 bg-black/50 animate-fade" aria-label="Close menu" onClick={() => setMenuOpen(false)} />
           <div className="safe-bottom absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto rounded-t-3xl bg-brand-navy px-4 pb-6 pt-4 animate-rise">
             <div className="mb-4 flex items-center justify-between px-2">
-              <Logo className="h-7 w-auto text-white" />
+              <BrandMark brand={brand} />
               <button type="button" onClick={() => setMenuOpen(false)} className="grid size-10 place-items-center rounded-xl text-white/70 hover:bg-white/10" aria-label="Close menu">
                 <X className="size-5" aria-hidden />
               </button>

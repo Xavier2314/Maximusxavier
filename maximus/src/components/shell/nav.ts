@@ -60,6 +60,7 @@ export const OFFICE_NAV: NavSection[] = [
       { href: "/attendance/register", label: "Attendance register", icon: "clipboard", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics"] },
       { href: "/admin/approvals", label: "Approvals", icon: "check", anyPermission: ["approve_financial_transactions", "approve_attendance_exceptions", "manage_office"] },
       { href: "/admin/offices", label: "Office setup & QR", icon: "building", permission: "manage_office" },
+      { href: "/office/brand", label: "Branding", icon: "palette", anyPermission: ["manage_office", "view_org_analytics"] },
     ],
   },
   {
@@ -78,6 +79,7 @@ export const OFFICE_NAV: NavSection[] = [
       { href: "/admin/daily", label: "Checklist & thoughts", icon: "clipboard", permission: "manage_content" },
       { href: "/admin/support", label: "Support tickets", icon: "lifebuoy", permission: "view_org_analytics" },
       { href: "/admin/settings", label: "Settings", icon: "sliders", permission: "manage_roles" },
+      { href: "/admin/branding", label: "Platform branding", icon: "palette", roles: ["super_admin"] },
       { href: "/admin/audit", label: "Audit log", icon: "scroll", permission: "view_org_analytics" },
     ],
   },

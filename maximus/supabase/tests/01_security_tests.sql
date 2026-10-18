@@ -671,6 +671,28 @@ do $$ declare n int; begin
   raise notice 'PASS: task notifications';
 end $$;
 
+-- ---------------------------------------------------------------------------
+-- Branding (0022): office admin a2 manages Abuja (f2)
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a2');
+select public.set_office_branding('00000000-0000-0000-0000-0000000000f2', 'Richies Blazers', 'Blazing a trail', null, '#b91c1c', '#facc15', '#1f1300', true);
+select pg_temp.expect_error($$select public.set_office_branding('00000000-0000-0000-0000-0000000000f1', 'Hijack', null, null, '#000000', '#000000', '#000000', false)$$, 'manager brands another office');
+select pg_temp.expect_error($$select public.set_office_branding('00000000-0000-0000-0000-0000000000f2', 'x', null, null, 'red', '#000000', '#000000', false)$$, 'invalid colour');
+select pg_temp.expect_error($$select public.set_platform_branding('{"app_name":"Mine"}')$$, 'office admin white-labels the platform');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select display_name from public.offices where id = '00000000-0000-0000-0000-0000000000f2') = 'Richies Blazers', 'member reads office brand';
+  raise notice 'PASS: office branding owned by its managers';
+end $$;
+select pg_temp.expect_error($$select public.set_office_branding('00000000-0000-0000-0000-0000000000f2', 'x', null, null, '#000000', '#000000', '#000000', false)$$, 'member changes branding');
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+select public.set_platform_branding('{"app_name":"Accelerator"}');
+do $$ begin
+  assert (select value ->> 'app_name' from public.app_settings where key = 'branding') = 'Accelerator', 'platform brand saved';
+  raise notice 'PASS: super admin white-labels the platform';
+end $$;
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
