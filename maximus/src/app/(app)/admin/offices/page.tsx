@@ -1,4 +1,5 @@
-import { Building2, MapPin, Plus, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { Building2, ClipboardList, MapPin, Plus, QrCode, ShieldCheck } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
 import { requirePermission } from "@/lib/auth";
@@ -36,6 +37,14 @@ export default async function OfficesPage() {
                   description={<span className="inline-flex items-center gap-1"><MapPin className="size-3.5" aria-hidden />{o.address ?? "No address"} · {o.radius_m} m radius</span>}
                   action={o.is_active ? <Badge tone="green">Active</Badge> : <Badge>Inactive</Badge>} />
                 <CardBody className="space-y-6">
+                  <div className="flex flex-wrap gap-2">
+                    <Link href={`/admin/offices/${o.id}/qr`} className="inline-flex items-center gap-1.5 rounded-xl bg-brand-navy px-3 py-2 text-sm font-medium text-white dark:bg-surface-muted">
+                      <QrCode className="size-4" aria-hidden /> Check-in QR poster
+                    </Link>
+                    <Link href={`/attendance/register?office=${o.id}`} className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm font-medium hover:bg-surface-muted">
+                      <ClipboardList className="size-4" aria-hidden /> Today&apos;s register
+                    </Link>
+                  </div>
                   <details className="group rounded-2xl border border-border p-4">
                     <summary className="cursor-pointer text-sm font-medium text-primary">Edit office details</summary>
                     <div className="mt-4"><OfficeForm office={o} /></div>

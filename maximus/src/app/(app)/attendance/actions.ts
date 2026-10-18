@@ -76,3 +76,27 @@ export async function reviewCorrectionAction(id: string, approve: boolean, note?
   dispatchPushSoon();
   return { ok: true, message: approve ? "Correction approved." : "Correction rejected." };
 }
+
+export async function checkInQrAction(input: { code: string; lat: number | null; lng: number | null; accuracy: number | null }): Promise<ActionResult<Attendance>> {
+  const parsed = coords.extend({ code: z.string().regex(/^[0-9a-f]{24}$/) }).safeParse(input);
+  if (!parsed.success) return { ok: false, message: "This QR code is not valid." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("check_in_qr", {
+    p_code: parsed.data.code, p_lat: parsed.data.lat, p_lng: parsed.data.lng, p_accuracy: parsed.data.accuracy,
+  });
+  if (error) return { ok: false, message: friendlyError(error) };
+  revalidatePath("/attendance");
+  revalidatePath("/dashboard");
+  return { ok: true, message: "Checked in", data: data as Attendance };
+}
+
+export async function markPresentAction(input: { userId: string; officeId: string; date: string }): Promise<ActionResult> {
+  const p = z.object({ userId: z.string().uuid(), officeId: z.string().uuid(), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }).safeParse(input);
+  if (!p.success) return { ok: false, message: "Invalid request." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("mark_attendance", { p_user: p.data.userId, p_office: p.data.officeId, p_date: p.data.date });
+  if (error) return { ok: false, message: friendlyError(error) };
+  dispatchPushSoon();
+  revalidatePath("/attendance/register");
+  return { ok: true, message: "Marked present" };
+}

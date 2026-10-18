@@ -15,17 +15,20 @@ export const NAV: NavSection[] = [
     items: [
       { href: "/dashboard", label: "Dashboard", icon: "home" },
       { href: "/team", label: "My Team", icon: "network" },
+      { href: "/prospects", label: "Prospects", icon: "funnel" },
       { href: "/attendance", label: "Attendance", icon: "map-pin" },
       { href: "/goals", label: "Goals", icon: "target" },
       { href: "/evaluations", label: "Evaluations", icon: "clipboard" },
       { href: "/finance", label: "Finance", icon: "wallet" },
       { href: "/orders", label: "Orders", icon: "bag" },
+      { href: "/bank", label: "Maximus Bank", icon: "landmark" },
     ],
   },
   {
     title: "Grow",
     items: [
       { href: "/growth", label: "Growth focus", icon: "compass" },
+      { href: "/leaderboard", label: "Leaderboard", icon: "medal" },
       { href: "/ai", label: "Maximus AI", icon: "sparkles" },
       { href: "/academy", label: "Academy", icon: "graduation" },
       { href: "/recognition", label: "Recognition", icon: "trophy" },
@@ -40,6 +43,7 @@ export const NAV: NavSection[] = [
       { href: "/admin/offices", label: "Offices", icon: "building", permission: "manage_office" },
       { href: "/admin/approvals", label: "Approvals", icon: "check", anyPermission: ["approve_financial_transactions", "approve_attendance_exceptions"] },
       { href: "/admin/content", label: "Content", icon: "book", permission: "manage_content" },
+      { href: "/admin/daily", label: "Checklist & thoughts", icon: "clipboard", permission: "manage_content" },
       { href: "/admin/settings", label: "Settings", icon: "sliders", permission: "manage_roles" },
       { href: "/admin/audit", label: "Audit log", icon: "scroll", permission: "view_org_analytics" },
     ],

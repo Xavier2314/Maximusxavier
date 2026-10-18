@@ -65,3 +65,11 @@ export async function removeMemberAction(officeId: string, userId: string) {
   revalidatePath("/admin/offices");
   return { ok: true, message: "Removed." };
 }
+
+export async function rotateQrAction(formData: FormData) {
+  const id = z.string().uuid().safeParse(formData.get("office_id"));
+  if (!id.success) return;
+  const supabase = await createClient();
+  await supabase.rpc("rotate_office_qr", { p_office: id.data });
+  revalidatePath(`/admin/offices/${id.data}/qr`);
+}

@@ -19,13 +19,18 @@ export default async function AdminOverviewPage({ searchParams }: { searchParams
   const today = todayIn(viewer.profile.timezone);
   const from = addMonths(monthStart(today), -(months - 1));
 
-  const [{ data: overview }, { data: joins }, { data: offices }, { data: todayAtt }, { data: orders }] = await Promise.all([
+  const [{ data: overview }, { data: joins }, { data: offices }, { data: todayAtt }, { data: orders }, { data: officeStats }, { data: bankWaitlist }] = await Promise.all([
     supabase.rpc("org_overview"),
     supabase.from("profiles").select("joined_at"),
     supabase.from("offices").select("id, name").eq("is_active", true).order("name"),
     supabase.from("attendance").select("office_id, status, check_out_at").eq("attendance_date", today),
     supabase.from("orders").select("amount, order_date, status").gte("order_date", from),
+    supabase.rpc("offices_overview"),
+    supabase.rpc("bank_waitlist_count"),
   ]);
+  type OfficeStat = { office: string; name: string; members: number; present_today: number; late_today: number; attendance_rate_7d: number; month_earnings: number; new_members_month: number };
+  // Offices that need attention first: lowest attendance this week.
+  const officeRows = ((officeStats ?? []) as OfficeStat[]).sort((a, b) => a.attendance_rate_7d - b.attendance_rate_7d);
   const o = (overview ?? {}) as Record<string, number>;
   const monthList = Array.from({ length: months }, (_, i) => addMonths(from, i));
   const joinDates = (joins ?? []).map((j) => (j.joined_at as string).slice(0, 10));
@@ -52,6 +57,35 @@ export default async function AdminOverviewPage({ searchParams }: { searchParams
             ))}
           </div>
         } />
+
+      {officeRows.length > 0 && (
+        <Card className="mb-6">
+          <CardHeader title="All offices at a glance" icon={<Building2 className="size-4" />}
+            description={`Lowest attendance first, so you can see who needs you. ${(bankWaitlist as number | null) ?? 0} members on the Maximus Bank waitlist.`} />
+          <CardBody className="overflow-x-auto pt-2">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead className="text-left text-xs uppercase tracking-wide text-fg-subtle">
+                <tr className="border-b border-border">
+                  {["Office", "Members", "Present today", "Late today", "Attendance (7 days)", "Earnings this month", "New this month"].map((h) => <th key={h} scope="col" className="px-3 py-2 font-medium">{h}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {officeRows.map((r) => (
+                  <tr key={r.office} className="border-b border-border/60 last:border-0">
+                    <td className="px-3 py-3 font-medium"><Link href={`/attendance/register?office=${r.office}`} className="hover:text-primary">{r.name}</Link></td>
+                    <td className="px-3 py-3 tabular-nums">{r.members}</td>
+                    <td className="px-3 py-3 tabular-nums">{r.present_today}</td>
+                    <td className="px-3 py-3 tabular-nums">{r.late_today}</td>
+                    <td className="px-3 py-3"><span className={cn("rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums", r.attendance_rate_7d >= 70 ? "bg-success-soft text-success" : r.attendance_rate_7d >= 40 ? "bg-warning-soft text-warning" : "bg-danger-soft text-danger")}>{r.attendance_rate_7d}%</span></td>
+                    <td className="px-3 py-3 tabular-nums">{formatMoney(r.month_earnings)}</td>
+                    <td className="px-3 py-3 tabular-nums">{r.new_members_month}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardBody>
+        </Card>
+      )}
 
       <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Registered members" value={formatNumber(o.members_total)} hint={`${formatNumber(o.members_active)} active accounts`} icon={<Users className="size-4" />} />

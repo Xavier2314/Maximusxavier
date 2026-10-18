@@ -63,3 +63,11 @@ export async function signOutEverywhereAction() {
   await supabase.auth.signOut({ scope: "global" });
   redirect("/login");
 }
+
+export async function disconnectIntegrationAction(formData: FormData) {
+  const provider = String(formData.get("provider"));
+  if (provider !== "google" && provider !== "spotify") return;
+  const supabase = await createClient();
+  await supabase.rpc("disconnect_integration", { p_provider: provider });
+  revalidatePath("/settings");
+}

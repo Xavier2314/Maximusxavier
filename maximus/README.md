@@ -21,7 +21,7 @@ Only **two accounts** are required to run it: Supabase and Vercel. Claude (AI) a
 ## 1. Set up Supabase
 
 1. Create a project at [supabase.com](https://supabase.com) (choose a region near Lagos, e.g. EU West).
-2. **Run the migrations** — in *SQL Editor*, run each file in `supabase/migrations/` **in order** (0001 → 0009). Or with the Supabase CLI: `supabase link` then `supabase db push`.
+2. **Run the migrations** — in *SQL Editor*, run each file in `supabase/migrations/` **in order** (0001 → 0012). Or with the Supabase CLI: `supabase link` then `supabase db push`.
 3. **Auth settings** — *Authentication → URL Configuration*:
    - Site URL: your Vercel URL (e.g. `https://maximus.vercel.app`)
    - Redirect URLs: add `https://YOUR-DOMAIN/auth/callback`
@@ -56,11 +56,24 @@ See `.env.example` for the full list.
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | For push | Run `npm run vapid` once; subject is `mailto:you@example.com` |
 | `ANTHROPIC_API_KEY` | For AI | [console.anthropic.com](https://console.anthropic.com) |
 | `MAXIMUS_AI_MODEL` | No | Override the AI model (default `claude-opus-5-5`; `claude-sonnet-5-5` is cheaper) |
+| `WHATSAPP_*` | For WhatsApp follow-up | See *AI prospect follow-up* below |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | For Gmail follow-up | Google Cloud Console → APIs & Services → Credentials |
+| `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` | No | developer.spotify.com → Dashboard → Create app (only for searching Spotify inside Maximus) |
 
 Until a credential is set, the related feature shows a clear "not configured" notice — nothing pretends to work.
 
 ### Instant push delivery (recommended)
 Push is sent right after actions that create notifications, and swept by the daily cron. For notifications created by database triggers (e.g. a new team registration), add a **Supabase Database Webhook**: *Database → Webhooks → Create*, table `notifications`, event `INSERT`, type HTTP `POST` to `https://YOUR-DOMAIN/api/push/dispatch` with header `Authorization: Bearer <CRON_SECRET>`.
+
+### AI prospect follow-up
+Members add prospects (Prospects page) and Maximus AI writes messages for them. Without any setup, members tap **Open in my WhatsApp** and the message opens ready to send from their own phone. For fully automatic follow-up:
+
+- **WhatsApp (recommended in Nigeria):** create a Meta Business account and a WhatsApp Business number (developers.facebook.com → My Apps → WhatsApp). Set `WHATSAPP_TOKEN` (a permanent System User token), `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_APP_SECRET` and `WHATSAPP_VERIFY_TOKEN`. In the app's WhatsApp → Configuration, set the webhook URL to `https://YOUR-DOMAIN/api/whatsapp/webhook` with the same verify token and subscribe to `messages`. WhatsApp only allows free-text messages within 24 hours of the prospect's last message, so also create and get approved a *utility* template (e.g. `maximus_follow_up`: "Hi {{1}}, it's {{2}} from Maximus. Do you have a minute to chat?") and set `WHATSAPP_TEMPLATE_NAME`. Replies are answered instantly by the AI.
+- **Gmail:** create an OAuth client (Web application) in Google Cloud, enable the Gmail API, add the redirect URI above, and set the two keys. Members then press **Connect Gmail** in Settings. The `gmail.readonly` scope is restricted: in *Testing* mode up to 100 named test users can connect; for everyone, Google requires app verification.
+- Follow-ups run daily at 10:00 Lagos time (`/api/cron/followups`), only between 08:00 and 20:00, stop when a prospect says no or "STOP", and pause after 3 unanswered messages.
+
+### Maximus Bank
+The Bank page is a *coming soon* dashboard with a waitlist; no money is held. Going live requires a CBN-licensed partner (Banking-as-a-Service, e.g. Anchor, Paystack/Flutterwave virtual accounts, or a partner bank's API), CAC registration, and KYC (BVN/NIN) for each member.
 
 **iPhone note:** iOS only delivers web push to apps added to the Home Screen (Safari → Share → *Add to Home Screen*, iOS 16.4+). Android works in Chrome directly.
 

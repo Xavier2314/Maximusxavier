@@ -1,10 +1,11 @@
 import Link from "next/link";
 import {
-  ArrowRight, Bell, Cake, Compass, CalendarClock, ClipboardCheck, Flame, GraduationCap, MapPin, PiggyBank, Sparkles,
+  ArrowRight, Bell, Cake, Compass, ListChecks, Quote, CalendarClock, ClipboardCheck, Flame, GraduationCap, MapPin, PiggyBank, Sparkles,
   Target, TrendingUp, TriangleAlert, Users,
 } from "lucide-react";
 import { TrendArea } from "@/components/charts";
 import { FocusPopup } from "@/components/focus-popup";
+import { DailyChecklist } from "./checklist";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -43,6 +44,7 @@ export default async function DashboardPage() {
   const [
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { data: balances },
     { data: notifications }, { data: birthdays }, { data: lessonsDone }, { data: publishedLessons }, { data: focusData },
+    { data: checklistItems }, { data: checklistDone }, { data: thought },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -56,6 +58,9 @@ export default async function DashboardPage() {
     supabase.from("course_progress").select("lesson_id").eq("user_id", viewer.id),
     supabase.from("lessons").select("id", { count: "exact", head: false }),
     supabase.rpc("growth_focus"),
+    supabase.from("checklist_items").select("id, title").eq("is_active", true).order("sort_order"),
+    supabase.from("checklist_checks").select("item_id").eq("user_id", viewer.id).eq("check_date", today),
+    supabase.from("daily_thoughts").select("body, author").lte("show_on", today).order("show_on", { ascending: false }).limit(1).maybeSingle(),
   ]);
   const growth = focusData as GrowthFocus | null;
   const focusTop = topFocus(growth);
@@ -136,6 +141,28 @@ export default async function DashboardPage() {
           icon={<ClipboardCheck className="size-4" />} tone={evaluation ? "green" : "lime"} />
         <StatCard label="Learning" value={`${learningPct}%`} hint={`${lessonsDone?.length ?? 0} lessons completed`} icon={<GraduationCap className="size-4" />} tone="navy" />
       </section>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader title="Today's checklist" icon={<ListChecks className="size-4" />} description="Small daily actions build big results" />
+          <CardBody>
+            {(checklistItems ?? []).length > 0
+              ? <DailyChecklist date={today} items={(checklistItems ?? []) as { id: string; title: string }[]} done={(checklistDone ?? []).map((c) => c.item_id as string)} />
+              : <p className="text-sm text-fg-muted">No checklist items yet.</p>}
+          </CardBody>
+        </Card>
+        <Card className="relative overflow-hidden">
+          <CardHeader title="Thought of the day" icon={<Quote className="size-4" />} />
+          <CardBody>
+            {thought ? (
+              <blockquote>
+                <p className="text-lg font-semibold leading-snug tracking-tight">“{thought.body as string}”</p>
+                {thought.author && <footer className="mt-3 text-sm text-fg-muted">— {thought.author as string}</footer>}
+              </blockquote>
+            ) : <p className="text-sm text-fg-muted">Check back tomorrow.</p>}
+          </CardBody>
+        </Card>
+      </div>
 
       {growth && focusTop.length > 0 && (
         <Card>

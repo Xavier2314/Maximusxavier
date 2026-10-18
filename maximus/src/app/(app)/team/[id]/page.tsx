@@ -91,7 +91,8 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
           {growth && (
             <Card className="mt-6">
               <CardHeader title={`What ${firstName} should work on`} icon={<Compass className="size-4" />}
-                description="Coach them on these areas first. Share the lessons with them." />
+                description="Coach them on these areas first. Share the lessons with them."
+                action={<Link href={`/prospects?member=${member.id}`} className="text-sm font-medium text-primary hover:underline">Their prospects</Link>} />
               <CardBody className="space-y-5">
                 <DuplicationSummary focus={growth} who={firstName} />
                 {focusTop.length > 0

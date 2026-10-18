@@ -1,4 +1,4 @@
-import { CalendarCheck, CalendarDays, Flame, History, MonitorDot, Send } from "lucide-react";
+import { CalendarCheck, CalendarDays, ClipboardList, Flame, History, MonitorDot, QrCode, Send } from "lucide-react";
 import { AttendanceBadge } from "@/components/attendance-badge";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -41,7 +41,11 @@ export default async function AttendancePage() {
   return (
     <>
       <PageHeader eyebrow="Attendance" title="Office attendance" description="Check in when you arrive, check out when you leave."
-        action={isManager && <LinkButton href="/attendance/live" variant="outline" size="sm"><MonitorDot className="size-4" aria-hidden /> Live office board</LinkButton>} />
+        action={<>
+          {(isManager || viewer.isLeader) && <LinkButton href="/attendance/register" variant="outline" size="sm"><ClipboardList className="size-4" aria-hidden /> Register</LinkButton>}
+          {isManager && <LinkButton href="/attendance/live" variant="outline" size="sm"><MonitorDot className="size-4" aria-hidden /> Live office board</LinkButton>}
+        </>} />
+      <p className="-mt-3 mb-6 flex items-center gap-2 text-sm text-fg-muted"><QrCode className="size-4 shrink-0" aria-hidden />At the office? Just scan the QR poster on the wall with your phone camera.</p>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="hero-gradient relative overflow-hidden rounded-[1.75rem] p-6 text-white lg:col-span-2" aria-label="Check in">
