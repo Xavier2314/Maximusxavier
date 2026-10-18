@@ -124,9 +124,14 @@
     text-size-adjust: 100%;
   }
   body {
-    background: var(--bg);
+    background:
+      radial-gradient(60rem 30rem at 100% -10%, color-mix(in srgb, var(--brand-blue) 7%, transparent), transparent 70%),
+      radial-gradient(40rem 24rem at -10% 110%, color-mix(in srgb, var(--brand-green) 6%, transparent), transparent 70%),
+      var(--bg);
+    background-attachment: fixed;
     color: var(--fg);
     font-feature-settings: "ss01";
+    -webkit-font-smoothing: antialiased;
   }
   ::selection {
     background: color-mix(in srgb, var(--brand-lime) 70%, transparent);
@@ -162,7 +167,9 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
   }
+  .card:has(a:hover, button:hover) { border-color: color-mix(in srgb, var(--primary) 18%, var(--border)); }
   .skeleton {
     background: linear-gradient(90deg, var(--surface-muted) 25%, var(--border) 37%, var(--surface-muted) 63%);
     background-size: 400% 100%;

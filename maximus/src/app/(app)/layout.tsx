@@ -12,14 +12,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (viewer.profile.status !== "active") redirect("/suspended");
 
   const supabase = await createClient();
-  const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true })
-    .eq("user_id", viewer.id).is("read_at", null);
+  const nowIso = new Date().toISOString();
+  const [{ count }, { data: announcements }] = await Promise.all([
+    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", viewer.id).is("read_at", null),
+    supabase.from("announcements").select("id, title, kind").lte("published_at", nowIso)
+      .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
+      .order("pinned", { ascending: false }).order("published_at", { ascending: false }).limit(5),
+  ]);
 
   return (
     <AppShell
       sections={visibleNav(viewer.permissions)}
       unread={count ?? 0}
       signOut={signOutAction}
+      announcements={(announcements ?? []) as { id: string; title: string; kind: string }[]}
       user={{
         id: viewer.id,
         name: viewer.profile.full_name,

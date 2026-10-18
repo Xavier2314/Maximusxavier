@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { LogOut, Menu, Settings, X } from "lucide-react";
+import { LogOut, Menu, Search, Settings, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Avatar } from "@/components/ui/misc";
 import { cn } from "@/lib/utils";
+import { AnnouncementBar, type BarAnnouncement } from "./announcement-bar";
+import { CommandPalette } from "./command-palette";
 import { BOTTOM_NAV, type NavSection } from "./nav";
 import { NAV_ICONS } from "./nav-icons";
 import { NotificationBell } from "./notification-bell";
+import { QuickAdd } from "./quick-add";
 import { ThemeToggle } from "./theme-toggle";
 
 type ShellUser = { id: string; name: string; avatar: string | null; role: string; memberId: string };
@@ -66,10 +69,11 @@ function UserCard({ user, signOut }: { user: ShellUser; signOut: () => void }) {
   );
 }
 
-export function AppShell({ sections, user, unread, signOut, children }: {
-  sections: NavSection[]; user: ShellUser; unread: number; signOut: () => void; children: ReactNode;
+export function AppShell({ sections, user, unread, signOut, announcements = [], children }: {
+  sections: NavSection[]; user: ShellUser; unread: number; signOut: () => void; announcements?: BarAnnouncement[]; children: ReactNode;
 }) {
   const pathname = usePathname();
+  const current = sections.flatMap((s) => s.items).filter((i) => isActive(pathname, i.href)).sort((a, b) => b.href.length - a.href.length)[0];
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => setMenuOpen(false), [pathname]);
@@ -95,9 +99,19 @@ export function AppShell({ sections, user, unread, signOut, children }: {
 
       {/* Top bar */}
       <header className="sticky top-0 z-30 border-b border-border/60 bg-bg/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6">
+        <AnnouncementBar items={announcements} />
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
           <Link href="/dashboard" className="lg:hidden"><Logo variant="mark" className="h-8 w-auto" /></Link>
+          <p className="hidden min-w-0 truncate text-sm font-semibold text-fg-muted md:block">{current?.label}</p>
+          <button type="button" onClick={() => window.dispatchEvent(new Event("maximus:search"))}
+            className="ml-auto flex h-10 min-w-0 items-center gap-2 rounded-xl border border-border bg-surface px-3 text-sm text-fg-subtle hover:border-primary/40 sm:w-64 md:ml-6"
+            aria-label="Search pages and actions">
+            <Search className="size-4 shrink-0" aria-hidden />
+            <span className="hidden flex-1 truncate text-left sm:inline">Search or jump to…</span>
+            <kbd className="hidden rounded-md border border-border px-1.5 text-[11px] lg:inline">Ctrl K</kbd>
+          </button>
           <div className="flex-1" />
+          <QuickAdd />
           <ThemeToggle />
           <NotificationBell userId={user.id} initialUnread={unread} />
           <Link href="/profile" className="hidden sm:block lg:hidden" aria-label="Your profile">
@@ -110,6 +124,7 @@ export function AppShell({ sections, user, unread, signOut, children }: {
       </header>
 
       <main id="main" className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:pb-12">{children}</main>
+      <CommandPalette sections={sections} />
 
       {/* Mobile bottom navigation */}
       <nav aria-label="Quick" className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-bg-elevated/90 backdrop-blur-xl lg:hidden">

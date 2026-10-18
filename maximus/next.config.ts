@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Frame-Options", value: "DENY" },
-          // Geolocation is needed for attendance check-in on our own origin only.
-          { key: "Permissions-Policy", value: "geolocation=(self), camera=(), microphone=()" },
+          // Geolocation (attendance check-in) and microphone (voice input) on our own origin only.
+          { key: "Permissions-Policy", value: "geolocation=(self), camera=(), microphone=(self)" },
         ],
       },
       {
