@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  BookOpen, Brain, CalendarClock, Clock, Flame, Gauge, Hourglass, LayoutGrid, ListChecks, Maximize2, Medal, Music,
+  BookOpen, Brain, CalendarClock, Clock, Flame, Gauge, Hourglass, LayoutGrid, ListChecks, Maximize2, Medal, MessageCircle, Music,
   NotebookPen, Repeat, Sparkles, Target, Timer, Trophy, Users, Watch, Zap, type LucideIcon,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/misc";
@@ -46,7 +46,10 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Accountability", blurb: "Pair up with a partner who keeps you on track.", tone: "bg-primary-soft text-primary",
-    tools: [{ label: "Accountability partner", desc: "Shared goals, check-ins and private chat", icon: Users }],
+    tools: [
+      { href: "/tools/accountability", label: "Accountability partner", desc: "Shared goals, check-ins, encouragement", icon: Users },
+      { label: "Private chat", desc: "Real-time messages with your partner", icon: MessageCircle },
+    ],
   },
   {
     title: "Team challenges", blurb: "Compete and grow together.", tone: "bg-danger-soft text-danger",

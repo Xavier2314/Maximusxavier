@@ -817,6 +817,60 @@ end $$;
 select pg_temp.expect_error($$select public.record_goal_progress((select id from public.tool_goals limit 1), 5)$$, 'update someone else goal');
 select pg_temp.act_as(null);
 
+-- ---------------------------------------------------------------------------
+-- Accountability partners (0029)
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+create temp table acc_code as select public.my_accountability_code() as code;
+grant select on acc_code to public;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+insert into public.tool_goals (title, target, unit, deadline) values ('Sell 10 packs', 10, 'packs', current_date + 20);
+select pg_temp.expect_error($$select public.request_partner('ACC-ZZZZZZ')$$, 'unknown partner code');
+select public.request_partner((select code from acc_code), 'Keep me honest');
+select pg_temp.expect_error($$select public.request_partner((select code from acc_code))$$, 'duplicate partner request');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select count(*) from public.tool_goals) = 0, 'no access before accepting';
+  perform public.respond_partner((select id from public.partnerships where status = 'pending' limit 1), true);
+  assert (select count(*) from public.tool_goals where title = 'Sell 10 packs') = 1, 'partner sees shared goals';
+  update public.tool_goals set progress = 9 where title = 'Sell 10 packs';
+  insert into public.goal_comments (goal_id, kind, body) select id, 'encourage', 'You got this' from public.tool_goals where title = 'Sell 10 packs';
+  insert into public.goal_comments (goal_id, kind, proposed_deadline, proposal_status) select id, 'deadline', current_date + 10, 'pending' from public.tool_goals where title = 'Sell 10 packs';
+  insert into public.partner_checkins (partnership_id, slot, plan) select id, 'morning', 'Call 5 people' from public.partnerships where status = 'active';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+do $$ begin
+  assert (select progress from public.tool_goals where title = 'Sell 10 packs') = 0, 'partner cannot edit my goal';
+  assert (select count(*) from public.goal_comments) = 2, 'owner sees partner comments';
+  assert exists (select 1 from public.notifications where type = 'partner_encourage'), 'owner notified of encouragement';
+  perform public.respond_deadline((select id from public.goal_comments where kind = 'deadline'), true);
+  assert (select deadline from public.tool_goals where title = 'Sell 10 packs') = current_date + 10, 'accepted deadline applied by owner';
+  assert (select count(*) from public.partner_checkins) = 1, 'owner sees partner check-in';
+  assert (select full_name from public.my_partnership()) is not null, 'partner details visible';
+  update public.partner_sharing set share_goals = false where user_id = auth.uid();
+end $$;
+select pg_temp.expect_error($$select public.productivity_score('00000000-0000-0000-0000-0000000000c2')$$, 'score not shared');
+select pg_temp.expect_error($$select public.respond_deadline((select id from public.goal_comments where kind = 'deadline'), true)$$, 'answer closed proposal');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select count(*) from public.tool_goals where title = 'Sell 10 packs') = 0, 'sharing off hides goals';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+do $$ begin
+  assert (select count(*) from public.partnerships) = 0, 'sponsor cannot see partnerships';
+  assert (select count(*) from public.partner_checkins) = 0, 'sponsor cannot see check-ins';
+  assert (select count(*) from public.goal_comments) = 0, 'sponsor cannot see goal comments';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+do $$ begin
+  assert (select count(*) from public.partnerships) = 0, 'super admin cannot see partnerships';
+  assert (select count(*) from public.partner_checkins) = 0, 'super admin cannot see check-ins';
+  raise notice 'PASS: accountability partners private, mutual and read-only';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+select public.end_partnership((select id from public.partnerships where status = 'active'));
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

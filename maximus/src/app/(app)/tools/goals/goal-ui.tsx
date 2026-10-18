@@ -12,6 +12,11 @@ import { GOAL_CATEGORIES, HORIZONS, type ToolGoal } from "@/lib/tools";
 import { cn, formatDate } from "@/lib/utils";
 import { recordProgressAction, saveGoalAction, setGoalStatusAction } from "../actions";
 
+export type GoalNote = {
+  id: string; goal_id: string; author_id: string; kind: "comment" | "encourage" | "request_update" | "deadline";
+  body: string | null; proposed_deadline: string | null; proposal_status: string | null; created_at: string;
+};
+
 const PRIORITY = { 1: { label: "High", tone: "red" }, 2: { label: "Normal", tone: "blue" }, 3: { label: "Low", tone: "neutral" } } as const;
 
 export function GoalForm({ today, goal, onDone }: { today: string; goal?: ToolGoal; onDone?: () => void }) {
@@ -67,7 +72,9 @@ export function GoalForm({ today, goal, onDone }: { today: string; goal?: ToolGo
   );
 }
 
-export function GoalCard({ goal, today, compact }: { goal: ToolGoal; today: string; compact?: boolean }) {
+export function GoalCard({ goal, today, compact, notes = [], viewerId, partnerName = "Partner" }: {
+  goal: ToolGoal; today: string; compact?: boolean; notes?: GoalNote[]; viewerId?: string; partnerName?: string;
+}) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(String(goal.progress));
   const [msg, setMsg] = useState<string | null>(null);
@@ -126,6 +133,18 @@ export function GoalCard({ goal, today, compact }: { goal: ToolGoal; today: stri
               <Button size="sm" variant="ghost" disabled={pending} onClick={() => { if (confirm("Drop this goal?")) start(async () => { const r = await setGoalStatusAction(goal.id, "abandoned"); setMsg(r.message); }); }}>Drop</Button>
             </form>
             {msg && <p className="text-xs text-fg-muted" role="status">{msg}</p>}
+            {notes.length > 0 && (
+              <div className="space-y-1.5 border-t border-border pt-3">
+                {notes.slice(-5).map((n) => (
+                  <p key={n.id} className="text-sm">
+                    <span className="font-medium">{n.author_id === viewerId ? "You" : partnerName}: </span>
+                    {n.kind === "deadline"
+                      ? <>suggested a deadline of {formatDate(n.proposed_deadline, { day: "numeric", month: "short" })} ({n.proposal_status === "pending" ? <Link href="/tools/accountability" className="text-primary">answer</Link> : n.proposal_status})</>
+                      : <span className="text-fg-muted">{n.body}</span>}
+                  </p>
+                ))}
+              </div>
+            )}
           </>
         )}
       </CardBody>
