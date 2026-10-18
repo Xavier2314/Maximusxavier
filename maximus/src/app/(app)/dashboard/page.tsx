@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   ArrowRight, Bell, Building2, Cake, Compass, ListChecks, MessageCircle, MessageSquare, Phone, Quote, ClipboardCheck,
-  GraduationCap, Heart, ListTodo, PiggyBank, Sparkles, Target, TrendingUp,
+  GraduationCap, ListTodo, PiggyBank, Sparkles, Target, TrendingUp,
 } from "lucide-react";
 import { TaskQuickAdd, TaskRow } from "../planner/task-ui";
 import type { Motivation, Task } from "@/lib/planner";
@@ -15,6 +15,7 @@ import { ROLE_LABELS, primaryRole, requireViewer } from "@/lib/auth";
 import { motivationFor } from "@/lib/motivation";
 import { rankLabel } from "@/lib/ranks";
 import { WelcomeHero } from "./welcome-hero";
+import { WhyStrip } from "./why-strip";
 import { FOCUS, topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
 import type { AccountBalance, Attendance, GoalProgress, MonthlyGoal, Notification } from "@/lib/types";
@@ -75,9 +76,19 @@ export default async function DashboardPage() {
   ]);
   // A different reason each day.
   const dayIndex = Math.floor(new Date(`${today}T00:00:00Z`).getTime() / 86400000);
-  const why = whys && whys.length ? whys[dayIndex % whys.length] : null;
-  const whyImage = why?.image_path
-    ? (await supabase.storage.from("motivations").createSignedUrl(why.image_path, 3600)).data?.signedUrl ?? null : null;
+  // Today's reason first, then the rest.
+  const allWhys = whys ?? [];
+  const start = allWhys.length ? dayIndex % allWhys.length : 0;
+  const orderedWhys = [...allWhys.slice(start), ...allWhys.slice(0, start)];
+  const whyPaths = orderedWhys.map((w) => w.image_path).filter((x): x is string => Boolean(x));
+  const whyImages: Record<string, string> = {};
+  if (whyPaths.length) {
+    const { data: signed } = await supabase.storage.from("motivations").createSignedUrls(whyPaths, 3600);
+    for (const w of orderedWhys) {
+      const url = signed?.find((x) => x.path === w.image_path)?.signedUrl;
+      if (url) whyImages[w.id] = url;
+    }
+  }
   const officePulse = pulse as { office: { name: string }; open_today: boolean; members: number; present_now: number; checked_in_today: number } | null;
   const growth = focusData as GrowthFocus | null;
   const focusTop = topFocus(growth);
@@ -123,6 +134,8 @@ export default async function DashboardPage() {
         streak={(streak as number | null) ?? 0} checkedInAt={checkedIn ? formatTime(openAttendance.check_in_at, tz) : null}
         evaluationDue={!evaluation} nextEvaluation={formatDate(nextEvaluationDate(today), { day: "numeric", month: "short" })}
         goalPct={goalPct} hasGoals={goalRows.length > 0} word={motivationFor(today)} />
+
+      <WhyStrip whys={orderedWhys} images={whyImages} today={today} />
 
       <FocusPopup week={focusWeek} areas={focusTop.map((a) => ({
         key: a.key, title: FOCUS[a.key].title, why: FOCUS[a.key].why(a, "You"), tip: FOCUS[a.key].tips[0],
@@ -231,8 +244,8 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+      <div>
+        <Card>
           <CardHeader title="Today's tasks" icon={<ListTodo className="size-4" />}
             description={(todayTasks ?? []).length ? "Tap the circle when it's done" : "Plan your day in a minute"}
             action={<Link href="/planner" className="text-sm font-medium text-primary hover:underline">Planner</Link>} />
@@ -243,21 +256,6 @@ export default async function DashboardPage() {
               </ul>
             ) : (
               <TaskQuickAdd today={today} compact />
-            )}
-          </CardBody>
-        </Card>
-        <Card className="relative overflow-hidden">
-          {whyImage && <img src={whyImage} alt="" className="h-36 w-full object-cover" />}
-          <CardHeader title="My Why" icon={<Heart className="size-4" />}
-            action={<Link href="/why" className="text-sm font-medium text-primary hover:underline">{why ? "All" : "Write it"}</Link>} />
-          <CardBody>
-            {why ? (
-              <>
-                <p className="text-lg font-semibold leading-snug tracking-tight">{why.title}</p>
-                {why.body && <p className="mt-2 line-clamp-4 text-sm text-fg-muted">{why.body}</p>}
-              </>
-            ) : (
-              <p className="text-sm text-fg-muted">Who are you doing this for? Write it down and see it here every day.</p>
             )}
           </CardBody>
         </Card>
