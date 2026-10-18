@@ -402,7 +402,7 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
               <Button type="button" variant="ghost" size="icon" aria-label="Attach a file" disabled={busy} onClick={() => fileRef.current?.click()}><Paperclip className="size-5" aria-hidden /></Button>
               <textarea value={text} onChange={(e) => onType(e.target.value)} rows={1} maxLength={4000} placeholder="Message"
                 onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && window.matchMedia("(pointer: fine)").matches) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }}
-                className="max-h-32 min-h-10 flex-1 resize-none rounded-2xl border border-border bg-surface px-3.5 py-2 text-[15px] outline-none focus:border-primary" aria-label="Message" />
+                className="max-h-32 min-h-10 flex-1 resize-none rounded-2xl border border-border bg-surface px-3.5 py-2 text-base sm:text-[15px] outline-none focus:border-primary" aria-label="Message" />
               {text.trim() ? (
                 <Button type="submit" size="icon" disabled={busy} aria-label={editing ? "Save edit" : "Send"}><Send className="size-5" aria-hidden /></Button>
               ) : (

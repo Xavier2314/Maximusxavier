@@ -71,3 +71,22 @@ export async function disconnectIntegrationAction(formData: FormData) {
   await supabase.rpc("disconnect_integration", { p_provider: provider });
   revalidatePath("/settings");
 }
+
+/** Sends a push to the signed-in member's devices right now, to check notifications work. */
+export async function sendTestPushAction(): Promise<{ ok: boolean; message: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Please sign in again." };
+  const { isPushConfigured, dispatchPendingPush } = await import("@/lib/push");
+  if (!isPushConfigured()) return { ok: false, message: "Push isn't configured on the server." };
+  const { createAdminClient } = await import("@/lib/supabase/server");
+  const admin = createAdminClient();
+  const { error } = await admin.from("notifications").insert({
+    user_id: user.id, type: "test", title: "Maximus test notification", body: "If you can see this, notifications work on this device.", link: "/settings",
+  });
+  if (error) return { ok: false, message: "Couldn't create the test notification." };
+  const r = await dispatchPendingPush(50);
+  return r.sent > 0
+    ? { ok: true, message: "Sent! If nothing appeared, check your computer's notification settings for this browser (and Do Not Disturb / Focus)." }
+    : { ok: false, message: "Not delivered. Turn notifications off and on again on this device, then retry." };
+}

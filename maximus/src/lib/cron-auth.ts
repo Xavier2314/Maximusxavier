@@ -10,3 +10,13 @@ export function isAuthorizedCron(request: Request): boolean {
   const given = Buffer.from(header);
   return given.length === expected.length && timingSafeEqual(given, expected);
 }
+
+/** The push dispatcher also accepts a separate token used by the database trigger that fires on every new notification. */
+export function isAuthorizedDispatch(request: Request): boolean {
+  if (isAuthorizedCron(request)) return true;
+  const token = process.env.PUSH_DISPATCH_TOKEN;
+  if (!token) return false;
+  const expected = Buffer.from(`Bearer ${token}`);
+  const given = Buffer.from(request.headers.get("authorization") ?? "");
+  return given.length === expected.length && timingSafeEqual(given, expected);
+}

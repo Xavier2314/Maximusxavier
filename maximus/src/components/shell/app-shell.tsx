@@ -1,5 +1,6 @@
 "use client";
 
+import { PushPrompt } from "@/components/push-prompt";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -187,7 +188,7 @@ export function AppShell({ sections: memberSections, office = null, brands, plat
         </div>
       </header>
 
-      <main id="main" className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:pb-12">{children}</main>
+      <main id="main" className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:pb-12"><PushPrompt />{children}</main>
       <CommandPalette sections={allSections} />
 
       {/* Mobile bottom navigation */}
