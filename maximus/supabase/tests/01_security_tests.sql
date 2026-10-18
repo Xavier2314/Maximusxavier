@@ -675,7 +675,7 @@ end $$;
 -- Branding (0022): office admin a2 manages Abuja (f2)
 -- ---------------------------------------------------------------------------
 select pg_temp.act_as('00000000-0000-0000-0000-0000000000a2');
-select public.set_office_branding('00000000-0000-0000-0000-0000000000f2', 'Richies Blazers', 'Blazing a trail', null, '#b91c1c', '#facc15', '#1f1300', true);
+select public.set_office_branding('00000000-0000-0000-0000-0000000000f2', 'Richies Blazers', 'Blazing a trail', null, '#b91c1c', '#facc15', '#1f1300', false);
 select pg_temp.expect_error($$select public.set_office_branding('00000000-0000-0000-0000-0000000000f1', 'Hijack', null, null, '#000000', '#000000', '#000000', false)$$, 'manager brands another office');
 select pg_temp.expect_error($$select public.set_office_branding('00000000-0000-0000-0000-0000000000f2', 'x', null, null, 'red', '#000000', '#000000', false)$$, 'invalid colour');
 select pg_temp.expect_error($$select public.set_platform_branding('{"app_name":"Mine"}')$$, 'office admin white-labels the platform');
@@ -690,6 +690,30 @@ select public.set_platform_branding('{"app_name":"Accelerator"}');
 do $$ begin
   assert (select value ->> 'app_name' from public.app_settings where key = 'branding') = 'Accelerator', 'platform brand saved';
   raise notice 'PASS: super admin white-labels the platform';
+end $$;
+select pg_temp.act_as(null);
+
+-- ---------------------------------------------------------------------------
+-- White-label fee (0023)
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a2');
+select pg_temp.expect_error($$select public.set_office_branding('00000000-0000-0000-0000-0000000000f2', 'RB', null, null, '#b91c1c', '#facc15', '#1f1300', true)$$, 'white-label before paying');
+insert into public.white_label_requests (office_id, amount, receipt_path) values ('00000000-0000-0000-0000-0000000000f2', 5000, '00000000-0000-0000-0000-0000000000a2/receipt.jpg');
+select pg_temp.expect_error($$insert into public.white_label_requests (office_id, amount, receipt_path) values ('00000000-0000-0000-0000-0000000000f2', 5000, '00000000-0000-0000-0000-0000000000a2/again.jpg')$$, 'second pending request');
+select pg_temp.expect_error($$insert into public.white_label_requests (office_id, amount, receipt_path) values ('00000000-0000-0000-0000-0000000000f1', 5000, '00000000-0000-0000-0000-0000000000a2/x.jpg')$$, 'request for another office');
+update public.white_label_requests set status = 'approved';
+do $$ begin
+  assert (select status from public.white_label_requests limit 1) = 'pending', 'requester cannot approve own payment';
+end $$;
+select pg_temp.expect_error($$select public.decide_white_label((select id from public.white_label_requests limit 1), true)$$, 'office admin approves');
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+select public.decide_white_label((select id from public.white_label_requests limit 1), true, 'Confirmed on bank alert');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a2');
+select public.set_office_branding('00000000-0000-0000-0000-0000000000f2', 'RB', null, null, '#b91c1c', '#facc15', '#1f1300', true);
+do $$ begin
+  assert (select white_label from public.offices where id = '00000000-0000-0000-0000-0000000000f2'), 'white-label on after approval';
+  assert (select status from public.white_label_requests limit 1) = 'approved', 'request approved';
+  raise notice 'PASS: white-label unlocked only after a Super Admin approves the payment';
 end $$;
 select pg_temp.act_as(null);
 

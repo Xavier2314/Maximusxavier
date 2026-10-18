@@ -47,8 +47,12 @@ function ColourField({ label, hint, name, value, onChange, error }: { label: str
   );
 }
 
-export function BrandEditor({ mode, officeId, initial, fallbackName, save, reset }: {
+export function BrandEditor({ mode, officeId, initial, fallbackName, save, reset, whiteLabelUnlocked = true, children }: {
   mode: "office" | "platform";
+  /** Removing "Powered by" is a paid unlock for offices. */
+  whiteLabelUnlocked?: boolean;
+  /** Shown under the white-label option (e.g. how to unlock it). */
+  children?: React.ReactNode;
   officeId?: string;
   initial: Brand;
   fallbackName: string;
@@ -149,12 +153,16 @@ export function BrandEditor({ mode, officeId, initial, fallbackName, save, reset
         </section>
 
         {mode === "office" && (
-          <label className="flex items-start gap-3 rounded-2xl bg-surface-muted/70 p-4 text-sm">
-            <Checkbox name="white_label" checked={whiteLabel} onChange={(e) => setWhiteLabel(e.target.checked)} className="mt-0.5 size-4" />
-            <span><b>White-label for our members</b>
-              <span className="block text-fg-muted">Your members see only your name and logo, with no &quot;Powered by&quot; line, and your name in the browser tab.</span>
-            </span>
-          </label>
+          <div className="space-y-3 rounded-2xl bg-surface-muted/70 p-4">
+            <label className={cn("flex items-start gap-3 text-sm", !whiteLabelUnlocked && "opacity-60")}>
+              <Checkbox name="white_label" checked={whiteLabel} disabled={!whiteLabelUnlocked}
+                onChange={(e) => setWhiteLabel(e.target.checked)} className="mt-0.5 size-4" />
+              <span><b>White-label for our members</b>{!whiteLabelUnlocked && <span className="ml-2 rounded-full bg-warning-soft px-2 py-0.5 text-xs text-warning">Locked</span>}
+                <span className="block text-fg-muted">Your members see only your name and logo, with no &quot;Powered by&quot; line, and your name in the browser tab.</span>
+              </span>
+            </label>
+            {children}
+          </div>
         )}
 
         <div className="flex flex-wrap gap-2 border-t border-border pt-5">
