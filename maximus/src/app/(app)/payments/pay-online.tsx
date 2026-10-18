@@ -6,10 +6,12 @@ import { FormMessage, Input } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { cn } from "@/lib/utils";
 import { startOnlinePaymentAction } from "./actions";
+import { safeAction } from "@/lib/report-error";
+const safe_startOnlinePaymentAction = safeAction(startOnlinePaymentAction, { ok: false, message: "Couldn't save. The app may have just updated. Refresh the page and try again." });
 
 /** Pay with card, bank transfer or USSD on Flutterwave's secure page. */
 export function PayOnline({ purpose, fixedAmount, officeId }: { purpose: "white_label" | "savings" | "contributions"; fixedAmount?: number; officeId?: string }) {
-  const [state, action] = useActionState(startOnlinePaymentAction, null);
+  const [state, action] = useActionState(safe_startOnlinePaymentAction, null);
   const [kind, setKind] = useState<"savings" | "contributions">(purpose === "contributions" ? "contributions" : "savings");
   const p = purpose === "white_label" ? "white_label" : kind;
   return (

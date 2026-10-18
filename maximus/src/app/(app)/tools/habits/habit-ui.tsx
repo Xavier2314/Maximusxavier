@@ -8,6 +8,8 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import type { Habit } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 import { addHabitAction, archiveHabitAction, toggleHabitAction } from "../actions";
+import { safeAction } from "@/lib/report-error";
+const safe_addHabitAction = safeAction(addHabitAction, { ok: false, message: "Couldn't save. The app may have just updated. Refresh the page and try again." });
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const ICONS = ["🔥", "📞", "🤝", "📚", "🙏", "🏃", "💧", "💰", "🎯", "✍️", "🧘", "⏰"];
@@ -24,7 +26,7 @@ function StepLabel({ n, children, htmlFor }: { n: number; children: React.ReactN
 }
 
 export function HabitForm() {
-  const [state, action] = useActionState(addHabitAction, null);
+  const [state, action] = useActionState(safe_addHabitAction, null);
   const [title, setTitle] = useState("");
   const [icon, setIcon] = useState("🔥");
   const [days, setDays] = useState<number[]>(ALL);

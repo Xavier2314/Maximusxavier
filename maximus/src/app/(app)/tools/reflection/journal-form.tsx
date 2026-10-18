@@ -7,6 +7,8 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { MOODS } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 import { saveJournalAction } from "../actions";
+import { safeAction } from "@/lib/report-error";
+const safe_saveJournalAction = safeAction(saveJournalAction, { ok: false, message: "Couldn't save. The app may have just updated. Refresh the page and try again." });
 
 export type Entry = {
   id: string; kind: "journal" | "reflection"; entry_date: string; mood: number | null;
@@ -25,7 +27,7 @@ function VoiceArea({ name, label, defaultValue, rows = 3, placeholder }: { name:
 }
 
 export function JournalForm({ kind, entryDate, entry }: { kind: "journal" | "reflection"; entryDate: string; entry: Entry | null }) {
-  const [state, action] = useActionState(saveJournalAction, null);
+  const [state, action] = useActionState(safe_saveJournalAction, null);
   const [mood, setMood] = useState<number | null>(entry?.mood ?? null);
   return (
     <form action={action} className="space-y-4">

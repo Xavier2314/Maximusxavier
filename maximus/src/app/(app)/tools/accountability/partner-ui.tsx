@@ -11,6 +11,9 @@ import { cn, formatDate, formatRelative } from "@/lib/utils";
 import {
   checkinAction, endPartnershipAction, goalCommentAction, requestPartnerAction, respondDeadlineAction, respondPartnerAction, saveSharingAction,
 } from "./actions";
+import { safeAction } from "@/lib/report-error";
+const safe_requestPartnerAction = safeAction(requestPartnerAction, { ok: false, message: "Couldn't save. The app may have just updated. Refresh the page and try again." });
+const safe_checkinAction = safeAction(checkinAction, { ok: false, message: "Couldn't save. The app may have just updated. Refresh the page and try again." });
 
 export type Comment = {
   id: string; goal_id: string; author_id: string; kind: "comment" | "encourage" | "request_update" | "deadline";
@@ -39,7 +42,7 @@ export function CodeCard({ code }: { code: string }) {
 }
 
 export function RequestForm() {
-  const [state, action] = useActionState(requestPartnerAction, null);
+  const [state, action] = useActionState(safe_requestPartnerAction, null);
   return (
     <form action={action} className="space-y-3">
       <FormMessage state={state} />
@@ -113,7 +116,7 @@ type Checkin = { slot: "morning" | "evening"; mood: number | null; plan: string 
 export function CheckinForm({ partnershipId, today, existing }: { partnershipId: string; today: string; existing: { morning: Checkin | null; evening: Checkin | null } }) {
   const hour = new Date().getHours();
   const [slot, setSlot] = useState<"morning" | "evening">(hour < 14 ? "morning" : "evening");
-  const [state, action] = useActionState(checkinAction, null);
+  const [state, action] = useActionState(safe_checkinAction, null);
   const cur = existing[slot];
   const [mood, setMood] = useState<number | null>(cur?.mood ?? null);
   return (

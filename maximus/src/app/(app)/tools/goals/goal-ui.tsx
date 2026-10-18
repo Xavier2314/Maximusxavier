@@ -11,6 +11,8 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { GOAL_CATEGORIES, HORIZONS, type ToolGoal } from "@/lib/tools";
 import { cn, formatDate } from "@/lib/utils";
 import { recordProgressAction, saveGoalAction, setGoalStatusAction } from "../actions";
+import { safeAction } from "@/lib/report-error";
+const safe_saveGoalAction = safeAction(saveGoalAction, { ok: false, message: "Couldn't save. The app may have just updated. Refresh the page and try again." });
 
 export type GoalNote = {
   id: string; goal_id: string; author_id: string; kind: "comment" | "encourage" | "request_update" | "deadline";
@@ -20,7 +22,7 @@ export type GoalNote = {
 const PRIORITY = { 1: { label: "High", tone: "red" }, 2: { label: "Normal", tone: "blue" }, 3: { label: "Low", tone: "neutral" } } as const;
 
 export function GoalForm({ today, goal, onDone }: { today: string; goal?: ToolGoal; onDone?: () => void }) {
-  const [state, action] = useActionState(saveGoalAction, null);
+  const [state, action] = useActionState(safe_saveGoalAction, null);
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (!state?.ok) return;
