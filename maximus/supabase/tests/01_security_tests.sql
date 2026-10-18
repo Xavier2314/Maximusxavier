@@ -717,6 +717,54 @@ do $$ begin
 end $$;
 select pg_temp.act_as(null);
 
+-- ---------------------------------------------------------------------------
+-- Weekly office reports (0024)
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a2');
+insert into public.office_reports (office_id, week_start, metrics, status)
+values ('00000000-0000-0000-0000-0000000000f2', date_trunc('week', current_date)::date, '{"active_members": 2}', 'submitted');
+select pg_temp.expect_error($$insert into public.office_reports (office_id, week_start) values ('00000000-0000-0000-0000-0000000000f1', date_trunc('week', current_date)::date)$$, 'report for another office');
+select pg_temp.expect_error($$insert into public.office_reports (office_id, week_start) values ('00000000-0000-0000-0000-0000000000f2', date_trunc('week', current_date)::date + 1)$$, 'week not starting Monday');
+do $$ declare f jsonb; begin
+  f := public.office_week_facts('00000000-0000-0000-0000-0000000000f2', date_trunc('week', current_date)::date);
+  assert (f ->> 'active_members')::int >= 2, 'facts count members';
+  assert (select submitted_at from public.office_reports limit 1) is not null, 'submitted time set';
+  raise notice 'PASS: office manager files a weekly report';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select count(*) from public.office_reports) = 0, 'members cannot read office reports';
+  raise notice 'PASS: weekly reports private to office managers';
+end $$;
+select pg_temp.expect_error($$select public.office_week_facts('00000000-0000-0000-0000-0000000000f2', date_trunc('week', current_date)::date)$$, 'member reads week facts');
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+do $$ begin
+  assert (select count(*) from public.office_reports) = 1, 'super admin sees every office report';
+  assert exists (select 1 from public.notifications where type = 'office_report'), 'super admin notified';
+  raise notice 'PASS: super admin sees weekly reports';
+end $$;
+select pg_temp.act_as(null);
+
+-- ---------------------------------------------------------------------------
+-- Business status & NeoLife ID (0025). Tree: a1 > b1 > e2.
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+update public.profiles set business_rank = 'manager' where id = '00000000-0000-0000-0000-0000000000b1';
+insert into public.member_private (newlife_id) values ('NL-777');
+select pg_temp.expect_error($$update public.profiles set business_rank = 'boss' where id = '00000000-0000-0000-0000-0000000000b1'$$, 'invalid business status');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a1');
+do $$ begin
+  assert (select newlife_id from public.member_private where user_id = '00000000-0000-0000-0000-0000000000b1') = 'NL-777', 'sponsor line sees NeoLife ID';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+do $$ begin
+  assert (select count(*) from public.member_private where user_id = '00000000-0000-0000-0000-0000000000b1') = 0, 'downline cannot see sponsor NeoLife ID';
+  assert (select business_rank from public.profiles where id = '00000000-0000-0000-0000-0000000000b1') = 'manager', 'downline sees sponsor status';
+  raise notice 'PASS: NeoLife ID visible up the line only; status visible to the team';
+end $$;
+select pg_temp.expect_error($$insert into public.member_private (user_id, newlife_id) values ('00000000-0000-0000-0000-0000000000b1', 'X')$$, 'set someone else NeoLife ID');
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

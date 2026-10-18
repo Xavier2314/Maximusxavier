@@ -78,8 +78,8 @@ const VIEWS = [
   { key: "list", label: "List view", icon: List },
 ] as const;
 
-export function TeamExplorer({ rootId, rootName, rootCode, rootAvatar, members, focus, target }: {
-  rootId: string; rootName: string; rootCode: string; rootAvatar: string | null; members: TeamMemberStat[];
+export function TeamExplorer({ rootId, rootName, rootCode, rootAvatar, rootRank = null, members, focus, target }: {
+  rootId: string; rootName: string; rootCode: string; rootAvatar: string | null; rootRank?: string | null; members: TeamMemberStat[];
   focus: Record<string, FocusKey[]>; target: number;
 }) {
   const [view, setView] = useState<(typeof VIEWS)[number]["key"]>("chart");
@@ -125,7 +125,7 @@ export function TeamExplorer({ rootId, rootName, rootCode, rootAvatar, members, 
       </div>
 
       {view === "chart" && !filtering ? (
-        <OrgChart rootId={rootId} rootName={rootName} rootCode={rootCode} rootAvatar={rootAvatar} members={members} focus={focus} target={target} />
+        <OrgChart rootId={rootId} rootName={rootName} rootCode={rootCode} rootAvatar={rootAvatar} rootRank={rootRank} members={members} focus={focus} target={target} />
       ) : view === "tree" && !filtering ? (
         <div className="overflow-x-auto p-4">
           <div className="mb-2 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-brand-navy to-[#1e3a8a] px-3 py-2.5 text-white">

@@ -11,6 +11,7 @@ import { topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
 import type { Attendance, Evaluation, GoalProgress, MonthlyGoal, Order, Profile, RoleKey, TeamMemberStat } from "@/lib/types";
 import { MemberManage } from "./member-manage";
+import { rankLabel } from "@/lib/ranks";
 import { TaskQuickAdd } from "../../planner/task-ui";
 import { Encourage } from "../../why/why-ui";
 import { WHY_CATEGORIES, type Motivation, type Task } from "@/lib/planner";
@@ -58,6 +59,9 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
   const team = ((subTeam as TeamMemberStat[] | null) ?? []).filter((m) => m.status !== "deactivated" && m.depth >= 1)
     .sort((a, b) => a.depth - b.depth || a.full_name.localeCompare(b.full_name))
     .map((m) => ({ id: m.member, name: m.full_name, avatar: m.avatar_url, depth: m.depth, sponsorId: m.sponsor_id }));
+  // RLS returns the NeoLife ID only to the member's sponsor line and admins, never their downline.
+  const { data: priv } = await supabase.from("member_private").select("newlife_id").eq("user_id", id).maybeSingle();
+  const neolife = (priv?.newlife_id as string | undefined) ?? null;
   const growth = focusData as GrowthFocus | null;
   const focusTop = topFocus(growth);
   const focusCourses = await coursesForFocus(supabase, focusTop);
@@ -89,6 +93,8 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{member.full_name}</h1>
             <p className="mt-1 text-white/70">{member.member_id} · Joined {formatDate(member.joined_at, { month: "long", year: "numeric" })}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
+              {rankLabel(member.business_rank) && <span className="rounded-full bg-brand-lime px-2.5 py-0.5 text-xs font-semibold text-brand-navy">{rankLabel(member.business_rank)}</span>}
+              {neolife && <span className="rounded-full bg-white/10 px-2.5 py-0.5 font-mono text-xs ring-1 ring-white/15">NeoLife ID {neolife}</span>}
               {roleKeys.filter((r) => r !== "member").map((r) => (
                 <span key={r} className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs ring-1 ring-white/15">{ROLE_LABELS[r]}</span>
               ))}

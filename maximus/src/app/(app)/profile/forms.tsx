@@ -7,7 +7,8 @@ import { Avatar } from "@/components/ui/misc";
 import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { Profile } from "@/lib/types";
-import { updateProfileAction, uploadAvatarAction } from "./actions";
+import { RANKS } from "@/lib/ranks";
+import { saveBusinessAction, updateProfileAction, uploadAvatarAction } from "./actions";
 
 export function AvatarUploader({ name, src }: { name: string; src: string | null }) {
   return (
@@ -47,6 +48,26 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         <Textarea id="bio" name="bio" defaultValue={profile.bio ?? ""} maxLength={500} />
       </Field>
       <SubmitButton pendingLabel="Saving…">Save profile</SubmitButton>
+    </form>
+  );
+}
+
+export function BusinessForm({ rank, newlifeId }: { rank: string | null; newlifeId: string | null }) {
+  const [state, action] = useActionState(saveBusinessAction, null);
+  return (
+    <form action={action} className="space-y-4">
+      <FormMessage state={state} />
+      <Field label="My business status" htmlFor="business_rank">
+        <Select id="business_rank" name="business_rank" defaultValue={rank ?? ""}>
+          <option value="">Choose your status</option>
+          {RANKS.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
+        </Select>
+      </Field>
+      <Field label="NeoLife ID number" htmlFor="newlife_id" optional
+        hint="Visible to you, your sponsor line and admins. Your downline can't see it.">
+        <Input id="newlife_id" name="newlife_id" defaultValue={newlifeId ?? ""} maxLength={40} autoComplete="off" />
+      </Field>
+      <SubmitButton pendingLabel="Saving…">Save</SubmitButton>
     </form>
   );
 }

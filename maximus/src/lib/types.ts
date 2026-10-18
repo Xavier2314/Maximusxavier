@@ -35,6 +35,7 @@ export type Profile = {
   upline_id: string | null;
   avatar_url: string | null;
   bio: string | null;
+  business_rank?: string | null;
   timezone: string;
   birthday_visibility: "private" | "day_month" | "full";
   ai_memory_enabled: boolean;
@@ -203,4 +204,5 @@ export type TeamMemberStat = {
   evaluations: number;
   last_activity: string | null;
   is_active: boolean;
+  business_rank?: string | null;
 };

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Camera, Compass, Download, Flame, Network, UserPlus, Users } from "lucide-react";
+import { Camera, Compass, Download, Flame, Medal, Network, UserPlus, Users } from "lucide-react";
 import { FocusList } from "@/components/growth-focus";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
@@ -40,7 +40,13 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
   focus[viewer.id] = topFocus(focusData).map((a) => a.key);
   const myTop = topFocus(focusData);
   // People removed from the team (deactivated) no longer appear in the structure.
-  const team = ((statsRes.data as TeamMemberStat[] | null) ?? []).filter((m) => m.status !== "deactivated");
+  const rawTeam = ((statsRes.data as TeamMemberStat[] | null) ?? []).filter((m) => m.status !== "deactivated");
+  // Business status for each card in the tree.
+  const { data: rankRows } = rawTeam.length
+    ? await supabase.from("profiles").select("id, business_rank").in("id", rawTeam.map((m) => m.member))
+    : { data: [] as { id: string; business_rank: string | null }[] };
+  const rankOf = new Map(((rankRows ?? []) as { id: string; business_rank: string | null }[]).map((r) => [r.id, r.business_rank]));
+  const team = rawTeam.map((m) => ({ ...m, business_rank: rankOf.get(m.member) ?? null }));
   const growth = (growthRes.data as { month: string; new_members: number }[] | null) ?? [];
   const direct = team.filter((m) => m.depth === 1).length;
   const active = team.filter((m) => m.is_active).length;
@@ -60,6 +66,12 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
           Removed {removed} {removed === "1" ? "person" : "people"} from your team.
           {Number(moved) > 0 && ` ${moved} ${moved === "1" ? "person who stayed is" : "people who stayed are"} now directly under you.`}
         </p>
+      )}
+      {!viewer.profile.business_rank && (
+        <Link href="/profile" className="mb-3 flex items-center gap-3 rounded-2xl border border-dashed border-primary/40 bg-primary-soft/50 p-4 text-sm hover:bg-primary-soft">
+          <Medal className="size-5 text-primary" aria-hidden />
+          <span className="flex-1"><b>Choose your business status</b> (Newbie to Diamond Director) so it shows in the structure.</span>
+        </Link>
       )}
       {!viewer.profile.avatar_url && (
         <Link href="/profile" className="mb-6 flex items-center gap-3 rounded-2xl border border-dashed border-primary/40 bg-primary-soft/50 p-4 text-sm hover:bg-primary-soft">
@@ -108,7 +120,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
           {team.length > 0 ? (
             <div className="mt-6 grid gap-6 xl:grid-cols-3">
               <div className="xl:col-span-3">
-                <TeamExplorer rootId={viewer.id} rootName={viewer.profile.full_name} rootCode={viewer.profile.member_id} rootAvatar={viewer.profile.avatar_url}
+                <TeamExplorer rootId={viewer.id} rootName={viewer.profile.full_name} rootCode={viewer.profile.member_id} rootAvatar={viewer.profile.avatar_url} rootRank={viewer.profile.business_rank ?? null}
                   members={team} focus={focus} target={target} />
               </div>
               {myTop.length > 0 && (

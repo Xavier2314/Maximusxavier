@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { RANKS } from "@/lib/ranks";
 import { friendlyError } from "@/lib/utils";
+
+const RANK_KEYS = RANKS.map((r) => r.key);
 
 export type ProfileState = { ok: boolean; message: string; errors?: Record<string, string[] | undefined> } | null;
 
@@ -56,4 +59,26 @@ export async function completeOnboardingAction() {
   const { data: { user } } = await supabase.auth.getUser();
   if (user) await supabase.from("profiles").update({ onboarding_completed: true }).eq("id", user.id);
   redirect("/dashboard");
+}
+
+/** Business status (everyone chooses their own) and NeoLife ID (seen by the member's sponsor line, never their downline). */
+export async function saveBusinessAction(_prev: ProfileState, formData: FormData): Promise<ProfileState> {
+  const parsed = z.object({
+    business_rank: z.enum(RANK_KEYS as [string, ...string[]]).or(z.literal("")),
+    newlife_id: z.string().trim().max(40).optional(),
+  }).safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { ok: false, message: "Please check your status and NeoLife ID." };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Please sign in again." };
+  const { error } = await supabase.from("profiles").update({ business_rank: parsed.data.business_rank || null }).eq("id", user.id);
+  if (error) return { ok: false, message: friendlyError(error) };
+  const nl = parsed.data.newlife_id || null;
+  const { data: existing } = await supabase.from("member_private").select("user_id").eq("user_id", user.id).maybeSingle();
+  const { error: idErr } = existing
+    ? await supabase.from("member_private").update({ newlife_id: nl }).eq("user_id", user.id)
+    : nl ? await supabase.from("member_private").insert({ newlife_id: nl }) : { error: null };
+  if (idErr) return { ok: false, message: friendlyError(idErr) };
+  revalidatePath("/", "layout");
+  return { ok: true, message: "Saved." };
 }

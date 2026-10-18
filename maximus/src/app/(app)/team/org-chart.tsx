@@ -7,13 +7,14 @@ import { PhotoPicker } from "@/components/photo-picker";
 import { Avatar } from "@/components/ui/misc";
 import { FOCUS, type FocusKey } from "@/lib/growth";
 import type { TeamMemberStat } from "@/lib/types";
+import { rankLabel } from "@/lib/ranks";
 import { cn } from "@/lib/utils";
 import { uploadAvatarAction } from "../profile/actions";
 import { uploadMemberPhotoAction } from "./actions";
 
 type ChartNode = {
   id: string; name: string; code: string; avatar: string | null; active: boolean; joinedAt: string | null;
-  focus: FocusKey[]; children: ChartNode[];
+  focus: FocusKey[]; children: ChartNode[]; rank?: string | null;
 };
 
 const NEW_DAYS = 7;
@@ -21,7 +22,7 @@ const NEW_DAYS = 7;
 function build(rootId: string, members: TeamMemberStat[], focus: Record<string, FocusKey[]>): ChartNode[] {
   const nodes = new Map<string, ChartNode>(members.map((m) => [m.member, {
     id: m.member, name: m.full_name, code: m.member_code, avatar: m.avatar_url, active: m.is_active,
-    joinedAt: m.joined_at, focus: focus[m.member] ?? [], children: [],
+    joinedAt: m.joined_at, focus: focus[m.member] ?? [], children: [], rank: m.business_rank ?? null,
   }]));
   const roots: ChartNode[] = [];
   for (const m of members) {
@@ -70,6 +71,9 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
         {node.name}{isRoot && <span className="font-normal text-white/60"> (you)</span>}
       </span>
       <span className={cn("block text-[11px]", isRoot ? "text-white/60" : "text-fg-subtle")}>{node.code}</span>
+      {rankLabel(node.rank) && (
+        <span className={cn("mt-0.5 block max-w-full truncate text-[11px] font-semibold", isRoot ? "text-brand-lime" : "text-primary")}>{rankLabel(node.rank)}</span>
+      )}
       <span className={cn("mt-1.5 inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums",
         count >= target ? "bg-success-soft text-success" : isRoot ? "bg-white/10 text-white" : "bg-primary-soft text-primary")}>
         {count >= target ? `${count} brought in ✓` : `${count}/${target} brought in`}
@@ -124,12 +128,12 @@ function Branch({ node, target, level }: { node: ChartNode; target: number; leve
   );
 }
 
-export function OrgChart({ rootId, rootName, rootCode, rootAvatar, members, focus, target }: {
-  rootId: string; rootName: string; rootCode: string; rootAvatar: string | null;
+export function OrgChart({ rootId, rootName, rootCode, rootAvatar, rootRank = null, members, focus, target }: {
+  rootId: string; rootName: string; rootCode: string; rootAvatar: string | null; rootRank?: string | null;
   members: TeamMemberStat[]; focus: Record<string, FocusKey[]>; target: number;
 }) {
   const tree = useMemo(() => build(rootId, members, focus), [rootId, members, focus]);
-  const root: ChartNode = { id: rootId, name: rootName, code: rootCode, avatar: rootAvatar, active: true, joinedAt: null, focus: focus[rootId] ?? [], children: tree };
+  const root: ChartNode = { id: rootId, name: rootName, code: rootCode, avatar: rootAvatar, active: true, joinedAt: null, focus: focus[rootId] ?? [], children: tree, rank: rootRank };
   const [zoom, setZoom] = useState(1);
   const scroller = useRef<HTMLDivElement>(null);
 
