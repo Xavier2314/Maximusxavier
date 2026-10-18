@@ -18,6 +18,7 @@ import { WHY_CATEGORIES, type Motivation, type Task } from "@/lib/planner";
 import { PositionSwitcher } from "@/components/position-switcher";
 import { currentPosition } from "@/lib/positions";
 import { OfficePlacement } from "./office-placement";
+import { ChatButton } from "../../messages/chat-button";
 import { formatDate, formatMoney, formatRelative, formatTime, monthStart, percent, todayIn } from "@/lib/utils";
 
 export const metadata = { title: "Team member" };
@@ -101,7 +102,8 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
               {member.status !== "active" && <span className="rounded-full bg-danger px-2.5 py-0.5 text-xs">{member.status}</span>}
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            {member.id !== viewer.id && member.status === "active" && (inDownline || member.id === viewer.profile.sponsor_id) && <ChatButton memberId={member.id} />}
             {member.phone && <a href={`tel:${member.phone}`} className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15" aria-label={`Call ${member.full_name}`}><Phone className="size-5" /></a>}
             <a href={`mailto:${member.email}`} className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15" aria-label={`Email ${member.full_name}`}><Mail className="size-5" /></a>
             {member.whatsapp && <a href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center rounded-xl bg-brand-green px-4 font-medium text-brand-navy">WhatsApp</a>}

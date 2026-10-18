@@ -23,8 +23,8 @@ const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif", "applicat
 
 const time = (iso: string) => new Date(iso).toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit" });
 
-export function ChatRoom({ conversationId, viewerId, other, canSend, otherLastRead: initialRead, initial, goals: initialGoals, myGoals }: {
-  conversationId: string; viewerId: string; other: { id: string; name: string; avatar: string | null }; canSend: boolean;
+export function ChatRoom({ conversationId, viewerId, kind = "partner", other, canSend, otherLastRead: initialRead, initial, goals: initialGoals, myGoals }: {
+  conversationId: string; viewerId: string; kind?: "partner" | "team"; other: { id: string; name: string; avatar: string | null }; canSend: boolean;
   otherLastRead: string | null; initial: ChatMessage[]; goals: Goal[]; myGoals: Goal[];
 }) {
   const supabase = useMemo(() => createClient(), []);
@@ -263,7 +263,7 @@ export function ChatRoom({ conversationId, viewerId, other, canSend, otherLastRe
           <Button variant="ghost" size="icon" aria-label="More" onClick={() => setMenu((v) => !v)}><MoreVertical className="size-5" aria-hidden /></Button>
           {menu && (
             <div className="absolute right-0 top-11 z-20 w-48 rounded-xl border border-border bg-bg-elevated p-1 text-sm shadow-lg">
-              <Link href="/tools/accountability" className="block rounded-lg px-3 py-2 hover:bg-surface-muted">Partner page</Link>
+              <Link href={kind === "partner" ? "/tools/accountability" : `/team/${other.id}`} className="block rounded-lg px-3 py-2 hover:bg-surface-muted">{kind === "partner" ? "Partner page" : "View profile"}</Link>
               <button type="button" onClick={toggleBlock} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-surface-muted"><Ban className="size-4" aria-hidden />{blocked ? "Unblock" : "Block"}</button>
               <button type="button" onClick={() => { setMenu(false); void report(null); }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-danger hover:bg-surface-muted"><Flag className="size-4" aria-hidden />Report a problem</button>
             </div>
@@ -360,7 +360,7 @@ export function ChatRoom({ conversationId, viewerId, other, canSend, otherLastRe
       {error && <p className="border-t border-border bg-surface-muted px-4 py-2 text-sm" role="status">{error}</p>}
       {!sendable ? (
         <p className="border-t border-border px-4 py-3 text-center text-sm text-fg-muted">
-          {blocked ? <>You blocked {first}. <button type="button" className="text-primary" onClick={toggleBlock}>Unblock</button></> : "This chat is read-only because the partnership ended or someone was blocked."}
+          {blocked ? <>You blocked {first}. <button type="button" className="text-primary" onClick={toggleBlock}>Unblock</button></> : "This chat is read-only: the partnership ended, you're no longer in the same team line, or someone was blocked."}
         </p>
       ) : (
         <div className="border-t border-border p-2 sm:p-3">
@@ -408,7 +408,7 @@ export function ChatRoom({ conversationId, viewerId, other, canSend, otherLastRe
               )}
             </form>
           )}
-          <p className="mt-1 text-center text-[11px] text-fg-subtle">Private between you and {first}. Sponsors and admins can&apos;t read it. Not end-to-end encrypted.</p>
+          <p className="mt-1 text-center text-[11px] text-fg-subtle">Only you and {first} can read this chat, not admins or anyone else. Not end-to-end encrypted.</p>
         </div>
       )}
     </div>

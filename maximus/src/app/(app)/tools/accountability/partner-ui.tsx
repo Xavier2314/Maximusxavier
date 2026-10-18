@@ -21,9 +21,9 @@ export function CodeCard({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
   const text = `Be my accountability partner on Maximus! My code is ${code}. Open Tools > Accountability and enter it.`;
   return (
-    <div className="card hero-gradient h-fit p-5 text-white">
+    <div className="h-fit rounded-3xl bg-brand-navy p-5 text-white shadow-lg ring-1 ring-black/5">
       <p className="text-sm text-white/80">Your partner code</p>
-      <p className="mt-1 font-mono text-3xl font-bold tracking-wider">{code || "—"}</p>
+      <p className="mt-2 inline-block rounded-xl bg-white/10 px-3 py-1.5 font-mono text-3xl font-bold tracking-wider text-brand-lime">{code || "—"}</p>
       <p className="mt-2 text-sm text-white/80">Share it with the person you want as your partner.</p>
       <div className="mt-4 flex flex-wrap gap-2">
         <Button variant="lime" size="sm" onClick={async () => { try { await navigator.clipboard.writeText(code); setCopied(true); } catch { /* ignore */ } }}>

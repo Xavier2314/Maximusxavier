@@ -29,14 +29,14 @@ export default async function ScorePage() {
     <>
       <PageHeader eyebrow="Goals & productivity" title="Productivity score" description="Your last 7 days, from things you can check. No hidden points." action={<BackToTools c="goals" />} />
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="hero-gradient text-white">
-          <CardBody className="flex flex-col items-center py-10 text-center">
+        <div className="rounded-3xl bg-brand-navy text-white shadow-lg">
+          <div className="flex flex-col items-center px-5 py-10 text-center">
             <p className="text-sm text-white/80">This week</p>
             <p className="text-7xl font-bold tabular-nums">{score ?? "—"}</p>
             <p className="text-sm text-white/80">out of 100</p>
             <p className="mt-4 max-w-xs text-sm">{message}</p>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
         <Card className="lg:col-span-2">
           <CardHeader title="How it's worked out" description="Parts with nothing to measure are left out and the rest are re-weighted." />
           <CardBody className="space-y-5">

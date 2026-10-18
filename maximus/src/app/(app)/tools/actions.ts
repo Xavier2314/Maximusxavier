@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { gameBySlug } from "@/lib/games";
 import type { FocusSession } from "@/lib/tools";
 import { friendlyError } from "@/lib/utils";
 
@@ -286,8 +287,9 @@ export async function saveGameScoreAction(input: { game: string; score: number; 
   if (!user) return { ok: false, message: "Please sign in again." };
   const { error } = await supabase.from("game_scores").insert(parsed.data);
   if (error) return { ok: false, message: friendlyError(error) };
+  const lowerWins = gameBySlug(parsed.data.game)?.higherIsBetter === false;
   const { data } = await supabase.from("game_scores").select("score").eq("user_id", user.id).eq("game", parsed.data.game)
-    .order("score", { ascending: false }).limit(1).maybeSingle();
+    .order("score", { ascending: lowerWins }).limit(1).maybeSingle();
   revalidatePath(`/tools/brain/${parsed.data.game}`);
   return { ok: true, message: "Score saved.", data: { best: (data?.score as number | undefined) ?? parsed.data.score } };
 }

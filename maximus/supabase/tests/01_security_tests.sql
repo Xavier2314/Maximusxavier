@@ -903,6 +903,27 @@ do $$ begin
 end $$;
 select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
 delete from public.user_blocks;
+-- Sponsor-line chat (0033): b1 sponsors e2; c2 is outside that line.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+do $$ declare v uuid; begin
+  v := public.open_team_chat('00000000-0000-0000-0000-0000000000e2');
+  insert into public.messages (conversation_id, body) values (v, 'Proud of your progress this week');
+end $$;
+select pg_temp.expect_error($$select public.open_team_chat('00000000-0000-0000-0000-0000000000c2')$$, 'chat outside sponsor line');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+do $$ begin
+  assert (select count(*) from public.my_chats() where kind = 'team') = 1, 'downline sees sponsor chat';
+  assert exists (select 1 from public.messages where body = 'Proud of your progress this week'), 'downline reads sponsor message';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert not exists (select 1 from public.messages where body = 'Proud of your progress this week'), 'others cannot read team chat';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+do $$ begin
+  assert not exists (select 1 from public.messages where body = 'Proud of your progress this week'), 'admin cannot read team chat';
+  raise notice 'PASS: sponsor-line chats private to the two people';
+end $$;
 select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
 select public.end_partnership((select id from public.partnerships where status = 'active'));
 select pg_temp.act_as(null);
