@@ -80,6 +80,10 @@ them into Supabase > SQL Editor.
   (/office/my): head counts, leaders, office news, top earners. Data comes from
   `office_public_summary()` (0039), which returns totals only.
 
+- Calls (0040): voice/video in private chats (📞/🎥 in the chat header) and office calls started by
+  office managers from /calls. Media runs on Daily.co; set `DAILY_API_KEY` in Vercel. Only chat members
+  (or that office's members) can get a room token.
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.

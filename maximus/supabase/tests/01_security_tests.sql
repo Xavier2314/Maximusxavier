@@ -1037,6 +1037,41 @@ end $$;
 select pg_temp.expect_error($$ select public.office_public_summary('00000000-0000-0000-0000-0000000000f1') $$, 'member cannot view another office');
 select pg_temp.act_as(null);
 
+-- 0040: calls. Only chat members join direct calls; office calls only for that office.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+delete from public.user_blocks;
+create temp table call_ids (direct uuid, grp uuid);
+grant all on call_ids to public;
+insert into call_ids (direct) select public.start_direct_call((select id from public.conversations limit 1), true);
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+do $$ begin
+  assert (select count(*) from public.calls) = 1, 'callee sees the call';
+  assert exists (select 1 from public.notifications where type = 'call'), 'callee is rung';
+  perform public.join_call((select direct from call_ids));
+  assert (select status from public.calls) = 'active', 'call answered';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+do $$ begin
+  assert (select count(*) from public.calls) = 0, 'sponsor cannot see private call';
+  assert not public.can_join_call((select direct from call_ids)), 'sponsor cannot join private call';
+end $$;
+select pg_temp.expect_error($$ select public.start_direct_call((select conversation_id from public.calls limit 1)) $$, 'outsider cannot start call in chat');
+select pg_temp.expect_error($$ select public.join_call((select direct from call_ids)) $$, 'outsider cannot join call');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+select pg_temp.expect_error($$ select public.start_group_call('00000000-0000-0000-0000-0000000000f2', 'Rally') $$, 'member cannot start office call');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a2');
+update call_ids set grp = public.start_group_call('00000000-0000-0000-0000-0000000000f2', 'Monday rally');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert public.can_join_call((select grp from call_ids)), 'office member can join office call';
+  perform public.end_call((select grp from call_ids));
+  assert (select status from public.calls where kind = 'group') <> 'ended', 'member cannot end office call';
+  perform public.end_call((select direct from call_ids));
+  assert (select status from public.calls where kind = 'direct') = 'ended', 'either side ends a direct call';
+  raise notice 'PASS: calls are private to their chat or office';
+end $$;
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  Ban, Check, CheckCheck, CornerUpLeft, FileText, Flag, Mic, MoreVertical, Paperclip, Pencil, Search, Send, Square, Target, Timer, Trash2, X,
+  Ban, Check, CheckCheck, CornerUpLeft, FileText, Flag, Mic, MoreVertical, Paperclip, Pencil, Phone, Search, Send, Square, Target, Timer, Trash2, Video, X,
 } from "lucide-react";
+import { startDirectCallAction } from "../calls/actions";
 import { Button } from "@/components/ui/button";
 import { Avatar, Progress } from "@/components/ui/misc";
 import { createClient } from "@/lib/supabase/client";
@@ -247,6 +248,13 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
   const byId = new Map(messages.map((m) => [m.id, m]));
   const sendable = canSend && !blocked;
 
+  const [calling, setCalling] = useState(false);
+  async function call(video: boolean) {
+    setCalling(true);
+    const r = await startDirectCallAction(conversationId, video);
+    if (r && !r.ok) { alert(r.message); setCalling(false); }
+  }
+
   return (
     <div className="card flex h-[calc(100dvh-11rem)] min-h-[420px] flex-col overflow-hidden lg:h-[calc(100dvh-8rem)]">
       <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
@@ -261,6 +269,10 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
           </div>
         </div>
         <div className="relative flex items-center gap-1">
+          <Button variant="ghost" size="icon" aria-label={`Voice call ${first}`} title="Voice call" disabled={calling || blocked}
+            onClick={() => call(false)}><Phone className="size-5" aria-hidden /></Button>
+          <Button variant="ghost" size="icon" aria-label={`Video call ${first}`} title="Video call" disabled={calling || blocked}
+            onClick={() => call(true)}><Video className="size-5" aria-hidden /></Button>
           <Button variant="ghost" size="icon" aria-label="Search messages" onClick={() => setSearch((s) => (s === null ? "" : null))}><Search className="size-5" aria-hidden /></Button>
           <Button variant="ghost" size="icon" aria-label="More" onClick={() => setMenu((v) => !v)}><MoreVertical className="size-5" aria-hidden /></Button>
           {menu && (

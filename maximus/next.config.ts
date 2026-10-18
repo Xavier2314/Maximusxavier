@@ -20,8 +20,9 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Frame-Options", value: "DENY" },
-          // Geolocation (attendance check-in) and microphone (voice input) on our own origin only.
-          { key: "Permissions-Policy", value: "geolocation=(self), camera=(), microphone=(self)" },
+          // Geolocation (check-in) on our own origin only. Camera, microphone and screen sharing
+          // are also delegated to the call frame (Daily.co), which asks via its iframe `allow` list.
+          { key: "Permissions-Policy", value: 'geolocation=(self), camera=(self "https://*.daily.co"), microphone=(self "https://*.daily.co"), display-capture=(self "https://*.daily.co")' },
         ],
       },
       {
