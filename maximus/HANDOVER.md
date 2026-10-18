@@ -71,6 +71,11 @@ them into Supabase > SQL Editor.
   `apply_online_payment()` (service role only, idempotent) unlocks white-label or writes a confirmed
   ledger entry. Bank transfer + receipt upload remain as a fallback.
 
+- Payouts (Bank page → Payouts admin page) need a static outbound IP: Flutterwave rejects transfers from
+  non-whitelisted IPs and Vercel IPs change. Set `FLUTTERWAVE_PROXY_URL` (e.g. Fixie / QuotaGuard) and add
+  the proxy's IPs under Flutterwave → Settings → Whitelisted IP addresses. Only /transfers and /balances
+  calls use the proxy.
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.

@@ -1,4 +1,5 @@
 import "server-only";
+import { ProxyAgent, fetch as undiciFetch } from "undici";
 import { createAdminClient } from "@/lib/supabase/server";
 
 /**
@@ -12,11 +13,31 @@ const BASE = "https://api.flutterwave.com/v3";
 const secretKey = () => (process.env.FLUTTERWAVE_SECRET_KEY || process.env.Secret__key || "").trim();
 export const isFlutterwaveConfigured = () => secretKey().startsWith("FLWSECK");
 
+/**
+ * Flutterwave only accepts payout (transfer) calls from whitelisted IP addresses, and
+ * Vercel's addresses change. When FLUTTERWAVE_PROXY_URL is set (e.g. a Fixie or QuotaGuard
+ * static-IP proxy), transfer and balance calls go through it so they come from fixed IPs.
+ */
+let proxy: ProxyAgent | null = null;
+function needsStaticIp(path: string) {
+  return path.startsWith("/transfers") || path.startsWith("/balances");
+}
+async function flwFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const proxyUrl = process.env.FLUTTERWAVE_PROXY_URL?.trim();
+  if (proxyUrl && needsStaticIp(path)) {
+    proxy ??= new ProxyAgent(proxyUrl);
+    const res = await undiciFetch(`${BASE}${path}`, {
+      method: init.method, body: init.body as string | undefined, headers: init.headers as Record<string, string>, dispatcher: proxy,
+    });
+    return res as unknown as Response;
+  }
+  return fetch(`${BASE}${path}`, { ...init, cache: "no-store" });
+}
+
 async function flw<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await flwFetch(path, {
     ...init,
-    headers: { Authorization: `Bearer ${secretKey()}`, "Content-Type": "application/json", ...(init?.headers ?? {}) },
-    cache: "no-store",
+    headers: { Authorization: `Bearer ${secretKey()}`, "Content-Type": "application/json", ...((init?.headers as Record<string, string>) ?? {}) },
   });
   const json = (await res.json().catch(() => null)) as T | null;
   if (!res.ok || !json) throw new Error(`Flutterwave ${path} failed (${res.status})`);
@@ -93,10 +114,9 @@ export async function resolveAccount(accountNumber: string, bankCode: string): P
 }
 
 export async function createTransfer(input: { reference: string; bankCode: string; accountNumber: string; amount: number; narration: string }) {
-  const res = await fetch(`${BASE}/transfers`, {
+  const res = await flwFetch("/transfers", {
     method: "POST",
     headers: { Authorization: `Bearer ${secretKey()}`, "Content-Type": "application/json" },
-    cache: "no-store",
     body: JSON.stringify({
       account_bank: input.bankCode, account_number: input.accountNumber, amount: input.amount, currency: "NGN", debit_currency: "NGN",
       narration: input.narration.slice(0, 80), reference: input.reference,

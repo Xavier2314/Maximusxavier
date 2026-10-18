@@ -26,7 +26,8 @@ export async function approvePayoutAction(id: string, note?: string): Promise<Re
     await admin.rpc("finish_payout", { p_reference: row.reference, p_success: false, p_provider_id: t.id, p_message: t.message });
     revalidatePath("/admin/payouts");
     dispatchPushSoon();
-    return { ok: false, message: `Flutterwave refused the transfer: ${t.message}. The member's money was released back to their wallet.` };
+    const hint = /whitelist/i.test(t.message) ? " Set up the static-IP proxy (FLUTTERWAVE_PROXY_URL) and whitelist its IPs in Flutterwave." : "";
+    return { ok: false, message: `Flutterwave refused the transfer: ${t.message}.${hint} The member's money was released back to their wallet.` };
   }
   await admin.rpc("mark_payout_sent", { p_reference: row.reference, p_provider_id: t.id, p_message: t.status });
   if (t.status === "SUCCESSFUL" || t.status === "FAILED") await settleTransfer({ reference: row.reference, transferId: t.id });
