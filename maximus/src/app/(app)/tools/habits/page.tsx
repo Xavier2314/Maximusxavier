@@ -51,7 +51,7 @@ export default async function HabitsPage() {
           </CardBody>
         </Card>
         <Card className="h-fit">
-          <CardHeader title="Add a habit" />
+          <CardHeader title="Add a new habit" description="Four quick steps." />
           <CardBody><HabitForm /></CardBody>
         </Card>
       </div>
