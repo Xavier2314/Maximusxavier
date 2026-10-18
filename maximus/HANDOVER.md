@@ -23,7 +23,8 @@ cat supabase/tests/00_supabase_stub.sql supabase/migrations/*.sql \
 A clean run ends with `ALL SECURITY TESTS PASSED`. Add a test for every new rule.
 
 ## Applying migrations
-All migrations up to `0025_business_status` are applied to the live database.
+All migrations up to `0033_team_chat` are applied to the live database (0030 schedules hourly
+check-in reminders with pg_cron).
 The Supabase MCP connection times out on large scripts and on anything containing a
 DELETE statement (it waits for a confirmation). Apply big migrations in pieces, or paste
 them into Supabase > SQL Editor.
@@ -47,7 +48,28 @@ them into Supabase > SQL Editor.
 - Weekly office report (Office view > Weekly office report): AI or form, last weeks carried
   over, branded printable PDF at `/print/office-report/[id]`.
 
+- Tools (one container at `/tools`, category cards open the tools inside):
+  - Focus & time: Pomodoro, focus mode, deep work, countdown, stopwatch, time blocking, time
+    audit, 2-minute challenge. Timers store start/pause timestamps (`focus_sessions`), so time
+    survives refreshes and closed tabs. Time is never counted as goal progress.
+  - Goals & productivity: goal tracker (`tool_goals`, separate from official monthly goals),
+    habits, productivity score (`productivity_score()`, 40% tasks, 30% goals, 30% habits),
+    Eisenhower matrix (moves change task priority/due date), reflection & journal, streaks.
+  - Accountability: partner codes (ACC-XXXXXX), mutual requests, one active partner, per-person
+    sharing switches, check-ins, comments/encouragement/deadline suggestions (owner decides).
+  - Private chat (`/messages`): partner chat plus sponsor-line chats (anyone directly above or
+    below in the tree, `open_team_chat`). Only the two people can read a conversation; no admin
+    policy exists on purpose. Not end-to-end encrypted. Reports carry only the reported message.
+  - Brain gym (`/tools/brain`): 20 games, scores in `game_scores`. Brain training for fun,
+    not a clinical test.
+
 ## Known follow-ups
+- Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
+  productivity coach, flashcards, focus music, motivational challenge, smart reminders.
+- Timer alerts play while the app is open or in the background; a timer finishing while the
+  phone is fully closed shows on reopening (server-side timer push isn't implemented).
+- Check-in reminders create in-app notifications on the hour; their push is sent by the next
+  push sweep (daily crons), unless a Supabase webhook calls `/api/push/dispatch`.
 - Registration now creates confirmed accounts on the server (no confirmation email), so the
   Supabase email rate limit can't block sign-ups. Password-reset emails still use Supabase's
   built-in email service, which allows only a few emails per hour. For real volume, set up
