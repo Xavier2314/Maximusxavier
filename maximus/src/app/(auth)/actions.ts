@@ -19,6 +19,10 @@ const registerSchema = z.object({
     return age >= 16 && age <= 100;
   }, "You must be at least 16 years old"),
   gender: z.enum(["female", "male", "other", "prefer_not_to_say", ""]).optional(),
+  business_rank: z.enum(
+    ["distributor", "manager", "senior_manager", "executive_manager", "director", "emerald_director"],
+    { errorMap: () => ({ message: "Choose your status" }) },
+  ),
   office_id: z.string().uuid("Choose your office"),
   referral_code: z.string().trim().max(20).optional(),
   upline_member_id: z.string().trim().max(20).optional(),
@@ -110,6 +114,13 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
       const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
       await supabase.from("profiles").update({ avatar_url: pub.publicUrl }).eq("id", data.user.id);
     }
+  }
+
+  // The status chosen at signup (business_rank isn't on the handle_new_user trigger,
+  // so it's set here once the member has a session and can update their own row).
+  if (data.session && data.user) {
+    const { error: rankErr } = await supabase.from("profiles").update({ business_rank: v.business_rank }).eq("id", data.user.id);
+    if (rankErr) console.error("Setting business_rank failed", rankErr.message);
   }
 
   // Joining above an existing member with an upline invite (e.g. the founder's own sponsor).

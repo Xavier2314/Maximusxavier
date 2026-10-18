@@ -14,7 +14,7 @@ import { registerAction } from "../actions";
 const STEPS = ["About you", "Your team", "Your account"] as const;
 const STEP_FIELDS: string[][] = [
   ["full_name", "phone", "whatsapp", "date_of_birth", "gender"],
-  ["office_id", "referral_code", "upline_member_id"],
+  ["office_id", "business_rank", "referral_code", "upline_member_id"],
   ["email", "password", "confirm_password", "privacy"],
 ];
 
@@ -150,6 +150,17 @@ export function RegisterForm({ offices, referralCode, uplineCode }: { offices: {
           <Select id="office_id" name="office_id" required defaultValue="">
             <option value="" disabled>Choose your office</option>
             {offices.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
+          </Select>
+        </Field>
+        <Field label="Your status" htmlFor="business_rank" error={errors.business_rank}>
+          <Select id="business_rank" name="business_rank" required defaultValue="">
+            <option value="" disabled>Choose your status</option>
+            <option value="distributor">Distributor</option>
+            <option value="manager">Manager</option>
+            <option value="senior_manager">Senior Manager</option>
+            <option value="executive_manager">Executive Manager</option>
+            <option value="director">Director</option>
+            <option value="emerald_director">Emerald Director</option>
           </Select>
         </Field>
         <Field label="Sponsor referral code or Member ID" htmlFor="referral_code" error={errors.referral_code}
