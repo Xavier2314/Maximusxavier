@@ -409,6 +409,68 @@ do $$ declare n int; n2 int; begin
   raise notice 'PASS: weekly growth focus % / rerun %', n, n2;
 end $$;
 
+-- Prospects
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c1');
+insert into public.prospects (full_name, phone, notes) values ('Pat Prospect', '2348012345678', 'Met at church');
+insert into public.prospect_messages (prospect_id, direction, body)
+  select id, 'out', 'Hi Pat, great meeting you!' from public.prospects where full_name = 'Pat Prospect';
+do $$ begin
+  assert (select count(*) from public.prospect_pipeline()) = 1, 'own pipeline';
+  raise notice 'PASS: member manages own prospects';
+end $$;
+select pg_temp.expect_error($$insert into public.prospects (owner_id, full_name) values ('00000000-0000-0000-0000-0000000000b1', 'Spoof')$$, 'create prospect for someone else');
+select pg_temp.expect_error($$select * from public.member_integrations$$, 'member reads integration tokens');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+do $$ begin
+  assert (select count(*) from public.prospects) = 1, 'sponsor sees downline prospects';
+  assert (select count(*) from public.prospect_messages) = 1, 'sponsor sees downline messages';
+  update public.prospects set stage = 'joined';
+  assert (select stage from public.prospects limit 1) = 'new', 'sponsor cannot change downline prospect';
+  raise notice 'PASS: leader reads but cannot edit team prospects';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+do $$ begin
+  assert (select count(*) from public.prospects) = 0, 'outsider sees no prospects';
+  insert into public.bank_waitlist (interests) values ('{savings}');
+  assert public.bank_waitlist_count() >= 1, 'waitlist count';
+  raise notice 'PASS: prospect privacy & bank waitlist';
+end $$;
+select pg_temp.expect_error($$select * from public.prospect_pipeline('00000000-0000-0000-0000-0000000000c1')$$, 'outsider reads member pipeline');
+
+-- Office tools
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c1');
+select pg_temp.expect_error($$select qr_code from public.offices$$, 'member reads office QR secret');
+select pg_temp.expect_error($$select public.office_qr_code('00000000-0000-0000-0000-0000000000f1')$$, 'member reads QR via function');
+select pg_temp.expect_error($$select public.check_in_qr('wrong-code')$$, 'check in with an invalid QR code');
+select pg_temp.act_as(null);
+update public.attendance set check_out_at = coalesce(check_out_at, now());
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+do $$ declare v_code text; r public.attendance; begin
+  v_code := public.office_qr_code('00000000-0000-0000-0000-0000000000f1');
+  perform pg_temp.act_as(null);
+  insert into public.office_memberships (office_id, user_id) values ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000d1') on conflict do nothing;
+  perform pg_temp.act_as('00000000-0000-0000-0000-0000000000d1');
+  r := public.check_in_qr(v_code);
+  assert r.method = 'qr' and r.status = 'verified_in_office', 'QR check-in verified';
+  r := public.check_out();
+  perform pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+  assert (select count(*) from public.office_register('00000000-0000-0000-0000-0000000000f1')) >= 2, 'register lists members';
+  assert (select count(*) from public.offices_overview()) = 1, 'admin overview';
+  raise notice 'PASS: QR check-in, register and overview';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c1');
+select pg_temp.expect_error($$select public.mark_attendance('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-0000000000f1', current_date)$$, 'member marks themself present');
+do $$ begin
+  assert (select count(*) from public.offices_overview()) = 0, 'member sees no office overview';
+  perform * from public.earnings_leaderboard('month');
+  insert into public.checklist_checks (item_id, check_date) select id, current_date from public.checklist_items limit 2;
+  assert (select count(*) from public.checklist_checks) = 2, 'checklist ticks';
+  assert (select count(*) from public.daily_thoughts) >= 1, 'thought visible';
+  raise notice 'PASS: leaderboard, checklist, thought of the day';
+end $$;
+select pg_temp.expect_error($$insert into public.checklist_checks (item_id, check_date) select id, current_date - 5 from public.checklist_items limit 1$$, 'tick an old checklist day');
+select pg_temp.expect_error($$insert into public.checklist_items (title) values ('Hack')$$, 'member edits checklist items');
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

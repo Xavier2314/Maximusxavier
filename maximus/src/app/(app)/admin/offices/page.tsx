@@ -15,7 +15,7 @@ export default async function OfficesPage() {
   const viewer = await requirePermission("manage_office");
   const supabase = await createClient();
   const [{ data: offices }, { data: memberships }] = await Promise.all([
-    supabase.from("offices").select("*").order("name").returns<Office[]>(),
+    supabase.from("offices").select("id, name, address, latitude, longitude, radius_m, timezone, schedule, manager_id, is_active, late_grace_minutes").order("name").returns<Office[]>(),
     supabase.from("office_memberships").select("office_id, user_id, is_manager, profiles!office_memberships_user_id_fkey(full_name, avatar_url, member_id)").returns<Membership[]>(),
   ]);
   const canCreate = viewer.isAdmin;

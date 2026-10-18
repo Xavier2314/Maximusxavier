@@ -54,6 +54,7 @@ export type Office = {
   schedule: Record<string, { open?: string; close?: string }>;
   manager_id: string | null;
   is_active: boolean;
+  late_grace_minutes?: number;
 };
 
 export type AttendanceStatus =
