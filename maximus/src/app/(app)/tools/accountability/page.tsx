@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Flame, Handshake, MessageCircle } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader, Progress } from "@/components/ui/misc";
@@ -100,7 +101,7 @@ async function Partner({ viewerId, p, today }: { viewerId: string; p: Partnershi
             <div className="flex flex-wrap gap-2 text-sm">
               {theirs?.share_focus && <Badge tone="blue">{fmtMinutes(focusMin)} focus this week</Badge>}
               {theirs?.share_score && score != null && <Badge tone="green">Score {score}/100</Badge>}
-              <Badge><MessageCircle className="size-3" aria-hidden /> Private chat: next update</Badge>
+              <Link href="/messages" className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-fg"><MessageCircle className="size-3.5" aria-hidden /> Chat with {first}</Link>
             </div>
           </CardBody>
         </Card>

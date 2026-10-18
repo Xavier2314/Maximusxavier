@@ -48,7 +48,7 @@ const SECTIONS: Section[] = [
     title: "Accountability", blurb: "Pair up with a partner who keeps you on track.", tone: "bg-primary-soft text-primary",
     tools: [
       { href: "/tools/accountability", label: "Accountability partner", desc: "Shared goals, check-ins, encouragement", icon: Users },
-      { label: "Private chat", desc: "Real-time messages with your partner", icon: MessageCircle },
+      { href: "/messages", label: "Private chat", desc: "Real-time messages with your partner", icon: MessageCircle },
     ],
   },
   {

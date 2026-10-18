@@ -1,5 +1,5 @@
 import {
-  BarChart3, Bell, Heart, ListChecks, Palette, BookOpen, Building2, ClipboardCheck, Compass, Filter, Inbox, LifeBuoy, Landmark, Medal, GraduationCap, House, MapPin, Megaphone, Network,
+  BarChart3, Bell, Heart, ListChecks, Palette, BookOpen, Building2, ClipboardCheck, Compass, Filter, Inbox, LifeBuoy, Landmark, Medal, GraduationCap, House, MapPin, Megaphone, MessageCircle, Network,
   ScrollText, ShieldCheck, ShoppingBag, Timer, SlidersHorizontal, Sparkles, Target, Trophy, Users, Wallet, type LucideIcon,
 } from "lucide-react";
 
@@ -33,4 +33,5 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   scroll: ScrollText,
   bell: Bell,
   timer: Timer,
+  message: MessageCircle,
 };

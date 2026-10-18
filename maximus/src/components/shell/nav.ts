@@ -25,6 +25,7 @@ export const NAV: NavSection[] = [
       { href: "/prospects", label: "Prospects", icon: "funnel" },
       { href: "/team", label: "My Team", icon: "network" },
       { href: "/inbox", label: "Inbox", icon: "inbox" },
+      { href: "/messages", label: "Partner chat", icon: "message" },
     ],
   },
   {

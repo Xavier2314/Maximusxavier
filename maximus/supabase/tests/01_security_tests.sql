@@ -867,6 +867,42 @@ do $$ begin
   assert (select count(*) from public.partner_checkins) = 0, 'super admin cannot see check-ins';
   raise notice 'PASS: accountability partners private, mutual and read-only';
 end $$;
+-- Private chat (0032)
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ declare v uuid; begin
+  v := public.open_partner_chat();
+  assert public.open_partner_chat() = v, 'same conversation reused';
+  insert into public.messages (conversation_id, body) values (v, 'Morning! Ready?');
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+do $$ begin
+  assert (select count(*) from public.messages) = 1, 'partner reads message';
+  assert (select unread from public.my_conversations()) = 1, 'unread count';
+  update public.messages set body = 'hacked';
+  assert (select body from public.messages limit 1) = 'Morning! Ready?', 'cannot edit partner message';
+  assert exists (select 1 from public.notifications where type = 'chat_message'), 'message notification';
+end $$;
+select pg_temp.expect_error($$insert into public.messages (conversation_id, sender_id, body) select id, '00000000-0000-0000-0000-0000000000c2', 'spoof' from public.conversations$$, 'spoof sender');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  update public.messages set body = 'Morning! Ready to focus?';
+  assert (select edited_at from public.messages limit 1) is not null, 'own edit stamped';
+  insert into public.user_blocks (blocked_id) values ('00000000-0000-0000-0000-0000000000e2');
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+select pg_temp.expect_error($$insert into public.messages (conversation_id, body) select id, 'hi' from public.conversations$$, 'blocked cannot send');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+do $$ begin
+  assert (select count(*) from public.messages) = 0, 'sponsor cannot read chat';
+  assert (select count(*) from public.conversations) = 0, 'sponsor cannot see conversations';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+do $$ begin
+  assert (select count(*) from public.messages) = 0, 'super admin cannot read chat';
+  raise notice 'PASS: private chat readable only by the two partners';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+delete from public.user_blocks;
 select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
 select public.end_partnership((select id from public.partnerships where status = 'active'));
 select pg_temp.act_as(null);
