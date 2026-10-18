@@ -34,6 +34,7 @@ export const NAV: NavSection[] = [
       { href: "/academy", label: "Academy", icon: "graduation" },
       { href: "/recognition", label: "Recognition", icon: "trophy" },
       { href: "/announcements", label: "Announcements", icon: "megaphone" },
+      { href: "/support", label: "Help & complaints", icon: "lifebuoy" },
     ],
   },
   {
@@ -46,6 +47,7 @@ export const NAV: NavSection[] = [
       { href: "/admin/content", label: "Content", icon: "book", permission: "manage_content" },
       { href: "/admin/daily", label: "Checklist & thoughts", icon: "clipboard", permission: "manage_content" },
       { href: "/admin/settings", label: "Settings", icon: "sliders", permission: "manage_roles" },
+      { href: "/admin/support", label: "Support tickets", icon: "lifebuoy", permission: "view_org_analytics" },
       { href: "/admin/audit", label: "Audit log", icon: "scroll", permission: "view_org_analytics" },
     ],
   },

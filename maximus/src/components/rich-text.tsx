@@ -1,11 +1,16 @@
+import Link from "next/link";
 import { Fragment } from "react";
 import { cn } from "@/lib/utils";
 
-/** Tiny, safe Markdown subset: paragraphs, bullet/numbered lists, **bold**. No HTML injection. */
+/** Tiny, safe Markdown subset: paragraphs, bullet/numbered lists, **bold**, and in-app links [label](/path). No HTML injection. */
 export function RichText({ text }: { text: string }) {
   const blocks = text.split(/\n{2,}/);
-  const inline = (s: string) => s.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith("**") && part.endsWith("**") ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>);
+  const inline = (s: string) => s.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\(\/[A-Za-z0-9/_?=&#-]*\))/g).map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) return <strong key={i}>{part.slice(2, -2)}</strong>;
+    const link = /^\[([^\]]+)\]\((\/[A-Za-z0-9/_?=&#-]*)\)$/.exec(part);
+    if (link) return <Link key={i} href={link[2]} className="font-medium text-primary underline underline-offset-2">{link[1]}</Link>;
+    return <Fragment key={i}>{part}</Fragment>;
+  });
   return (
     <div className="space-y-3">
       {blocks.map((b, i) => {

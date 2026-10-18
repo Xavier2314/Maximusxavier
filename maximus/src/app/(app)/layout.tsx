@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ChatWidget } from "@/components/chat-widget";
 import { AppShell } from "@/components/shell/app-shell";
 import { visibleNav } from "@/components/shell/nav";
 import { getViewer, primaryRole, ROLE_LABELS } from "@/lib/auth";
@@ -27,6 +28,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         memberId: viewer.profile.member_id,
       }}>
       {children}
+      <ChatWidget firstName={viewer.profile.full_name.split(" ")[0]} />
     </AppShell>
   );
 }

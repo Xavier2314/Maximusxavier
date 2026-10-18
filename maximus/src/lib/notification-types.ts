@@ -1,5 +1,6 @@
 /** Every notification type the platform sends, grouped for the preferences screen. */
 export const NOTIFICATION_TYPES = [
+  { key: "support_ticket", label: "Complaints and replies from the admin team", group: "Community" },
   { key: "shared_with_you", label: "Goals, evaluations and orders your team sends you", group: "Team" },
   { key: "goal_submitted", label: "New goal submissions from your team", group: "Team" },
   { key: "prospecting_nudge", label: "Reminders to keep inviting prospects", group: "Reminders" },

@@ -7,6 +7,7 @@ import { ArrowUp, Brain, LoaderCircle, MessageSquarePlus, Plus, Sparkles, Trash2
 import { Logo } from "@/components/brand/logo";
 import { RichText as Rich } from "@/components/rich-text";
 import { Button } from "@/components/ui/button";
+import { MicButton, ReadAloud } from "@/components/voice";
 import { cn, formatRelative } from "@/lib/utils";
 import { addMemoryAction, deleteConversationAction, deleteMemoryAction } from "./actions";
 
@@ -169,6 +170,9 @@ export function Chat({ conversationId, initialQuestion, conversations, initialMe
                 m.role === "user" ? "bg-primary text-white" : "bg-surface-muted")}>
                 {m.content ? (m.role === "assistant" ? <Rich text={m.content} /> : <p className="whitespace-pre-line">{m.content}</p>)
                   : <LoaderCircle className="size-4 animate-spin text-fg-subtle" aria-label="Thinking" />}
+                {m.role === "assistant" && m.content && !(streaming && m === messages[messages.length - 1]) && (
+                  <ReadAloud text={m.content.replace(/[*_#`>|-]+/g, " ")} label="Listen" className="mt-2 h-8 bg-surface" />
+                )}
               </div>
             </div>
           ))}
@@ -183,6 +187,7 @@ export function Chat({ conversationId, initialQuestion, conversations, initialMe
               placeholder={enabled ? "Ask Maximus AI anything about growing your business…" : "Maximus AI is not configured yet"}
               disabled={!enabled} aria-label="Message Maximus AI"
               className="max-h-40 min-h-[40px] flex-1 resize-none bg-transparent px-2 py-2 text-[15px] focus:outline-none" />
+            {enabled && <MicButton onText={(t) => setInput((cur) => (cur ? `${cur.replace(/\s+$/, "")} ${t}` : t))} />}
             <Button type="submit" size="icon" disabled={!input.trim() || streaming || !enabled} aria-label="Send">
               {streaming ? <LoaderCircle className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
             </Button>

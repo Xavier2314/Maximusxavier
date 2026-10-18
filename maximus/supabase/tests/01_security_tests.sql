@@ -510,6 +510,24 @@ do $$ begin
   raise notice 'PASS: shared items private';
 end $$;
 
+-- Complaints
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c1');
+insert into public.support_tickets (category, message, page) values ('payment', 'My deposit is still pending after a week', '/finance');
+select pg_temp.expect_error($$insert into public.support_tickets (message, status) values ('trying to self-resolve', 'resolved')$$, 'member creates a resolved ticket');
+do $$ begin
+  update public.support_tickets set status = 'resolved';
+  assert (select status from public.support_tickets limit 1) = 'open', 'member cannot resolve own ticket';
+  raise notice 'PASS: member complaint';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+do $$ begin assert (select count(*) from public.support_tickets) = 0, 'outsider sees no tickets'; raise notice 'PASS: tickets private'; end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+do $$ begin
+  assert exists (select 1 from public.notifications where type = 'support_ticket'), 'admin notified';
+  update public.support_tickets set status = 'resolved', admin_note = 'Confirmed today';
+  raise notice 'PASS: admin handles complaint';
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
