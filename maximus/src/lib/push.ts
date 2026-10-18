@@ -3,6 +3,7 @@ import webpush from "web-push";
 import { after } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { env } from "@/lib/env";
+import { motivationFor } from "@/lib/motivation";
 
 export const isPushConfigured = () => Boolean(env.vapidPublicKey && process.env.VAPID_PRIVATE_KEY && process.env.SUPABASE_SERVICE_ROLE_KEY);
 
@@ -69,7 +70,8 @@ export async function dispatchPendingPush(limit = 300) {
       stats.deferred++;
       continue;
     }
-    const payload = JSON.stringify({ title: n.title, body: n.body ?? "", url: n.link ?? "/notifications", tag: n.type });
+    const body = [n.body, `💪 ${motivationFor(n.id)}`].filter(Boolean).join("\n");
+    const payload = JSON.stringify({ title: n.title, body, url: n.link ?? "/notifications", tag: n.type });
     let delivered = false;
     for (const s of userSubs) {
       try {
