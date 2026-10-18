@@ -118,8 +118,8 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
           </section>
 
           {team.length > 0 ? (
-            <div className="mt-6 grid gap-6 xl:grid-cols-3">
-              <div className="xl:col-span-3">
+            <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
+              <div className="min-w-0 xl:col-span-3">
                 <TeamExplorer rootId={viewer.id} rootName={viewer.profile.full_name} rootCode={viewer.profile.member_id} rootAvatar={viewer.profile.avatar_url} rootRank={viewer.profile.business_rank ?? null}
                   members={team} focus={focus} target={target} />
               </div>

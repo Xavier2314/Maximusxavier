@@ -149,7 +149,7 @@ export function OrgChart({ rootId, rootName, rootCode, rootAvatar, rootRank = nu
         <button type="button" onClick={() => setZoom(1)} aria-label="Reset zoom" className="grid size-8 place-items-center rounded-lg hover:bg-surface-muted"><RotateCcw className="size-4" /></button>
         <button type="button" onClick={() => setZoom((z) => Math.min(1.6, +(z + 0.15).toFixed(2)))} aria-label="Zoom in" className="grid size-8 place-items-center rounded-lg hover:bg-surface-muted"><Plus className="size-4" /></button>
       </div>
-      <div ref={scroller} className="max-h-[75vh] overflow-auto px-4 pb-8 pt-14">
+      <div ref={scroller} className="max-h-[75vh] w-full overflow-auto overscroll-x-contain px-4 pb-8 pt-14 [contain:inline-size] [-webkit-overflow-scrolling:touch]">
         <div className="org-tree mx-auto w-max min-w-full" style={{ zoom }}>
           <ul>
             <li>
