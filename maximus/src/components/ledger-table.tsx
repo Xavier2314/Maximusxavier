@@ -48,7 +48,7 @@ export function LedgerTable({ rows }: { rows: (FinancialTransaction & { account_
                 {t.status === "confirmed" && <Badge tone="green">Confirmed</Badge>}
                 {t.status === "pending" && <Badge tone="blue"><Clock className="size-3" aria-hidden /> Pending</Badge>}
                 {t.status === "rejected" && <Badge tone="red">Rejected</Badge>}
-                {t.source === "self_reported" && t.status !== "confirmed" && <span className="ml-1 text-xs text-fg-subtle">self-reported</span>}
+                {t.source === "self_reported" && t.status !== "confirmed" && <span className="ml-1 text-xs text-fg-subtle">self-reported</span>}{t.source === "online_payment" && <span className="ml-1 text-xs text-success">paid online</span>}
               </td>
             </tr>
           ))}

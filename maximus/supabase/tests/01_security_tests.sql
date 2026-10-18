@@ -928,6 +928,41 @@ select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
 select public.end_partnership((select id from public.partnerships where status = 'active'));
 select pg_temp.act_as(null);
 
+-- ---------------------------------------------------------------------------
+-- Online payments (0034)
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+create temp table pay_refs (purpose text, tx_ref text);
+grant all on pay_refs to public;
+insert into pay_refs select 'savings', tx_ref from public.create_online_payment('savings', 2500);
+select pg_temp.expect_error($$select public.create_online_payment('savings', 50)$$, 'below minimum');
+select pg_temp.expect_error($$select public.create_online_payment('white_label', null, '00000000-0000-0000-0000-0000000000f2')$$, 'member pays office fee');
+select pg_temp.expect_error($$select public.apply_online_payment((select tx_ref from pay_refs limit 1), 1, 2500, 'NGN', true)$$, 'member applies own payment');
+select pg_temp.act_as(null);
+update public.offices set white_label_paid = false where id = '00000000-0000-0000-0000-0000000000f2';
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a2');
+insert into pay_refs select 'white_label', tx_ref from public.create_online_payment('white_label', null, '00000000-0000-0000-0000-0000000000f2');
+select pg_temp.act_as(null);
+do $$ begin
+  assert public.apply_online_payment((select tx_ref from pay_refs where purpose = 'savings'), 111, 2000, 'NGN', true) = 'mismatch', 'underpayment rejected';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+insert into pay_refs select 'savings2', tx_ref from public.create_online_payment('savings', 3000);
+select pg_temp.act_as(null);
+do $$ begin
+  assert public.apply_online_payment((select tx_ref from pay_refs where purpose = 'savings2'), 222, 3000, 'NGN', true) = 'applied', 'savings applied';
+  assert public.apply_online_payment((select tx_ref from pay_refs where purpose = 'savings2'), 222, 3000, 'NGN', true) = 'already', 'idempotent';
+  assert (select count(*) from public.financial_transactions where source = 'online_payment' and amount = 3000 and status = 'confirmed') = 1, 'one confirmed ledger entry';
+  assert public.apply_online_payment((select tx_ref from pay_refs where purpose = 'white_label'), 333, 5000, 'NGN', true) = 'applied', 'white-label applied';
+  assert (select white_label_paid from public.offices where id = '00000000-0000-0000-0000-0000000000f2'), 'office unlocked';
+  raise notice 'PASS: online payments verified, idempotent and server-only';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select count(*) from public.online_payments) = 0, 'others cannot see payments';
+end $$;
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

@@ -140,7 +140,7 @@ export type FinancialTransaction = {
   direction: 1 | -1;
   amount: number;
   status: TransactionStatus;
-  source: "self_reported" | "admin_recorded";
+  source: "self_reported" | "admin_recorded" | "online_payment";
   occurred_on: string;
   receipt_path: string | null;
   note: string | null;

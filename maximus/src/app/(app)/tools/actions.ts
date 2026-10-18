@@ -165,12 +165,13 @@ export async function setGoalStatusAction(goalId: string, status: "active" | "ab
 // ---------------------------------------------------------------------------
 export async function addHabitAction(_prev: Result | null, formData: FormData): Promise<Result> {
   const parsed = z.object({
-    name: z.string().trim().min(1, "Name the habit").max(80),
+    name: z.string().trim().min(1, "Type the habit you want to build, e.g. Read 10 pages.").max(80),
     icon: z.string().max(8).optional(),
     reminder_time: z.string().regex(/^\d{2}:\d{2}$/).optional().or(z.literal("")),
-  }).safeParse(Object.fromEntries(formData));
+  }).safeParse({ ...Object.fromEntries(formData), name: formData.get("habit_title") ?? formData.get("name") ?? "" });
   if (!parsed.success) return { ok: false, message: parsed.error.issues[0].message };
   const days = formData.getAll("days").map(Number).filter((d) => d >= 1 && d <= 7);
+  if (formData.has("days_set") && !days.length) return { ok: false, message: "Pick at least one day for this habit." };
   const { supabase } = await me();
   const { error } = await supabase.from("habits").insert({
     name: parsed.data.name, icon: parsed.data.icon || null, reminder_time: parsed.data.reminder_time || null,

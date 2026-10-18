@@ -8,6 +8,9 @@ import { BrandEditor } from "./brand-editor";
 import { WhiteLabelUnlock } from "./white-label-unlock";
 import type { WhiteLabelFee, WhiteLabelRequest } from "@/lib/white-label";
 import { resetOfficeBrandAction, saveOfficeBrandAction } from "./actions";
+import { Card, CardBody, CardHeader } from "@/components/ui/card";
+import { isFlutterwaveConfigured } from "@/lib/flutterwave";
+import { PayOnline } from "../../payments/pay-online";
 
 export const metadata = { title: "Office branding" };
 
@@ -35,6 +38,13 @@ export default async function OfficeBrandPage({ searchParams }: { searchParams: 
       <PageHeader eyebrow="Office view" title="Branding"
         description={`Make ${row?.name ?? "your office"} feel like yours: your name, logo and colours. Your members see it across the app.`}
         action={<OfficePicker offices={viewer.offices} current={officeId} />} />
+      {!unlocked && fee && isFlutterwaveConfigured() && latest?.status !== "pending" && (
+        <Card className="mb-6 border-2 border-primary/40">
+          <CardHeader title={`Remove "Powered by": pay ₦${Number(fee.amount).toLocaleString()} online`}
+            description="Unlocks instantly once Flutterwave confirms the payment. You can still pay by transfer below." />
+          <CardBody className="max-w-md"><PayOnline purpose="white_label" fixedAmount={Number(fee.amount)} officeId={officeId} /></CardBody>
+        </Card>
+      )}
       <BrandEditor key={officeId} mode="office" officeId={officeId} initial={{ ...current, logo: row?.logo_url ?? null }}
         fallbackName={row?.name ?? DEFAULT_BRAND.name}
         save={saveOfficeBrandAction} reset={resetOfficeBrandAction.bind(null, officeId)} whiteLabelUnlocked={unlocked}>
