@@ -1,6 +1,6 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
-import { AI_MODEL, aiClient, isAiConfigured } from "@/lib/ai";
+import { AI_MODEL, aiClient, aiErrorMessage, isAiConfigured } from "@/lib/ai";
 import { OPT_OUT, type Prospect, type ProspectMessage, type ProspectStage } from "@/lib/prospects";
 import type { createAdminClient } from "@/lib/supabase/server";
 

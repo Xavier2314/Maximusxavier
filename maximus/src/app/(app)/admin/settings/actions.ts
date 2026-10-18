@@ -24,3 +24,18 @@ export async function saveActiveDefinitionAction(_prev: { ok: boolean; message: 
   revalidatePath("/admin/settings");
   return { ok: true, message: "Active member definition saved." };
 }
+
+/** Sends a tiny request to Claude and reports exactly what happened. */
+export async function testAiAction(): Promise<{ ok: boolean; message: string }> {
+  const { requirePermission } = await import("@/lib/auth");
+  await requirePermission("manage_roles");
+  const { AI_MODEL, aiClient, aiErrorMessage, isAiConfigured } = await import("@/lib/ai");
+  if (!isAiConfigured()) return { ok: false, message: "ANTHROPIC_API_KEY is not set in Vercel." };
+  try {
+    await aiClient().messages.create({ model: AI_MODEL, max_tokens: 5, messages: [{ role: "user", content: "Say OK" }] });
+    return { ok: true, message: `Maximus AI is working (model ${AI_MODEL}).` };
+  } catch (err) {
+    console.error("AI test failed", err);
+    return { ok: false, message: aiErrorMessage(err) };
+  }
+}

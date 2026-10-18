@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { AI_MODEL, SYSTEM_PROMPT, aiClient, buildContextBlock, isAiConfigured } from "@/lib/ai";
+import { AI_MODEL, SYSTEM_PROMPT, aiClient, aiErrorMessage, buildContextBlock, isAiConfigured } from "@/lib/ai";
 import { createClient } from "@/lib/supabase/server";
 import { monthStart, todayIn } from "@/lib/utils";
 
@@ -95,14 +95,11 @@ export async function POST(request: NextRequest) {
     async start(controller) {
       let full = "";
       try {
-        const s = aiClient().beta.messages.stream({
+        const s = aiClient().messages.stream({
           model: AI_MODEL,
           max_tokens: 4000,
-          betas: ["server-side-fallback-2026-07-01"],
-          // Newer request fields, spread so older SDK type definitions still compile.
-          ...({ fallbacks: "default", output_config: { effort: "medium" } } as Record<string, unknown>),
           system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-          messages: messages as Anthropic.Beta.BetaMessageParam[],
+          messages,
         });
         for await (const event of s) {
           if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
@@ -121,11 +118,8 @@ export async function POST(request: NextRequest) {
           controller.enqueue(encoder.encode(note));
         }
       } catch (err) {
-        const msg = err instanceof Anthropic.RateLimitError
-          ? "Maximus AI is busy right now. Please try again in a minute."
-          : err instanceof Anthropic.APIError && err.status && err.status >= 500
-            ? "Maximus AI is temporarily unavailable. Please try again shortly."
-            : "Sorry, something went wrong generating a reply.";
+        console.error("Maximus AI chat failed", err instanceof Anthropic.APIError ? { status: err.status, message: err.message } : err);
+        const msg = aiErrorMessage(err);
         full = full ? `${full}\n\n(${msg})` : msg;
         controller.enqueue(encoder.encode(full === msg ? msg : `\n\n(${msg})`));
       } finally {

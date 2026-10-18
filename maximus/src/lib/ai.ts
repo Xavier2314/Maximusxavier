@@ -55,3 +55,18 @@ ${ctx.memories.length ? `Things the member asked you to remember:\n- ${ctx.memor
 ${k}
 </approved_knowledge>`;
 }
+
+/** A clear, member-friendly explanation of why a Claude request failed. */
+export function aiErrorMessage(err: unknown): string {
+  if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
+    return "Maximus AI can't sign in to Claude: the API key is invalid or was revoked. An administrator needs to put a valid ANTHROPIC_API_KEY in Vercel and redeploy.";
+  }
+  if (err instanceof Anthropic.RateLimitError) return "Maximus AI is busy right now. Please try again in a minute.";
+  if (err instanceof Anthropic.NotFoundError) return "The AI model configured for Maximus isn't available on this API key. An administrator should check MAXIMUS_AI_MODEL.";
+  if (err instanceof Anthropic.BadRequestError && /credit|billing|balance/i.test(err.message)) {
+    return "The Claude account has run out of credit. An administrator needs to add credit at console.anthropic.com.";
+  }
+  if (err instanceof Anthropic.APIError && err.status && err.status >= 500) return "Maximus AI is temporarily unavailable. Please try again shortly.";
+  if (err instanceof Anthropic.APIConnectionError) return "Maximus AI couldn't reach Claude. Please try again.";
+  return "Sorry, something went wrong generating a reply. Please try again.";
+}

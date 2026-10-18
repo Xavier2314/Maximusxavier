@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/ui/misc";
 import { requirePermission } from "@/lib/auth";
 import { integrationStatus } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
+import { AiTest } from "./ai-test";
 import { ActiveDefinitionForm } from "./settings-forms";
 
 export const metadata = { title: "System settings" };
@@ -42,6 +43,7 @@ export default async function SettingsAdminPage() {
                   <div><p className="text-sm font-medium">{i.name}</p><p className="font-mono text-xs text-fg-subtle">{i.env}</p></div>
                 </div>
               ))}
+              <div className="border-t border-border pt-4"><AiTest /></div>
             </CardBody>
           </Card>
           <Card>

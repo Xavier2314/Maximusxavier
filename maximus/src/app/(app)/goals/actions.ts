@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { AI_MODEL, aiClient, isAiConfigured } from "@/lib/ai";
+import { AI_MODEL, aiClient, aiErrorMessage, isAiConfigured } from "@/lib/ai";
 import { createClient } from "@/lib/supabase/server";
 import { dispatchPushSoon } from "@/lib/push";
 import { friendlyError } from "@/lib/utils";
@@ -158,7 +158,8 @@ export async function planGoalsAction(text: string): Promise<{ ok: boolean; mess
     const plan = block.input as GoalPlan;
     plan.actions = (plan.actions ?? []).slice(0, 8);
     return { ok: true, message: "Here's your plan. Check it, change anything, then save.", plan };
-  } catch {
-    return { ok: false, message: "Maximus AI is busy right now. Please try again in a minute." };
+  } catch (err) {
+    console.error("Goal planner failed", err);
+    return { ok: false, message: aiErrorMessage(err) };
   }
 }

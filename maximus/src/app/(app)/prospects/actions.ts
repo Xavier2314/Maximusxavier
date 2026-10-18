@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { aiErrorMessage } from "@/lib/ai";
 import { requireViewer } from "@/lib/auth";
 import {
   aiStep, deliver, isGoogleConfigured, isWhatsAppConfigured, planFollowUp, searchSpotify, spotifyPreview,
@@ -107,7 +108,8 @@ export async function suggestMessagesAction(input: { id: string; situation?: str
     });
     return { ok: true, message: "Here are some options", data: plan.messages };
   } catch (e) {
-    return { ok: false, message: e instanceof Error ? e.message : "Maximus AI could not write a message." };
+    console.error("Prospect suggestions failed", e);
+    return { ok: false, message: e instanceof Error && e.message.startsWith("Maximus AI") ? e.message : aiErrorMessage(e) };
   }
 }
 
