@@ -58,6 +58,7 @@ export const OFFICE_NAV: NavSection[] = [
       { href: "/office/members", label: "Office members", icon: "users", anyPermission: ["manage_office", "view_org_analytics"] },
       { href: "/attendance/live", label: "Live attendance", icon: "map-pin", anyPermission: ["manage_office", "approve_attendance_exceptions", "view_org_analytics"] },
       { href: "/attendance/register", label: "Attendance register", icon: "clipboard", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics"] },
+      { href: "/office/reports", label: "Attendance reports", icon: "chart", anyPermission: ["manage_office", "view_org_analytics"] },
       { href: "/admin/approvals", label: "Approvals", icon: "check", anyPermission: ["approve_financial_transactions", "approve_attendance_exceptions", "manage_office"] },
       { href: "/admin/offices", label: "Office setup & QR", icon: "building", permission: "manage_office" },
       { href: "/office/brand", label: "Branding", icon: "palette", anyPermission: ["manage_office", "view_org_analytics"] },
@@ -67,6 +68,7 @@ export const OFFICE_NAV: NavSection[] = [
     title: "Team",
     items: [
       { href: "/office/team", label: "Team overview", icon: "network", anyPermission: ["view_team_dashboard", "view_direct_downlines"] },
+      { href: "/office/alerts", label: "Coaching alerts", icon: "bell", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics"] },
       { href: "/office/place", label: "Place in an office", icon: "building", roles: ["super_admin", "team_leader"] },
     ],
   },

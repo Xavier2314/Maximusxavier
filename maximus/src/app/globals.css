@@ -223,3 +223,12 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Printing a report (or saving it as PDF): just the page content. */
+@media print {
+  aside, header, nav[aria-label="Quick"], .no-print, [aria-label="Ask Maximus"] { display: none !important; }
+  .lg\:pl-72 { padding-left: 0 !important; }
+  main { padding: 0 !important; max-width: none !important; }
+  body { background: #fff !important; }
+  .card { box-shadow: none !important; break-inside: avoid; }
+}
