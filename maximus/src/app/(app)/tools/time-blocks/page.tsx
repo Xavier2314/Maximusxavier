@@ -17,7 +17,7 @@ export default async function TimeBlocksPage({ searchParams }: { searchParams: P
     .eq("user_id", viewer.id).eq("block_date", date).order("start_min");
   return (
     <>
-      <PageHeader eyebrow="Focus & time" title="Time blocking" description="Give every hour a job. Drag blocks to move them, drag the bottom edge to resize." action={<BackToTools />} />
+      <PageHeader eyebrow="Focus & time" title="Time blocking" description="Give every hour a job. Drag blocks to move them, drag the bottom edge to resize." action={<BackToTools c="focus" />} />
       <BlockPlanner key={date} date={date} today={today} blocks={(data ?? []) as Block[]} />
     </>
   );

@@ -22,7 +22,7 @@ export default async function EisenhowerPage() {
   return (
     <>
       <PageHeader eyebrow="Goals & productivity" title="Eisenhower matrix"
-        description="Sort your planner tasks by what's urgent and what's important. Do, schedule, delegate or drop." action={<BackToTools />} />
+        description="Sort your planner tasks by what's urgent and what's important. Do, schedule, delegate or drop." action={<BackToTools c="goals" />} />
       <Matrix tasks={tasks} today={today} />
     </>
   );

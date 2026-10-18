@@ -51,7 +51,7 @@ export default async function TimeAuditPage({ searchParams }: { searchParams: Pr
 
   return (
     <>
-      <PageHeader eyebrow="Focus & time" title="Time audit" description="Where your focused time actually went. Only completed timer sessions count." action={<BackToTools />} />
+      <PageHeader eyebrow="Focus & time" title="Time audit" description="Where your focused time actually went. Only completed timer sessions count." action={<BackToTools c="focus" />} />
       <div className="mb-4 flex gap-2">
         {[7, 30].map((n) => (
           <Link key={n} href={`/tools/time-audit?days=${n}`} className={cn("rounded-full px-3 py-1 text-sm", days === n ? "bg-primary text-primary-fg" : "bg-surface-muted")}>Last {n} days</Link>

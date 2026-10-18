@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  BookOpen, Brain, CalendarClock, Clock, Flame, Gauge, Hourglass, LayoutGrid, ListChecks, Maximize2, Medal, MessageCircle, Music,
+  ArrowLeft, ChevronRight, BookOpen, Brain, CalendarClock, Clock, Flame, Gauge, Hourglass, LayoutGrid, ListChecks, Maximize2, Medal, MessageCircle, Music,
   NotebookPen, Repeat, Sparkles, Target, Timer, Trophy, Users, Watch, Zap, type LucideIcon,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/misc";
@@ -12,11 +12,11 @@ import { cn, todayIn } from "@/lib/utils";
 export const metadata = { title: "Tools" };
 
 type Tool = { href?: string; label: string; desc: string; icon: LucideIcon };
-type Section = { title: string; blurb: string; tone: string; tools: Tool[] };
+type Section = { slug: string; title: string; blurb: string; tone: string; icon: LucideIcon; tools: Tool[] };
 
 const SECTIONS: Section[] = [
   {
-    title: "Focus & time", blurb: "Timers that keep going even if you close the app.", tone: "bg-primary-soft text-primary",
+    slug: "focus", icon: Timer, title: "Focus & time", blurb: "Timers that keep going even if you close the app.", tone: "bg-primary-soft text-primary",
     tools: [
       { href: "/tools/pomodoro", label: "Pomodoro", desc: "25-minute sprints with breaks", icon: Timer },
       { href: "/tools/focus", label: "Focus mode", desc: "Full-screen, distraction-free", icon: Maximize2 },
@@ -29,7 +29,7 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    title: "Goals & productivity", blurb: "Plan, track and finish.", tone: "bg-success-soft text-success",
+    slug: "goals", icon: Target, title: "Goals & productivity", blurb: "Plan, track and finish.", tone: "bg-success-soft text-success",
     tools: [
       { href: "/planner", label: "Daily planner", desc: "Your smart to-do list", icon: ListChecks },
       { href: "/tools/goals", label: "Goal tracker", desc: "Daily to quarterly goals", icon: Target },
@@ -41,25 +41,25 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    title: "Brain gym", blurb: "Fun games for focus, memory and problem-solving. Brain training, not a medical test.", tone: "bg-warning-soft text-warning",
+    slug: "brain", icon: Brain, title: "Brain gym", blurb: "Fun games for focus, memory and problem-solving. Brain training, not a medical test.", tone: "bg-warning-soft text-warning",
     tools: [{ label: "20 brain games", desc: "Chess, Sudoku, 2048, memory and more", icon: Brain }],
   },
   {
-    title: "Accountability", blurb: "Pair up with a partner who keeps you on track.", tone: "bg-primary-soft text-primary",
+    slug: "accountability", icon: Users, title: "Accountability", blurb: "Pair up with a partner who keeps you on track.", tone: "bg-primary-soft text-primary",
     tools: [
       { href: "/tools/accountability", label: "Accountability partner", desc: "Shared goals, check-ins, encouragement", icon: Users },
       { href: "/messages", label: "Private chat", desc: "Real-time messages with your partner", icon: MessageCircle },
     ],
   },
   {
-    title: "Team challenges", blurb: "Compete and grow together.", tone: "bg-danger-soft text-danger",
+    slug: "challenges", icon: Trophy, title: "Team challenges", blurb: "Compete and grow together.", tone: "bg-danger-soft text-danger",
     tools: [
       { label: "Challenges arena", desc: "Focus, habit and sales challenges", icon: Trophy },
       { href: "/leaderboard", label: "Leaderboard", desc: "Office and team rankings", icon: Medal },
     ],
   },
   {
-    title: "Personal growth", blurb: "Learn, reflect and stay motivated.", tone: "bg-brand-lime/25 text-brand-navy dark:text-brand-lime",
+    slug: "growth", icon: Sparkles, title: "Personal growth", blurb: "Learn, reflect and stay motivated.", tone: "bg-brand-lime/25 text-brand-navy dark:text-brand-lime",
     tools: [
       { href: "/ai", label: "Maximus AI coach", desc: "Ask for a plan or advice", icon: Sparkles },
       { href: "/academy", label: "Academy", desc: "Courses and lessons", icon: BookOpen },
@@ -69,7 +69,9 @@ const SECTIONS: Section[] = [
   },
 ];
 
-export default async function ToolsPage() {
+export default async function ToolsPage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
+  const { c } = await searchParams;
+  const open = SECTIONS.find((s) => s.slug === c);
   const viewer = await requireViewer();
   const today = todayIn(viewer.profile.timezone);
   const supabase = await createClient();
@@ -97,31 +99,44 @@ export default async function ToolsPage() {
         <Link href="/tools/score" className="card p-4"><p className="text-sm text-fg-muted">Productivity score</p><p className="mt-1 text-2xl font-bold tabular-nums">{sc ?? "—"}<span className="text-sm font-normal text-fg-subtle">/100</span></p></Link>
         <Link href="/tools/pomodoro" className="card col-span-2 flex items-center justify-center gap-2 bg-primary p-4 font-semibold text-primary-fg sm:col-span-1"><Timer className="size-5" aria-hidden /> Start a Pomodoro</Link>
       </div>
-      <div className="space-y-8">
-        {SECTIONS.map((s, si) => (
-          <section key={s.title} aria-labelledby={`sec-${si}`}>
-            <h2 id={`sec-${si}`} className="text-lg font-semibold">{s.title}</h2>
-            <p className="mb-3 text-sm text-fg-muted">{s.blurb}</p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {s.tools.map((t) => {
-                const inner = (
-                  <>
-                    <span className={cn("grid size-10 place-items-center rounded-xl", s.tone)}><t.icon className="size-5" aria-hidden /></span>
-                    <p className="mt-3 font-medium">{t.label}</p>
-                    <p className="text-xs text-fg-muted">{t.desc}</p>
-                    {!t.href && <span className="mt-2 inline-block rounded-full bg-surface-muted px-2 py-0.5 text-[11px] text-fg-muted">Coming in the next update</span>}
-                  </>
-                );
-                return t.href ? (
-                  <Link key={t.label} href={t.href} className="card p-4 transition-shadow hover:shadow-md">{inner}</Link>
-                ) : (
-                  <div key={t.label} className="card p-4 opacity-75" aria-disabled>{inner}</div>
-                );
-              })}
-            </div>
-          </section>
-        ))}
-      </div>
+      {open ? (
+        <section aria-labelledby="sec-open">
+          <Link href="/tools" className="mb-3 inline-flex items-center gap-1 text-sm text-primary"><ArrowLeft className="size-4" aria-hidden /> All tools</Link>
+          <h2 id="sec-open" className="text-xl font-semibold">{open.title}</h2>
+          <p className="mb-4 text-sm text-fg-muted">{open.blurb}</p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {open.tools.map((t) => {
+              const inner = (
+                <>
+                  <span className={cn("grid size-10 place-items-center rounded-xl", open.tone)}><t.icon className="size-5" aria-hidden /></span>
+                  <p className="mt-3 font-medium">{t.label}</p>
+                  <p className="text-xs text-fg-muted">{t.desc}</p>
+                  {!t.href && <span className="mt-2 inline-block rounded-full bg-surface-muted px-2 py-0.5 text-[11px] text-fg-muted">Coming in the next update</span>}
+                </>
+              );
+              return t.href ? (
+                <Link key={t.label} href={t.href} className="card p-4 transition-shadow hover:shadow-md">{inner}</Link>
+              ) : (
+                <div key={t.label} className="card p-4 opacity-75" aria-disabled>{inner}</div>
+              );
+            })}
+          </div>
+        </section>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {SECTIONS.map((s) => (
+            <Link key={s.slug} href={`/tools?c=${s.slug}`} className="card flex items-center gap-4 p-5 transition-shadow hover:shadow-md">
+              <span className={cn("grid size-12 shrink-0 place-items-center rounded-2xl", s.tone)}><s.icon className="size-6" aria-hidden /></span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">{s.title}</span>
+                <span className="block text-sm text-fg-muted">{s.blurb}</span>
+                <span className="mt-1 block text-xs text-fg-subtle">{s.tools.some((t) => t.href) ? `${s.tools.filter((t) => t.href).length} tools inside` : "Coming in the next update"}</span>
+              </span>
+              <ChevronRight className="size-5 shrink-0 text-fg-subtle" aria-hidden />
+            </Link>
+          ))}
+        </div>
+      )}
     </>
   );
 }

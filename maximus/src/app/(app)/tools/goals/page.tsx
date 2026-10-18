@@ -33,7 +33,7 @@ export default async function GoalsToolPage({ searchParams }: { searchParams: Pr
   return (
     <>
       <PageHeader eyebrow="Goals & productivity" title="Goal tracker"
-        description="Daily, weekly, monthly and quarterly goals. Separate from your official monthly office goals." action={<BackToTools />} />
+        description="Daily, weekly, monthly and quarterly goals. Separate from your official monthly office goals." action={<BackToTools c="goals" />} />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           <nav className="flex flex-wrap gap-2" aria-label="Filter by horizon">

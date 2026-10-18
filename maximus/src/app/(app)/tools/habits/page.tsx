@@ -36,7 +36,7 @@ export default async function HabitsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Goals & productivity" title="Habit tracker" description="Small daily actions, done consistently. Tick them off each day." action={<BackToTools />} />
+      <PageHeader eyebrow="Goals & productivity" title="Habit tracker" description="Small daily actions, done consistently. Tick them off each day." action={<BackToTools c="goals" />} />
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader title="This week" description="Tap a day to tick it. Greyed days aren't scheduled for that habit." />

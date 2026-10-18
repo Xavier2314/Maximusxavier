@@ -34,7 +34,7 @@ export default async function AccountabilityPage() {
   return (
     <>
       <PageHeader eyebrow="Accountability" title="Accountability partner"
-        description="Pair up with one person who keeps you on track. You choose what they see, and they can never change your goals." action={<BackToTools />} />
+        description="Pair up with one person who keeps you on track. You choose what they see, and they can never change your goals." action={<BackToTools c="accountability" />} />
       {partnership ? <Partner viewerId={viewer.id} p={partnership} today={today} /> : (
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">

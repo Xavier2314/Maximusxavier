@@ -27,7 +27,7 @@ export default async function ScorePage() {
 
   return (
     <>
-      <PageHeader eyebrow="Goals & productivity" title="Productivity score" description="Your last 7 days, from things you can check. No hidden points." action={<BackToTools />} />
+      <PageHeader eyebrow="Goals & productivity" title="Productivity score" description="Your last 7 days, from things you can check. No hidden points." action={<BackToTools c="goals" />} />
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="hero-gradient text-white">
           <CardBody className="flex flex-col items-center py-10 text-center">

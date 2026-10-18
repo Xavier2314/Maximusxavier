@@ -42,7 +42,7 @@ export default async function StreaksPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Goals & productivity" title="Streaks" description="Days in a row you showed up. Don't break the chain." action={<BackToTools />} />
+      <PageHeader eyebrow="Goals & productivity" title="Streaks" description="Days in a row you showed up. Don't break the chain." action={<BackToTools c="goals" />} />
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {tiles.map((t) => (
           <Link key={t.label} href={t.href} className="card p-5 transition-shadow hover:shadow-md">

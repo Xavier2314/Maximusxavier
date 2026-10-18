@@ -5,8 +5,8 @@ import { requireViewer } from "@/lib/auth";
 import { loadTimerData } from "./data";
 import { FocusTimer, type TimerMode } from "./focus-timer";
 
-export function BackToTools() {
-  return <LinkButton href="/tools" variant="ghost" size="sm"><ArrowLeft className="size-4" aria-hidden /> All tools</LinkButton>;
+export function BackToTools({ c }: { c?: "focus" | "goals" | "accountability" }) {
+  return <LinkButton href={c ? `/tools?c=${c}` : "/tools"} variant="ghost" size="sm"><ArrowLeft className="size-4" aria-hidden /> Back</LinkButton>;
 }
 
 /** Shared server wrapper for every timer tool. */
@@ -17,7 +17,7 @@ export async function TimerPage({ mode, title, description, searchParams }: {
   const [data, sp] = await Promise.all([loadTimerData(viewer), searchParams ?? Promise.resolve({} as { goal?: string; label?: string })]);
   return (
     <>
-      <PageHeader eyebrow="Focus & time" title={title} description={description} action={<BackToTools />} />
+      <PageHeader eyebrow="Focus & time" title={title} description={description} action={<BackToTools c="focus" />} />
       <FocusTimer mode={mode} {...data} initialGoal={sp.goal} initialLabel={sp.label?.slice(0, 140)} />
     </>
   );

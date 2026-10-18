@@ -32,7 +32,7 @@ export default async function ReflectionPage({ searchParams }: { searchParams: P
 
   return (
     <>
-      <PageHeader eyebrow="Goals & productivity" title="Reflection & journal" description="Private to you. Nobody else, not even admins, can read these." action={<BackToTools />} />
+      <PageHeader eyebrow="Goals & productivity" title="Reflection & journal" description="Private to you. Nobody else, not even admins, can read these." action={<BackToTools c="goals" />} />
       <div className="mb-4 flex gap-2">
         {[{ k: "reflection", l: "Weekly reflection" }, { k: "journal", l: "Daily journal" }].map((t) => (
           <Link key={t.k} href={`/tools/reflection?tab=${t.k}`} className={cn("rounded-full px-3 py-1 text-sm", tab === t.k ? "bg-primary text-primary-fg" : "bg-surface-muted")}>{t.l}</Link>
