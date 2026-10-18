@@ -53,7 +53,7 @@ export default async function PayoutsPage() {
       )}
       <div className="space-y-6">
         <Card>
-          <CardHeader title="Waiting for approval" description={viewer.roles.includes("super_admin") ? "You can't approve your own requests." : undefined} />
+          <CardHeader title="Waiting for approval" description={viewer.roles.includes("super_admin") ? "As Super Admin you can also approve your own requests." : "You can't approve your own requests."} />
           <CardBody className="divide-y divide-border pt-0">
             {waiting.length === 0 ? <EmptyState icon={<Send className="size-6" aria-hidden />} title="Nothing waiting" /> : waiting.map((r) => (
               <div key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-4">

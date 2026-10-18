@@ -1010,6 +1010,23 @@ do $$ begin
 end $$;
 select pg_temp.act_as(null);
 
+-- Super Admin has no self-approval limit (0037)
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+create temp table sa_pay as select null::uuid as id;
+grant all on sa_pay to public;
+create temp table sa_ref as select tx_ref from public.create_online_payment('savings', 1000);
+grant select on sa_ref to public;
+select pg_temp.act_as(null);
+select public.apply_online_payment((select tx_ref from sa_ref), 1, 1000, 'NGN', true);
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+select public.set_wallet_pin('4826');
+update sa_pay set id = public.request_payout('savings', 200, 'self', '011', 'First Bank', '3095342378', 'Super Admin', null, '4826');
+do $$ begin
+  assert (public.decide_payout((select id from sa_pay), true)).status = 'approved', 'super admin approves own payout';
+  raise notice 'PASS: super admin has no self-approval limit';
+end $$;
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
