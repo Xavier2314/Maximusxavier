@@ -21,13 +21,23 @@ function recognitionCtor(): (new () => Recognition) | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-/** Dictate into a text value. Keeps listening (through pauses) until the member taps Stop. */
+const isMobile = () => typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+/**
+ * Dictate into a text value. Keeps listening through short pauses until the member taps Stop
+ * (or stays quiet for a while). Shows what it hears live through `interim`.
+ *
+ * Phones get one short session at a time, restarted automatically: continuous mode on Android
+ * repeats earlier words in every result, and on iPhone it often stops returning anything.
+ */
 export function useDictation(onText: (text: string) => void) {
   const [listening, setListening] = useState(false);
-  const [supported, setSupported] = useState(false);
+  const [supported, setSupported] = useState<boolean | null>(null);
   const [error, setError] = useState("");
+  const [interim, setInterim] = useState("");
   const rec = useRef<Recognition | null>(null);
   const wanted = useRef(false);
+  const silent = useRef(0);
   const lang = useRef("en-NG");
   const cb = useRef(onText);
   cb.current = onText;
@@ -35,45 +45,77 @@ export function useDictation(onText: (text: string) => void) {
   useEffect(() => { setSupported(Boolean(recognitionCtor())); }, []);
   useEffect(() => () => { wanted.current = false; rec.current?.abort(); }, []);
 
+  const finish = () => { wanted.current = false; setListening(false); setInterim(""); };
+
   const begin = () => {
     const Ctor = recognitionCtor();
     if (!Ctor) return;
+    const mobile = isMobile();
     const r = new Ctor();
     r.lang = lang.current;
-    r.continuous = true;
-    r.interimResults = false;
+    r.continuous = !mobile;
+    r.interimResults = true;
+    let committed = 0;      // desktop: results already sent on
+    let pending = "";       // phone: the latest text for this short session
+    let heard = false;
+    const commit = (t: string) => { const x = t.trim(); if (x) { heard = true; cb.current(x); } };
     r.onresult = (e) => {
-      let text = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) text += e.results[i][0].transcript;
-      if (text.trim()) cb.current(text.trim());
+      if (mobile) {
+        let t = "";
+        for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+        pending = t;
+        setInterim(t);
+        return;
+      }
+      let live = "";
+      for (let i = Math.max(e.resultIndex, committed); i < e.results.length; i++) {
+        if (e.results[i].isFinal && i === committed) { commit(e.results[i][0].transcript); committed = i + 1; }
+        else live += e.results[i][0].transcript;
+      }
+      setInterim(live);
     };
     r.onerror = (e) => {
       if (e.error === "language-not-supported" && lang.current !== "en-US") { lang.current = "en-US"; return; } // retried in onend
       if (e.error === "no-speech" || e.error === "aborted") return;
       wanted.current = false;
       setError(e.error === "not-allowed" || e.error === "service-not-allowed"
-        ? "Allow microphone access for this site, then tap Speak again."
-        : e.error === "network" ? "Voice needs an internet connection. Please try again." : "Voice input stopped. Tap Speak to try again.");
+        ? "Microphone is blocked. Allow it for this site (tap the lock icon by the address), then tap Speak again."
+        : e.error === "audio-capture" ? "No microphone found. Check your phone or headset mic."
+        : e.error === "network" ? "Voice needs an internet connection. Please try again."
+        : "Voice input stopped. Tap Speak to try again.");
     };
     // Browsers stop after a pause; restart quietly while the member still wants to talk.
-    r.onend = () => { if (wanted.current) { try { begin(); } catch { setListening(false); } } else setListening(false); };
+    r.onend = () => {
+      commit(pending);
+      pending = "";
+      setInterim("");
+      silent.current = heard ? 0 : silent.current + 1;
+      if (!wanted.current || silent.current >= 3) return finish();
+      try { begin(); } catch { finish(); }
+    };
     rec.current = r;
     r.start();
   };
   const start = () => {
     setError("");
+    if (!recognitionCtor()) {
+      setError("Voice typing isn't available in this browser. Tap the mic on your phone keyboard instead, or open Maximus in Chrome or Safari.");
+      return;
+    }
+    rec.current?.abort();
     wanted.current = true;
-    try { begin(); setListening(true); } catch { setError("Voice input couldn't start. Please try again."); }
+    silent.current = 0;
+    try { begin(); setListening(true); } catch { finish(); setError("Voice input couldn't start. Please try again."); }
   };
   const stop = () => { wanted.current = false; rec.current?.stop(); setListening(false); };
-  return { listening, supported, error, start, stop };
+  return { listening, supported, error, interim, start, stop };
 }
 
 export function MicButton({ onText, className }: { onText: (text: string) => void; className?: string }) {
   const d = useDictation(onText);
-  if (!d.supported) return null;
+  if (d.supported === null) return null; // not checked yet (server render)
   return (
-    <span className={cn("inline-flex flex-wrap items-center gap-2", className)}>
+    <span className={cn("inline-flex min-w-0 flex-wrap items-center gap-2", className)}>
       <button type="button" onClick={d.listening ? d.stop : d.start} aria-pressed={d.listening}
         aria-label={d.listening ? "Stop voice input" : "Speak instead of typing"}
         className={cn("inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors",
@@ -82,6 +124,9 @@ export function MicButton({ onText, className }: { onText: (text: string) => voi
           <><span className="relative flex size-2.5"><span className="absolute inline-flex size-full animate-ping rounded-full bg-white/80" /><span className="relative inline-flex size-2.5 rounded-full bg-white" /></span>Listening… tap to stop</>
         ) : <><Mic className="size-4" aria-hidden />Speak</>}
       </button>
+      {d.listening && (
+        <span className="min-w-0 text-xs italic text-fg-muted" aria-live="polite">{d.interim || "Go ahead, I'm listening…"}</span>
+      )}
       {d.error && <span className="text-xs text-danger" role="alert">{d.error}</span>}
     </span>
   );

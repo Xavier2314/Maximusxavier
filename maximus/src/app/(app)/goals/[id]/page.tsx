@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CircleCheck, ListChecks, MessageSquare, NotebookPen, Pencil, RotateCcw, Send, Target } from "lucide-react";
+import { ArrowLeft, BookOpen, CircleCheck, ListChecks, MessageSquare, NotebookPen, Pencil, RotateCcw, Send, Target } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, PageHeader, Progress } from "@/components/ui/misc";
 import { GoalStatus } from "@/components/goal-status";
@@ -53,12 +53,21 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
 
   const rows = [
     { label: "Income", value: p?.income ?? 0, target: goal.income_target, money: true, source: "From your evaluations" },
-    { label: "Sales", value: p?.sales ?? 0, target: goal.sales_target, money: true, source: "From recorded orders" },
+    { label: "Product sales", value: p?.sales ?? 0, target: goal.sales_target, money: true, source: "From recorded orders" },
     { label: "Prospecting", value: p?.prospecting ?? 0, target: goal.prospecting_target, source: "From your evaluations" },
     { label: "Recruitment", value: p?.recruitment ?? 0, target: goal.recruitment_target, source: "New members you sponsored" },
     { label: "Product orders", value: p?.orders ?? 0, target: goal.order_target, source: "From recorded orders" },
     { label: "Savings", value: p?.savings ?? 0, target: goal.savings_target, money: true, source: "Confirmed savings entries" },
   ].filter((r) => Number(r.target) > 0);
+  // Targets without automatic tracking yet: shown as plain targets.
+  const extra = [
+    { label: "Product sales (PV)", value: goal.product_pv_target != null ? `${Number(goal.product_pv_target).toLocaleString()} PV` : null },
+    { label: "Fiverr", value: Number(goal.fiverr_target) > 0 ? formatMoney(goal.fiverr_target) : null },
+    { label: "Upwork", value: Number(goal.upwork_target) > 0 ? formatMoney(goal.upwork_target) : null },
+    { label: "Other freelancing", value: Number(goal.freelance_other_target) > 0 ? formatMoney(goal.freelance_other_target) : null },
+  ].filter((x): x is { label: string; value: string } => Boolean(x.value) && x.value !== "0 PV");
+  const methods = [...(goal.prospecting_methods ?? []), ...(goal.prospecting_methods_other ? [goal.prospecting_methods_other] : [])];
+  const books = (goal.books ?? "").split("\n").map((b) => b.trim()).filter(Boolean);
 
   return (
     <>
@@ -87,7 +96,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
           <Card>
             <CardHeader title="Progress" icon={<Target className="size-4" />} description="Calculated automatically — never typed in by hand" />
             <CardBody className="space-y-5">
-              {rows.length === 0 && <p className="text-sm text-fg-muted">No numeric targets set.</p>}
+              {rows.length === 0 && extra.length === 0 && <p className="text-sm text-fg-muted">No numeric targets set.</p>}
               {rows.map((r) => {
                 const pct = percent(Number(r.value), Number(r.target));
                 return (
@@ -107,6 +116,28 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
                   </div>
                 );
               })}
+              {extra.length > 0 && (
+                <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {extra.map((x) => (
+                    <div key={x.label} className="rounded-2xl border border-border p-3">
+                      <dt className="text-xs text-fg-subtle">{x.label}</dt>
+                      <dd className="mt-0.5 text-sm font-semibold tabular-nums">{x.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+              {methods.length > 0 && (
+                <div>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-fg-subtle">Prospecting methods</p>
+                  <div className="flex flex-wrap gap-2">{methods.map((m) => <Badge key={m}>{m}</Badge>)}</div>
+                </div>
+              )}
+              {books.length > 0 && (
+                <div className="rounded-2xl bg-surface-muted p-4">
+                  <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-fg-subtle"><BookOpen className="size-3.5" aria-hidden />Books to read</p>
+                  <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm">{books.map((b) => <li key={b}>{b}</li>)}</ul>
+                </div>
+              )}
               {goal.personal_development_target && (
                 <div className="rounded-2xl bg-surface-muted p-4">
                   <p className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">Personal development</p>
@@ -177,6 +208,9 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
                 title={`My goals for ${formatDate(goal.month, { month: "long", year: "numeric" })}`}
                 body={[
                   ...rows.map((r) => `${r.label}: ${r.money ? formatMoney(r.target) : r.target}`),
+                  ...extra.map((x) => `${x.label}: ${x.value}`),
+                  methods.length ? `Prospecting methods: ${methods.join(", ")}` : "",
+                  books.length ? `Books to read: ${books.join("; ")}` : "",
                   goal.personal_development_target ? `Personal development: ${goal.personal_development_target}` : "",
                   goal.plan_text ? `\nMy plan:\n${goal.plan_text}` : "",
                   goal.custom_goals?.length ? `\nTo-do list:\n${goal.custom_goals.map((c) => `• ${c.title}${c.target != null ? ` (${c.target} ${c.unit ?? ""})` : ""}`).join("\n")}` : "",

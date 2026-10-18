@@ -93,6 +93,13 @@ export type MonthlyGoal = {
   personal_development_target: string | null;
   custom_goals: CustomGoal[];
   plan_text?: string | null;
+  fiverr_target?: number | null;
+  upwork_target?: number | null;
+  freelance_other_target?: number | null;
+  product_pv_target?: number | null;
+  prospecting_methods?: string[];
+  prospecting_methods_other?: string | null;
+  books?: string | null;
   status: GoalStatus;
   reviewer_id: string | null;
   submitted_at: string | null;
