@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  CalendarCheck, ClipboardCheck, GraduationCap, MessageCircle, Network, PhoneCall, ShoppingBag, Sparkles, UserPlus, Users,
+  CalendarCheck, ClipboardCheck, GraduationCap, MessageCircle, Network, PhoneCall, Send, ShoppingBag, Sparkles, UserPlus, Users,
   type LucideIcon,
 } from "lucide-react";
 import { categoryOf } from "@/lib/academy";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 
 export const FOCUS_ICONS: Record<FocusKey, LucideIcon> = {
   recruiting: UserPlus,
+  inviting: Send,
   duplication: Network,
   team_prospecting: Users,
   prospecting: PhoneCall,
@@ -87,21 +88,22 @@ export function FocusList({ areas, who = "You", courses = [], compact = false }:
 /** "You brought in X of 3 — and Y of them duplicated" summary. */
 export function DuplicationSummary({ focus, who = "You" }: { focus: GrowthFocus; who?: string }) {
   const target = focus.duplication_target;
-  const slots = Math.max(target, focus.directs);
+  const slots = Math.min(Math.max(target, focus.directs), 12);
   return (
     <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-fg-subtle">{who === "You" ? "You brought in" : "Brought in"}</p>
-        <div className="mt-1.5 flex gap-1.5" role="img" aria-label={`${focus.directs} of ${target} direct recruits`}>
+        <div className="mt-1.5 flex gap-1.5" role="img" aria-label={`${focus.directs} direct recruits; goal at least ${target}`}>
           {Array.from({ length: slots }, (_, i) => (
             <span key={i} className={cn("size-4 rounded-full",
               i < focus.duplicated ? "bg-brand-green" : i < focus.directs ? "bg-brand-blue" : "border-2 border-dashed border-border")} aria-hidden />
           ))}
+          {focus.directs > 12 && <span className="text-xs font-semibold text-fg-muted">+{focus.directs - 12}</span>}
         </div>
       </div>
       <p className="text-sm text-fg-muted">
-        <b className="text-fg">{focus.directs}/{target}</b> direct ·{" "}
-        <b className="text-fg">{focus.duplicated}</b> duplicated (brought in their own {target}) ·{" "}
+        <b className="text-fg">{focus.directs}</b> brought in directly ({focus.directs >= target ? `first ${target} reached, keep going: there's no limit` : `aim for at least ${target}, no limit`}) ·{" "}
+        <b className="text-fg">{focus.duplicated}</b> of them have brought in {target}+ ·{" "}
         <b className="text-fg">{focus.team_size}</b> in the whole team
       </p>
     </div>

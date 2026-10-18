@@ -9,7 +9,7 @@ export const maxDuration = 60;
 /**
  * Daily job (Vercel Cron, 06:00 UTC = 07:00 in Lagos):
  * evaluation reminders, goal-setting reminders (10th–15th), birthdays,
- * anniversaries, the Monday "your focus this week" message — then delivers
+ * anniversaries, "keep inviting" nudges, the Monday "your focus this week" message — then delivers
  * any queued push notifications.
  */
 export async function GET(request: Request) {
@@ -21,6 +21,7 @@ export async function GET(request: Request) {
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Lagos" }).format(new Date());
   const { data: reminders, error } = await admin.rpc("run_daily_reminders", { p_today: today });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const { data: prospectingNudges } = await admin.rpc("run_prospecting_nudges");
   let growthFocus: number | null = null;
   if (new Date(`${today}T12:00:00Z`).getUTCDay() === 1) {
     const { data, error: focusError } = await admin.rpc("run_weekly_growth_focus");
@@ -28,5 +29,5 @@ export async function GET(request: Request) {
     growthFocus = data as number;
   }
   const push = await dispatchPendingPush(1000);
-  return NextResponse.json({ ok: true, reminders, growthFocus, push });
+  return NextResponse.json({ ok: true, reminders, prospectingNudges, growthFocus, push });
 }

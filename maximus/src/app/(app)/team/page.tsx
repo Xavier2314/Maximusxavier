@@ -134,7 +134,7 @@ function StartChart({ viewerId, name, code, avatar, target, focus }: {
     <Card className="mt-6">
       <OrgChart rootId={viewerId} rootName={name} rootCode={code} rootAvatar={avatar} members={[]} focus={focus} target={target} />
       <EmptyState icon={<Network className="size-6" />} title="Your team starts here"
-        description={`Share your invite link. Everyone who registers with it appears under you in this chart the moment they join. Aim for your first ${target}.`} />
+        description={`Share your invite link. Everyone who registers with it appears under you in this chart the moment they join. Aim for at least ${target} to start; there's no limit.`} />
     </Card>
   );
 }

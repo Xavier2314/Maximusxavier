@@ -20,7 +20,7 @@ export type GrowthFocus = {
 };
 
 export type FocusKey =
-  | "recruiting" | "duplication" | "team_prospecting" | "prospecting"
+  | "recruiting" | "inviting" | "duplication" | "team_prospecting" | "prospecting"
   | "follow_up" | "sales" | "consistency" | "accountability";
 
 type FocusInfo = {
@@ -35,9 +35,9 @@ type FocusInfo = {
 
 export const FOCUS: Record<FocusKey, FocusInfo> = {
   recruiting: {
-    title: "Personal recruiting",
-    short: "Recruiting",
-    why: (a, n) => `${n} personally brought in ${a.value} of ${a.target} people. Duplication starts with you bringing in your own ${a.target}.`,
+    title: "Bring in your first 3",
+    short: "First 3",
+    why: (a, n) => `${n} personally brought in ${a.value} so far. ${a.target} is the minimum to aim for first, and there is no limit after that.`,
     tips: [
       "Write a list of 50 names: family, friends, colleagues, church, school. Don't pre-judge anyone.",
       "Invite 3 people a day with a simple, honest invitation and a clear next step (a meeting or a call).",
@@ -45,6 +45,18 @@ export const FOCUS: Record<FocusKey, FocusInfo> = {
     ],
     academy: "prospecting_masterclass",
     ask: "Help me plan how to personally bring in my first three people this month.",
+  },
+  inviting: {
+    title: "Keep inviting new people",
+    short: "Inviting",
+    why: (a, n) => `${n === "You" ? "You" : n} invited or messaged ${a.value} prospect${a.value === 1 ? "" : "s"} in the last 7 days (aim for at least ${a.target} a week). There's no limit to how many people you can bring in, so keep the invitations going.`,
+    tips: [
+      "Add every new person you meet in Prospects the same day, so nobody is forgotten.",
+      "Send at least 2 invitations every day. Use “Help me write” if you don't know what to say.",
+      "Turn on AI follow-up for each prospect so nobody goes cold while you keep inviting.",
+    ],
+    academy: "prospecting_masterclass",
+    ask: "I haven't been inviting people. Give me a simple plan to invite 10 people this week.",
   },
   duplication: {
     title: "Leadership & duplication",

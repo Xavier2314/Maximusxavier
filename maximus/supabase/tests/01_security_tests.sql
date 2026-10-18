@@ -471,6 +471,23 @@ end $$;
 select pg_temp.expect_error($$insert into public.checklist_checks (item_id, check_date) select id, current_date - 5 from public.checklist_items limit 1$$, 'tick an old checklist day');
 select pg_temp.expect_error($$insert into public.checklist_items (title) values ('Hack')$$, 'member edits checklist items');
 
+-- Keep inviting
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c1');
+do $$ declare f jsonb; begin
+  f := public.growth_focus();
+  assert exists (select 1 from jsonb_array_elements(f -> 'areas') a where a ->> 'key' = 'inviting'), 'inviting area present when few invites';
+  raise notice 'PASS: inviting focus area';
+end $$;
+select pg_temp.expect_error($$select public.run_prospecting_nudges()$$, 'member triggers prospecting nudges');
+select pg_temp.act_as(null);
+do $$ declare n int; n2 int; begin
+  n := public.run_prospecting_nudges();
+  n2 := public.run_prospecting_nudges();
+  assert n > 0 and n2 = 0, 'nudges sent once per window';
+  assert not exists (select 1 from public.notifications where type = 'prospecting_nudge' and user_id = '00000000-0000-0000-0000-0000000000c1'), 'active prospector not nudged';
+  raise notice 'PASS: prospecting nudges % / rerun %', n, n2;
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

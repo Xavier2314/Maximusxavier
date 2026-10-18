@@ -40,7 +40,7 @@ export default async function GrowthPage() {
       {focus && (
         <Card className="mb-6">
           <CardHeader title="Duplication" icon={<Network className="size-4" />}
-            description={`The goal: you bring in ${target}, and each of them brings in ${target}.`} />
+            description={`Bring in at least ${target} (there's no limit), help each of them bring in ${target}+, and never stop inviting.`} />
           <CardBody><DuplicationSummary focus={focus} /></CardBody>
         </Card>
       )}
@@ -63,7 +63,7 @@ export default async function GrowthPage() {
       {(directs ?? []).length > 0 && (
         <Card>
           <CardHeader title="Your direct downlines" icon={<Network className="size-4" />}
-            description={`Who has brought in their ${target}, and what each person should work on`} />
+            description={`Who has reached their first ${target}, and what each person should work on`} />
           <CardBody>
             <ul className="divide-y divide-border">
               {(directs ?? []).map((d) => {
@@ -77,7 +77,7 @@ export default async function GrowthPage() {
                         <span className="block truncate font-medium">{d.full_name as string}</span>
                         <span className="text-xs text-fg-subtle">{d.member_id as string}</span>
                       </span>
-                      <Badge tone={n >= target ? "green" : n > 0 ? "blue" : "amber"}>{n}/{target} brought in</Badge>
+                      <Badge tone={n >= target ? "green" : n > 0 ? "blue" : "amber"}>{n >= target ? `${n} brought in ✓` : `${n}/${target} brought in`}</Badge>
                       <span className="flex flex-wrap gap-1">
                         {f.slice(0, 2).map((k) => {
                           const Icon = FOCUS_ICONS[k];

@@ -69,7 +69,7 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
       <span className={cn("block text-[11px]", isRoot ? "text-white/60" : "text-fg-subtle")}>{node.code}</span>
       <span className={cn("mt-1.5 inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums",
         count >= target ? "bg-success-soft text-success" : isRoot ? "bg-white/10 text-white" : "bg-primary-soft text-primary")}>
-        {count}/{target} brought in
+        {count >= target ? `${count} brought in ✓` : `${count}/${target} brought in`}
       </span>
       {top && FOCUS[top] && (
         <span className="mt-1 block max-w-full truncate rounded-full bg-warning-soft px-2 py-0.5 text-[11px] font-medium text-warning" title={`Needs work: ${FOCUS[top].title}`}>
@@ -136,8 +136,8 @@ export function OrgChart({ rootId, rootName, rootCode, rootAvatar, members, focu
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border px-4 py-3 text-xs text-fg-muted">
-        <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-brand-blue" aria-hidden /> Ring fills as they bring in their {target}</span>
-        <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-brand-green" aria-hidden /> Duplicated ({target}+ brought in)</span>
+        <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-brand-blue" aria-hidden /> Ring fills toward their first {target} (no limit after that)</span>
+        <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-brand-green" aria-hidden /> First {target} reached</span>
         <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-brand-lime" aria-hidden /> Joined in the last {NEW_DAYS} days</span>
         <span className="flex items-center gap-1.5"><span className="rounded-full bg-warning-soft px-1.5 text-warning">Focus</span> What they should work on next</span>
       </div>
