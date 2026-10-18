@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, HandCoins, Landmark, PiggyBank, Plus, Receipt, Share2, TriangleAlert } from "lucide-react";
+import { ArrowLeft, CreditCard, HandCoins, Landmark, PiggyBank, Plus, Receipt, Share2, TriangleAlert } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { LedgerTable } from "@/components/ledger-table";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import { addMonths, formatDate, formatMoney, monthStart, percent, todayIn } from
 import { ShareToggle } from "./share-toggle";
 import { TargetForm } from "./target-form";
 import { TransactionForm } from "./transaction-form";
+import { PayOnline } from "../payments/pay-online";
+import { isFlutterwaveConfigured } from "@/lib/flutterwave";
 
 export const metadata = { title: "Finance" };
 
@@ -100,9 +102,15 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
         </div>
 
         <div className="space-y-6">
+          {isSelf && isFlutterwaveConfigured() && (
+            <Card className="border-2 border-primary/40">
+              <CardHeader title="Pay online" icon={<CreditCard className="size-4" />} description="Confirmed instantly. No approval needed." />
+              <CardBody><PayOnline purpose="savings" /></CardBody>
+            </Card>
+          )}
           {isSelf && (
             <Card>
-              <CardHeader title="Submit a payment" icon={<Plus className="size-4" />} description="An administrator confirms it before it counts." />
+              <CardHeader title={isFlutterwaveConfigured() ? "Or record a bank transfer" : "Submit a payment"} icon={<Plus className="size-4" />} description="An administrator confirms it before it counts." />
               <CardBody><TransactionForm today={today} /></CardBody>
             </Card>
           )}

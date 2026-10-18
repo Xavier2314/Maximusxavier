@@ -23,7 +23,7 @@ cat supabase/tests/00_supabase_stub.sql supabase/migrations/*.sql \
 A clean run ends with `ALL SECURITY TESTS PASSED`. Add a test for every new rule.
 
 ## Applying migrations
-All migrations up to `0033_team_chat` are applied to the live database (0030 schedules hourly
+All migrations up to `0034_online_payments` are applied to the live database (0030 schedules hourly
 check-in reminders with pg_cron).
 The Supabase MCP connection times out on large scripts and on anything containing a
 DELETE statement (it waits for a confirmation). Apply big migrations in pieces, or paste
@@ -62,6 +62,14 @@ them into Supabase > SQL Editor.
     policy exists on purpose. Not end-to-end encrypted. Reports carry only the reported message.
   - Brain gym (`/tools/brain`): 20 games, scores in `game_scores`. Brain training for fun,
     not a clinical test.
+
+- Online payments (Flutterwave **v3** API, `src/lib/flutterwave.ts`): white-label fee and savings /
+  contributions. Needs `FLUTTERWAVE_SECRET_KEY` (FLWSECK-…) and `FLUTTERWAVE_WEBHOOK_HASH` in Vercel;
+  the "Pay online" buttons stay hidden until the secret key is set. Flutterwave's webhook (V3, header
+  `verif-hash`) points to `/api/payments/flutterwave/webhook`; members return to
+  `/api/payments/flutterwave/return`. Both re-check the payment with Flutterwave before
+  `apply_online_payment()` (service role only, idempotent) unlocks white-label or writes a confirmed
+  ledger entry. Bank transfer + receipt upload remain as a fallback.
 
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
