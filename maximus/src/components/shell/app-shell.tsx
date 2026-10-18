@@ -95,15 +95,18 @@ function NavLinks({ sections, pathname, onNavigate }: { sections: NavSection[]; 
 
 function UserCard({ user, signOut }: { user: ShellUser; signOut: () => void }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
-      <Avatar name={user.name} src={user.avatar} size={38} className="ring-white/10" />
-      <Link href="/profile" className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-white">{user.name}</p>
-        <p className="truncate text-xs text-white/50">{user.role} · {user.memberId}</p>
+    <div className="rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
+      <Link href="/profile" className="flex items-center gap-3">
+        <Avatar name={user.name} src={user.avatar} size={38} className="ring-white/10" />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-medium text-white">{user.name}</span>
+          <span className="block truncate text-xs text-white/50">{user.role} · {user.memberId}</span>
+        </span>
       </Link>
-      <form action={signOut}>
-        <button type="submit" className="grid size-8 place-items-center rounded-lg text-white/50 hover:bg-white/10 hover:text-white" aria-label="Sign out">
-          <LogOut className="size-4" aria-hidden />
+      <form action={signOut} className="mt-3">
+        <button type="submit"
+          className="flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-white/10 text-sm font-medium text-white/80 hover:bg-white/15 hover:text-white">
+          <LogOut className="size-4" aria-hidden />Log out
         </button>
       </form>
     </div>
