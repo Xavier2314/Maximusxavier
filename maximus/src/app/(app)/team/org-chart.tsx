@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Minus, Plus, RotateCcw } from "lucide-react";
+import { Camera, LoaderCircle, Minus, Plus, RotateCcw } from "lucide-react";
+import { PhotoPicker } from "@/components/photo-picker";
 import { Avatar } from "@/components/ui/misc";
 import { FOCUS, type FocusKey } from "@/lib/growth";
 import type { TeamMemberStat } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { uploadAvatarAction } from "../profile/actions";
+import { uploadMemberPhotoAction } from "./actions";
 
 type ChartNode = {
   id: string; name: string; code: string; avatar: string | null; active: boolean; joinedAt: string | null;
@@ -82,7 +85,24 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
     isRoot ? "border-transparent bg-gradient-to-b from-brand-navy to-[#1e3a8a] text-white"
       : "border-border bg-surface hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-card)]",
     isNew && "ring-2 ring-brand-lime");
-  return isRoot ? <div className={cls}>{body}</div> : <Link href={`/team/${node.id}`} className={cls}>{body}</Link>;
+  const card = isRoot ? <div className={cls}>{body}</div> : <Link href={`/team/${node.id}`} className={cls}>{body}</Link>;
+  // Your own card always offers a photo change; downline cards only until they have a photo.
+  if (!isRoot && node.avatar) return card;
+  return (
+    <div className="relative">
+      {card}
+      <PhotoPicker action={isRoot ? uploadAvatarAction : uploadMemberPhotoAction} fileField={isRoot ? "avatar" : "photo"}
+        fields={isRoot ? {} : { member_id: node.id }} label={isRoot ? "Change your photo" : `Add a photo of ${node.name}`}
+        className="absolute left-1/2 top-[58px] z-10 -ml-10" messageClassName="w-36 rounded-lg bg-surface p-1 text-center shadow">
+        {(busy) => (
+          <span className={cn("grid size-7 place-items-center rounded-full ring-2 ring-surface transition-transform hover:scale-110",
+            node.avatar ? "bg-surface text-fg-muted" : "bg-brand-lime text-brand-navy")} title={isRoot ? "Change your photo" : "Add a photo"}>
+            {busy ? <LoaderCircle className="size-3.5 animate-spin" aria-hidden /> : <Camera className="size-3.5" aria-hidden />}
+          </span>
+        )}
+      </PhotoPicker>
+    </div>
+  );
 }
 
 function Branch({ node, target, level }: { node: ChartNode; target: number; level: number }) {

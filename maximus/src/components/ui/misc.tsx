@@ -27,7 +27,7 @@ export function Avatar({ name, src, size = 40, className }: { name: string; src?
   return (
     <span className={cn("relative inline-grid shrink-0 place-items-center overflow-hidden rounded-full font-semibold text-white ring-2 ring-surface", color, className)}
       style={{ width: size, height: size, fontSize: size * 0.38 }} aria-hidden={!src}>
-      {src ? <Image src={src} alt={name} fill sizes={`${size}px`} className="object-cover" /> : initials(name)}
+      {src ? <Image src={src} alt={name} fill sizes={`${size}px`} className="object-cover" unoptimized /> : initials(name)}
     </span>
   );
 }

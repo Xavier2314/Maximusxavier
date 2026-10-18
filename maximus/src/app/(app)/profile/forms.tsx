@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useRef } from "react";
-import { Camera } from "lucide-react";
+import { useActionState } from "react";
+import { Camera, LoaderCircle } from "lucide-react";
+import { PhotoPicker } from "@/components/photo-picker";
 import { Avatar } from "@/components/ui/misc";
 import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -9,20 +10,17 @@ import type { Profile } from "@/lib/types";
 import { updateProfileAction, uploadAvatarAction } from "./actions";
 
 export function AvatarUploader({ name, src }: { name: string; src: string | null }) {
-  const [state, action] = useActionState(uploadAvatarAction, null);
-  const formRef = useRef<HTMLFormElement>(null);
   return (
-    <form ref={formRef} action={action} className="flex flex-col items-center gap-2">
-      <label className="group relative cursor-pointer" aria-label="Change profile picture">
-        <Avatar name={name} src={src} size={104} className="ring-4 ring-white/20" />
-        <span className="absolute bottom-1 right-1 grid size-9 place-items-center rounded-full bg-brand-lime text-brand-navy ring-4 ring-brand-navy transition-transform group-hover:scale-105">
-          <Camera className="size-4" aria-hidden />
+    <PhotoPicker action={uploadAvatarAction} fileField="avatar" label="Change profile picture" messageClassName="text-white/80">
+      {(busy) => (
+        <span className="group relative block">
+          <Avatar name={name} src={src} size={104} className={busy ? "opacity-60 ring-4 ring-white/20" : "ring-4 ring-white/20"} />
+          <span className="absolute bottom-1 right-1 grid size-9 place-items-center rounded-full bg-brand-lime text-brand-navy ring-4 ring-brand-navy transition-transform group-hover:scale-105">
+            {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Camera className="size-4" aria-hidden />}
+          </span>
         </span>
-        <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp" className="sr-only"
-          onChange={() => formRef.current?.requestSubmit()} />
-      </label>
-      {state?.message && <p className={`text-xs ${state.ok ? "text-brand-lime" : "text-red-200"}`} role="status">{state.message}</p>}
-    </form>
+      )}
+    </PhotoPicker>
   );
 }
 

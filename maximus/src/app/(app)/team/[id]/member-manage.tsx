@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import { Camera, UserMinus } from "lucide-react";
+import { Camera, LoaderCircle, UserMinus } from "lucide-react";
+import { PhotoPicker } from "@/components/photo-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Checkbox, Field, FormMessage, Input } from "@/components/ui/form";
@@ -14,7 +15,6 @@ export type TeamPerson = { id: string; name: string; avatar: string | null; dept
 
 /** Upline tools on a member's page: add their photo, or remove them if they've left. */
 export function MemberManage({ member, team }: { member: { id: string; name: string; avatar: string | null }; team: TeamPerson[] }) {
-  const [photoState, photoAction] = useActionState(uploadMemberPhotoAction, null);
   const [removeState, removeAction] = useActionState(removeFromTeamAction, null);
   const [open, setOpen] = useState(false);
   const [leaving, setLeaving] = useState<Set<string>>(new Set());
@@ -30,18 +30,18 @@ export function MemberManage({ member, team }: { member: { id: string; name: str
     <Card>
       <CardHeader title="Manage" icon={<UserMinus className="size-4" />} description={`You're ${first}'s upline`} />
       <CardBody className="space-y-6">
-        <form action={photoAction} className="space-y-3">
-          <FormMessage state={photoState} />
-          <input type="hidden" name="member_id" value={member.id} />
-          <div className="flex items-center gap-3">
-            <Avatar name={member.name} src={member.avatar} size={48} />
-            <label className="flex-1 text-sm">
-              <span className="mb-1 flex items-center gap-1.5 font-medium"><Camera className="size-4 text-primary" aria-hidden />{member.avatar ? "Change photo" : "Add a photo"}</span>
-              <Input type="file" name="photo" accept="image/jpeg,image/png,image/webp" className="h-auto py-2 text-xs" required />
-            </label>
-          </div>
-          <SubmitButton variant="secondary" size="sm" pendingLabel="Uploading…">Save photo</SubmitButton>
-        </form>
+        <PhotoPicker action={uploadMemberPhotoAction} fileField="photo" fields={{ member_id: member.id }} label={`Add a photo of ${member.name}`}
+          className="items-start">
+          {(busy) => (
+            <span className="flex items-center gap-3">
+              <Avatar name={member.name} src={member.avatar} size={52} className={busy ? "opacity-60" : undefined} />
+              <span className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-primary-soft px-3 text-sm font-medium text-primary">
+                {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Camera className="size-4" aria-hidden />}
+                {busy ? "Uploading…" : member.avatar ? "Change photo" : "Add a photo"}
+              </span>
+            </span>
+          )}
+        </PhotoPicker>
 
         <div className="border-t border-border pt-5">
           {!open ? (
