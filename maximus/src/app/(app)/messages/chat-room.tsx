@@ -103,7 +103,9 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
     if (!need.length) return;
     void supabase.storage.from("chat").createSignedUrls(need, 3600).then(({ data }) => {
       if (!data) return;
-      setUrls((u) => ({ ...u, ...Object.fromEntries(data.filter((d) => d.signedUrl && d.path).map((d) => [d.path!, d.signedUrl])) }));
+      const fresh: Record<string, string> = {};
+      for (const d of data) if (d.path && d.signedUrl) fresh[d.path] = d.signedUrl;
+      setUrls((u) => ({ ...u, ...fresh }));
     });
   }, [messages, urls, supabase]);
 
