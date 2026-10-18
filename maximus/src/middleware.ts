@@ -46,6 +46,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Skip static files, images, the service worker, the manifest and cron/push/WhatsApp APIs (they authenticate themselves).
-    "/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.webmanifest|brand/|icons/|api/cron|api/push/dispatch|api/whatsapp|api/ai/status|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.webmanifest|brand/|icons/|api/cron|api/push/dispatch|api/whatsapp|api/ai/status|api/client-error|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

@@ -1,5 +1,5 @@
 /* Maximus service worker: web push, notification clicks and offline fallback. */
-const CACHE = "maximus-v1";
+const CACHE = "maximus-v2"; // bump to clear old caches
 const OFFLINE_URL = "/offline";
 const PRECACHE = [OFFLINE_URL, "/brand/logo-mark.svg", "/icons/icon-192.png"];
 
@@ -28,8 +28,11 @@ self.addEventListener("fetch", (event) => {
   if (url.origin === self.location.origin && (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/brand/") || url.pathname.startsWith("/icons/"))) {
     event.respondWith(
       caches.match(req).then((hit) => hit || fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy));
+        // Only keep good responses; a failed file must never be served from cache later.
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+        }
         return res;
       })),
     );
