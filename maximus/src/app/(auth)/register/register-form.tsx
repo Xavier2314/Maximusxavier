@@ -18,7 +18,7 @@ const STEP_FIELDS: string[][] = [
   ["email", "password", "confirm_password", "privacy"],
 ];
 
-export function RegisterForm({ offices, referralCode }: { offices: { id: string; name: string }[]; referralCode?: string }) {
+export function RegisterForm({ offices, referralCode, uplineCode }: { offices: { id: string; name: string }[]; referralCode?: string; uplineCode?: string }) {
   const [state, action] = useActionState(registerAction, null);
   const [step, setStep] = useState(0);
   const [sponsor, setSponsor] = useState<{ name?: string; checking?: boolean; invalid?: boolean }>({});
@@ -81,6 +81,7 @@ export function RegisterForm({ offices, referralCode }: { offices: { id: string;
 
       <FormMessage state={state} />
       <input type="hidden" name="timezone" value={tz} />
+      {uplineCode && <input type="hidden" name="upline_code" value={uplineCode} />}
 
       {/* Step 1 — personal details */}
       <fieldset className={cn("space-y-4", step !== 0 && "hidden")}>
@@ -152,7 +153,7 @@ export function RegisterForm({ offices, referralCode }: { offices: { id: string;
           </Select>
         </Field>
         <Field label="Sponsor referral code or Member ID" htmlFor="referral_code" error={errors.referral_code}
-          hint="Ask the person who invited you. Leave blank only if you are the founding administrator.">
+          hint={uplineCode ? "Optional: only if someone sponsored you." : "Ask the person who invited you. Leave blank only if you are the founding administrator."}>
           <Input id="referral_code" name="referral_code" defaultValue={referralCode} autoCapitalize="characters"
             placeholder="e.g. MX-001024" onBlur={(e) => checkSponsor(e.target.value)} aria-describedby="sponsor-status" />
         </Field>

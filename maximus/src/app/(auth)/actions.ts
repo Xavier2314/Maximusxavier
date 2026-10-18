@@ -27,6 +27,7 @@ const registerSchema = z.object({
   privacy: z.literal("on", { errorMap: () => ({ message: "You must accept the privacy policy" }) }),
   celebrate_birthday: z.string().optional(),
   timezone: z.string().max(64).optional(),
+  upline_code: z.string().trim().toUpperCase().regex(/^[A-Z0-9-]{6,32}$/).optional().or(z.literal("")),
 }).refine((v) => v.password === v.confirm_password, { path: ["confirm_password"], message: "Passwords do not match" });
 
 export async function registerAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
@@ -111,6 +112,11 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
     }
   }
 
+  // Joining above an existing member with an upline invite (e.g. the founder's own sponsor).
+  if (data.session && v.upline_code) {
+    const { error: inviteErr } = await supabase.rpc("accept_upline_invite", { p_code: v.upline_code });
+    if (inviteErr) console.error("Upline invite failed", inviteErr.message);
+  }
   if (data.session) redirect("/onboarding");
   if (createdConfirmed) return { ok: true, message: "Your account is ready. Sign in with your email and password to continue." };
   return {

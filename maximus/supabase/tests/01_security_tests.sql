@@ -765,6 +765,28 @@ end $$;
 select pg_temp.expect_error($$insert into public.member_private (user_id, newlife_id) values ('00000000-0000-0000-0000-0000000000b1', 'X')$$, 'set someone else NeoLife ID');
 select pg_temp.act_as(null);
 
+-- ---------------------------------------------------------------------------
+-- Upline invites (0026): founder a1 invites their own sponsor
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as(null);
+insert into public.upline_invites (code, for_user, created_by) values ('VAL-SPONSOR-TEST', '00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-00000000000a');
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('00000000-0000-0000-0000-0000000000f9', 'bigsponsor@test.dev', '{"full_name":"Big Sponsor"}');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000f9');
+do $$ begin
+  assert (select for_name from public.upline_invite_info('val-sponsor-test')) = 'Lola Leader', 'invite shows who you sponsor';
+  assert public.accept_upline_invite('VAL-SPONSOR-TEST') = 'Lola Leader', 'invite accepted';
+  assert public.is_in_my_downline('00000000-0000-0000-0000-0000000000e2'), 'new sponsor sees the whole team below';
+  raise notice 'PASS: sponsor joins above the founder with an invite code';
+end $$;
+select pg_temp.expect_error($$select public.accept_upline_invite('VAL-SPONSOR-TEST')$$, 'reuse an upline invite');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+select pg_temp.expect_error($$select public.accept_upline_invite('NOPE-1234')$$, 'unknown upline invite');
+select pg_temp.act_as(null);
+do $$ begin
+  assert (select sponsor_id from public.profiles where id = '00000000-0000-0000-0000-0000000000a1') = '00000000-0000-0000-0000-0000000000f9', 'founder placed under sponsor';
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
