@@ -21,7 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   ]);
 
   const managesOffice = viewer.offices.length > 0;
-  const officeSections = viewer.hasOfficeView ? visibleOfficeNav(viewer.permissions, managesOffice) : [];
+  const officeSections = viewer.hasOfficeView ? visibleOfficeNav(viewer.permissions, managesOffice, viewer.roles) : [];
   const officeHome = managesOffice ? "/office" : viewer.isLeader ? "/office/team" : officeSections[0]?.items[0]?.href;
   const office = officeHome ? {
     home: officeHome,

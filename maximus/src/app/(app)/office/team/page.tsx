@@ -34,7 +34,7 @@ async function LeaderSection({ viewerId, canSeeExtended, period }: { viewerId: s
       .eq("reviewer_id", viewerId).eq("status", "submitted").limit(5),
     supabase.from("evaluations").select("user_id").eq("period_date", period),
   ]);
-  const team = (stats as TeamMemberStat[] | null) ?? [];
+  const team = ((stats as TeamMemberStat[] | null) ?? []).filter((m) => m.status !== "deactivated");
   const active = team.filter((m) => m.is_active).length;
   const done = new Set((periodEvals ?? []).map((e) => e.user_id as string));
   const evalRate = percent(team.filter((m) => done.has(m.member)).length, team.length);

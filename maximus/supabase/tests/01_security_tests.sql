@@ -580,6 +580,51 @@ end $$;
 select pg_temp.act_as(null);
 
 
+-- ---------------------------------------------------------------------------
+-- Team changes (0019)
+-- ---------------------------------------------------------------------------
+-- Tree: leader a1 > sponsor b1 > member c1 > member d1. Add e2 under c1.
+select pg_temp.act_as(null);
+insert into auth.users (id, email, raw_user_meta_data)
+select '00000000-0000-0000-0000-0000000000e2', 'member3@test.dev',
+       jsonb_build_object('full_name', 'Ella Member', 'referral_code', referral_code)
+from public.profiles where id = '00000000-0000-0000-0000-0000000000c1';
+
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000d1');
+select pg_temp.expect_error($$select public.remove_from_team('00000000-0000-0000-0000-0000000000c1')$$, 'downline removes their sponsor');
+select pg_temp.expect_error($$select public.set_member_office('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000f2')$$, 'member changes own office');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+select pg_temp.expect_error($$select public.remove_from_team('00000000-0000-0000-0000-0000000000c1', array['00000000-0000-0000-0000-0000000000a1']::uuid[])$$, 'remove someone outside their team with them');
+select pg_temp.expect_error($$select public.set_member_office('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-0000000000f2')$$, 'sponsor changes member office');
+do $$ declare r jsonb; begin
+  -- c1 leaves with d1; e2 stays and moves under b1.
+  r := public.remove_from_team('00000000-0000-0000-0000-0000000000c1', array['00000000-0000-0000-0000-0000000000d1']::uuid[], 'moved away');
+  assert (r ->> 'removed')::int = 2 and (r ->> 'moved')::int = 1, 'removed 2, moved 1';
+  raise notice 'PASS: sponsor removes a leaver and keeps the rest of the team';
+end $$;
+select pg_temp.act_as(null);
+do $$ begin
+  assert (select status from public.profiles where id = '00000000-0000-0000-0000-0000000000c1') = 'deactivated', 'leaver deactivated';
+  assert (select status from public.profiles where id = '00000000-0000-0000-0000-0000000000d1') = 'deactivated', 'their downline who left deactivated';
+  assert (select sponsor_id from public.profiles where id = '00000000-0000-0000-0000-0000000000e2') = '00000000-0000-0000-0000-0000000000b1', 'stayer moved under remover';
+  assert exists (select 1 from public.team_relationships where ancestor_id = '00000000-0000-0000-0000-0000000000a1'
+                 and descendant_id = '00000000-0000-0000-0000-0000000000e2' and depth = 2), 'tree rebuilt';
+  assert not exists (select 1 from public.team_relationships where ancestor_id = '00000000-0000-0000-0000-0000000000c1'
+                 and descendant_id = '00000000-0000-0000-0000-0000000000e2'), 'detached from leaver';
+  raise notice 'PASS: tree updated after removal';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a1');
+select public.set_member_office('00000000-0000-0000-0000-0000000000e2', '00000000-0000-0000-0000-0000000000f1');
+select pg_temp.expect_error($$select public.set_member_office('00000000-0000-0000-0000-0000000000c2', '00000000-0000-0000-0000-0000000000f1')$$, 'team leader moves someone outside their team');
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+select public.set_member_office('00000000-0000-0000-0000-0000000000e2', '00000000-0000-0000-0000-0000000000f2');
+select pg_temp.act_as(null);
+do $$ begin
+  assert (select office_id from public.profiles where id = '00000000-0000-0000-0000-0000000000e2') = '00000000-0000-0000-0000-0000000000f2', 'office set';
+  assert (select count(*) from public.office_memberships where user_id = '00000000-0000-0000-0000-0000000000e2') = 1, 'only the new office';
+  raise notice 'PASS: team leader (own team) and super admin place members in offices';
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

@@ -11,6 +11,7 @@ export const NOTIFICATION_TYPES = [
   { key: "goal_reminder", label: "Monthly goal-setting reminders", group: "Reminders" },
   { key: "evaluation_completed", label: "Team member completed an evaluation", group: "Team" },
   { key: "team_registration", label: "New team registrations", group: "Team" },
+  { key: "team_change", label: "Changes to your sponsor or office", group: "Team" },
   { key: "order_recorded", label: "Team orders", group: "Team" },
   { key: "order_milestone", label: "Sales milestones", group: "Growth" },
   { key: "fund_update", label: "Savings and payment updates", group: "Finance" },

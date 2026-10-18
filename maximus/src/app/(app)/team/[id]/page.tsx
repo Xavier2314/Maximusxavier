@@ -9,7 +9,9 @@ import { ATTENDANCE_LABELS, AttendanceBadge } from "@/components/attendance-badg
 import { ROLE_LABELS, requireViewer } from "@/lib/auth";
 import { topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
-import type { Attendance, Evaluation, GoalProgress, MonthlyGoal, Order, Profile, RoleKey } from "@/lib/types";
+import type { Attendance, Evaluation, GoalProgress, MonthlyGoal, Order, Profile, RoleKey, TeamMemberStat } from "@/lib/types";
+import { MemberManage } from "./member-manage";
+import { OfficePlacement } from "./office-placement";
 import { formatDate, formatMoney, formatRelative, formatTime, monthStart, percent, todayIn } from "@/lib/utils";
 
 export const metadata = { title: "Team member" };
@@ -32,6 +34,19 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
     supabase.rpc("attendance_streak", { p_user: id }),
     supabase.rpc("growth_focus", { p_user: id }),
   ]);
+  // Upline tools: add a photo, remove someone who left, and (Super Admin / Team Leader) set their office.
+  const { data: link } = await supabase.from("team_relationships").select("depth")
+    .eq("ancestor_id", viewer.id).eq("descendant_id", id).gte("depth", 1).maybeSingle();
+  const inDownline = Boolean(link);
+  const canEdit = inDownline || viewer.can("manage_roles");
+  const canPlace = viewer.roles.includes("super_admin") || (viewer.roles.includes("team_leader") && inDownline);
+  const [{ data: subTeam }, { data: officeList }] = await Promise.all([
+    canEdit ? supabase.rpc("team_member_stats", { p_root: id, p_max_depth: null }) : Promise.resolve({ data: [] }),
+    canPlace ? supabase.rpc("list_public_offices") : Promise.resolve({ data: [] }),
+  ]);
+  const team = ((subTeam as TeamMemberStat[] | null) ?? []).filter((m) => m.status !== "deactivated" && m.depth >= 1)
+    .sort((a, b) => a.depth - b.depth || a.full_name.localeCompare(b.full_name))
+    .map((m) => ({ id: m.member, name: m.full_name, avatar: m.avatar_url, depth: m.depth, sponsorId: m.sponsor_id }));
   const growth = focusData as GrowthFocus | null;
   const focusTop = topFocus(growth);
   const focusCourses = await coursesForFocus(supabase, focusTop);
@@ -76,6 +91,14 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
       </section>
+
+      {member.status === "active" && (canEdit || canPlace) && (
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          {canEdit && <MemberManage member={{ id: member.id, name: member.full_name, avatar: member.avatar_url }} team={team} />}
+          {canPlace && <OfficePlacement memberId={member.id} firstName={firstName} current={member.office_id}
+            offices={(officeList as { id: string; name: string }[] | null) ?? []} />}
+        </div>
+      )}
 
       {!canSeeActivity ? (
         <Card className="mt-6"><EmptyState icon={<Target className="size-6" />} title="Activity is private" description="Only this member's authorised leaders can see their attendance, goals and evaluations." /></Card>

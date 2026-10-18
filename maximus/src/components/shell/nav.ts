@@ -6,6 +6,8 @@ export type NavItem = {
   icon: string; // lucide icon name, resolved in nav-icons.tsx
   permission?: Permission;
   anyPermission?: Permission[];
+  /** Shown only to members holding one of these roles. */
+  roles?: string[];
 };
 
 export type NavSection = { title?: string; items: NavItem[] };
@@ -62,6 +64,7 @@ export const OFFICE_NAV: NavSection[] = [
     title: "Team",
     items: [
       { href: "/office/team", label: "Team overview", icon: "network", anyPermission: ["view_team_dashboard", "view_direct_downlines"] },
+      { href: "/office/place", label: "Place in an office", icon: "building", roles: ["super_admin", "team_leader"] },
     ],
   },
   {
@@ -97,9 +100,10 @@ export const OFFICE_BOTTOM_NAV: NavItem[] = [
   { href: "/admin/approvals", label: "Approvals", icon: "check" },
 ];
 
-function filterNav(nav: NavSection[], perms: Set<string>): NavSection[] {
+function filterNav(nav: NavSection[], perms: Set<string>, roles: string[] = []): NavSection[] {
   const allowed = (i: NavItem) =>
-    (!i.permission || perms.has(i.permission)) && (!i.anyPermission || i.anyPermission.some((p) => perms.has(p)));
+    (!i.permission || perms.has(i.permission)) && (!i.anyPermission || i.anyPermission.some((p) => perms.has(p)))
+    && (!i.roles || i.roles.some((r) => roles.includes(r)));
   return nav.map((s) => ({ ...s, items: s.items.filter(allowed) })).filter((s) => s.items.length > 0);
 }
 
@@ -108,8 +112,8 @@ export function visibleNav(perms: Set<string>): NavSection[] {
 }
 
 /** Office-view sections. Team leaders without an office get the Team part only. */
-export function visibleOfficeNav(perms: Set<string>, managesOffice: boolean): NavSection[] {
-  const sections = filterNav(OFFICE_NAV, perms);
+export function visibleOfficeNav(perms: Set<string>, managesOffice: boolean, roles: string[] = []): NavSection[] {
+  const sections = filterNav(OFFICE_NAV, perms, roles);
   if (managesOffice) return sections;
   // Without an office, only Approvals is useful from the Office section (e.g. earnings managers).
   return sections

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, Download, Flame, Network, UserPlus, Users } from "lucide-react";
+import { Camera, Compass, Download, Flame, Network, UserPlus, Users } from "lucide-react";
 import { FocusList } from "@/components/growth-focus";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
@@ -17,8 +17,9 @@ import { TeamExplorer } from "./team-explorer";
 
 export const metadata = { title: "My Team" };
 
-export default async function TeamPage() {
+export default async function TeamPage({ searchParams }: { searchParams: Promise<{ removed?: string; moved?: string }> }) {
   const viewer = await requireViewer();
+  const { removed, moved } = await searchParams;
   const supabase = await createClient();
   const extended = viewer.can("view_extended_downline");
   const canSeeTeam = viewer.can("view_direct_downlines") || extended;
@@ -38,7 +39,8 @@ export default async function TeamPage() {
     ((focusRes.data as { member: string; focus: FocusKey[] }[] | null) ?? []).map((f) => [f.member, f.focus]));
   focus[viewer.id] = topFocus(focusData).map((a) => a.key);
   const myTop = topFocus(focusData);
-  const team = (statsRes.data as TeamMemberStat[] | null) ?? [];
+  // People removed from the team (deactivated) no longer appear in the structure.
+  const team = ((statsRes.data as TeamMemberStat[] | null) ?? []).filter((m) => m.status !== "deactivated");
   const growth = (growthRes.data as { month: string; new_members: number }[] | null) ?? [];
   const direct = team.filter((m) => m.depth === 1).length;
   const active = team.filter((m) => m.is_active).length;
@@ -52,6 +54,19 @@ export default async function TeamPage() {
           <LiveTeam viewerId={viewer.id} />
           {team.length > 0 && <LinkButton href="/api/export/team" variant="outline" size="sm" prefetch={false}><Download className="size-4" aria-hidden /> Export CSV</LinkButton>}
         </>} />
+
+      {removed && (
+        <p className="mb-6 rounded-2xl bg-success-soft px-4 py-3 text-sm text-success" role="status">
+          Removed {removed} {removed === "1" ? "person" : "people"} from your team.
+          {Number(moved) > 0 && ` ${moved} ${moved === "1" ? "person who stayed is" : "people who stayed are"} now directly under you.`}
+        </p>
+      )}
+      {!viewer.profile.avatar_url && (
+        <Link href="/profile" className="mb-6 flex items-center gap-3 rounded-2xl border border-dashed border-primary/40 bg-primary-soft/50 p-4 text-sm hover:bg-primary-soft">
+          <Camera className="size-5 text-primary" aria-hidden />
+          <span className="flex-1"><b>Add your profile photo</b> so your team recognises you in the structure.</span>
+        </Link>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card>
