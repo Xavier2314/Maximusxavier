@@ -76,6 +76,10 @@ them into Supabase > SQL Editor.
   the proxy's IPs under Flutterwave → Settings → Whitelisted IP addresses. Only /transfers and /balances
   calls use the proxy.
 
+- Every member who belongs to an office has an Office view tab with a read-only "My office" page
+  (/office/my): head counts, leaders, office news, top earners. Data comes from
+  `office_public_summary()` (0039), which returns totals only.
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.

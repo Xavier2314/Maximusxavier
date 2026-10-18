@@ -1027,6 +1027,16 @@ do $$ begin
 end $$;
 select pg_temp.act_as(null);
 
+-- 0039: members see a safe summary of their own office only.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ declare d jsonb := public.office_public_summary('00000000-0000-0000-0000-0000000000f2'); begin
+  assert (d->>'members')::int >= 2, 'office member count';
+  assert d->'leaders' @> '[{"name":"Olu OfficeAdmin"}]', 'office leaders listed';
+  raise notice 'PASS: member sees own office summary';
+end $$;
+select pg_temp.expect_error($$ select public.office_public_summary('00000000-0000-0000-0000-0000000000f1') $$, 'member cannot view another office');
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
