@@ -2,9 +2,11 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { Paperclip } from "lucide-react";
+import { AiFilledBanner, ModeTabs, TalkToAi, type FormMode } from "@/components/form-modes";
 import { Field, FormMessage, Input, Select } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { VoiceTextarea } from "@/components/voice";
+import { arrangeAction } from "../ai/arrange-actions";
 import { recordOrderAction } from "./actions";
 
 export const CATEGORIES = ["Wellness", "Nutrition", "Personal care", "Beauty", "Home care", "Accessories", "Other"];
@@ -22,12 +24,24 @@ export function OrderForm({ members, selfId, today, hasLeaders }: { members: { i
   const [platform, setPlatform] = useState("fiverr");
   const [fileName, setFileName] = useState<string | null>(null);
   const [round, setRound] = useState(0);
+  const [mode, setMode] = useState<FormMode>("ai");
+  const [prefill, setPrefill] = useState<Record<string, string | number> | null>(null);
   const e = state?.errors ?? {};
-  useEffect(() => { if (state?.ok) { ref.current?.reset(); setFileName(null); setPlatform("fiverr"); setRound((r) => r + 1); } }, [state]);
+  useEffect(() => { if (state?.ok) { ref.current?.reset(); setFileName(null); setPlatform("fiverr"); setPrefill(null); setRound((r) => r + 1); } }, [state]);
+  const pv = (k: string, d = "") => String(prefill?.[k] ?? d);
+  const full = mode === "form";
 
   return (
-    <form ref={ref} action={action} className="space-y-4" noValidate>
+    <div className="space-y-4">
+    <ModeTabs mode={mode} onChange={setMode} />
+    {mode === "ai" ? (
+      <TalkToAi arrange={(t) => arrangeAction("order", t)}
+        placeholder="e.g. I got a 45k logo design job on Fiverr yesterday from a client called Tunde, already delivered…"
+        onArranged={(data) => { setPrefill(data as Record<string, string | number>); if (data.platform) setPlatform(String(data.platform)); setRound((r) => r + 1); setMode("form"); }} />
+    ) : (
+    <form key={`${mode}-${round}`} ref={ref} action={action} className="space-y-4" noValidate>
       <FormMessage state={state} />
+      {prefill && full && <AiFilledBanner />}
       {members.length > 0 ? (
         <Field label="Attributed to" htmlFor="member_id" error={e.member_id}>
           <Select id="member_id" name="member_id" defaultValue={selfId}>
@@ -43,20 +57,20 @@ export function OrderForm({ members, selfId, today, hasLeaders }: { members: { i
       </Field>
       <Field label="Describe the order" htmlFor="description" error={e.description}
         hint="Type or tap Speak: the service or product, the client, anything worth knowing.">
-        <VoiceTextarea key={round} id="description" name="description" rows={3} maxLength={2000}
+        <VoiceTextarea id="description" name="description" rows={full ? 3 : 6} maxLength={2000} defaultValue={pv("description")}
           placeholder={platform === "product" ? "e.g. 2 packs of the detox tea for Mrs Ade" : "e.g. Logo design for a bakery in Lekki, 3 revisions, delivered in 2 days"} />
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Amount" htmlFor="amount" error={e.amount}>
           <div className="relative">
             <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-subtle">₦</span>
-            <Input id="amount" name="amount" inputMode="decimal" placeholder="0" className="pl-8" required />
+            <Input id="amount" name="amount" inputMode="decimal" placeholder="0" className="pl-8" required defaultValue={pv("amount")} />
           </div>
         </Field>
-        <Field label="Client / customer" htmlFor="customer_name" optional>
-          <Input id="customer_name" name="customer_name" placeholder="Name or username" maxLength={120} />
-        </Field>
-        {platform === "product" && (
+        {full && <Field label="Client / customer" htmlFor="customer_name" optional>
+          <Input id="customer_name" name="customer_name" placeholder="Name or username" maxLength={120} defaultValue={pv("customer_name")} />
+        </Field>}
+        {full && platform === "product" && (
           <>
             <Field label="Category" htmlFor="category">
               <Select id="category" name="category" defaultValue="">
@@ -69,15 +83,16 @@ export function OrderForm({ members, selfId, today, hasLeaders }: { members: { i
             </Field>
           </>
         )}
-        <Field label="Status" htmlFor="status">
-          <Select id="status" name="status" defaultValue="confirmed">
+        {!full && <input type="hidden" name="status" value="confirmed" />}
+        {full && <Field label="Status" htmlFor="status">
+          <Select id="status" name="status" defaultValue={pv("status", "confirmed")}>
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed / in progress</option>
             <option value="delivered">Delivered / completed</option>
           </Select>
-        </Field>
+        </Field>}
         <Field label="Order date" htmlFor="order_date" error={e.order_date}>
-          <Input id="order_date" name="order_date" type="date" max={today} defaultValue={today} />
+          <Input id="order_date" name="order_date" type="date" max={today} defaultValue={pv("order_date", today)} />
         </Field>
       </div>
       <Field label="Screenshot or file" htmlFor="attachment" optional error={e.attachment} hint="Screenshot of the order (JPG, PNG, WebP or PDF, up to 10 MB).">
@@ -95,5 +110,7 @@ export function OrderForm({ members, selfId, today, hasLeaders }: { members: { i
       )}
       <SubmitButton className="w-full" pendingLabel="Saving…">Record order</SubmitButton>
     </form>
+    )}
+    </div>
   );
 }

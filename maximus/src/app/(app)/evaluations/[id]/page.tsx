@@ -71,7 +71,13 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
                 ))}
               </dl>
               <div className="mt-6 space-y-4">
-                <ReadAloud label="Listen to this evaluation" text={`${numbers.map(([l, v]) => `${l}: ${v}`).join(". ")}. Challenges: ${ev.challenges ?? "none"}. Priorities: ${ev.priorities}. Support needed: ${ev.support_needed ?? "none"}.`} />
+                <ReadAloud label="Listen to this evaluation" text={`${numbers.map(([l, v]) => `${l}: ${v}`).join(". ")}. Challenges: ${ev.challenges ?? "none"}. Priorities: ${ev.priorities ?? "none"}. ${ev.free_text ?? ""} Support needed: ${ev.support_needed ?? "none"}.`} />
+                {ev.free_text && (
+                  <div className="rounded-2xl bg-surface-muted p-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">In their own words</h3>
+                    <p className="mt-1 whitespace-pre-line text-sm">{ev.free_text}</p>
+                  </div>
+                )}
                 {[["Challenges", ev.challenges], ["Priorities for the next five days", ev.priorities], ["Support needed from sponsor", ev.support_needed]].map(([l, t]) => (
                   <div key={l as string}>
                     <h3 className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">{l}</h3>
@@ -89,7 +95,7 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
             <CardBody>
               <SendToLeaders leaders={leaders} kind="evaluation" itemId={ev.id}
                 title={`My ${formatDate(ev.period_date, { day: "numeric", month: "long" })} evaluation`}
-                body={[...numbers.map(([l, v]) => `${l}: ${v}`), `\nChallenges: ${ev.challenges ?? "—"}`, `Priorities for the next five days: ${ev.priorities}`, `Support needed: ${ev.support_needed ?? "—"}`].join("\n")} />
+                body={[...numbers.map(([l, v]) => `${l}: ${v}`), `\nChallenges: ${ev.challenges ?? "—"}`, `Priorities for the next five days: ${ev.priorities ?? "—"}`, `Support needed: ${ev.support_needed ?? "—"}`, ev.free_text ? `\nIn my own words:\n${ev.free_text}` : ""].join("\n")} />
             </CardBody>
           </Card>
         )}

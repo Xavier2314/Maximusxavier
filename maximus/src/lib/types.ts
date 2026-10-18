@@ -116,6 +116,7 @@ export type Evaluation = {
   members_supported: number;
   challenges: string | null;
   priorities: string | null;
+  free_text?: string | null;
   support_needed: string | null;
   submitted_at: string;
 };

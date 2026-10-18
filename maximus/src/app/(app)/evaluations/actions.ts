@@ -24,18 +24,23 @@ const schema = z.object({
   new_joins: int,
   members_supported: int,
   challenges: z.string().trim().max(2000).optional(),
-  priorities: z.string().trim().min(3, "Share at least one priority for the next five days").max(2000),
+  priorities: z.string().trim().max(2000).optional(),
   support_needed: z.string().trim().max(2000).optional(),
+  free_text: z.string().trim().max(4000).optional(),
+  mode: z.enum(["write", "form"]).optional(),
+}).superRefine((v, ctx) => {
+  if (v.mode === "write" && (v.free_text ?? "").length < 10) ctx.addIssue({ code: "custom", path: ["free_text"], message: "Write a little about your five days (at least 10 characters)." });
+  if (v.mode !== "write" && (v.priorities ?? "").length < 3) ctx.addIssue({ code: "custom", path: ["priorities"], message: "Share at least one priority for the next five days" });
 });
 
 export async function saveEvaluationAction(_prev: EvalFormState, formData: FormData): Promise<EvalFormState> {
   const parsed = schema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { ok: false, message: "Please fix the highlighted fields.", errors: parsed.error.flatten().fieldErrors };
-  const { id, ...v } = parsed.data;
+  const { id, mode: _mode, ...v } = parsed.data;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const row = { ...v, challenges: v.challenges || null, support_needed: v.support_needed || null };
+  const row = { ...v, challenges: v.challenges || null, priorities: v.priorities || null, support_needed: v.support_needed || null, free_text: v.free_text || null };
 
   const { data, error } = id
     ? await supabase.from("evaluations").update(row).eq("id", id).select("id").single()
