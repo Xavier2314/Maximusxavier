@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { addMonths, formatDate, monthStart, todayIn } from "@/lib/utils";
-import { GoalForm } from "../goal-form";
+import { GoalComposer } from "../goal-composer";
 
 export const metadata = { title: "Set goals" };
 
@@ -25,8 +25,8 @@ export default async function NewGoalPage({ searchParams }: { searchParams: Prom
   return (
     <>
       <Link href="/goals" className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg"><ArrowLeft className="size-4" aria-hidden /> Goals</Link>
-      <PageHeader title="Set your monthly goals" description="Only fill the targets that matter to you this month. Progress updates automatically from your evaluations, orders and confirmed savings." />
-      <Card className="max-w-3xl"><CardBody className="sm:p-8"><GoalForm months={months} defaultMonth={selected} /></CardBody></Card>
+      <PageHeader title="Set your monthly goals" description="Type, speak, or let Maximus AI build your plan. Progress updates automatically from your evaluations, orders and confirmed savings." />
+      <Card className="max-w-3xl"><CardBody className="sm:p-8"><GoalComposer months={months} defaultMonth={selected} /></CardBody></Card>
     </>
   );
 }

@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { Paperclip } from "lucide-react";
-import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
+import { Field, FormMessage, Input, Select } from "@/components/ui/form";
+import { VoiceTextarea } from "@/components/voice";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { submitTransactionAction } from "./actions";
 
@@ -10,11 +11,12 @@ export function TransactionForm({ today }: { today: string }) {
   const [state, action] = useActionState(submitTransactionAction, null);
   const [kind, setKind] = useState("deposit");
   const [fileName, setFileName] = useState<string | null>(null);
+  const [round, setRound] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
   const e = state?.errors ?? {};
 
   useEffect(() => {
-    if (state?.ok) { formRef.current?.reset(); setFileName(null); setKind("deposit"); }
+    if (state?.ok) { formRef.current?.reset(); setFileName(null); setKind("deposit"); setRound((r) => r + 1); }
   }, [state]);
 
   return (
@@ -45,8 +47,8 @@ export function TransactionForm({ today }: { today: string }) {
           <Input id="occurred_on" name="occurred_on" type="date" max={today} defaultValue={today} />
         </Field>
       </div>
-      <Field label="Note" htmlFor="note" optional>
-        <Textarea id="note" name="note" rows={2} placeholder="e.g. Bank transfer reference" maxLength={1000} />
+      <Field label="Details" htmlFor="note" optional hint="Type or speak: what this payment is for, bank, reference…">
+        <VoiceTextarea key={round} id="note" name="note" rows={3} placeholder="e.g. Transfer from GTBank, ref 12345, my October savings" maxLength={1000} />
       </Field>
       {kind !== "withdrawal" && (
         <Field label="Receipt" htmlFor="receipt" optional error={e.receipt} hint="JPG, PNG, WebP or PDF up to 5 MB. Receipts speed up approval.">

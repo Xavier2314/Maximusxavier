@@ -1,8 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
+import { Field, FormMessage, Input, Select } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { VoiceTextarea } from "@/components/voice";
 import type { Evaluation } from "@/lib/types";
 import { saveEvaluationAction } from "./actions";
 
@@ -48,13 +49,13 @@ export function EvaluationForm({ evaluation, periods }: { evaluation?: Evaluatio
       </div>
 
       <Field label="8. What challenges did you encounter?" htmlFor="challenges" optional error={e.challenges}>
-        <Textarea id="challenges" name="challenges" defaultValue={evaluation?.challenges ?? ""} maxLength={2000} />
+        <VoiceTextarea id="challenges" name="challenges" defaultValue={evaluation?.challenges ?? ""} placeholder="Type or tap Speak" maxLength={2000} />
       </Field>
       <Field label="9. What are your priorities for the next five days?" htmlFor="priorities" error={e.priorities}>
-        <Textarea id="priorities" name="priorities" defaultValue={evaluation?.priorities ?? ""} maxLength={2000} required />
+        <VoiceTextarea id="priorities" name="priorities" defaultValue={evaluation?.priorities ?? ""} maxLength={2000} required />
       </Field>
       <Field label="10. What support do you need from your sponsor?" htmlFor="support_needed" optional error={e.support_needed}>
-        <Textarea id="support_needed" name="support_needed" defaultValue={evaluation?.support_needed ?? ""} maxLength={2000} />
+        <VoiceTextarea id="support_needed" name="support_needed" defaultValue={evaluation?.support_needed ?? ""} maxLength={2000} />
       </Field>
 
       <div className="flex justify-end border-t border-border pt-6">

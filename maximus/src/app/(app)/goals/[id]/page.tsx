@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CircleCheck, ListChecks, MessageSquare, Pencil, RotateCcw, Target } from "lucide-react";
+import { ArrowLeft, CircleCheck, ListChecks, MessageSquare, NotebookPen, Pencil, RotateCcw, Send, Target } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, PageHeader, Progress } from "@/components/ui/misc";
 import { GoalStatus } from "@/components/goal-status";
+import { SendToLeaders } from "@/components/send-to-leaders";
+import { ReadAloud } from "@/components/voice";
+import { getMyLeaders } from "@/lib/leaders";
 import { requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { GoalProgress, MonthlyGoal } from "@/lib/types";
@@ -33,6 +36,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
   const isOwner = goal.user_id === viewer.id;
   const editable = isOwner && (goal.status === "draft" || goal.status === "revision_requested");
   const canReview = !isOwner && viewer.can("review_member_goals");
+  const leaders = isOwner ? await getMyLeaders(supabase) : [];
 
   if (editable && edit === "1") {
     return (
@@ -109,9 +113,18 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
                   <p className="mt-1 text-sm">{goal.personal_development_target}</p>
                 </div>
               )}
+              {goal.plan_text && (
+                <div className="rounded-2xl bg-surface-muted p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-fg-subtle"><NotebookPen className="size-3.5" aria-hidden />Plan in their own words</p>
+                    <ReadAloud text={goal.plan_text} label="Listen" />
+                  </div>
+                  <p className="mt-1 whitespace-pre-line text-sm">{goal.plan_text}</p>
+                </div>
+              )}
               {goal.custom_goals?.length > 0 && (
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-fg-subtle">Custom goals</p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-fg-subtle">To-do list</p>
                   <ul className="space-y-2">
                     {goal.custom_goals.map((c, i) => (
                       <li key={i} className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm">
@@ -156,6 +169,21 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
           </Card>
         </div>
 
+        {isOwner && (
+          <Card className="h-fit">
+            <CardHeader title="Send to sponsor / team leader" icon={<Send className="size-4" />} description="They get a notification and can read your plan." />
+            <CardBody>
+              <SendToLeaders leaders={leaders} kind="goal" itemId={goal.id}
+                title={`My goals for ${formatDate(goal.month, { month: "long", year: "numeric" })}`}
+                body={[
+                  ...rows.map((r) => `${r.label}: ${r.money ? formatMoney(r.target) : r.target}`),
+                  goal.personal_development_target ? `Personal development: ${goal.personal_development_target}` : "",
+                  goal.plan_text ? `\nMy plan:\n${goal.plan_text}` : "",
+                  goal.custom_goals?.length ? `\nTo-do list:\n${goal.custom_goals.map((c) => `• ${c.title}${c.target != null ? ` (${c.target} ${c.unit ?? ""})` : ""}`).join("\n")}` : "",
+                ].filter(Boolean).join("\n")} />
+            </CardBody>
+          </Card>
+        )}
         {canReview && (
           <Card className="h-fit lg:sticky lg:top-24">
             <CardHeader title="Review" icon={<CircleCheck className="size-4" />} description="Your feedback notifies the member instantly." />

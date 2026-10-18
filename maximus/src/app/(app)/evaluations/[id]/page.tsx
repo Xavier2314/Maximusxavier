@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, MessageSquare, Pencil } from "lucide-react";
+import { ArrowLeft, MessageSquare, Pencil, Send } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, PageHeader } from "@/components/ui/misc";
+import { SendToLeaders } from "@/components/send-to-leaders";
+import { ReadAloud } from "@/components/voice";
 import { requireViewer } from "@/lib/auth";
+import { getMyLeaders } from "@/lib/leaders";
 import { createClient } from "@/lib/supabase/server";
 import type { Evaluation } from "@/lib/types";
 import { formatDate, formatMoney, formatRelative, nextEvaluationDate, todayIn } from "@/lib/utils";
@@ -28,6 +31,7 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
   const isOwner = ev.user_id === viewer.id;
   const editable = isOwner && todayIn(viewer.profile.timezone) < nextEvaluationDate(ev.period_date);
   const canFeedback = !isOwner && viewer.can("review_member_goals");
+  const leaders = isOwner ? await getMyLeaders(supabase) : [];
 
   if (editable && edit === "1") {
     return (
@@ -67,6 +71,7 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
                 ))}
               </dl>
               <div className="mt-6 space-y-4">
+                <ReadAloud label="Listen to this evaluation" text={`${numbers.map(([l, v]) => `${l}: ${v}`).join(". ")}. Challenges: ${ev.challenges ?? "none"}. Priorities: ${ev.priorities}. Support needed: ${ev.support_needed ?? "none"}.`} />
                 {[["Challenges", ev.challenges], ["Priorities for the next five days", ev.priorities], ["Support needed from sponsor", ev.support_needed]].map(([l, t]) => (
                   <div key={l as string}>
                     <h3 className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">{l}</h3>
@@ -77,6 +82,17 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
             </CardBody>
           </Card>
         </div>
+        <div className="space-y-6">
+        {isOwner && (
+          <Card>
+            <CardHeader title="Send to sponsor / team leader" icon={<Send className="size-4" />} />
+            <CardBody>
+              <SendToLeaders leaders={leaders} kind="evaluation" itemId={ev.id}
+                title={`My ${formatDate(ev.period_date, { day: "numeric", month: "long" })} evaluation`}
+                body={[...numbers.map(([l, v]) => `${l}: ${v}`), `\nChallenges: ${ev.challenges ?? "—"}`, `Priorities for the next five days: ${ev.priorities}`, `Support needed: ${ev.support_needed ?? "—"}`].join("\n")} />
+            </CardBody>
+          </Card>
+        )}
         <Card className="h-fit">
           <CardHeader title="Sponsor feedback" icon={<MessageSquare className="size-4" />} />
           <CardBody className="space-y-4 pt-3">
@@ -92,6 +108,7 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
             {canFeedback && <FeedbackForm evaluationId={id} />}
           </CardBody>
         </Card>
+        </div>
       </div>
     </>
   );

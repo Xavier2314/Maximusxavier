@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { AI_MODEL, aiClient, isAiConfigured } from "@/lib/ai";
 import { createClient } from "@/lib/supabase/server";
 import { dispatchPushSoon } from "@/lib/push";
 import { friendlyError } from "@/lib/utils";
@@ -23,6 +24,7 @@ const goalSchema = z.object({
   recruitment_target: count,
   order_target: count,
   personal_development_target: z.string().trim().max(1000).optional(),
+  plan_text: z.string().trim().max(4000).optional(),
   intent: z.enum(["draft", "submit"]),
 });
 
@@ -39,7 +41,7 @@ export async function saveGoalAction(_prev: GoalFormState, formData: FormData): 
     .filter((g) => g.title);
 
   const hasAny = [v.income_target, v.sales_target, v.savings_target, v.prospecting_target, v.recruitment_target, v.order_target].some((x) => x != null && x > 0)
-    || Boolean(v.personal_development_target) || custom_goals.length > 0;
+    || Boolean(v.personal_development_target) || Boolean(v.plan_text) || custom_goals.length > 0;
   if (v.intent === "submit" && !hasAny) return { ok: false, message: "Add at least one target before submitting." };
 
   const supabase = await createClient();
@@ -56,6 +58,7 @@ export async function saveGoalAction(_prev: GoalFormState, formData: FormData): 
     recruitment_target: v.recruitment_target,
     order_target: v.order_target,
     personal_development_target: v.personal_development_target || null,
+    plan_text: v.plan_text || null,
     custom_goals,
     status: v.intent === "submit" ? "submitted" : "draft",
   }, { onConflict: "user_id,month" }).select("id").single();
@@ -95,4 +98,67 @@ export async function deleteDraftAction(goalId: string) {
   await supabase.from("monthly_goals").delete().eq("id", goalId).eq("status", "draft");
   revalidatePath("/goals");
   redirect("/goals");
+}
+
+export type GoalPlan = {
+  summary: string;
+  income_target: number | null; sales_target: number | null; savings_target: number | null;
+  prospecting_target: number | null; recruitment_target: number | null; order_target: number | null;
+  personal_development_target: string | null;
+  actions: { title: string; target: number | null; unit: string | null }[];
+};
+
+const PLAN_TOOL = {
+  name: "monthly_goal_plan",
+  description: "The member's monthly goals turned into targets and a to-do list.",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      summary: { type: "string", description: "Two or three encouraging sentences summarising the plan, in second person." },
+      income_target: { type: ["number", "null"], description: "Naira" },
+      sales_target: { type: ["number", "null"], description: "Naira" },
+      savings_target: { type: ["number", "null"], description: "Naira" },
+      prospecting_target: { type: ["integer", "null"], description: "People to contact this month" },
+      recruitment_target: { type: ["integer", "null"], description: "New team members this month (at least 3 is the usual minimum, no upper limit)" },
+      order_target: { type: ["integer", "null"] },
+      personal_development_target: { type: ["string", "null"] },
+      actions: {
+        type: "array", maxItems: 8,
+        description: "Concrete things to do this month, e.g. 'Invite 3 people every day' (target 90, unit people).",
+        items: {
+          type: "object",
+          properties: { title: { type: "string" }, target: { type: ["number", "null"] }, unit: { type: ["string", "null"] } },
+          required: ["title", "target", "unit"],
+        },
+      },
+    },
+    required: ["summary", "income_target", "sales_target", "savings_target", "prospecting_target", "recruitment_target", "order_target", "personal_development_target", "actions"],
+  },
+};
+
+/** Turns what the member typed or said into goal targets and a to-do list. */
+export async function planGoalsAction(text: string): Promise<{ ok: boolean; message: string; plan?: GoalPlan }> {
+  const input = z.string().trim().min(5, "Tell Maximus AI a bit more about your goals.").max(4000).safeParse(text);
+  if (!input.success) return { ok: false, message: input.error.issues[0].message };
+  if (!isAiConfigured()) return { ok: false, message: "Maximus AI is not configured yet." };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Please sign in again." };
+  try {
+    const res = await aiClient().messages.create({
+      model: AI_MODEL,
+      max_tokens: 2000,
+      system: "You help members of Maximus, a Nigerian network-marketing and freelancing team, turn their monthly goals into clear targets and a practical to-do list. Use Naira. Only fill targets the member mentioned or clearly implied; use null otherwise. Make actions specific, daily or weekly, and achievable. Never promise income.",
+      tools: [PLAN_TOOL],
+      tool_choice: { type: "tool", name: PLAN_TOOL.name },
+      messages: [{ role: "user", content: `My goals for this month, in my own words:\n\n${input.data}` }],
+    });
+    const block = res.content.find((b) => b.type === "tool_use");
+    if (!block || block.type !== "tool_use") return { ok: false, message: "Maximus AI couldn't build a plan. Please try again." };
+    const plan = block.input as GoalPlan;
+    plan.actions = (plan.actions ?? []).slice(0, 8);
+    return { ok: true, message: "Here's your plan. Check it, change anything, then save.", plan };
+  } catch {
+    return { ok: false, message: "Maximus AI is busy right now. Please try again in a minute." };
+  }
 }

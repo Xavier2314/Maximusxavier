@@ -5,6 +5,7 @@ import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, PageHeader, StatCard } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
+import { getMyLeaders } from "@/lib/leaders";
 import { createClient } from "@/lib/supabase/server";
 import type { Order, TeamMemberStat } from "@/lib/types";
 import { addMonths, cn, formatDate, formatMoney, formatNumber, monthStart, todayIn } from "@/lib/utils";
@@ -30,10 +31,11 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
   if (scope === "mine") query = query.eq("member_id", viewer.id);
   else query = query.neq("member_id", viewer.id);
 
-  const [{ data: orders }, teamRes, { data: sixMonths }] = await Promise.all([
+  const [{ data: orders }, teamRes, { data: sixMonths }, leaders] = await Promise.all([
     query.returns<Row[]>(),
     viewer.can("view_team_dashboard") ? supabase.rpc("team_member_stats", { p_root: viewer.id }) : Promise.resolve({ data: [] }),
     supabase.from("orders").select("amount, order_date, status").eq("member_id", viewer.id).gte("order_date", addMonths(monthStart(today), -5)),
+    getMyLeaders(supabase),
   ]);
   const rows = orders ?? [];
   const live = rows.filter((o) => o.status !== "cancelled");
@@ -54,7 +56,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <PageHeader eyebrow="Business" title="Orders & activity" description="Record product orders and track monthly business performance."
+      <PageHeader eyebrow="Business" title="Orders & activity" description="Record orders from Fiverr, Upwork, product sales and more, with a screenshot, and track your monthly business."
         action={<LinkButton href={`/api/export/orders?month=${month}&scope=${scope}`} variant="outline" size="sm" prefetch={false}><Download className="size-4" aria-hidden /> Export report</LinkButton>} />
 
       <div className="mb-6 flex flex-wrap items-center gap-2">
@@ -96,8 +98,8 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                     <tr className="border-b border-border">
                       <th scope="col" className="px-4 py-3 font-medium">Date</th>
                       {scope === "team" && <th scope="col" className="px-4 py-3 font-medium">Member</th>}
-                      <th scope="col" className="px-4 py-3 font-medium">Customer</th>
-                      <th scope="col" className="px-4 py-3 font-medium">Category</th>
+                      <th scope="col" className="px-4 py-3 font-medium">Order</th>
+                      <th scope="col" className="px-4 py-3 font-medium">Source</th>
                       <th scope="col" className="px-4 py-3 text-right font-medium">Amount</th>
                       <th scope="col" className="px-4 py-3 font-medium">Status</th>
                     </tr>
@@ -107,7 +109,11 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                       <tr key={o.id} className="border-b border-border/60 last:border-0">
                         <td className="whitespace-nowrap px-4 py-3 text-fg-muted">{formatDate(o.order_date, { day: "numeric", month: "short" })}</td>
                         {scope === "team" && <td className="px-4 py-3">{o.profiles?.full_name}</td>}
-                        <td className="px-4 py-3">{o.customer_name ?? "—"}</td>
+                        <td className="max-w-[260px] px-4 py-3">
+                          <span className="line-clamp-2">{o.description ?? o.customer_name ?? "—"}</span>
+                          {o.description && o.customer_name && <span className="block text-xs text-fg-subtle">{o.customer_name}</span>}
+                          {o.attachment_path && <a href={`/api/attachments?path=${encodeURIComponent(o.attachment_path)}`} target="_blank" rel="noreferrer" className="text-xs font-medium text-primary hover:underline">View screenshot</a>}
+                        </td>
                         <td className="px-4 py-3 text-fg-muted">{o.category ?? "—"}</td>
                         <td className="px-4 py-3 text-right font-semibold tabular-nums">{formatMoney(o.amount)}</td>
                         <td className="px-4 py-3"><StatusSelect id={o.id} status={o.status} editable={o.recorded_by === viewer.id || viewer.isAdmin} /></td>
@@ -138,7 +144,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
         </div>
         <Card className="h-fit">
           <CardHeader title="Record an order" icon={<Plus className="size-4" />} />
-          <CardBody><OrderForm members={teamMembers} selfId={viewer.id} today={today} /></CardBody>
+          <CardBody><OrderForm members={teamMembers} selfId={viewer.id} today={today} hasLeaders={leaders.length > 0} /></CardBody>
         </Card>
       </div>
     </>

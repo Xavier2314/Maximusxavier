@@ -488,6 +488,28 @@ do $$ declare n int; n2 int; begin
   raise notice 'PASS: prospecting nudges % / rerun %', n, n2;
 end $$;
 
+-- Send to sponsor / team leader
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c1');
+do $$ declare n int; begin
+  assert (select id from public.my_leaders() where relation = 'sponsor') = '00000000-0000-0000-0000-0000000000b1', 'sponsor found';
+  assert (select id from public.my_leaders() where relation = 'team_leader') = '00000000-0000-0000-0000-0000000000a1', 'office team leader found';
+  n := public.share_with_leaders('plan', null, 'My plan', 'Call 10 people', array['sponsor', 'team_leader'], 'Please check');
+  assert n = 2, 'sent to both';
+  raise notice 'PASS: leaders resolved and plan shared';
+end $$;
+select pg_temp.expect_error($$select public.share_with_leaders('goal', gen_random_uuid(), 'x', 'y', array['sponsor'])$$, 'share someone else''s goal');
+select pg_temp.expect_error($$insert into public.shared_items (sender_id, recipient_id, relation, kind, title, body) values (auth.uid(), auth.uid(), 'sponsor', 'plan', 'x', 'y')$$, 'insert shared item directly');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a1');
+do $$ begin
+  assert (select count(*) from public.shared_items where recipient_id = auth.uid()) = 1, 'team leader received it';
+  raise notice 'PASS: team leader inbox';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+do $$ begin
+  assert (select count(*) from public.shared_items) = 0, 'outsider sees nothing';
+  raise notice 'PASS: shared items private';
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

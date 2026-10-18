@@ -92,6 +92,7 @@ export type MonthlyGoal = {
   savings_target: number | null;
   personal_development_target: string | null;
   custom_goals: CustomGoal[];
+  plan_text?: string | null;
   status: GoalStatus;
   reviewer_id: string | null;
   submitted_at: string | null;
@@ -161,6 +162,9 @@ export type Order = {
   status: "pending" | "confirmed" | "delivered" | "cancelled";
   order_date: string;
   notes: string | null;
+  platform?: string | null;
+  description?: string | null;
+  attachment_path?: string | null;
   created_at: string;
 };
 

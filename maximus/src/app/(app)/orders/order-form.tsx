@@ -1,17 +1,29 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
-import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { Paperclip } from "lucide-react";
+import { Field, FormMessage, Input, Select } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { VoiceTextarea } from "@/components/voice";
 import { recordOrderAction } from "./actions";
 
 export const CATEGORIES = ["Wellness", "Nutrition", "Personal care", "Beauty", "Home care", "Accessories", "Other"];
+export const PLATFORMS = [
+  { value: "fiverr", label: "Fiverr" },
+  { value: "upwork", label: "Upwork" },
+  { value: "freelance_other", label: "Other freelance / client work" },
+  { value: "product", label: "Product sale" },
+  { value: "other", label: "Other" },
+] as const;
 
-export function OrderForm({ members, selfId, today }: { members: { id: string; name: string }[]; selfId: string; today: string }) {
+export function OrderForm({ members, selfId, today, hasLeaders }: { members: { id: string; name: string }[]; selfId: string; today: string; hasLeaders: boolean }) {
   const [state, action] = useActionState(recordOrderAction, null);
   const ref = useRef<HTMLFormElement>(null);
+  const [platform, setPlatform] = useState("fiverr");
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [round, setRound] = useState(0);
   const e = state?.errors ?? {};
-  useEffect(() => { if (state?.ok) ref.current?.reset(); }, [state]);
+  useEffect(() => { if (state?.ok) { ref.current?.reset(); setFileName(null); setPlatform("fiverr"); setRound((r) => r + 1); } }, [state]);
 
   return (
     <form ref={ref} action={action} className="space-y-4" noValidate>
@@ -24,39 +36,63 @@ export function OrderForm({ members, selfId, today }: { members: { id: string; n
           </Select>
         </Field>
       ) : <input type="hidden" name="member_id" value={selfId} />}
-      <Field label="Customer" htmlFor="customer_name" optional>
-        <Input id="customer_name" name="customer_name" placeholder="Customer or member name" maxLength={120} />
+      <Field label="Where is the order from?" htmlFor="platform" error={e.platform}>
+        <Select id="platform" name="platform" value={platform} onChange={(ev) => setPlatform(ev.target.value)}>
+          {PLATFORMS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+        </Select>
+      </Field>
+      <Field label="Describe the order" htmlFor="description" error={e.description}
+        hint="Type or tap Speak: the service or product, the client, anything worth knowing.">
+        <VoiceTextarea key={round} id="description" name="description" rows={3} maxLength={2000}
+          placeholder={platform === "product" ? "e.g. 2 packs of the detox tea for Mrs Ade" : "e.g. Logo design for a bakery in Lekki, 3 revisions, delivered in 2 days"} />
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Order amount" htmlFor="amount" error={e.amount}>
+        <Field label="Amount" htmlFor="amount" error={e.amount}>
           <div className="relative">
             <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-subtle">₦</span>
             <Input id="amount" name="amount" inputMode="decimal" placeholder="0" className="pl-8" required />
           </div>
         </Field>
-        <Field label="Business volume" htmlFor="business_volume" optional error={e.business_volume}>
-          <Input id="business_volume" name="business_volume" inputMode="decimal" placeholder="BV" />
+        <Field label="Client / customer" htmlFor="customer_name" optional>
+          <Input id="customer_name" name="customer_name" placeholder="Name or username" maxLength={120} />
         </Field>
-        <Field label="Category" htmlFor="category">
-          <Select id="category" name="category" defaultValue="">
-            <option value="">Choose…</option>
-            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </Select>
-        </Field>
+        {platform === "product" && (
+          <>
+            <Field label="Category" htmlFor="category">
+              <Select id="category" name="category" defaultValue="">
+                <option value="">Choose…</option>
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </Select>
+            </Field>
+            <Field label="Business volume" htmlFor="business_volume" optional error={e.business_volume}>
+              <Input id="business_volume" name="business_volume" inputMode="decimal" placeholder="BV" />
+            </Field>
+          </>
+        )}
         <Field label="Status" htmlFor="status">
-          <Select id="status" name="status" defaultValue="pending">
+          <Select id="status" name="status" defaultValue="confirmed">
             <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="delivered">Delivered</option>
+            <option value="confirmed">Confirmed / in progress</option>
+            <option value="delivered">Delivered / completed</option>
           </Select>
         </Field>
         <Field label="Order date" htmlFor="order_date" error={e.order_date}>
           <Input id="order_date" name="order_date" type="date" max={today} defaultValue={today} />
         </Field>
       </div>
-      <Field label="Notes" htmlFor="notes" optional>
-        <Textarea id="notes" name="notes" rows={2} maxLength={1000} />
+      <Field label="Screenshot or file" htmlFor="attachment" optional error={e.attachment} hint="Screenshot of the order (JPG, PNG, WebP or PDF, up to 10 MB).">
+        <label htmlFor="attachment" className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-fg-muted hover:border-primary">
+          <Paperclip className="size-4" aria-hidden /> {fileName ?? "Attach a screenshot"}
+        </label>
+        <input id="attachment" name="attachment" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="sr-only"
+          onChange={(ev) => setFileName(ev.target.files?.[0]?.name ?? null)} />
       </Field>
+      {hasLeaders && (
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="send_to_leaders" value="1" defaultChecked className="size-4 accent-[var(--primary)]" />
+          Send it to my sponsor and team leader
+        </label>
+      )}
       <SubmitButton className="w-full" pendingLabel="Saving…">Record order</SubmitButton>
     </form>
   );

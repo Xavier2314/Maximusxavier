@@ -1,5 +1,5 @@
 import {
-  BarChart3, Bell, BookOpen, Building2, ClipboardCheck, Compass, Filter, Landmark, Medal, GraduationCap, House, MapPin, Megaphone, Network,
+  BarChart3, Bell, BookOpen, Building2, ClipboardCheck, Compass, Filter, Inbox, Landmark, Medal, GraduationCap, House, MapPin, Megaphone, Network,
   ScrollText, ShieldCheck, ShoppingBag, SlidersHorizontal, Sparkles, Target, Trophy, Users, Wallet, type LucideIcon,
 } from "lucide-react";
 
@@ -14,6 +14,7 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   sparkles: Sparkles,
   compass: Compass,
   funnel: Filter,
+  inbox: Inbox,
   landmark: Landmark,
   medal: Medal,
   graduation: GraduationCap,

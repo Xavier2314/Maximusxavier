@@ -16,6 +16,7 @@ export const NAV: NavSection[] = [
       { href: "/dashboard", label: "Dashboard", icon: "home" },
       { href: "/team", label: "My Team", icon: "network" },
       { href: "/prospects", label: "Prospects", icon: "funnel" },
+      { href: "/inbox", label: "Inbox", icon: "inbox" },
       { href: "/attendance", label: "Attendance", icon: "map-pin" },
       { href: "/goals", label: "Goals", icon: "target" },
       { href: "/evaluations", label: "Evaluations", icon: "clipboard" },
