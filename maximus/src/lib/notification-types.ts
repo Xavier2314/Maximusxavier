@@ -3,6 +3,8 @@ export const NOTIFICATION_TYPES = [
   { key: "support_ticket", label: "Complaints and replies from the admin team", group: "Community" },
   { key: "shared_with_you", label: "Goals, evaluations and orders your team sends you", group: "Team" },
   { key: "goal_submitted", label: "New goal submissions from your team", group: "Team" },
+  { key: "task_assigned", label: "Tasks your leader gives you", group: "Team" },
+  { key: "task_reminder", label: "Morning reminder of today's tasks", group: "Reminders" },
   { key: "prospecting_nudge", label: "Reminders to keep inviting prospects", group: "Reminders" },
   { key: "prospect_update", label: "Prospect replies and AI follow-ups", group: "Growth" },
   { key: "growth_focus", label: "Weekly growth focus (what to work on)", group: "Growth" },

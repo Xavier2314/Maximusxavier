@@ -625,6 +625,52 @@ do $$ begin
   raise notice 'PASS: team leader (own team) and super admin place members in offices';
 end $$;
 
+-- ---------------------------------------------------------------------------
+-- My Why & planner (0020). e2 is now directly under sponsor b1.
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+insert into public.motivations (category, title, shared) values ('family', 'Build my mum a house', true), ('financial', 'Clear my debt', false);
+insert into public.tasks (title, due_date, repeat) values ('Invite 3 people', current_date, 'daily'), ('Read chapter 2', current_date - 1, 'none');
+select pg_temp.expect_error($$insert into public.motivations (user_id, title) values ('00000000-0000-0000-0000-0000000000b1', 'Spoof')$$, 'create motivation for someone else');
+select pg_temp.expect_error($$insert into public.tasks (user_id, title) values ('00000000-0000-0000-0000-0000000000b1', 'Spoof')$$, 'member gives a task to their sponsor');
+do $$ declare v_next uuid; begin
+  v_next := public.complete_task((select id from public.tasks where title = 'Invite 3 people'));
+  assert v_next is not null, 'repeating task scheduled again';
+  assert (select due_date from public.tasks where id = v_next) = current_date + 1, 'next copy is tomorrow';
+  assert public.complete_task((select id from public.tasks where title = 'Read chapter 2')) is null, 'one-off task has no next copy';
+  raise notice 'PASS: planner completes and repeats tasks';
+end $$;
+
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+do $$ begin
+  assert (select count(*) from public.motivations) = 1, 'sponsor sees only the shared motivation';
+  assert (select count(*) from public.tasks) = 0, 'sponsor cannot read member tasks';
+  insert into public.tasks (user_id, title, assigned_by, due_date)
+    values ('00000000-0000-0000-0000-0000000000e2', 'Follow up with 2 prospects', '00000000-0000-0000-0000-0000000000b1', current_date);
+  assert (select count(*) from public.tasks) = 1, 'sponsor sees the task they assigned';
+  update public.tasks set due_date = current_date + 30;
+  assert (select due_date from public.tasks) = current_date, 'only the member reschedules';
+  perform public.encourage_member((select id from public.motivations limit 1), 'So proud of you, keep going!');
+  raise notice 'PASS: sponsor sees shared why, assigns a task, sends encouragement';
+end $$;
+select pg_temp.expect_error($$select public.encourage_member((select id from public.motivations limit 1), '')$$, 'empty encouragement');
+
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select count(*) from public.motivations) = 0, 'outsider sees no motivations';
+  raise notice 'PASS: motivations private outside the team';
+end $$;
+select pg_temp.expect_error($$insert into public.tasks (user_id, title, assigned_by) values ('00000000-0000-0000-0000-0000000000e2', 'x', '00000000-0000-0000-0000-0000000000c2')$$, 'outsider assigns a task');
+
+select pg_temp.act_as(null);
+do $$ declare n int; begin
+  assert exists (select 1 from public.notifications where user_id = '00000000-0000-0000-0000-0000000000e2' and type = 'task_assigned'), 'assigned task notified';
+  assert exists (select 1 from public.notifications where user_id = '00000000-0000-0000-0000-0000000000e2' and type = 'sponsor_feedback'), 'encouragement notified';
+  n := public.run_task_reminders(current_date);
+  assert n >= 1 and public.run_task_reminders(current_date) = 0, 'task reminder once a day';
+  raise notice 'PASS: task notifications';
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

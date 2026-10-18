@@ -17,6 +17,7 @@ export const NAV: NavSection[] = [
   {
     items: [
       { href: "/dashboard", label: "Home", icon: "home" },
+      { href: "/planner", label: "Daily planner", icon: "list-checks" },
       { href: "/attendance", label: "Check in", icon: "map-pin" },
       { href: "/goals", label: "Goals", icon: "target" },
       { href: "/evaluations", label: "Evaluations", icon: "clipboard" },
@@ -36,6 +37,7 @@ export const NAV: NavSection[] = [
   {
     title: "Grow",
     items: [
+      { href: "/why", label: "My Why", icon: "heart" },
       { href: "/growth", label: "Growth focus", icon: "compass" },
       { href: "/leaderboard", label: "Leaderboard", icon: "medal" },
       { href: "/academy", label: "Academy", icon: "graduation" },
@@ -88,7 +90,7 @@ export const isOfficePath = (pathname: string) =>
 
 export const BOTTOM_NAV: NavItem[] = [
   { href: "/dashboard", label: "Home", icon: "home" },
-  { href: "/goals", label: "Goals", icon: "target" },
+  { href: "/planner", label: "Planner", icon: "list-checks" },
   { href: "/attendance", label: "Check in", icon: "map-pin" },
   { href: "/prospects", label: "Prospects", icon: "funnel" },
 ];
@@ -124,6 +126,8 @@ export function visibleOfficeNav(perms: Set<string>, managesOffice: boolean, rol
 /** Shortcuts used by the "+ New" menu and search. */
 export const QUICK_ACTIONS: { href: string; label: string; icon: string; keywords?: string }[] = [
   { href: "/attendance", label: "Check in", icon: "map-pin", keywords: "attendance office arrive" },
+  { href: "/planner", label: "Add a task", icon: "list-checks", keywords: "todo plan today reminder" },
+  { href: "/why", label: "My Why", icon: "heart", keywords: "motivation reason dream family" },
   { href: "/prospects", label: "Add a prospect", icon: "funnel", keywords: "lead contact invite" },
   { href: "/orders", label: "Record an order", icon: "bag", keywords: "fiverr upwork sale screenshot" },
   { href: "/evaluations/new", label: "Complete evaluation", icon: "clipboard", keywords: "5 day report" },

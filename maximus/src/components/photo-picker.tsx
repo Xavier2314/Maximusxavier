@@ -9,7 +9,7 @@ type State = { ok: boolean; message: string } | null;
  * Phone photos are often 3–8 MB (and HEIC on iPhone). Draw the picture onto a
  * canvas, crop it square and save it as a small JPEG before uploading.
  */
-async function shrinkImage(file: File, size = 512): Promise<File> {
+export async function shrinkImage(file: File, size = 512, square = true): Promise<File> {
   const url = URL.createObjectURL(file);
   try {
     const img = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -18,14 +18,17 @@ async function shrinkImage(file: File, size = 512): Promise<File> {
       i.onerror = reject;
       i.src = url;
     });
-    const side = Math.min(img.naturalWidth, img.naturalHeight);
-    const out = Math.min(size, side);
+    const w = img.naturalWidth, h = img.naturalHeight;
+    const side = Math.min(w, h);
+    const scale = Math.min(1, size / (square ? side : Math.max(w, h)));
+    const outW = Math.round((square ? side : w) * scale), outH = Math.round((square ? side : h) * scale);
     const canvas = document.createElement("canvas");
-    canvas.width = out;
-    canvas.height = out;
+    canvas.width = outW;
+    canvas.height = outH;
     const ctx = canvas.getContext("2d");
     if (!ctx) return file;
-    ctx.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, out, out);
+    if (square) ctx.drawImage(img, (w - side) / 2, (h - side) / 2, side, side, 0, 0, outW, outH);
+    else ctx.drawImage(img, 0, 0, outW, outH);
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
     return blob ? new File([blob], "photo.jpg", { type: "image/jpeg" }) : file;
   } finally {

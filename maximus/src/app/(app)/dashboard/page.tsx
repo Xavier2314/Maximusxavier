@@ -1,8 +1,10 @@
 import Link from "next/link";
 import {
   ArrowRight, Bell, Building2, Cake, Compass, ListChecks, MessageCircle, MessageSquare, Phone, Quote, CalendarClock, ClipboardCheck, Flame,
-  GraduationCap, MapPin, PiggyBank, Sparkles, Target, TrendingUp,
+  GraduationCap, Heart, ListTodo, MapPin, PiggyBank, Sparkles, Target, TrendingUp,
 } from "lucide-react";
+import { TaskQuickAdd, TaskRow } from "../planner/task-ui";
+import type { Motivation, Task } from "@/lib/planner";
 import { FocusPopup } from "@/components/focus-popup";
 import { DailyChecklist } from "./checklist";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
@@ -44,6 +46,7 @@ export default async function DashboardPage() {
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { data: balances },
     { data: notifications }, { data: birthdays }, { data: lessonsDone }, { data: publishedLessons }, { data: focusData },
     { data: checklistItems }, { data: checklistDone }, { data: thought }, { data: pulse }, { data: followUps },
+    { data: todayTasks }, { data: whys },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -64,7 +67,15 @@ export default async function DashboardPage() {
     supabase.from("prospects").select("id, full_name, phone, next_follow_up_at, stage").eq("owner_id", viewer.id)
       .not("next_follow_up_at", "is", null).lte("next_follow_up_at", `${today}T23:59:59`).eq("opted_out", false)
       .not("stage", "in", "(joined,customer,not_now)").order("next_follow_up_at").limit(4),
+    supabase.from("tasks").select("*").eq("user_id", viewer.id).is("completed_at", null).lte("due_date", today)
+      .order("due_date").order("priority").limit(6).returns<Task[]>(),
+    supabase.from("motivations").select("*").eq("user_id", viewer.id).eq("show_on_dashboard", true).returns<Motivation[]>(),
   ]);
+  // A different reason each day.
+  const dayIndex = Math.floor(new Date(`${today}T00:00:00Z`).getTime() / 86400000);
+  const why = whys && whys.length ? whys[dayIndex % whys.length] : null;
+  const whyImage = why?.image_path
+    ? (await supabase.storage.from("motivations").createSignedUrl(why.image_path, 3600)).data?.signedUrl ?? null : null;
   const officePulse = pulse as { office: { name: string }; open_today: boolean; members: number; present_now: number; checked_in_today: number } | null;
   const growth = focusData as GrowthFocus | null;
   const focusTop = topFocus(growth);
@@ -244,6 +255,38 @@ export default async function DashboardPage() {
               <p className="py-4 text-center text-sm text-fg-muted">
                 {goal && goal.status !== "draft" ? "No feedback yet. Your sponsor will reply here." : "Submit your goals and your sponsor's advice will show up here."}
               </p>
+            )}
+          </CardBody>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader title="Today's tasks" icon={<ListTodo className="size-4" />}
+            description={(todayTasks ?? []).length ? "Tap the circle when it's done" : "Plan your day in a minute"}
+            action={<Link href="/planner" className="text-sm font-medium text-primary hover:underline">Planner</Link>} />
+          <CardBody className="pt-2">
+            {(todayTasks ?? []).length > 0 ? (
+              <ul className="divide-y divide-border/60">
+                {(todayTasks ?? []).map((t) => <TaskRow key={t.id} task={t} today={today} />)}
+              </ul>
+            ) : (
+              <TaskQuickAdd today={today} compact />
+            )}
+          </CardBody>
+        </Card>
+        <Card className="relative overflow-hidden">
+          {whyImage && <img src={whyImage} alt="" className="h-36 w-full object-cover" />}
+          <CardHeader title="My Why" icon={<Heart className="size-4" />}
+            action={<Link href="/why" className="text-sm font-medium text-primary hover:underline">{why ? "All" : "Write it"}</Link>} />
+          <CardBody>
+            {why ? (
+              <>
+                <p className="text-lg font-semibold leading-snug tracking-tight">{why.title}</p>
+                {why.body && <p className="mt-2 line-clamp-4 text-sm text-fg-muted">{why.body}</p>}
+              </>
+            ) : (
+              <p className="text-sm text-fg-muted">Who are you doing this for? Write it down and see it here every day.</p>
             )}
           </CardBody>
         </Card>

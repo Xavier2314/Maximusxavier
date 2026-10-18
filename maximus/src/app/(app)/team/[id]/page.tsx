@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, CalendarCheck, Compass, ClipboardCheck, Flame, History, Mail, Phone, ShieldCheck, ShoppingBag, Target } from "lucide-react";
+import { ArrowLeft, CalendarCheck, Compass, ClipboardCheck, Flame, Heart, History, ListChecks, Mail, Phone, ShieldCheck, ShoppingBag, Target } from "lucide-react";
 import { TrendLines } from "@/components/charts";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -11,6 +11,9 @@ import { topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
 import type { Attendance, Evaluation, GoalProgress, MonthlyGoal, Order, Profile, RoleKey, TeamMemberStat } from "@/lib/types";
 import { MemberManage } from "./member-manage";
+import { TaskQuickAdd } from "../../planner/task-ui";
+import { Encourage } from "../../why/why-ui";
+import { WHY_CATEGORIES, type Motivation, type Task } from "@/lib/planner";
 import { PositionSwitcher } from "@/components/position-switcher";
 import { currentPosition } from "@/lib/positions";
 import { OfficePlacement } from "./office-placement";
@@ -42,6 +45,12 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
   const inDownline = Boolean(link);
   const canEdit = inDownline || viewer.can("manage_roles");
   const canPlace = viewer.roles.includes("super_admin") || (viewer.roles.includes("team_leader") && inDownline);
+  const canAssign = inDownline && (viewer.can("view_direct_downlines") || viewer.can("view_team_dashboard"));
+  const [{ data: sharedWhys }, { data: assigned }] = await Promise.all([
+    supabase.from("motivations").select("*").eq("user_id", id).eq("shared", true).order("created_at", { ascending: false }).returns<Motivation[]>(),
+    canAssign ? supabase.from("tasks").select("*").eq("user_id", id).eq("assigned_by", viewer.id).order("created_at", { ascending: false }).limit(5).returns<Task[]>()
+      : Promise.resolve({ data: [] as Task[] }),
+  ]);
   const [{ data: subTeam }, { data: officeList }] = await Promise.all([
     canEdit ? supabase.rpc("team_member_stats", { p_root: id, p_max_depth: null }) : Promise.resolve({ data: [] }),
     canPlace ? supabase.rpc("list_public_offices") : Promise.resolve({ data: [] }),
@@ -108,6 +117,43 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
           {canEdit && <MemberManage member={{ id: member.id, name: member.full_name, avatar: member.avatar_url }} team={team} />}
           {canPlace && <OfficePlacement memberId={member.id} firstName={firstName} current={member.office_id}
             offices={(officeList as { id: string; name: string }[] | null) ?? []} />}
+        </div>
+      )}
+
+      {(canAssign || (sharedWhys ?? []).length > 0) && (
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          {canAssign && (
+            <Card>
+              <CardHeader title={`Give ${firstName} a task`} icon={<ListChecks className="size-4" />} description="It appears in their planner and they get a notification." />
+              <CardBody className="space-y-4">
+                <TaskQuickAdd today={todayIn(viewer.profile.timezone)} memberId={member.id} compact />
+                {(assigned ?? []).length > 0 && (
+                  <ul className="space-y-1.5 border-t border-border pt-3 text-sm">
+                    {(assigned ?? []).map((t) => (
+                      <li key={t.id} className="flex items-center justify-between gap-2">
+                        <span className={t.completed_at ? "text-fg-subtle line-through" : ""}>{t.title}</span>
+                        <Badge tone={t.completed_at ? "green" : "neutral"}>{t.completed_at ? "Done" : t.due_date ? formatDate(t.due_date, { day: "numeric", month: "short" }) : "Open"}</Badge>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardBody>
+            </Card>
+          )}
+          {(sharedWhys ?? []).length > 0 && (
+            <Card>
+              <CardHeader title={`${firstName}'s why`} icon={<Heart className="size-4" />} description="Shared with you. Use it to encourage, never to pressure." />
+              <CardBody className="space-y-4">
+                {(sharedWhys ?? []).map((w) => (
+                  <div key={w.id} className="rounded-2xl bg-surface-muted/70 p-4">
+                    <p className="font-semibold">{WHY_CATEGORIES.find((c) => c.key === w.category)?.emoji} {w.title}</p>
+                    {w.body && <p className="mt-1 line-clamp-3 text-sm text-fg-muted">{w.body}</p>}
+                    <Encourage motivationId={w.id} firstName={firstName} />
+                  </div>
+                ))}
+              </CardBody>
+            </Card>
+          )}
         </div>
       )}
 
