@@ -5,7 +5,7 @@ import { requireViewer } from "@/lib/auth";
 import { loadTimerData } from "./data";
 import { FocusTimer, type TimerMode } from "./focus-timer";
 
-export function BackToTools({ c }: { c?: "focus" | "goals" | "accountability" }) {
+export function BackToTools({ c }: { c?: "focus" | "goals" | "accountability" | "brain" }) {
   return <LinkButton href={c ? `/tools?c=${c}` : "/tools"} variant="ghost" size="sm"><ArrowLeft className="size-4" aria-hidden /> Back</LinkButton>;
 }
 

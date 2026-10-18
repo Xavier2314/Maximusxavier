@@ -42,7 +42,7 @@ const SECTIONS: Section[] = [
   },
   {
     slug: "brain", icon: Brain, title: "Brain gym", blurb: "Fun games for focus, memory and problem-solving. Brain training, not a medical test.", tone: "bg-warning-soft text-warning",
-    tools: [{ label: "20 brain games", desc: "Chess, Sudoku, 2048, memory and more", icon: Brain }],
+    tools: [{ href: "/tools/brain", label: "20 brain games", desc: "Chess, Sudoku, 2048, memory, maze and more", icon: Brain }],
   },
   {
     slug: "accountability", icon: Users, title: "Accountability", blurb: "Pair up with a partner who keeps you on track.", tone: "bg-primary-soft text-primary",
@@ -125,12 +125,12 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {SECTIONS.map((s) => (
-            <Link key={s.slug} href={`/tools?c=${s.slug}`} className="card flex items-center gap-4 p-5 transition-shadow hover:shadow-md">
+            <Link key={s.slug} href={s.slug === "brain" ? "/tools/brain" : `/tools?c=${s.slug}`} className="card flex items-center gap-4 p-5 transition-shadow hover:shadow-md">
               <span className={cn("grid size-12 shrink-0 place-items-center rounded-2xl", s.tone)}><s.icon className="size-6" aria-hidden /></span>
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">{s.title}</span>
                 <span className="block text-sm text-fg-muted">{s.blurb}</span>
-                <span className="mt-1 block text-xs text-fg-subtle">{s.tools.some((t) => t.href) ? `${s.tools.filter((t) => t.href).length} tools inside` : "Coming in the next update"}</span>
+                <span className="mt-1 block text-xs text-fg-subtle">{s.tools.some((t) => t.href) ? (s.slug === "brain" ? "20 games inside" : `${s.tools.filter((t) => t.href).length} tools inside`) : "Coming in the next update"}</span>
               </span>
               <ChevronRight className="size-5 shrink-0 text-fg-subtle" aria-hidden />
             </Link>
