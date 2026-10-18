@@ -8,6 +8,7 @@ import { Checkbox, Field, FormMessage, Input, Select } from "@/components/ui/for
 import { PasswordInput } from "@/components/ui/password-input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { createClient } from "@/lib/supabase/client";
+import { SIGNUP_RANKS } from "@/lib/ranks";
 import { cn } from "@/lib/utils";
 import { registerAction } from "../actions";
 
@@ -155,12 +156,7 @@ export function RegisterForm({ offices, referralCode, uplineCode }: { offices: {
         <Field label="Your status" htmlFor="business_rank" error={errors.business_rank}>
           <Select id="business_rank" name="business_rank" required defaultValue="">
             <option value="" disabled>Choose your status</option>
-            <option value="distributor">Distributor</option>
-            <option value="manager">Manager</option>
-            <option value="senior_manager">Senior Manager</option>
-            <option value="executive_manager">Executive Manager</option>
-            <option value="director">Director</option>
-            <option value="emerald_director">Emerald Director</option>
+            {SIGNUP_RANKS.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
           </Select>
         </Field>
         <Field label="Sponsor referral code or Member ID" htmlFor="referral_code" error={errors.referral_code}

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
 import { env } from "@/lib/env";
+import { SIGNUP_RANKS } from "@/lib/ranks";
 
 export type AuthState = { ok?: boolean; message?: string; errors?: Record<string, string[] | undefined> } | null;
 
@@ -19,10 +20,7 @@ const registerSchema = z.object({
     return age >= 16 && age <= 100;
   }, "You must be at least 16 years old"),
   gender: z.enum(["female", "male", "other", "prefer_not_to_say", ""]).optional(),
-  business_rank: z.enum(
-    ["distributor", "manager", "senior_manager", "executive_manager", "director", "emerald_director"],
-    { errorMap: () => ({ message: "Choose your status" }) },
-  ),
+  business_rank: z.string().refine((k) => SIGNUP_RANKS.some((r) => r.key === k), "Choose your status"),
   office_id: z.string().uuid("Choose your office"),
   referral_code: z.string().trim().max(20).optional(),
   upline_member_id: z.string().trim().max(20).optional(),

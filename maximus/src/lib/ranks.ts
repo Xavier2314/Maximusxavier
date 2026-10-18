@@ -13,5 +13,8 @@ export const RANKS = [
   ...[1, 2, 3, 4, 5].map((n) => ({ key: `diamond_director_${n}`, label: `${["One", "Two", "Three", "Four", "Five"][n - 1]} Diamond Director` })),
 ] as const;
 
+/** Statuses offered at sign-up: Distributor and up. */
+export const SIGNUP_RANKS = RANKS.slice(RANKS.findIndex((r) => r.key === "distributor"));
+
 export type RankKey = (typeof RANKS)[number]["key"];
 export const rankLabel = (key: string | null | undefined) => RANKS.find((r) => r.key === key)?.label ?? null;
