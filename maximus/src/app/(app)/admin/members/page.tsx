@@ -4,7 +4,9 @@ import { LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/form";
 import { Avatar, Badge, PageHeader } from "@/components/ui/misc";
+import { PositionSwitcher } from "@/components/position-switcher";
 import { ROLE_LABELS, requireViewer } from "@/lib/auth";
+import { currentPosition } from "@/lib/positions";
 import { createClient } from "@/lib/supabase/server";
 import type { RoleKey } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
@@ -38,6 +40,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
     q.returns<Row[]>(),
     supabase.from("offices").select("id, name").order("name"),
   ]);
+  const canSwitch = viewer.can("manage_roles");
   const pages = Math.max(1, Math.ceil((count ?? 0) / PAGE));
   const qs = (p: Record<string, string | number>) => `/admin/members?${new URLSearchParams({ ...Object.fromEntries(Object.entries(sp).filter(([, v]) => v)), ...Object.fromEntries(Object.entries(p).map(([k, v]) => [k, String(v)])) } as Record<string, string>)}`;
 
@@ -57,11 +60,11 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
           <button className="h-11 rounded-xl bg-primary px-4 text-sm font-medium text-white">Filter</button>
         </form>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-sm">
+          <table className="w-full min-w-[900px] text-sm">
             <thead className="text-left text-xs uppercase tracking-wide text-fg-subtle">
               <tr className="border-b border-border">
                 <th scope="col" className="px-4 py-3 font-medium">Member</th><th scope="col" className="px-4 py-3 font-medium">Office</th>
-                <th scope="col" className="px-4 py-3 font-medium">Roles</th><th scope="col" className="px-4 py-3 font-medium">Joined</th><th scope="col" className="px-4 py-3 font-medium">Status</th>
+                <th scope="col" className="px-4 py-3 font-medium">Role</th><th scope="col" className="px-4 py-3 font-medium">Joined</th><th scope="col" className="px-4 py-3 font-medium">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -74,7 +77,15 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-fg-muted">{m.offices?.name ?? "—"}</td>
-                  <td className="px-4 py-3"><div className="flex flex-wrap gap-1">{m.user_roles.map((r) => r.roles?.key).filter((k): k is RoleKey => Boolean(k) && k !== "member" && k !== "downline").map((k) => <Badge key={k} tone={["super_admin", "executive_admin", "office_admin", "director", "team_leader", "earnings_manager"].includes(k) ? "blue" : "neutral"}>{ROLE_LABELS[k]}</Badge>)}</div></td>
+                  <td className="px-4 py-3">
+                    {canSwitch ? (
+                      <PositionSwitcher compact userId={m.id} name={m.full_name} disabled={m.id === viewer.id}
+                        current={currentPosition(m.user_roles.map((r) => r.roles?.key ?? ""))}
+                        earningsManager={m.user_roles.some((r) => r.roles?.key === "earnings_manager")} />
+                    ) : (
+                      <div className="flex flex-wrap gap-1">{m.user_roles.map((r) => r.roles?.key).filter((k): k is RoleKey => Boolean(k) && k !== "member" && k !== "downline").map((k) => <Badge key={k} tone={["super_admin", "executive_admin", "office_admin", "director", "team_leader", "earnings_manager"].includes(k) ? "blue" : "neutral"}>{ROLE_LABELS[k]}</Badge>)}</div>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-fg-muted">{formatDate(m.joined_at)}</td>
                   <td className="px-4 py-3"><Badge tone={m.status === "active" ? "green" : "red"}>{m.status}</Badge></td>
                 </tr>

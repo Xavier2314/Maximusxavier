@@ -6,6 +6,8 @@ import { Avatar, Badge } from "@/components/ui/misc";
 import { ROLE_LABELS, requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile, RoleKey } from "@/lib/types";
+import { PositionSwitcher } from "@/components/position-switcher";
+import { currentPosition } from "@/lib/positions";
 import { formatDate, formatRelative } from "@/lib/utils";
 import { MemberControls } from "./member-controls";
 
@@ -43,6 +45,13 @@ export default async function ManageMemberPage({ params }: { params: Promise<{ i
         <Card className="lg:col-span-2">
           <CardHeader title="Roles & access" icon={<ShieldCheck className="size-4" />} description="Sponsor, Upline and Downline are assigned automatically from the team tree." />
           <CardBody>
+            {viewer.can("manage_roles") && (
+              <div className="mb-8 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
+                <p className="mb-3 text-sm font-semibold">Position</p>
+                <PositionSwitcher userId={id} name={m.full_name} disabled={id === viewer.id}
+                  current={currentPosition([...held])} earningsManager={held.has("earnings_manager")} />
+              </div>
+            )}
             <MemberControls userId={id} isSelf={id === viewer.id} status={m.status} sponsorLabel={sponsor ? `${sponsor.full_name} (${sponsor.member_id})` : "None"}
               roles={((allRoles ?? []) as { key: RoleKey; name: string; rank: number }[]).map((r) => ({ ...r, held: held.has(r.key) }))}
               offices={((offices ?? []) as { id: string; name: string }[])} memberOffices={((memberships ?? []) as { office_id: string }[]).map((x) => x.office_id)} />

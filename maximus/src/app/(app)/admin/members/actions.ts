@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { POSITION_KEYS } from "@/lib/positions";
 import { friendlyError } from "@/lib/utils";
 
 type Result = { ok: boolean; message: string };
@@ -47,4 +48,33 @@ export async function setHomeOfficeAction(userId: string, officeId: string): Pro
   if (error) return { ok: false, message: friendlyError(error) };
   revalidatePath(`/admin/members/${userId}`);
   return { ok: true, message: "Office assigned." };
+}
+
+/**
+ * Switch a member's position in one step (e.g. Admin → Super Admin): grant the new
+ * position, then remove the others. assign_role/revoke_role enforce who may do what.
+ */
+export async function setPositionAction(userId: string, position: string, earningsManager: boolean): Promise<Result> {
+  if (position !== "none" && !(POSITION_KEYS as string[]).includes(position)) return { ok: false, message: "Choose a position." };
+  const supabase = await createClient();
+  const { data: rows } = await supabase.from("user_roles").select("roles(key)").eq("user_id", userId);
+  const held = new Set(((rows ?? []) as unknown as { roles: { key: string } | null }[]).map((r) => r.roles?.key).filter(Boolean) as string[]);
+
+  if (position !== "none" && !held.has(position)) {
+    const { error } = await supabase.rpc("assign_role", { target: userId, role_key: position });
+    if (error) return { ok: false, message: friendlyError(error) };
+  }
+  for (const key of POSITION_KEYS.filter((k) => k !== position && held.has(k))) {
+    const { error } = await supabase.rpc("revoke_role", { target: userId, role_key: key });
+    if (error) return { ok: false, message: friendlyError(error) };
+  }
+  if (earningsManager !== held.has("earnings_manager")) {
+    const { error } = earningsManager
+      ? await supabase.rpc("assign_role", { target: userId, role_key: "earnings_manager" })
+      : await supabase.rpc("revoke_role", { target: userId, role_key: "earnings_manager" });
+    if (error) return { ok: false, message: friendlyError(error) };
+  }
+  revalidatePath("/admin/members", "layout");
+  revalidatePath(`/team/${userId}`);
+  return { ok: true, message: "Role updated. It applies the next time they open the app." };
 }

@@ -80,7 +80,7 @@ export const ROLE_LABELS: Record<RoleKey, string> = {
   earnings_manager: "Earnings Manager",
   director: "Director",
   office_admin: "Office Admin",
-  executive_admin: "Executive Admin",
+  executive_admin: "Admin",
   super_admin: "Super Admin",
 };
 

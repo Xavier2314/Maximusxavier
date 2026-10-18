@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, CalendarCheck, Compass, ClipboardCheck, Flame, History, Mail, Phone, ShoppingBag, Target } from "lucide-react";
+import { ArrowLeft, CalendarCheck, Compass, ClipboardCheck, Flame, History, Mail, Phone, ShieldCheck, ShoppingBag, Target } from "lucide-react";
 import { TrendLines } from "@/components/charts";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -11,6 +11,8 @@ import { topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
 import type { Attendance, Evaluation, GoalProgress, MonthlyGoal, Order, Profile, RoleKey, TeamMemberStat } from "@/lib/types";
 import { MemberManage } from "./member-manage";
+import { PositionSwitcher } from "@/components/position-switcher";
+import { currentPosition } from "@/lib/positions";
 import { OfficePlacement } from "./office-placement";
 import { formatDate, formatMoney, formatRelative, formatTime, monthStart, percent, todayIn } from "@/lib/utils";
 
@@ -92,8 +94,17 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
         </div>
       </section>
 
-      {member.status === "active" && (canEdit || canPlace) && (
+      {member.status === "active" && (canEdit || canPlace || viewer.can("manage_roles")) && (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          {viewer.can("manage_roles") && (
+            <Card>
+              <CardHeader title="Role" icon={<ShieldCheck className="size-4" />} description={`Switch ${firstName}'s position`} />
+              <CardBody>
+                <PositionSwitcher userId={member.id} name={member.full_name} current={currentPosition(roleKeys)}
+                  earningsManager={roleKeys.includes("earnings_manager")} />
+              </CardBody>
+            </Card>
+          )}
           {canEdit && <MemberManage member={{ id: member.id, name: member.full_name, avatar: member.avatar_url }} team={team} />}
           {canPlace && <OfficePlacement memberId={member.id} firstName={firstName} current={member.office_id}
             offices={(officeList as { id: string; name: string }[] | null) ?? []} />}
