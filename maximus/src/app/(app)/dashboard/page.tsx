@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
-  ArrowRight, Bell, Building2, Cake, Compass, ListChecks, MessageCircle, MessageSquare, Phone, Quote, CalendarClock, ClipboardCheck, Flame,
-  GraduationCap, Heart, ListTodo, MapPin, PiggyBank, Sparkles, Target, TrendingUp,
+  ArrowRight, Bell, Building2, Cake, Compass, ListChecks, MessageCircle, MessageSquare, Phone, Quote, ClipboardCheck,
+  GraduationCap, Heart, ListTodo, PiggyBank, Sparkles, Target, TrendingUp,
 } from "lucide-react";
 import { TaskQuickAdd, TaskRow } from "../planner/task-ui";
 import type { Motivation, Task } from "@/lib/planner";
@@ -10,8 +10,11 @@ import { DailyChecklist } from "./checklist";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
-import { Avatar, Badge, EmptyState, Progress, ProgressRing, StatCard } from "@/components/ui/misc";
-import { requireViewer } from "@/lib/auth";
+import { Avatar, Badge, EmptyState, Progress, StatCard } from "@/components/ui/misc";
+import { ROLE_LABELS, primaryRole, requireViewer } from "@/lib/auth";
+import { motivationFor } from "@/lib/motivation";
+import { rankLabel } from "@/lib/ranks";
+import { WelcomeHero } from "./welcome-hero";
 import { FOCUS, topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
 import type { AccountBalance, Attendance, GoalProgress, MonthlyGoal, Notification } from "@/lib/types";
@@ -29,9 +32,8 @@ function isoWeek(day: string) {
   return `${d.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 
-function greeting(tz: string) {
-  const h = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: tz }).format(new Date()));
-  return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+function hourIn(tz: string) {
+  return Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: tz }).format(new Date())) % 24;
 }
 
 export default async function DashboardPage() {
@@ -110,48 +112,17 @@ export default async function DashboardPage() {
     : 0;
   const firstName = viewer.profile.full_name.split(" ")[0];
   const checkedIn = openAttendance && !openAttendance.check_out_at;
+  const role = primaryRole(viewer.roles);
 
   return (
     <div className="space-y-6">
-      {/* Hero */}
-      <section className="hero-gradient relative overflow-hidden rounded-[1.75rem] p-6 text-white sm:p-8 animate-rise">
-        <div className="wedge absolute -right-6 -top-4 h-[74px] w-[100px] scale-[2.4] bg-brand-green/25" aria-hidden />
-        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-white/70">{greeting(tz)},</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">{firstName} 👋</h1>
-            <p className="mt-2 text-white/70">
-              {formatDate(today, { weekday: "long", day: "numeric", month: "long" }, tz)} · Member {viewer.profile.member_id}
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {checkedIn ? (
-                <span className="inline-flex h-11 items-center gap-2 rounded-xl bg-white/10 px-4 text-sm ring-1 ring-white/20">
-                  <span className="size-2 rounded-full bg-brand-green" aria-hidden /> Checked in at {formatTime(openAttendance.check_in_at, tz)}
-                </span>
-              ) : (
-                <LinkButton href="/attendance" variant="lime"><MapPin className="size-4" aria-hidden /> Check in</LinkButton>
-              )}
-              {!evaluation && (
-                <LinkButton href="/evaluations/new" variant="outline" className="border-white/25 bg-white/5 text-white hover:bg-white/10">
-                  <ClipboardCheck className="size-4" aria-hidden /> Complete evaluation
-                </LinkButton>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-5">
-            <ProgressRing value={goalPct} size={112}>
-              <div>
-                <p className="text-2xl font-bold">{goalPct}%</p>
-                <p className="text-[11px] text-white/60">month goals</p>
-              </div>
-            </ProgressRing>
-            <div className="space-y-3 text-sm">
-              <p className="flex items-center gap-2"><Flame className="size-4 text-brand-lime" aria-hidden /><span><b>{(streak as number | null) ?? 0}</b> day streak</span></p>
-              <p className="flex items-center gap-2"><CalendarClock className="size-4 text-brand-lime" aria-hidden /><span>Next evaluation <b>{formatDate(nextEvaluationDate(today), { day: "numeric", month: "short" })}</b></span></p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <WelcomeHero
+        firstName={firstName} avatar={viewer.profile.avatar_url} hour={hourIn(tz)} memberId={viewer.profile.member_id}
+        dateLabel={formatDate(today, { weekday: "long", day: "numeric", month: "long" }, tz)}
+        rank={rankLabel(viewer.profile.business_rank)} role={role === "member" ? null : ROLE_LABELS[role]}
+        streak={(streak as number | null) ?? 0} checkedInAt={checkedIn ? formatTime(openAttendance.check_in_at, tz) : null}
+        evaluationDue={!evaluation} nextEvaluation={formatDate(nextEvaluationDate(today), { day: "numeric", month: "short" })}
+        goalPct={goalPct} hasGoals={goalRows.length > 0} word={motivationFor(today)} />
 
       <FocusPopup week={focusWeek} areas={focusTop.map((a) => ({
         key: a.key, title: FOCUS[a.key].title, why: FOCUS[a.key].why(a, "You"), tip: FOCUS[a.key].tips[0],
