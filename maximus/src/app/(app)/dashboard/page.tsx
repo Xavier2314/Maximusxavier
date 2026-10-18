@@ -16,6 +16,8 @@ import { motivationFor } from "@/lib/motivation";
 import { rankLabel } from "@/lib/ranks";
 import { WelcomeHero } from "./welcome-hero";
 import { WhyStrip } from "./why-strip";
+import { FeaturedHomeCard } from "@/components/featured/featured-video";
+import { featuredFrom } from "@/lib/featured";
 import { FOCUS, topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
 import type { AccountBalance, Attendance, GoalProgress, MonthlyGoal, Notification } from "@/lib/types";
@@ -49,7 +51,7 @@ export default async function DashboardPage() {
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { data: balances },
     { data: notifications }, { data: birthdays }, { data: lessonsDone }, { data: publishedLessons }, { data: focusData },
     { data: checklistItems }, { data: checklistDone }, { data: thought }, { data: pulse }, { data: followUps },
-    { data: todayTasks }, { data: whys },
+    { data: todayTasks }, { data: whys }, { data: featuredSetting },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -73,7 +75,9 @@ export default async function DashboardPage() {
     supabase.from("tasks").select("*").eq("user_id", viewer.id).is("completed_at", null).lte("due_date", today)
       .order("due_date").order("priority").limit(6).returns<Task[]>(),
     supabase.from("motivations").select("*").eq("user_id", viewer.id).eq("show_on_dashboard", true).returns<Motivation[]>(),
+    supabase.from("app_settings").select("value").eq("key", "featured_video").maybeSingle(),
   ]);
+  const featured = featuredFrom(featuredSetting?.value);
   // A different reason each day.
   const dayIndex = Math.floor(new Date(`${today}T00:00:00Z`).getTime() / 86400000);
   // Today's reason first, then the rest.
@@ -134,6 +138,8 @@ export default async function DashboardPage() {
         streak={(streak as number | null) ?? 0} checkedInAt={checkedIn ? formatTime(openAttendance.check_in_at, tz) : null}
         evaluationDue={!evaluation} nextEvaluation={formatDate(nextEvaluationDate(today), { day: "numeric", month: "short" })}
         goalPct={goalPct} hasGoals={goalRows.length > 0} word={motivationFor(today)} />
+
+      {featured && <FeaturedHomeCard video={featured} />}
 
       <WhyStrip whys={orderedWhys} images={whyImages} today={today} />
 

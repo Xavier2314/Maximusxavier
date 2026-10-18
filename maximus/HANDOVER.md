@@ -88,6 +88,9 @@ them into Supabase > SQL Editor.
   "Watch together" syncs viewers to the host over Supabase Realtime broadcast. Rooms are read on the
   server with the service role; views are counted by `watch_room_viewed()` (service role only).
 
+- Featured video: a Super Admin sets it at /admin/featured-video (app_settings key `featured_video`).
+  Everyone sees it on Home, in the side menu, and once as a pop-up per new video (if pop-up is on).
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.

@@ -1,6 +1,8 @@
 "use client";
 
 import { PushPrompt } from "@/components/push-prompt";
+import { FeaturedPopup, FeaturedSideBox } from "@/components/featured/featured-video";
+import type { FeaturedVideo } from "@/lib/featured";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -115,8 +117,8 @@ function UserCard({ user, signOut }: { user: ShellUser; signOut: () => void }) {
   );
 }
 
-export function AppShell({ sections: memberSections, office = null, brands, platformName, user, unread, signOut, announcements = [], children }: {
-  sections: NavSection[]; office?: OfficeView; brands: { me: Brand; office: Brand }; platformName: string;
+export function AppShell({ sections: memberSections, office = null, brands, platformName, user, unread, signOut, announcements = [], featured = null, children }: {
+  sections: NavSection[]; office?: OfficeView; brands: { me: Brand; office: Brand }; platformName: string; featured?: FeaturedVideo | null;
   user: ShellUser; unread: number; signOut: () => void; announcements?: BarAnnouncement[]; children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -152,6 +154,7 @@ export function AppShell({ sections: memberSections, office = null, brands, plat
         <div className={cn("scrollbar-none flex-1 overflow-y-auto", office ? "mt-6" : "mt-8")}>
           <NavLinks sections={sections} pathname={pathname} />
         </div>
+        {featured && <FeaturedSideBox video={featured} />}
         <UserCard user={user} signOut={signOut} />
         {!brand.isDefault && !brand.whiteLabel && brand.name !== platformName && (
           <p className="mt-3 text-center text-[11px] text-white/35">Powered by {platformName}</p>
@@ -192,6 +195,7 @@ export function AppShell({ sections: memberSections, office = null, brands, plat
       <main id="main" className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:pb-12"><PushPrompt />{children}</main>
       <CommandPalette sections={allSections} />
       <ViewportFix />
+      {featured && <FeaturedPopup video={featured} />}
 
       {/* Mobile bottom navigation */}
       <nav aria-label="Quick" className="bottom-bar safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-bg-elevated/90 backdrop-blur-xl lg:hidden">
@@ -242,6 +246,7 @@ export function AppShell({ sections: memberSections, office = null, brands, plat
               <Link href="/settings" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-white/70 hover:bg-white/5">
                 <Settings className="size-[18px]" aria-hidden /> Settings
               </Link>
+              {featured && <div onClick={() => setMenuOpen(false)}><FeaturedSideBox video={featured} /></div>}
               <UserCard user={user} signOut={signOut} />
             </div>
           </div>

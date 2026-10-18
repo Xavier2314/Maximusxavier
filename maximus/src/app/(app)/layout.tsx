@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { ChatWidget } from "@/components/chat-widget";
 import { AppShell } from "@/components/shell/app-shell";
+import { featuredFrom } from "@/lib/featured";
 import { BOTTOM_NAV, OFFICE_BOTTOM_NAV, visibleNav, visibleOfficeNav } from "@/components/shell/nav";
 import { getViewer, primaryRole, ROLE_LABELS } from "@/lib/auth";
 import { OFFICE_BRAND_COLUMNS, officeBrand, platformBrand, type OfficeBrandRow, type PlatformBrandSetting } from "@/lib/branding";
@@ -18,7 +19,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const brandOfficeId = viewer.offices.find((o) => o.id === viewer.profile.office_id)?.id
     ?? (viewer.offices.length === 1 ? viewer.offices[0].id : null);
   const officeIds = [viewer.profile.office_id, brandOfficeId].filter(Boolean) as string[];
-  const [{ count }, { data: announcements }, { data: brandSetting }, { data: brandOffices }] = await Promise.all([
+  const [{ count }, { data: announcements }, { data: brandSetting }, { data: brandOffices }, { data: featuredSetting }] = await Promise.all([
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", viewer.id).is("read_at", null),
     supabase.from("announcements").select("id, title, kind").lte("published_at", nowIso)
       .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
@@ -26,7 +27,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     supabase.from("app_settings").select("value").eq("key", "branding").maybeSingle(),
     officeIds.length ? supabase.from("offices").select(OFFICE_BRAND_COLUMNS).in("id", officeIds).returns<OfficeBrandRow[]>()
       : Promise.resolve({ data: [] as OfficeBrandRow[] }),
+    supabase.from("app_settings").select("value").eq("key", "featured_video").maybeSingle(),
   ]);
+  const featured = featuredFrom(featuredSetting?.value);
   const platform = platformBrand(brandSetting?.value as PlatformBrandSetting | null);
   const homeBrand = officeBrand((brandOffices ?? []).find((o) => o.id === viewer.profile.office_id), platform);
   const managedBrand = officeBrand((brandOffices ?? []).find((o) => o.id === brandOfficeId), platform);
@@ -58,6 +61,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <AppShell
+      featured={featured}
       sections={visibleNav(viewer.permissions)}
       office={office}
       brands={brands}

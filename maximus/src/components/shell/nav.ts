@@ -86,6 +86,7 @@ export const OFFICE_NAV: NavSection[] = [
       { href: "/admin/support", label: "Support tickets", icon: "lifebuoy", permission: "view_org_analytics" },
       { href: "/admin/settings", label: "Settings", icon: "sliders", permission: "manage_roles" },
       { href: "/admin/branding", label: "Platform branding", icon: "palette", roles: ["super_admin"] },
+      { href: "/admin/featured-video", label: "Featured video", icon: "play", roles: ["super_admin"] },
       { href: "/admin/white-label", label: "White-label payments", icon: "wallet", roles: ["super_admin"] },
       { href: "/admin/payouts", label: "Payouts", icon: "landmark", anyPermission: ["approve_financial_transactions"], roles: ["super_admin", "earnings_manager", "executive_admin"] },
       { href: "/admin/audit", label: "Audit log", icon: "scroll", permission: "view_org_analytics" },
