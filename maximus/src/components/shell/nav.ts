@@ -26,6 +26,7 @@ export const NAV: NavSection[] = [
       { href: "/team", label: "My Team", icon: "network" },
       { href: "/inbox", label: "Inbox", icon: "inbox" },
       { href: "/calls", label: "Calls", icon: "phone" },
+      { href: "/watch", label: "Watch party", icon: "play" },
     ],
   },
   {

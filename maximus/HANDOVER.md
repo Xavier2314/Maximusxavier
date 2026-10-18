@@ -84,6 +84,10 @@ them into Supabase > SQL Editor.
   office managers from /calls. Media runs on Daily.co; set `DAILY_API_KEY` in Vercel. Only chat members
   (or that office's members) can get a room token.
 
+- Watch party (0041): members turn a YouTube link into a public page at /w/<slug> (no login needed).
+  "Watch together" syncs viewers to the host over Supabase Realtime broadcast. Rooms are read on the
+  server with the service role; views are counted by `watch_room_viewed()` (service role only).
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.

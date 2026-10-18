@@ -1072,6 +1072,20 @@ do $$ begin
 end $$;
 select pg_temp.act_as(null);
 
+-- 0041: watch rooms are managed only by their owner.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+insert into public.watch_rooms (title, youtube_id) values ('Opportunity video', 'dQw4w9WgXcQ');
+select pg_temp.expect_error($$ insert into public.watch_rooms (title, youtube_id) values ('Bad', 'not a video id') $$, 'bad youtube id rejected');
+select pg_temp.expect_error($$ update public.watch_rooms set views = 999999 $$, 'owner cannot fake views');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+do $$ begin
+  assert (select count(*) from public.watch_rooms) = 0, 'others cannot list rooms';
+  delete from public.watch_rooms;
+  raise notice 'PASS: watch rooms owner-only';
+end $$;
+select pg_temp.act_as(null);
+do $$ begin assert (select count(*) from public.watch_rooms) = 1, 'room not deleted by others'; end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
