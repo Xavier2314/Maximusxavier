@@ -426,7 +426,14 @@ do $$ begin
   assert (select count(*) from public.prospect_messages) = 1, 'sponsor sees downline messages';
   update public.prospects set stage = 'joined';
   assert (select stage from public.prospects limit 1) = 'new', 'sponsor cannot change downline prospect';
-  raise notice 'PASS: leader reads but cannot edit team prospects';
+  assert public.can_view_team_data('00000000-0000-0000-0000-0000000000d1'), 'sponsor sees second-level downline';
+  raise notice 'PASS: sponsor sees whole downline and their prospects (read-only)';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c1');
+do $$ begin
+  assert not public.can_view_team_data('00000000-0000-0000-0000-0000000000b1'), 'downline cannot see sponsor data';
+  assert not public.can_view_team_data('00000000-0000-0000-0000-0000000000a1'), 'downline cannot see upline data';
+  raise notice 'PASS: visibility only flows down the tree';
 end $$;
 select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
 do $$ begin
@@ -527,6 +534,51 @@ do $$ begin
   update public.support_tickets set status = 'resolved', admin_note = 'Confirmed today';
   raise notice 'PASS: admin handles complaint';
 end $$;
+
+-- ---------------------------------------------------------------------------
+-- Office view (0018)
+-- ---------------------------------------------------------------------------
+select pg_temp.act_as(null);
+insert into public.offices (id, name, address, latitude, longitude, radius_m) values
+  ('00000000-0000-0000-0000-0000000000f2', 'Abuja', 'Wuse', 9.07, 7.48, 100);
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('00000000-0000-0000-0000-0000000000a2', 'officeadmin@test.dev', '{"full_name":"Olu OfficeAdmin","office_id":"00000000-0000-0000-0000-0000000000f2"}'),
+  ('00000000-0000-0000-0000-0000000000c2', 'abuja1@test.dev', '{"full_name":"Bisi Abuja","office_id":"00000000-0000-0000-0000-0000000000f2"}');
+insert into public.user_roles (user_id, role_id)
+select '00000000-0000-0000-0000-0000000000a2', id from public.roles where key = 'office_admin';
+update public.office_memberships set is_manager = true
+  where office_id = '00000000-0000-0000-0000-0000000000f2' and user_id = '00000000-0000-0000-0000-0000000000a2';
+
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a2');
+do $$ declare d jsonb; begin
+  assert (select count(*) from public.my_managed_offices()) = 1, 'office admin manages one office';
+  d := public.office_dashboard('00000000-0000-0000-0000-0000000000f2');
+  assert (d ->> 'members_total')::int = 2, 'office dashboard counts members';
+  assert public.can_view_team_data('00000000-0000-0000-0000-0000000000c2'), 'office admin sees own office member';
+  assert (select count(*) from public.office_members('00000000-0000-0000-0000-0000000000f2')) = 2, 'office directory';
+  assert not public.can_view_team_data('00000000-0000-0000-0000-0000000000c1'), 'office admin cannot see another office';
+  raise notice 'PASS: office admin sees their office only';
+end $$;
+select pg_temp.expect_error($$select public.office_dashboard('00000000-0000-0000-0000-0000000000f1')$$, 'office admin opens another office dashboard');
+
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ declare d jsonb; begin
+  d := public.office_pulse();
+  assert (d ->> 'members')::int = 2, 'member sees own office pulse';
+  assert (select count(*) from public.my_managed_offices()) = 0, 'member manages no office';
+  raise notice 'PASS: member sees office pulse';
+end $$;
+select pg_temp.expect_error($$select public.office_dashboard('00000000-0000-0000-0000-0000000000f2')$$, 'member opens office dashboard');
+select pg_temp.expect_error($$select public.office_pulse('00000000-0000-0000-0000-0000000000f1')$$, 'member reads another office pulse');
+select pg_temp.expect_error($$select * from public.office_members('00000000-0000-0000-0000-0000000000f2')$$, 'member reads office directory');
+select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+do $$ begin
+  assert (select count(*) from public.my_managed_offices()) >= 2, 'super admin sees every office';
+  assert (public.office_dashboard('00000000-0000-0000-0000-0000000000f1') ->> 'members_total')::int >= 1, 'super admin opens any office';
+  raise notice 'PASS: super admin office view';
+end $$;
+select pg_temp.act_as(null);
+
 
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'

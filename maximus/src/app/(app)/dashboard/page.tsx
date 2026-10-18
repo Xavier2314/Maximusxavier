@@ -1,9 +1,8 @@
 import Link from "next/link";
 import {
-  ArrowRight, Bell, Cake, Compass, ListChecks, Quote, CalendarClock, ClipboardCheck, Flame, GraduationCap, MapPin, PiggyBank, Sparkles,
-  Target, TrendingUp, TriangleAlert, Users,
+  ArrowRight, Bell, Building2, Cake, Compass, ListChecks, MessageCircle, MessageSquare, Phone, Quote, CalendarClock, ClipboardCheck, Flame,
+  GraduationCap, MapPin, PiggyBank, Sparkles, Target, TrendingUp,
 } from "lucide-react";
-import { TrendArea } from "@/components/charts";
 import { FocusPopup } from "@/components/focus-popup";
 import { DailyChecklist } from "./checklist";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
@@ -13,9 +12,9 @@ import { Avatar, Badge, EmptyState, Progress, ProgressRing, StatCard } from "@/c
 import { requireViewer } from "@/lib/auth";
 import { FOCUS, topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
-import type { AccountBalance, Attendance, GoalProgress, MonthlyGoal, Notification, TeamMemberStat } from "@/lib/types";
+import type { AccountBalance, Attendance, GoalProgress, MonthlyGoal, Notification } from "@/lib/types";
 import {
-  currentEvaluationPeriod, formatCompact, formatDate, formatMoney, formatRelative, formatTime, monthStart,
+  currentEvaluationPeriod, formatDate, formatMoney, formatRelative, formatTime, monthStart,
   nextEvaluationDate, percent, todayIn,
 } from "@/lib/utils";
 
@@ -44,7 +43,7 @@ export default async function DashboardPage() {
   const [
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { data: balances },
     { data: notifications }, { data: birthdays }, { data: lessonsDone }, { data: publishedLessons }, { data: focusData },
-    { data: checklistItems }, { data: checklistDone }, { data: thought },
+    { data: checklistItems }, { data: checklistDone }, { data: thought }, { data: pulse }, { data: followUps },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -61,13 +60,29 @@ export default async function DashboardPage() {
     supabase.from("checklist_items").select("id, title").eq("is_active", true).order("sort_order"),
     supabase.from("checklist_checks").select("item_id").eq("user_id", viewer.id).eq("check_date", today),
     supabase.from("daily_thoughts").select("body, author").lte("show_on", today).order("show_on", { ascending: false }).limit(1).maybeSingle(),
+    viewer.profile.office_id ? supabase.rpc("office_pulse") : Promise.resolve({ data: null }),
+    supabase.from("prospects").select("id, full_name, phone, next_follow_up_at, stage").eq("owner_id", viewer.id)
+      .not("next_follow_up_at", "is", null).lte("next_follow_up_at", `${today}T23:59:59`).eq("opted_out", false)
+      .not("stage", "in", "(joined,customer,not_now)").order("next_follow_up_at").limit(4),
   ]);
+  const officePulse = pulse as { office: { name: string }; open_today: boolean; members: number; present_now: number; checked_in_today: number } | null;
   const growth = focusData as GrowthFocus | null;
   const focusTop = topFocus(growth);
   const focusCourses = await coursesForFocus(supabase, focusTop);
   const focusWeek = isoWeek(today);
 
-  const progress = goal ? ((await supabase.rpc("goal_progress", { p_goal: goal.id })).data as GoalProgress | null) : null;
+  type Feedback = { id: string; action: string; comment: string; created_at: string; profiles: { full_name: string; avatar_url: string | null } | null };
+  let progress: GoalProgress | null = null;
+  let feedback: Feedback[] = [];
+  if (goal) {
+    const [p, f] = await Promise.all([
+      supabase.rpc("goal_progress", { p_goal: goal.id }),
+      supabase.from("goal_feedback").select("id, action, comment, created_at, profiles!goal_feedback_author_id_fkey(full_name, avatar_url)")
+        .eq("goal_id", goal.id).neq("author_id", viewer.id).not("comment", "is", null).order("created_at", { ascending: false }).limit(2),
+    ]);
+    progress = p.data as GoalProgress | null;
+    feedback = (f.data ?? []) as unknown as Feedback[];
+  }
   const savings = balances?.find((b) => b.kind === "savings");
   const contributions = balances?.find((b) => b.kind === "contributions");
   const learningPct = percent(lessonsDone?.length ?? 0, publishedLessons?.length ?? 0);
@@ -141,6 +156,98 @@ export default async function DashboardPage() {
           icon={<ClipboardCheck className="size-4" />} tone={evaluation ? "green" : "lime"} />
         <StatCard label="Learning" value={`${learningPct}%`} hint={`${lessonsDone?.length ?? 0} lessons completed`} icon={<GraduationCap className="size-4" />} tone="navy" />
       </section>
+
+      {viewer.hasOfficeView && (
+        <Link href={viewer.offices.length ? "/office" : viewer.isLeader ? "/office/team" : "/admin/approvals"}
+          className="card group flex items-center gap-4 p-4 hover:border-primary/40">
+          <span className="grid size-10 place-items-center rounded-xl bg-brand-navy text-brand-lime"><Building2 className="size-5" aria-hidden /></span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold">{viewer.offices.length ? "Office view" : viewer.isLeader ? "Team view" : "Approvals"}</span>
+            <span className="block truncate text-sm text-fg-muted">
+              {viewer.offices.length ? `Attendance, members and approvals for ${viewer.offices.length === 1 ? viewer.offices[0].name : `${viewer.offices.length} offices`}`
+                : "See who is active and what is waiting for your review"}
+            </span>
+          </span>
+          <ArrowRight className="size-4 text-fg-subtle transition-transform group-hover:translate-x-0.5" aria-hidden />
+        </Link>
+      )}
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card>
+          <CardHeader title="Follow-ups due" icon={<Phone className="size-4" />} description="Prospects waiting to hear from you"
+            action={<Link href="/prospects" className="text-sm font-medium text-primary hover:underline">All</Link>} />
+          <CardBody className="pt-3">
+            {(followUps ?? []).length > 0 ? (
+              <ul className="space-y-1">
+                {(followUps as { id: string; full_name: string; phone: string | null; next_follow_up_at: string }[]).map((p) => (
+                  <li key={p.id} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
+                    <Avatar name={p.full_name} size={32} />
+                    <Link href={`/prospects/${p.id}`} className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-medium">{p.full_name}</span>
+                      <span className="text-xs text-fg-subtle">{p.next_follow_up_at < today ? "Overdue" : "Today"}</span>
+                    </Link>
+                    {p.phone && (
+                      <a href={`https://wa.me/${p.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
+                        className="grid size-8 place-items-center rounded-lg text-success hover:bg-success-soft" aria-label={`WhatsApp ${p.full_name}`}>
+                        <MessageCircle className="size-4" aria-hidden />
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="py-4 text-center">
+                <p className="text-sm text-fg-muted">No follow-ups due today.</p>
+                <Link href="/prospects" className="mt-1 inline-block text-sm font-medium text-primary hover:underline">Add someone new to talk to</Link>
+              </div>
+            )}
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader title={officePulse ? officePulse.office.name : "Your office"} icon={<Building2 className="size-4" />}
+            description={officePulse ? (officePulse.open_today ? "Open today" : "Closed today") : "Choose your office in your profile"} />
+          <CardBody>
+            {officePulse ? (
+              <div className="flex items-center gap-5">
+                <div>
+                  <p className="text-4xl font-bold tabular-nums">{officePulse.present_now}</p>
+                  <p className="text-sm text-fg-muted">in the office now</p>
+                </div>
+                <div className="flex-1 space-y-2 text-sm">
+                  <p className="flex justify-between"><span className="text-fg-muted">Checked in today</span><b className="tabular-nums">{officePulse.checked_in_today}</b></p>
+                  <p className="flex justify-between"><span className="text-fg-muted">Members</span><b className="tabular-nums">{officePulse.members}</b></p>
+                </div>
+              </div>
+            ) : <LinkButton href="/profile" variant="outline" size="sm">Open profile</LinkButton>}
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader title="From your sponsor" icon={<MessageSquare className="size-4" />} description="Feedback on this month's goals" />
+          <CardBody className="pt-3">
+            {feedback.length > 0 ? (
+              <ul className="space-y-3">
+                {feedback.map((f) => (
+                  <li key={f.id}>
+                    <Link href={`/goals/${goal!.id}`} className="flex gap-3 hover:opacity-80">
+                      <Avatar name={f.profiles?.full_name ?? "Sponsor"} src={f.profiles?.avatar_url} size={32} />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-medium">{f.profiles?.full_name} <span className="font-normal text-fg-subtle">· {formatRelative(f.created_at)}</span></span>
+                        <span className="line-clamp-2 text-sm text-fg-muted">{f.comment}</span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="py-4 text-center text-sm text-fg-muted">
+                {goal && goal.status !== "draft" ? "No feedback yet. Your sponsor will reply here." : "Submit your goals and your sponsor's advice will show up here."}
+              </p>
+            )}
+          </CardBody>
+        </Card>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
@@ -298,11 +405,10 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {viewer.isLeader && <LeaderSection viewerId={viewer.id} canSeeExtended={viewer.can("view_extended_downline")} period={period} />}
-      {viewer.isAdmin && <AdminTeaser />}
     </div>
   );
 }
+
 
 function GoalStatusBadge({ status }: { status: MonthlyGoal["status"] }) {
   const map = {
@@ -312,109 +418,4 @@ function GoalStatusBadge({ status }: { status: MonthlyGoal["status"] }) {
     revision_requested: <Badge tone="amber">Revision requested</Badge>,
   } as const;
   return map[status];
-}
-
-async function LeaderSection({ viewerId, canSeeExtended, period }: { viewerId: string; canSeeExtended: boolean; period: string }) {
-  const supabase = await createClient();
-  const [{ data: stats }, { data: growth }, { data: pendingGoals }, { data: periodEvals }] = await Promise.all([
-    supabase.rpc("team_member_stats", { p_root: viewerId, p_max_depth: canSeeExtended ? null : 1 }),
-    supabase.rpc("team_growth", { p_root: viewerId, p_months: 6 }),
-    supabase.from("monthly_goals").select("id, user_id, month, profiles!monthly_goals_user_id_fkey(full_name, avatar_url)")
-      .eq("reviewer_id", viewerId).eq("status", "submitted").limit(5),
-    supabase.from("evaluations").select("user_id").eq("period_date", period),
-  ]);
-  const team = (stats as TeamMemberStat[] | null) ?? [];
-  const active = team.filter((m) => m.is_active).length;
-  const done = new Set((periodEvals ?? []).map((e) => e.user_id as string));
-  const evalRate = percent(team.filter((m) => done.has(m.member)).length, team.length);
-  const inactive = team.filter((m) => !m.is_active && m.status === "active").slice(0, 5);
-  const growthData = ((growth as { month: string; new_members: number; total_members: number }[] | null) ?? [])
-    .map((g) => ({ month: formatDate(g.month, { month: "short" }), total: g.total_members, joined: g.new_members }));
-
-  return (
-    <section className="space-y-6" aria-labelledby="team-heading">
-      <div className="flex items-end justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Leadership</p>
-          <h2 id="team-heading" className="text-xl font-bold tracking-tight">Your team at a glance</h2>
-        </div>
-        <LinkButton href="/team" variant="outline" size="sm">View team <ArrowRight className="size-4" aria-hidden /></LinkButton>
-      </div>
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard label="Team members" value={team.length} icon={<Users className="size-4" />} hint={canSeeExtended ? "Whole downline" : "Direct downlines"} />
-        <StatCard label="Active" value={active} icon={<Flame className="size-4" />} tone="green" hint={`${team.length - active} inactive`} />
-        <StatCard label="Evaluations this period" value={`${evalRate}%`} icon={<ClipboardCheck className="size-4" />} tone="lime" hint="Completion rate" />
-        <StatCard label="Team sales (30 days)" value={formatMoney(team.reduce((a, m) => a + Number(m.sales), 0))} icon={<TrendingUp className="size-4" />} tone="navy" />
-      </div>
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader title="Team growth" description="Total members over the last 6 months" icon={<TrendingUp className="size-4" />} />
-          <CardBody>
-            {growthData.some((g) => g.total > 0)
-              ? <TrendArea data={growthData} xKey="month" series={[{ key: "total", label: "Team members" }]} caption="Team size by month" />
-              : <EmptyState icon={<Users className="size-6" />} title="Your team chart starts with your first recruit"
-                  description="Share your referral link from your profile to invite people." />}
-          </CardBody>
-        </Card>
-        <div className="space-y-6">
-          <Card>
-            <CardHeader title="Goals to review" icon={<Target className="size-4" />} />
-            <CardBody className="pt-3">
-              {pendingGoals && pendingGoals.length > 0 ? (
-                <ul className="space-y-2">
-                  {(pendingGoals as unknown as { id: string; month: string; profiles: { full_name: string; avatar_url: string | null } | null }[]).map((g) => (
-                    <li key={g.id}>
-                      <Link href={`/goals/${g.id}`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
-                        <Avatar name={g.profiles?.full_name ?? "Member"} src={g.profiles?.avatar_url} size={32} />
-                        <span className="flex-1 truncate text-sm">{g.profiles?.full_name}</span>
-                        <Badge tone="blue">{formatDate(g.month, { month: "short" })}</Badge>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : <p className="py-4 text-center text-sm text-fg-muted">No goals waiting for you.</p>}
-            </CardBody>
-          </Card>
-          <Card>
-            <CardHeader title="Needs attention" icon={<TriangleAlert className="size-4" />} description="Inactive by your organisation's definition" />
-            <CardBody className="pt-3">
-              {inactive.length > 0 ? (
-                <ul className="space-y-2">
-                  {inactive.map((m) => (
-                    <li key={m.member}>
-                      <Link href={`/team/${m.member}`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
-                        <Avatar name={m.full_name} src={m.avatar_url} size={32} />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm">{m.full_name}</span>
-                          <span className="text-xs text-fg-subtle">{m.last_activity ? `Last active ${formatRelative(m.last_activity)}` : "No activity yet"}</span>
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : <p className="py-4 text-center text-sm text-fg-muted">Everyone is active. Great leadership! 🏆</p>}
-            </CardBody>
-          </Card>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-async function AdminTeaser() {
-  const supabase = await createClient();
-  const { data } = await supabase.rpc("org_overview");
-  const o = (data ?? {}) as Record<string, number>;
-  return (
-    <section className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Organisation</p>
-        <p className="mt-1 text-sm text-fg-muted">
-          <b className="text-fg">{formatCompact(o.members_total)}</b> members · <b className="text-fg">{o.present_now ?? 0}</b> in office now ·{" "}
-          <b className="text-fg">{o.pending_payments ?? 0}</b> payments and <b className="text-fg">{o.pending_corrections ?? 0}</b> corrections awaiting review
-        </p>
-      </div>
-      <LinkButton href="/admin" variant="secondary" size="sm">Admin overview <ArrowRight className="size-4" aria-hidden /></LinkButton>
-    </section>
-  );
 }

@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { LogOut, Menu, Search, Settings, X } from "lucide-react";
+import { Building2, LogOut, Menu, Search, Settings, User, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Avatar } from "@/components/ui/misc";
 import { cn } from "@/lib/utils";
 import { AnnouncementBar, type BarAnnouncement } from "./announcement-bar";
 import { CommandPalette } from "./command-palette";
-import { BOTTOM_NAV, type NavSection } from "./nav";
+import { BOTTOM_NAV, OFFICE_BOTTOM_NAV, isOfficePath, type NavItem, type NavSection } from "./nav";
 import { NAV_ICONS } from "./nav-icons";
 import { NotificationBell } from "./notification-bell";
 import { QuickAdd } from "./quick-add";
@@ -17,8 +17,28 @@ import { ThemeToggle } from "./theme-toggle";
 
 type ShellUser = { id: string; name: string; avatar: string | null; role: string; memberId: string };
 
+/** Where the Office view starts and what it is called for this member. */
+export type OfficeView = { home: string; label: string; officeName?: string; sections: NavSection[]; bottom: NavItem[] } | null;
+
+function ViewSwitch({ office, mode, dark = false, className }: { office: NonNullable<OfficeView>; mode: "me" | "office"; dark?: boolean; className?: string }) {
+  const base = "flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-3 py-1.5 text-sm font-medium transition-colors";
+  const on = dark ? "bg-white text-brand-navy shadow-sm" : "bg-surface text-fg shadow-sm";
+  const off = dark ? "text-white/60 hover:text-white" : "text-fg-muted hover:text-fg";
+  return (
+    <div role="tablist" aria-label="Switch view"
+      className={cn("flex gap-1 rounded-xl p-1", dark ? "bg-white/10 ring-1 ring-white/10" : "bg-surface-muted ring-1 ring-border", className)}>
+      <Link href="/dashboard" role="tab" aria-selected={mode === "me"} className={cn(base, mode === "me" ? on : off)}>
+        <User className="size-4" aria-hidden />My view
+      </Link>
+      <Link href={office.home} role="tab" aria-selected={mode === "office"} className={cn(base, mode === "office" ? on : off)}>
+        <Building2 className="size-4" aria-hidden />{office.label}
+      </Link>
+    </div>
+  );
+}
+
 function isActive(pathname: string, href: string) {
-  return href === "/dashboard" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+  return ["/dashboard", "/office", "/admin"].includes(href) ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 }
 
 function NavLinks({ sections, pathname, onNavigate }: { sections: NavSection[]; pathname: string; onNavigate?: () => void }) {
@@ -69,11 +89,15 @@ function UserCard({ user, signOut }: { user: ShellUser; signOut: () => void }) {
   );
 }
 
-export function AppShell({ sections, user, unread, signOut, announcements = [], children }: {
-  sections: NavSection[]; user: ShellUser; unread: number; signOut: () => void; announcements?: BarAnnouncement[]; children: ReactNode;
+export function AppShell({ sections: memberSections, office = null, user, unread, signOut, announcements = [], children }: {
+  sections: NavSection[]; office?: OfficeView; user: ShellUser; unread: number; signOut: () => void; announcements?: BarAnnouncement[]; children: ReactNode;
 }) {
   const pathname = usePathname();
-  const current = sections.flatMap((s) => s.items).filter((i) => isActive(pathname, i.href)).sort((a, b) => b.href.length - a.href.length)[0];
+  const mode: "me" | "office" = office && isOfficePath(pathname) ? "office" : "me";
+  const sections = mode === "office" && office ? office.sections : memberSections;
+  const bottom = mode === "office" && office ? office.bottom : BOTTOM_NAV;
+  const allSections = office ? [...memberSections, ...office.sections] : memberSections;
+  const current = allSections.flatMap((s) => s.items).filter((i) => isActive(pathname, i.href)).sort((a, b) => b.href.length - a.href.length)[0];
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => setMenuOpen(false), [pathname]);
@@ -91,7 +115,11 @@ export function AppShell({ sections, user, unread, signOut, announcements = [], 
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col bg-brand-navy px-4 pb-4 pt-6 lg:flex">
         <Link href="/dashboard" className="px-3"><Logo className="h-8 w-auto text-white" /></Link>
-        <div className="scrollbar-none mt-8 flex-1 overflow-y-auto">
+        {office && <ViewSwitch office={office} mode={mode} dark className="mt-6" />}
+        {mode === "office" && office?.officeName && (
+          <p className="mt-3 truncate px-3 text-xs text-white/50">Managing <span className="font-medium text-white/80">{office.officeName}</span></p>
+        )}
+        <div className={cn("scrollbar-none flex-1 overflow-y-auto", office ? "mt-6" : "mt-8")}>
           <NavLinks sections={sections} pathname={pathname} />
         </div>
         <UserCard user={user} signOut={signOut} />
@@ -100,6 +128,11 @@ export function AppShell({ sections, user, unread, signOut, announcements = [], 
       {/* Top bar */}
       <header className="sticky top-0 z-30 border-b border-border/60 bg-bg/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
         <AnnouncementBar items={announcements} />
+        {office && (
+          <div className="border-b border-border/60 px-4 py-2 lg:hidden">
+            <ViewSwitch office={office} mode={mode} className="mx-auto max-w-md" />
+          </div>
+        )}
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
           <Link href="/dashboard" className="lg:hidden"><Logo variant="mark" className="h-8 w-auto" /></Link>
           <p className="hidden min-w-0 truncate text-sm font-semibold text-fg-muted md:block">{current?.label}</p>
@@ -124,15 +157,15 @@ export function AppShell({ sections, user, unread, signOut, announcements = [], 
       </header>
 
       <main id="main" className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:pb-12">{children}</main>
-      <CommandPalette sections={sections} />
+      <CommandPalette sections={allSections} />
 
       {/* Mobile bottom navigation */}
       <nav aria-label="Quick" className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-bg-elevated/90 backdrop-blur-xl lg:hidden">
         <ul className="mx-auto grid max-w-md grid-cols-5">
-          {BOTTOM_NAV.map((item) => {
+          {bottom.map((item) => {
             const Icon = NAV_ICONS[item.icon];
             const active = isActive(pathname, item.href);
-            const isCheckIn = item.href === "/attendance";
+            const isCheckIn = item.href === "/attendance" || item.href === "/attendance/live";
             return (
               <li key={item.href}>
                 <Link href={item.href} aria-current={active ? "page" : undefined}

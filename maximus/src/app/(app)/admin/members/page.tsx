@@ -74,7 +74,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-fg-muted">{m.offices?.name ?? "—"}</td>
-                  <td className="px-4 py-3"><div className="flex flex-wrap gap-1">{m.user_roles.map((r) => r.roles?.key).filter((k): k is RoleKey => Boolean(k) && k !== "member" && k !== "downline").map((k) => <Badge key={k} tone={["super_admin", "executive_admin", "director", "team_leader"].includes(k) ? "blue" : "neutral"}>{ROLE_LABELS[k]}</Badge>)}</div></td>
+                  <td className="px-4 py-3"><div className="flex flex-wrap gap-1">{m.user_roles.map((r) => r.roles?.key).filter((k): k is RoleKey => Boolean(k) && k !== "member" && k !== "downline").map((k) => <Badge key={k} tone={["super_admin", "executive_admin", "office_admin", "director", "team_leader", "earnings_manager"].includes(k) ? "blue" : "neutral"}>{ROLE_LABELS[k]}</Badge>)}</div></td>
                   <td className="px-4 py-3 text-fg-muted">{formatDate(m.joined_at)}</td>
                   <td className="px-4 py-3"><Badge tone={m.status === "active" ? "green" : "red"}>{m.status}</Badge></td>
                 </tr>

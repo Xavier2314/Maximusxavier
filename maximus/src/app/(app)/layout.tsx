@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { ChatWidget } from "@/components/chat-widget";
 import { AppShell } from "@/components/shell/app-shell";
-import { visibleNav } from "@/components/shell/nav";
+import { OFFICE_BOTTOM_NAV, visibleNav, visibleOfficeNav } from "@/components/shell/nav";
 import { getViewer, primaryRole, ROLE_LABELS } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "../(auth)/actions";
@@ -20,9 +20,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       .order("pinned", { ascending: false }).order("published_at", { ascending: false }).limit(5),
   ]);
 
+  const managesOffice = viewer.offices.length > 0;
+  const officeSections = viewer.hasOfficeView ? visibleOfficeNav(viewer.permissions, managesOffice) : [];
+  const officeHome = managesOffice ? "/office" : viewer.isLeader ? "/office/team" : officeSections[0]?.items[0]?.href;
+  const office = officeHome ? {
+    home: officeHome,
+    label: managesOffice ? "Office view" : viewer.isLeader ? "Team view" : "Approvals",
+    officeName: viewer.offices.length === 1 ? viewer.offices[0].name : managesOffice ? `${viewer.offices.length} offices` : undefined,
+    sections: officeSections,
+    bottom: managesOffice ? OFFICE_BOTTOM_NAV : officeSections.flatMap((s) => s.items).slice(0, 4),
+  } : null;
+
   return (
     <AppShell
       sections={visibleNav(viewer.permissions)}
+      office={office}
       unread={count ?? 0}
       signOut={signOutAction}
       announcements={(announcements ?? []) as { id: string; title: string; kind: string }[]}

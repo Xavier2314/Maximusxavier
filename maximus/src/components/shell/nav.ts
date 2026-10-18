@@ -10,17 +10,23 @@ export type NavItem = {
 
 export type NavSection = { title?: string; items: NavItem[] };
 
+/** My view: the member's own work. Everyone has this. */
 export const NAV: NavSection[] = [
   {
     items: [
-      { href: "/dashboard", label: "Dashboard", icon: "home" },
-      { href: "/team", label: "My Team", icon: "network" },
-      { href: "/prospects", label: "Prospects", icon: "funnel" },
-      { href: "/inbox", label: "Inbox", icon: "inbox" },
-      { href: "/attendance", label: "Attendance", icon: "map-pin" },
+      { href: "/dashboard", label: "Home", icon: "home" },
+      { href: "/attendance", label: "Check in", icon: "map-pin" },
       { href: "/goals", label: "Goals", icon: "target" },
       { href: "/evaluations", label: "Evaluations", icon: "clipboard" },
-      { href: "/finance", label: "Finance", icon: "wallet" },
+      { href: "/prospects", label: "Prospects", icon: "funnel" },
+      { href: "/team", label: "My Team", icon: "network" },
+      { href: "/inbox", label: "Inbox", icon: "inbox" },
+    ],
+  },
+  {
+    title: "Money",
+    items: [
+      { href: "/finance", label: "Savings & payments", icon: "wallet" },
       { href: "/orders", label: "Orders", icon: "bag" },
       { href: "/bank", label: "Maximus Bank", icon: "landmark" },
     ],
@@ -30,40 +36,85 @@ export const NAV: NavSection[] = [
     items: [
       { href: "/growth", label: "Growth focus", icon: "compass" },
       { href: "/leaderboard", label: "Leaderboard", icon: "medal" },
-      { href: "/ai", label: "Maximus AI", icon: "sparkles" },
       { href: "/academy", label: "Academy", icon: "graduation" },
+      { href: "/ai", label: "Maximus AI", icon: "sparkles" },
       { href: "/recognition", label: "Recognition", icon: "trophy" },
       { href: "/announcements", label: "Announcements", icon: "megaphone" },
       { href: "/support", label: "Help & complaints", icon: "lifebuoy" },
     ],
   },
+];
+
+/** Office view: running an office or leading a team. Shown only to those who can. */
+export const OFFICE_NAV: NavSection[] = [
   {
-    title: "Administration",
+    title: "Office",
     items: [
-      { href: "/admin", label: "Overview", icon: "chart", permission: "view_org_analytics" },
+      { href: "/office", label: "Office overview", icon: "chart", anyPermission: ["manage_office", "view_org_analytics"] },
+      { href: "/office/members", label: "Office members", icon: "users", anyPermission: ["manage_office", "view_org_analytics"] },
+      { href: "/attendance/live", label: "Live attendance", icon: "map-pin", anyPermission: ["manage_office", "approve_attendance_exceptions", "view_org_analytics"] },
+      { href: "/attendance/register", label: "Attendance register", icon: "clipboard", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics"] },
+      { href: "/admin/approvals", label: "Approvals", icon: "check", anyPermission: ["approve_financial_transactions", "approve_attendance_exceptions", "manage_office"] },
+      { href: "/admin/offices", label: "Office setup & QR", icon: "building", permission: "manage_office" },
+    ],
+  },
+  {
+    title: "Team",
+    items: [
+      { href: "/office/team", label: "Team overview", icon: "network", anyPermission: ["view_team_dashboard", "view_direct_downlines"] },
+    ],
+  },
+  {
+    title: "Organisation",
+    items: [
+      { href: "/admin", label: "All offices", icon: "building", permission: "view_org_analytics" },
       { href: "/admin/members", label: "Members & roles", icon: "users", anyPermission: ["manage_roles", "view_org_analytics"] },
-      { href: "/admin/offices", label: "Offices", icon: "building", permission: "manage_office" },
-      { href: "/admin/approvals", label: "Approvals", icon: "check", anyPermission: ["approve_financial_transactions", "approve_attendance_exceptions"] },
       { href: "/admin/content", label: "Content", icon: "book", permission: "manage_content" },
       { href: "/admin/daily", label: "Checklist & thoughts", icon: "clipboard", permission: "manage_content" },
-      { href: "/admin/settings", label: "Settings", icon: "sliders", permission: "manage_roles" },
       { href: "/admin/support", label: "Support tickets", icon: "lifebuoy", permission: "view_org_analytics" },
+      { href: "/admin/settings", label: "Settings", icon: "sliders", permission: "manage_roles" },
       { href: "/admin/audit", label: "Audit log", icon: "scroll", permission: "view_org_analytics" },
     ],
   },
 ];
 
+/** Paths that belong to the Office view (the switch and sidebar follow these). */
+export const OFFICE_PATHS = ["/office", "/admin", "/attendance/live", "/attendance/register"];
+export const isOfficePath = (pathname: string) =>
+  OFFICE_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+
 export const BOTTOM_NAV: NavItem[] = [
   { href: "/dashboard", label: "Home", icon: "home" },
-  { href: "/team", label: "Team", icon: "network" },
-  { href: "/attendance", label: "Check in", icon: "map-pin" },
   { href: "/goals", label: "Goals", icon: "target" },
+  { href: "/attendance", label: "Check in", icon: "map-pin" },
+  { href: "/prospects", label: "Prospects", icon: "funnel" },
 ];
 
-export function visibleNav(perms: Set<string>): NavSection[] {
+export const OFFICE_BOTTOM_NAV: NavItem[] = [
+  { href: "/office", label: "Office", icon: "chart" },
+  { href: "/office/members", label: "Members", icon: "users" },
+  { href: "/attendance/live", label: "Live", icon: "map-pin" },
+  { href: "/admin/approvals", label: "Approvals", icon: "check" },
+];
+
+function filterNav(nav: NavSection[], perms: Set<string>): NavSection[] {
   const allowed = (i: NavItem) =>
     (!i.permission || perms.has(i.permission)) && (!i.anyPermission || i.anyPermission.some((p) => perms.has(p)));
-  return NAV.map((s) => ({ ...s, items: s.items.filter(allowed) })).filter((s) => s.items.length > 0);
+  return nav.map((s) => ({ ...s, items: s.items.filter(allowed) })).filter((s) => s.items.length > 0);
+}
+
+export function visibleNav(perms: Set<string>): NavSection[] {
+  return filterNav(NAV, perms);
+}
+
+/** Office-view sections. Team leaders without an office get the Team part only. */
+export function visibleOfficeNav(perms: Set<string>, managesOffice: boolean): NavSection[] {
+  const sections = filterNav(OFFICE_NAV, perms);
+  if (managesOffice) return sections;
+  // Without an office, only Approvals is useful from the Office section (e.g. earnings managers).
+  return sections
+    .map((s) => (s.title === "Office" ? { ...s, items: s.items.filter((i) => i.href === "/admin/approvals") } : s))
+    .filter((s) => s.items.length > 0);
 }
 
 /** Shortcuts used by the "+ New" menu and search. */

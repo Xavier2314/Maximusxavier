@@ -18,7 +18,7 @@ export type Permission =
 
 export type RoleKey =
   | "member" | "downline" | "upline" | "sponsor"
-  | "team_leader" | "director" | "executive_admin" | "super_admin";
+  | "team_leader" | "earnings_manager" | "director" | "office_admin" | "executive_admin" | "super_admin";
 
 export type Profile = {
   id: string;

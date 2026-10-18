@@ -13,6 +13,10 @@ export type Viewer = {
   can: (p: Permission) => boolean;
   isLeader: boolean;
   isAdmin: boolean;
+  /** Offices this member manages (every office for organisation admins). */
+  offices: { id: string; name: string }[];
+  /** Has an Office view: manages an office, leads a team or approves payments. */
+  hasOfficeView: boolean;
 };
 
 /**
@@ -25,10 +29,11 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [{ data: profile }, { data: perms }, { data: roleRows }] = await Promise.all([
+  const [{ data: profile }, { data: perms }, { data: roleRows }, { data: offices }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single<Profile>(),
     supabase.rpc("my_permissions"),
     supabase.from("user_roles").select("roles(key)").eq("user_id", user.id),
+    supabase.rpc("my_managed_offices"),
   ]);
   if (!profile) return null;
 
@@ -37,6 +42,8 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     .map((r) => r.roles?.key)
     .filter((k): k is RoleKey => Boolean(k));
 
+  const managed = ((offices as { id: string; name: string }[] | null) ?? []);
+  const isLeader = permissions.has("view_team_dashboard") || permissions.has("view_direct_downlines");
   return {
     id: user.id,
     email: user.email ?? profile.email,
@@ -44,8 +51,10 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     roles,
     permissions,
     can: (p) => permissions.has(p),
-    isLeader: permissions.has("view_team_dashboard") || permissions.has("view_direct_downlines"),
+    isLeader,
     isAdmin: permissions.has("view_org_analytics"),
+    offices: managed,
+    hasOfficeView: managed.length > 0 || isLeader || permissions.has("approve_financial_transactions") || permissions.has("view_org_analytics"),
   };
 });
 
@@ -68,13 +77,15 @@ export const ROLE_LABELS: Record<RoleKey, string> = {
   upline: "Upline",
   sponsor: "Sponsor",
   team_leader: "Team Leader",
+  earnings_manager: "Earnings Manager",
   director: "Director",
+  office_admin: "Office Admin",
   executive_admin: "Executive Admin",
   super_admin: "Super Admin",
 };
 
 /** The most senior role, for display. */
 export function primaryRole(roles: RoleKey[]): RoleKey {
-  const order: RoleKey[] = ["super_admin", "executive_admin", "director", "team_leader", "upline", "sponsor", "downline", "member"];
+  const order: RoleKey[] = ["super_admin", "executive_admin", "office_admin", "director", "team_leader", "earnings_manager", "upline", "sponsor", "downline", "member"];
   return order.find((r) => roles.includes(r)) ?? "member";
 }
