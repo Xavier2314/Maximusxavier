@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/register", "/forgot-password", "/auth", "/privacy", "/offline", "/setup", "/w", "/white-label", "/c", "/p", "/f", "/funnels"];
+const PUBLIC_PATHS = ["/login", "/register", "/forgot-password", "/auth", "/privacy", "/offline", "/setup", "/w", "/white-label", "/c", "/p", "/f", "/s", "/funnels"];
 
 export async function middleware(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

@@ -27,7 +27,10 @@ Legend: [x] done and live-ready · [~] started · [ ] not started · 🔌 needs 
 
 ## 4. Forms and surveys
 - [x] Extra questions and consent box on funnel forms
-- [ ] Standalone forms and multi-step surveys with their own link and responses inbox
+- [x] Standalone forms and multi-step surveys with their own public link (/s/…), 12 question types, required fields, consent box, redirect or thank-you message, 8 looks
+- [x] AI builds a form or survey from a description
+- [x] Responses inbox with counts per choice, averages, Net Promoter Score and CSV download
+- [ ] Show answers branching (skip logic), and embed a form inside a funnel page
 
 ## 5. Templates
 - [x] 5 funnel types, 8 looks, 10 prebuilt sections, saved sections

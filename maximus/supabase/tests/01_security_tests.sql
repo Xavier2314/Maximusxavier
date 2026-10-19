@@ -1322,6 +1322,38 @@ do $$ begin
   assert (select count(*) from public.funnel_ad_plans where title = 'Plan A2') = 1, 'ad plan untouched by others';
 end $$;
 
+-- 0053: forms and surveys. Owners manage their own; responses are owner-read only and cannot be planted by clients.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+insert into public.forms (title, slug, kind, definition) values ('Customer survey', public.suggest_form_slug('customer survey'), 'survey', '{"steps":[]}'::jsonb);
+do $$ begin
+  assert (select count(*) from public.forms) = 1, 'owner reads own form';
+  update public.forms set published = true;
+  raise notice 'PASS: owner can create and publish a form';
+end $$;
+select pg_temp.expect_error($$ insert into public.form_responses (form_id, answers) select id, '{}'::jsonb from public.forms $$, 'clients cannot insert responses directly');
+select pg_temp.expect_error($$ update public.forms set user_id = '00000000-0000-0000-0000-0000000000e1' $$, 'cannot hand a form to someone else');
+select pg_temp.act_as(null);
+insert into public.form_responses (form_id, answers, name) select id, '{"q1":"Great"}'::jsonb, 'Ada' from public.forms;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select count(*) from public.form_responses) = 1, 'owner reads responses';
+  raise notice 'PASS: owner reads responses';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+do $$ begin
+  assert (select count(*) from public.forms) = 0, 'others cannot read forms';
+  assert (select count(*) from public.form_responses) = 0, 'others cannot read responses';
+  update public.forms set title = 'hacked';
+  delete from public.form_responses;
+  delete from public.forms;
+  raise notice 'PASS: forms and responses are owner-only';
+end $$;
+select pg_temp.act_as(null);
+do $$ begin
+  assert (select count(*) from public.forms where title = 'Customer survey') = 1, 'form untouched by others';
+  assert (select count(*) from public.form_responses) = 1, 'responses untouched by others';
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
