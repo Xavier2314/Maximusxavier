@@ -44,6 +44,7 @@ export const NAV: NavSection[] = [
       { href: "/growth", label: "Growth focus", icon: "compass" },
       { href: "/leaderboard", label: "Leaderboard", icon: "medal" },
       { href: "/academy", label: "Academy", icon: "graduation" },
+      { href: "/marketing", label: "Marketing", icon: "megaphone" },
       { href: "/ai", label: "Maximus AI", icon: "sparkles" },
       { href: "/recognition", label: "Recognition", icon: "trophy" },
       { href: "/announcements", label: "Announcements", icon: "megaphone" },
