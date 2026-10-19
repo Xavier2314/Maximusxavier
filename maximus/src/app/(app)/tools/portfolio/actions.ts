@@ -6,8 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { aiClient, aiErrorMessage, isAiConfigured } from "@/lib/ai";
 import { requireViewer } from "@/lib/auth";
-import { textToProjects, textToServices, type PortfolioProject, type PortfolioService } from "@/lib/portfolio";
-import { rankLabel } from "@/lib/ranks";
+import { cleanBlocks, cleanDesign, cleanSocials, textToProjects, textToServices, type PortfolioProject, type PortfolioService } from "@/lib/portfolio";
 import { createClient } from "@/lib/supabase/server";
 import { friendlyError } from "@/lib/utils";
 
@@ -50,7 +49,6 @@ async function draftWithAI(focus: string | null): Promise<Draft | { error: strin
   ]);
   const facts = [
     `Name: ${viewer.profile.full_name}`,
-    rankLabel(viewer.profile.business_rank) ? `Business status: ${rankLabel(viewer.profile.business_rank)}` : null,
     focus ? `This site should focus on: ${focus}` : null,
     analysis?.input ? `Their Upwork profile details:\n${JSON.stringify(analysis.input).slice(0, 5000)}` : null,
     orders?.length ? `Work they have recorded (most recent first):\n${orders.map((o) => `- ${[o.platform, o.category, o.description].filter(Boolean).join(" · ")}`).join("\n")}` : null,
@@ -59,7 +57,7 @@ async function draftWithAI(focus: string | null): Promise<Draft | { error: strin
     const res = await aiClient().messages.create({
       model: MODEL,
       max_tokens: 8000,
-      system: "You write one-page portfolio websites for Nigerian freelancers and network marketers. Use only the facts given. Never invent clients, company names, numbers, results or reviews; if there is little information, keep projects generic (e.g. 'Sample: ...') or leave the list short. Clear, confident, friendly English. Always respond by calling the provided tool exactly once, with no other text.",
+      system: "You write one-page portfolio websites for Nigerian freelancers and network marketers. Use only the facts given. Do not mention ranks, business status or network-marketing titles. Never invent clients, company names, numbers, results or reviews; if there is little information, keep projects generic (e.g. 'Sample: ...') or leave the list short. Clear, confident, friendly English. Always respond by calling the provided tool exactly once, with no other text.",
       tools: [SITE_TOOL],
       tool_choice: { type: "auto" },
       messages: [{ role: "user", content: `<member>\n${facts}\n</member>\n\nWrite their portfolio website.` }],
@@ -106,6 +104,9 @@ export async function rebuildPortfolioAction(id: string): Promise<State> {
   return { ok: true, message: "Rebuilt from your latest information." };
 }
 
+const json = (v: FormDataEntryValue | null): unknown => {
+  try { return typeof v === "string" && v.length < 200_000 ? JSON.parse(v) : null; } catch { return null; }
+};
 const slugRule = z.string().trim().toLowerCase().regex(/^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$/, "Use 3–40 letters, numbers or dashes");
 export async function savePortfolioAction(_: State, form: FormData): Promise<State> {
   const parsed = z.object({
@@ -121,6 +122,7 @@ export async function savePortfolioAction(_: State, form: FormData): Promise<Sta
     skills: v.skills.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 30),
     services: textToServices(v.services), projects: textToProjects(v.projects), accent: v.accent ?? null,
     published: form.get("published") === "on", show_whatsapp: form.get("show_whatsapp") === "on", show_email: form.get("show_email") === "on",
+    blocks: cleanBlocks(json(form.get("blocks"))), socials: cleanSocials(json(form.get("socials"))), design: cleanDesign(json(form.get("design"))),
   }).eq("id", v.id);
   if (error) return { ok: false, message: /duplicate|unique/i.test(error.message) ? "That link name is taken. Try another." : friendlyError(error) };
   revalidatePath(`/tools/portfolio/${v.id}`);
