@@ -59,7 +59,7 @@ const REPORT_TOOL: Anthropic.Tool = {
 const SYSTEM = `You are an expert Upwork profile reviewer who has helped thousands of freelancers win clients. Many users are Nigerian freelancers starting out.
 Review the profile the user pasted and score it honestly; don't inflate scores. Judge it the way a client scrolling Upwork search results would.
 Focus on: a specific, searchable title; an overview whose first two lines hook the client and speak to their problem; clear outcomes and proof; relevant skill tags; a rate that fits the niche and experience; portfolio items that show results; and fit with the target clients.
-Every fix must be concrete (say exactly what to write or change). Never invent experience, clients, numbers or reviews; when the rewrite needs a detail the user didn't give, write a [placeholder]. Don't promise jobs or earnings. Follow Upwork's rules (no contact details or off-platform payment in profiles).`;
+Every fix must be concrete (say exactly what to write or change). Never invent experience, clients, numbers or reviews; when the rewrite needs a detail the user didn't give, write a [placeholder]. Don't promise jobs or earnings. Follow Upwork's rules (no contact details or off-platform payment in profiles). Always respond by calling the provided tool exactly once, with no other text.`;
 
 export type AnalyseState = { ok: boolean; message: string; id?: string } | null;
 
@@ -94,10 +94,10 @@ export async function analyseUpworkAction(_: AnalyseState, form: FormData): Prom
   try {
     const res = await aiClient().messages.create({
       model: MODEL,
-      max_tokens: 5000,
+      max_tokens: 12000,
       system: SYSTEM,
       tools: [REPORT_TOOL],
-      tool_choice: { type: "tool", name: "upwork_report" },
+      tool_choice: { type: "auto" },
       messages: [{ role: "user", content: `<upwork_profile>\n${profile}\n</upwork_profile>\n\nAnalyse this profile.` }],
     });
     if (res.stop_reason === "max_tokens") return { ok: false, message: "The report was too long. Shorten your overview a little and try again." };

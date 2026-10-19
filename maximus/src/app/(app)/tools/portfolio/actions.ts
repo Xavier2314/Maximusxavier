@@ -58,10 +58,10 @@ async function draftWithAI(focus: string | null): Promise<Draft | { error: strin
   try {
     const res = await aiClient().messages.create({
       model: MODEL,
-      max_tokens: 3000,
-      system: "You write one-page portfolio websites for Nigerian freelancers and network marketers. Use only the facts given. Never invent clients, company names, numbers, results or reviews; if there is little information, keep projects generic (e.g. 'Sample: ...') or leave the list short. Clear, confident, friendly English.",
+      max_tokens: 8000,
+      system: "You write one-page portfolio websites for Nigerian freelancers and network marketers. Use only the facts given. Never invent clients, company names, numbers, results or reviews; if there is little information, keep projects generic (e.g. 'Sample: ...') or leave the list short. Clear, confident, friendly English. Always respond by calling the provided tool exactly once, with no other text.",
       tools: [SITE_TOOL],
-      tool_choice: { type: "tool", name: "portfolio_site" },
+      tool_choice: { type: "auto" },
       messages: [{ role: "user", content: `<member>\n${facts}\n</member>\n\nWrite their portfolio website.` }],
     });
     const block = res.content.find((b): b is Anthropic.ToolUseBlock => b.type === "tool_use");

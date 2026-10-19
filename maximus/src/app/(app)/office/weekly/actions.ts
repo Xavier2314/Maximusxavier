@@ -79,10 +79,10 @@ export async function arrangeOfficeReportAction(spoken: string): Promise<{ ok: b
   try {
     const res = await aiClient().messages.create({
       model: AI_MODEL,
-      max_tokens: 3000,
-      system: "You fill a weekly office report from what a Nigerian office leader said (often spoken, informal). Only fill what they clearly mentioned; leave the rest out. Convert '5k' to 5000. 'Distributors', 'managers', 'newbies' are ranks: put their counts in the matching metric. Keep service names and gig titles in their words.",
+      max_tokens: 8000,
+      system: "You fill a weekly office report from what a Nigerian office leader said (often spoken, informal). Only fill what they clearly mentioned; leave the rest out. Convert '5k' to 5000. 'Distributors', 'managers', 'newbies' are ranks: put their counts in the matching metric. Keep service names and gig titles in their words. Always respond by calling the provided tool exactly once, with no other text.",
       tools: [REPORT_TOOL],
-      tool_choice: { type: "tool", name: "fill_report" },
+      tool_choice: { type: "auto" },
       messages: [{ role: "user", content: input.data }],
     });
     const block = res.content.find((b) => b.type === "tool_use");

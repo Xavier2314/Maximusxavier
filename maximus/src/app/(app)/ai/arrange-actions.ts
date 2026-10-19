@@ -53,10 +53,10 @@ export async function arrangeAction(kind: "evaluation" | "order" | "payment", te
   try {
     const res = await aiClient().messages.create({
       model: AI_MODEL,
-      max_tokens: 1200,
-      system: "You turn what a Nigerian team member said (often spoken, informal, mixed English/Pidgin) into form fields. Only fill fields they clearly mentioned; leave others null. Convert amounts like '50k' to 50000 and relative dates like 'yesterday' to YYYY-MM-DD. Keep their own words for text fields, lightly tidied.",
+      max_tokens: 4000,
+      system: "You turn what a Nigerian team member said (often spoken, informal, mixed English/Pidgin) into form fields. Only fill fields they clearly mentioned; leave others null. Convert amounts like '50k' to 50000 and relative dates like 'yesterday' to YYYY-MM-DD. Keep their own words for text fields, lightly tidied. Always respond by calling the provided tool exactly once, with no other text.",
       tools: [tool],
-      tool_choice: { type: "tool", name: "fill_form" },
+      tool_choice: { type: "auto" },
       messages: [{ role: "user", content: `Today is ${todayIn(viewer.profile.timezone)}.\n\n${input.data}` }],
     });
     const block = res.content.find((b) => b.type === "tool_use");

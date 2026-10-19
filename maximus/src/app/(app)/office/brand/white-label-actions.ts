@@ -39,10 +39,10 @@ async function checkReceipt(image: Blob, fee: WhiteLabelFee): Promise<{ verdict:
   const data = Buffer.from(await image.arrayBuffer()).toString("base64");
   const res = await aiClient().messages.create({
     model: AI_MODEL,
-    max_tokens: 1000,
-    system: "You read Nigerian bank transfer receipts and screenshots and report exactly what they show. Never guess a value you cannot read; use null.",
+    max_tokens: 4000,
+    system: "You read Nigerian bank transfer receipts and screenshots and report exactly what they show. Never guess a value you cannot read; use null. Always respond by calling the provided tool exactly once, with no other text.",
     tools: [RECEIPT_TOOL],
-    tool_choice: { type: "tool", name: RECEIPT_TOOL.name },
+    tool_choice: { type: "auto" },
     messages: [{ role: "user", content: [
       { type: "image", source: { type: "base64", media_type: (image.type === "image/png" ? "image/png" : image.type === "image/webp" ? "image/webp" : "image/jpeg"), data } },
       { type: "text", text: "Read this transfer receipt." },
