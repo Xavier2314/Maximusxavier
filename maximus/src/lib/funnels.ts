@@ -110,8 +110,9 @@ export type FunnelPage = { id: string; name: string; slug: string; blocks: Funne
 export type Funnel = {
   id: string; user_id: string; title: string; slug: string; published: boolean;
   product: FunnelProduct; theme: FunnelTheme; pages: FunnelPage[]; views: number; updated_at: string;
+  live_at: string | null; live: { title?: string; theme?: unknown; product?: unknown; pages?: unknown } | null;
 };
-export const FUNNEL_COLUMNS = "id, user_id, title, slug, published, product, theme, pages, views, updated_at";
+export const FUNNEL_COLUMNS = "id, user_id, title, slug, published, product, theme, pages, views, updated_at, live_at, live";
 
 export const BLOCK_GROUPS: { title: string; types: BlockType[] }[] = [
   { title: "Top of the page", types: ["announcement", "hero", "countdown", "event"] },

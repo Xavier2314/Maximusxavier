@@ -28,9 +28,9 @@ export async function submitFunnelLeadAction(slug: string, pageId: string, block
   const v = parsed.data;
 
   const admin = createAdminClient();
-  const { data: funnel } = await admin.from("funnels").select("id, product, pages").eq("slug", slug).eq("published", true).maybeSingle();
+  const { data: funnel } = await admin.from("funnels").select("id, product, pages, live").eq("slug", slug).eq("published", true).maybeSingle();
   if (!funnel) return { ok: false, message: "This page is not available." };
-  const page = cleanPages(funnel.pages).find((p) => p.id === pageId);
+  const page = cleanPages((funnel.live && typeof funnel.live === "object" ? (funnel.live as { pages?: unknown }).pages : null) ?? funnel.pages).find((p) => p.id === pageId);
   // A form is either a form block, or a form element inside a custom section.
   const nested = page?.blocks.flatMap((b) => (b.type === "section" ? b.rows.flatMap((r) => r.columns.flatMap((c) => c.elements)) : [])).find((e) => e.type === "form" && e.id === blockId);
   const block = nested?.type === "form"

@@ -8,14 +8,16 @@ export type PublicFunnel = { id: string; title: string; slug: string; theme: Fun
 export async function loadPublicFunnel(slug: string): Promise<PublicFunnel | null> {
   if (!/^[a-z0-9-]{3,40}$/.test(slug) || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null;
   const admin = createAdminClient();
-  const { data: f } = await admin.from("funnels").select("id, user_id, title, slug, product, theme, pages").eq("slug", slug).eq("published", true).maybeSingle();
+  const { data: f } = await admin.from("funnels").select("id, user_id, title, slug, product, theme, pages, live").eq("slug", slug).eq("published", true).maybeSingle();
   if (!f) return null;
   const { data: owner } = await admin.from("profiles").select("whatsapp").eq("id", f.user_id).eq("status", "active").maybeSingle();
   if (!owner) return null;
-  const product = cleanProduct(f.product);
+  // Visitors see the published snapshot; older funnels without one fall back to their saved content.
+  const live = (f.live && typeof f.live === "object" ? f.live : f) as Record<string, unknown>;
+  const product = cleanProduct(live.product);
   const digits = (owner.whatsapp ?? "").replace(/\D/g, "");
   return {
-    id: f.id, title: f.title, slug: f.slug, theme: cleanTheme(f.theme), product, pages: cleanPages(f.pages),
+    id: f.id, title: typeof live.title === "string" && live.title ? live.title : f.title, slug: f.slug, theme: cleanTheme(live.theme), product, pages: cleanPages(live.pages),
     whatsapp: product.whatsapp && digits.length >= 8 ? digits : null,
   };
 }

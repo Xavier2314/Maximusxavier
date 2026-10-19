@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type DragEvent, type ReactNode } from "react";
 import {
-  ArrowDown, ArrowLeft, ArrowUp, Check, ChevronRight, Copy, CopyPlus, Eye, GripVertical, Laptop, Layers, LayoutTemplate, LoaderCircle, Palette, Plus, Redo2, Rocket, Smartphone, Sparkles, Tablet, Trash2, Undo2, X,
+  ArrowDown, ArrowLeft, ArrowUp, Check, ChevronRight, Copy, CopyPlus, Eye, GripVertical, History, Laptop, Layers, LayoutTemplate, LoaderCircle, Palette, Plus, Redo2, Rocket, Smartphone, Sparkles, Tablet, Trash2, Undo2, X,
 } from "lucide-react";
-import { aiFunnelAction, deleteFunnelAction, duplicateFunnelAction, saveFunnelAction } from "@/app/(app)/marketing/funnels/actions";
+import {
+  aiFunnelAction, createVersionAction, deleteFunnelAction, duplicateFunnelAction, listVersionsAction, publishFunnelAction, restoreVersionAction, rollbackLiveAction, saveAsCopyAction, saveFunnelAction, unpublishFunnelAction,
+  type VersionRow,
+} from "@/app/(app)/marketing/funnels/actions";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { FunnelView, type NodeKind } from "@/components/funnels/funnel-view";
@@ -16,7 +19,7 @@ import {
 } from "@/lib/funnel-doc";
 import { PREBUILT } from "@/lib/funnel-templates";
 import {
-  BLOCK_LABELS, ELEMENT_LABELS, newBlock, newElement, newPage, newRow, pagePath, uid,
+  BLOCK_LABELS, ELEMENT_LABELS, cleanPages, cleanProduct, cleanTheme, newBlock, newElement, newPage, newRow, pagePath, uid,
   type Funnel, type FunnelBlock, type FunnelPage, type FunnelProduct, type FunnelTheme, type Resp,
 } from "@/lib/funnels";
 import { DesignPanel } from "./design-panel";
@@ -87,6 +90,19 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
   const [welcome, setWelcome] = useState(isNew);
   const [copied, setCopied] = useState(false);
   const version = useRef(0);
+  const baseVer = useRef<string>(funnel.updated_at);
+  const [conflict, setConflict] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [versions, setVersions] = useState<VersionRow[] | null>(null);
+  const [versionLabel, setVersionLabel] = useState("");
+  const [histMsg, setHistMsg] = useState("");
+  const [pubMsg, setPubMsg] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [liveAt, setLiveAt] = useState<string | null>(funnel.live_at);
+  // Edits made since the last publish. Starts true when the draft was saved after the live copy.
+  const [unpublished, setUnpublished] = useState(!!funnel.live_at && Date.parse(funnel.updated_at) - Date.parse(funnel.live_at) > 2000);
+  const [recover, setRecover] = useState<string | null>(null);
+  const pendingKey = `funnel-pending-${funnel.id}`;
   const origin = useRef("");
   const dragRef = useRef<Payload | null>(null);
   useEffect(() => { origin.current = window.location.origin; }, []);
@@ -95,7 +111,7 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
   const blocks = page.blocks;
   const selNode = sel ? getNode(blocks, sel) : null;
   const selBlock = sel ? blocks.find((b) => b.id === sel.block) ?? null : null;
-  const touch = () => { version.current += 1; setStatus("dirty"); setSaveMsg(""); };
+  const touch = () => { version.current += 1; setStatus("dirty"); setSaveMsg(""); setUnpublished(true); };
 
   // --- history ------------------------------------------------------------------------------------
   const commit = useCallback((nextPages: FunnelPage[], nextTheme?: FunnelTheme) => {
@@ -115,18 +131,95 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
     const v = version.current;
     setStatus("saving");
     try {
-      const res = await saveFunnelAction(funnel.id, JSON.stringify({ title, slug, published, product, theme, pages }));
-      if (res?.ok) { if (version.current === v) setStatus("saved"); }
+      const res = await saveFunnelAction(funnel.id, JSON.stringify({ title, slug, product, theme, pages }), baseVer.current);
+      if (res?.ok) {
+        if (res.version) baseVer.current = res.version;
+        if (version.current === v) { setStatus("saved"); try { localStorage.removeItem(pendingKey); } catch { /* storage unavailable */ } }
+      } else if (res?.conflict) { setConflict(true); setStatus("error"); setSaveMsg("Changed somewhere else"); }
       else { setStatus("error"); setSaveMsg(res?.message ?? "Could not save."); }
     } catch {
       setStatus("error"); setSaveMsg("Could not reach the server. Your edits are still here; we will retry when you change something.");
     }
-  }, [funnel.id, title, slug, published, product, theme, pages]);
+  }, [funnel.id, title, slug, product, theme, pages, pendingKey]);
   useEffect(() => {
-    if (status !== "dirty" || aiBusy || !SLUG_OK.test(slug)) return;
+    if (status !== "dirty" || aiBusy || conflict || !SLUG_OK.test(slug)) return;
     const h = setTimeout(() => { void save(); }, 1400);
     return () => clearTimeout(h);
-  }, [status, aiBusy, slug, save]);
+  }, [status, aiBusy, conflict, slug, save]);
+
+  // Local safety copy: if the browser closes or the network drops, unsaved edits can be recovered on reopening.
+  const payload = () => JSON.stringify({ title, slug, product, theme, pages });
+  useEffect(() => {
+    if (status === "saved") return;
+    const h = setTimeout(() => { try { localStorage.setItem(pendingKey, JSON.stringify({ at: Date.now(), payload: payload() })); } catch { /* storage unavailable */ } }, 700);
+    return () => clearTimeout(h);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, title, slug, product, theme, pages, pendingKey]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(pendingKey);
+      if (!raw) return;
+      const o = JSON.parse(raw) as { at: number; payload: string };
+      if (o.at > Date.parse(funnel.updated_at) && o.payload !== payload()) setRecover(o.payload); else localStorage.removeItem(pendingKey);
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const applyDoc = (d: { title?: string; theme?: unknown; product?: unknown; pages?: unknown }) => {
+    const cp = cleanPages(d.pages);
+    if (!cp.length) return;
+    setUndo((u) => [...u.slice(-49), { pages, theme }]); setRedo([]);
+    setPages(cp); setTheme(cleanTheme(d.theme)); setProduct(cleanProduct(d.product)); if (d.title) setTitle(String(d.title).slice(0, 80));
+    setSel(null); setPageIdx(0);
+  };
+  const recoverEdits = () => { if (!recover) return; try { applyDoc(JSON.parse(recover)); touch(); } catch { /* ignore */ } setRecover(null); };
+  const dismissRecover = () => { try { localStorage.removeItem(pendingKey); } catch { /* ignore */ } setRecover(null); };
+
+  // --- publishing and history ---------------------------------------------------------------------
+  const publish = async () => {
+    setBusy(true); setPubMsg("");
+    if (status === "dirty" || status === "error") await save();
+    const r = await publishFunnelAction(funnel.id);
+    setBusy(false);
+    setPubMsg(r.message);
+    if (r.ok) { setPublished(true); setLiveAt(r.liveAt ?? null); setUnpublished(false); if (r.version) baseVer.current = r.version; setVersions(null); }
+  };
+  const unpublish = async () => {
+    setBusy(true); setPubMsg("");
+    const r = await unpublishFunnelAction(funnel.id);
+    setBusy(false); setPubMsg(r.message);
+    if (r.ok) { setPublished(false); if (r.version) baseVer.current = r.version; }
+  };
+  const loadVersions = async () => { setVersions(await listVersionsAction(funnel.id)); };
+  const openHistory = () => { setHistoryOpen(true); setHistMsg(""); void loadVersions(); };
+  const saveVersion = async () => {
+    setBusy(true); if (status === "dirty") await save();
+    const r = await createVersionAction(funnel.id, versionLabel);
+    setBusy(false); setHistMsg(r.message); if (r.ok) { setVersionLabel(""); void loadVersions(); }
+  };
+  const restore = async (vid: string) => {
+    if (!confirm("Put this version into your draft? Your current draft is saved in the history first.")) return;
+    setBusy(true);
+    const r = await restoreVersionAction(funnel.id, vid);
+    setBusy(false); setHistMsg(r.message);
+    if (r.ok && r.snapshot) { applyDoc(r.snapshot); if (r.version) baseVer.current = r.version; setStatus("saved"); setUnpublished(true); void loadVersions(); }
+  };
+  const rollback = async (vid: string) => {
+    if (!confirm("Make this version live again? Visitors will see it straight away. Your draft is not changed.")) return;
+    setBusy(true);
+    const r = await rollbackLiveAction(funnel.id, vid);
+    setBusy(false); setHistMsg(r.message);
+    if (r.ok) { setPublished(true); setLiveAt(r.liveAt ?? null); setUnpublished(true); void loadVersions(); }
+  };
+  const reloadLatest = () => { window.location.reload(); };
+  const keepMine = async () => {
+    // Saving without a base version overwrites the newer copy on purpose; the member chose to keep their own edits.
+    const r = await saveFunnelAction(funnel.id, payload(), null);
+    if (r.ok) { if (r.version) baseVer.current = r.version; setConflict(false); setStatus("saved"); setSaveMsg(""); } else setSaveMsg(r.message);
+  };
+  const copyMine = async () => {
+    const r = await saveAsCopyAction(funnel.id, payload());
+    if (r.ok && r.id) window.location.href = `/builder/${r.id}`; else setSaveMsg(r.message);
+  };
   useEffect(() => {
     if (status !== "dirty" && status !== "saving") return;
     const h = (e: BeforeUnloadEvent) => { e.preventDefault(); };
@@ -369,6 +462,25 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
                   <Input aria-label="Page name" value={pg.name} maxLength={40} className="!h-9" onFocus={() => setPageIdx(i)} onChange={(e) => commit(pages.map((x) => (x.id === pg.id ? { ...x, name: e.target.value } : x)))} />
                 </div>
                 <p className="mt-1.5 truncate text-[11px] text-fg-subtle">{origin.current}{pagePath(slug, pg, i)}</p>
+                {i === pageIdx && (
+                  <details className="mt-2 rounded-lg border border-border bg-surface p-2 text-sm">
+                    <summary className="cursor-pointer font-medium">Search &amp; sharing (SEO)</summary>
+                    <div className="mt-2 space-y-2">
+                      {(() => {
+                        const seo = pg.seo ?? { title: "", description: "", image: "", noIndex: false };
+                        const set = (patch: Partial<typeof seo>) => commit(pages.map((x) => (x.id === pg.id ? { ...x, seo: { ...seo, ...patch } } : x)));
+                        return (
+                          <>
+                            <Field label="Page title" htmlFor={`seo-t-${pg.id}`} hint={`${seo.title.length}/60. Shown in Google and browser tabs.`}><Input id={`seo-t-${pg.id}`} value={seo.title} maxLength={120} placeholder={title} onChange={(e) => set({ title: e.target.value })} /></Field>
+                            <Field label="Description" htmlFor={`seo-d-${pg.id}`} hint={`${seo.description.length}/160`}><Textarea id={`seo-d-${pg.id}`} rows={3} value={seo.description} maxLength={320} onChange={(e) => set({ description: e.target.value })} /></Field>
+                            <Field label="Social share image" htmlFor={`seo-i-${pg.id}`}><ImageField id={`seo-i-${pg.id}`} userId={userId} value={seo.image} onChange={(v) => set({ image: v })} /></Field>
+                            <label className="flex items-center gap-2 text-xs"><Checkbox checked={seo.noIndex} onChange={(e) => set({ noIndex: e.target.checked })} />Hide this page from search engines</label>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </details>
+                )}
                 <div className="mt-1.5 flex gap-1">
                   <Button size="icon" variant="ghost" disabled={i === 0} aria-label="Move earlier" onClick={() => { const a = [...pages]; [a[i - 1], a[i]] = [a[i], a[i - 1]]; commit(a); setPageIdx(i - 1); }}><ArrowUp className="size-4" /></Button>
                   <Button size="icon" variant="ghost" disabled={i === pages.length - 1} aria-label="Move later" onClick={() => { const a = [...pages]; [a[i + 1], a[i]] = [a[i], a[i + 1]]; commit(a); setPageIdx(i + 1); }}><ArrowDown className="size-4" /></Button>
@@ -457,7 +569,7 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
         </span>
         <div className="ml-auto flex items-center gap-1.5">
           <a href={`/builder/${funnel.id}/preview?p=${page.slug}`} target="_blank" rel="noopener noreferrer" aria-label="Preview" className="grid size-9 place-items-center rounded-xl border border-border hover:bg-surface-muted"><Eye className="size-4" /></a>
-          <Button size="sm" onClick={() => setPublishOpen(true)}><Rocket className="size-4" />{published ? "Published" : "Publish"}</Button>
+          <Button size="sm" onClick={() => setPublishOpen(true)}><Rocket className="size-4" />{published ? (unpublished ? "Publish changes" : "Published") : "Publish"}</Button>
         </div>
       </header>
 
@@ -480,6 +592,7 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
         </div>
         <Select aria-label="Zoom" value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="!h-9 !w-24">{[50, 75, 100, 125].map((z) => <option key={z} value={z}>{z}%</option>)}</Select>
         <div className="ml-auto flex items-center gap-0.5">
+          <Button size="icon" variant="ghost" onClick={openHistory} aria-label="Version history" title="Version history"><History className="size-4" /></Button>
           <Button size="icon" variant="ghost" onClick={stepUndo} disabled={!undo.length} aria-label="Undo"><Undo2 className="size-4" /></Button>
           <Button size="icon" variant="ghost" onClick={stepRedo} disabled={!redo.length} aria-label="Redo"><Redo2 className="size-4" /></Button>
           <Button size="sm" variant="ghost" onClick={() => setShortcutsOpen(true)} aria-label="Keyboard shortcuts" className="hidden sm:inline-flex">⌨︎</Button>
@@ -492,6 +605,23 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
         <button type="button" onClick={copyLink} className="text-primary underline">{copied ? "Copied" : "Copy link"}</button>
         <button type="button" onClick={() => setDomainOpen(true)} className="font-medium text-primary underline">Connect domain</button>
       </div>
+
+      {conflict && (
+        <div role="alert" className="flex flex-wrap items-center gap-2 border-b border-danger bg-danger/10 px-3 py-2 text-sm">
+          <b>This funnel was changed in another tab or device.</b> Autosave is paused so nothing gets overwritten.
+          <span className="ml-auto flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={reloadLatest}>Load the latest</Button>
+            <Button size="sm" variant="outline" onClick={keepMine}>Keep my version</Button>
+            <Button size="sm" variant="outline" onClick={copyMine}>Save mine as a copy</Button>
+          </span>
+        </div>
+      )}
+      {recover && (
+        <div role="status" className="flex flex-wrap items-center gap-2 border-b border-border bg-primary-soft px-3 py-2 text-sm">
+          <b>We found edits that never reached the server.</b>
+          <span className="ml-auto flex gap-2"><Button size="sm" onClick={recoverEdits}>Recover them</Button><Button size="sm" variant="outline" onClick={dismissRecover}>Discard</Button></span>
+        </div>
+      )}
 
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         {/* Left panel (desktop) */}
@@ -569,14 +699,44 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
         </div>
       )}
 
+      {historyOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="hist-title" onClick={() => setHistoryOpen(false)}>
+          <div className="flex max-h-[85dvh] w-full max-w-lg flex-col gap-3 rounded-3xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between"><h2 id="hist-title" className="text-xl font-bold">Version history</h2><Button size="icon" variant="ghost" aria-label="Close" onClick={() => setHistoryOpen(false)}><X className="size-4" /></Button></div>
+            <div className="flex gap-2">
+              <Input aria-label="Version name" placeholder="Name this version (optional)" maxLength={80} value={versionLabel} onChange={(e) => setVersionLabel(e.target.value)} />
+              <Button onClick={saveVersion} disabled={busy}>Save version</Button>
+            </div>
+            {histMsg && <p role="status" className="text-sm">{histMsg}</p>}
+            <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto">
+              {versions === null && <li className="text-sm text-fg-muted">Loading…</li>}
+              {versions?.length === 0 && <li className="text-sm text-fg-muted">No versions yet. Safety copies are saved automatically while you work, and each time you publish.</li>}
+              {versions?.map((v) => (
+                <li key={v.id} className="flex flex-wrap items-center gap-2 rounded-xl border border-border p-3 text-sm">
+                  <div className="min-w-0 flex-1"><p className="font-medium">{v.label || ({ auto: "Automatic copy", manual: "Saved version", publish: "Published", restore: "Before a restore" })[v.kind]}</p><p className="text-xs text-fg-subtle">{new Date(v.created_at).toLocaleString()}</p></div>
+                  <Button size="sm" variant="outline" onClick={() => restore(v.id)} disabled={busy}>Restore to draft</Button>
+                  <Button size="sm" variant="ghost" onClick={() => rollback(v.id)} disabled={busy}>Make live</Button>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-fg-subtle">The newest 50 versions are kept. Versions never change once saved.</p>
+          </div>
+        </div>
+      )}
+
       {publishOpen && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="pub-title" onClick={() => setPublishOpen(false)}>
           <div className="w-full max-w-md space-y-4 rounded-3xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between"><h2 id="pub-title" className="text-xl font-bold">Publish your funnel</h2><Button size="icon" variant="ghost" aria-label="Close" onClick={() => setPublishOpen(false)}><X className="size-4" /></Button></div>
-            <label className="flex items-center gap-3 rounded-2xl border border-border p-3.5 text-sm font-semibold">
-              <Checkbox checked={published} onChange={(e) => { setPublished(e.target.checked); touch(); }} />
-              {published ? "Live: anyone with the link can see it" : "Draft: only you can see it"}
-            </label>
+            <div className="space-y-2 rounded-2xl border border-border p-3.5 text-sm">
+              <p className="font-semibold">{published ? (unpublished ? "Live, with changes not published yet" : "Live: anyone with the link can see it") : "Not published: only you can see it"}</p>
+              {liveAt && <p className="text-xs text-fg-subtle">Last published {new Date(liveAt).toLocaleString()}. Visitors only see what you publish; autosave never changes the live page.</p>}
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={publish} disabled={busy || !SLUG_OK.test(slug)}>{busy ? <LoaderCircle className="size-4 animate-spin" /> : <Rocket className="size-4" />}{published ? "Publish changes" : "Publish"}</Button>
+                {published && <Button variant="outline" onClick={unpublish} disabled={busy}>Unpublish</Button>}
+              </div>
+              {pubMsg && <p role="status" className="text-xs">{pubMsg}</p>}
+            </div>
             <Field label="Your link" htmlFor="slug" hint="Letters, numbers and dashes only.">
               <div className="flex items-center gap-1.5"><span className="shrink-0 text-xs text-fg-subtle">{origin.current.replace(/^https?:\/\//, "")}/f/</span><Input id="slug" value={slug} maxLength={40} onChange={(e) => { setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "")); touch(); }} /></div>
             </Field>

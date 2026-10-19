@@ -1247,6 +1247,39 @@ end $$;
 select pg_temp.expect_error($$ insert into public.funnels (title, slug) values ('Eleven', public.suggest_funnel_slug('eleven')) $$, 'limit of 10 funnels');
 select pg_temp.act_as(null);
 
+-- 0050: funnel versions are owner-only and immutable; the live (published) copy is separate from the draft.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+insert into public.funnel_versions (funnel_id, kind, label, snapshot) select id, 'manual', 'Before the big change', jsonb_build_object('title', title) from public.funnels limit 1;
+do $$ begin
+  assert (select count(*) from public.funnel_versions) = 1, 'owner reads own versions';
+  raise notice 'PASS: owner can snapshot and read funnel versions';
+end $$;
+select pg_temp.expect_error($$ update public.funnel_versions set label = 'tampered' $$, 'versions are immutable');
+select pg_temp.expect_error($$ insert into public.funnel_versions (funnel_id, snapshot) select id, '{}'::jsonb from public.funnels where false union all select '00000000-0000-0000-0000-00000000dead', '{}'::jsonb $$, 'cannot add a version to a funnel that is not yours');
+update public.funnels set live = jsonb_build_object('pages', '[]'::jsonb), live_at = now() where slug like 'wellness-pack%';
+do $$ begin
+  assert (select count(*) from public.funnels where live is not null) = 1, 'owner publishes a live snapshot';
+  raise notice 'PASS: owner can publish a live snapshot';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+do $$ begin
+  assert (select count(*) from public.funnel_versions) = 0, 'others cannot read versions';
+  delete from public.funnel_versions;
+  update public.funnels set live = '{"pages":[]}'::jsonb;
+  raise notice 'PASS: versions and live snapshots are owner-only';
+end $$;
+select pg_temp.act_as(null);
+do $$ begin
+  assert (select count(*) from public.funnel_versions) = 1, 'versions not deleted by others';
+  assert (select count(*) from public.funnels where live is not null) = 1, 'live not changed by others';
+end $$;
+-- the newest 50 versions are kept
+insert into public.funnel_versions (funnel_id, kind, snapshot) select f.id, 'auto', '{}'::jsonb from public.funnels f, generate_series(1, 60) where f.slug like 'wellness-pack%';
+do $$ begin
+  assert (select count(*) from public.funnel_versions v join public.funnels f on f.id = v.funnel_id where f.slug like 'wellness-pack%') = 50, 'history is trimmed to 50';
+  raise notice 'PASS: funnel history keeps the newest 50';
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

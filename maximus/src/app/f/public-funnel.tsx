@@ -9,13 +9,19 @@ export async function funnelMetadata(slug: string, pageSlug?: string): Promise<M
   if (!f) return { title: "Page not found" };
   const page = pageSlug ? f.pages.find((p) => p.slug === pageSlug) : f.pages[0];
   const hero = page?.blocks.find((b) => b.type === "hero");
+  const seo = page?.seo;
+  const title = seo?.title || f.title;
+  const description = seo?.description || (hero && hero.type === "hero" ? hero.subheadline.slice(0, 160) : undefined);
+  const image = seo?.image || f.product.imageUrl;
   // Funnel pages carry the seller's name only: no "Maximus" title suffix, app name or install label.
   return {
-    title: { absolute: f.title },
+    title: { absolute: title },
     applicationName: f.title,
     appleWebApp: { title: f.title },
-    description: hero && hero.type === "hero" ? hero.subheadline.slice(0, 160) : undefined,
-    openGraph: { title: f.title, images: f.product.imageUrl ? [f.product.imageUrl] : undefined },
+    description,
+    robots: seo?.noIndex ? { index: false, follow: false } : undefined,
+    alternates: { canonical: pageSlug ? `/f/${f.slug}/${pageSlug}` : `/f/${f.slug}` },
+    openGraph: { title, description, images: image ? [image] : undefined },
   };
 }
 
