@@ -2,14 +2,15 @@
   "name": "maximus",
   "version": "0.1.0",
   "private": true,
-  "description": "Maximus \u2014 team growth platform. Fulfilment in maximized potential.",
+  "description": "Maximus — team growth platform. Fulfilment in maximized potential.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:db": "bash supabase/tests/run.sh",
-    "vapid": "node -e \"const w=require('web-push');const k=w.generateVAPIDKeys();console.log('NEXT_PUBLIC_VAPID_PUBLIC_KEY='+k.publicKey+'\\nVAPID_PRIVATE_KEY='+k.privateKey)\""
+    "vapid": "node -e \"const w=require('web-push');const k=w.generateVAPIDKeys();console.log('NEXT_PUBLIC_VAPID_PUBLIC_KEY='+k.publicKey+'\\nVAPID_PRIVATE_KEY='+k.privateKey)\"",
+    "test": "node --import tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": ">=0.60.0",
@@ -35,6 +36,7 @@
     "@types/react-dom": "^19.1.2",
     "@types/web-push": "^3.6.4",
     "tailwindcss": "^4.1.4",
+    "tsx": "^4.23.15",
     "typescript": "^5.8.3"
   },
   "engines": {

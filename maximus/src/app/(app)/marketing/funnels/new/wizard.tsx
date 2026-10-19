@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { Checkbox, Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { ImageField } from "@/components/funnels/image-upload";
+import { MultiImageField } from "@/components/funnels/image-upload";
 import { StyleThumb } from "@/components/funnels/style-thumb";
 import { STYLES } from "@/lib/funnel-styles";
 import { starterPages } from "@/lib/funnel-templates";
@@ -33,7 +33,7 @@ export function Wizard({ userId }: { userId: string }) {
     <form action={action} className="mx-auto max-w-4xl space-y-6">
       <input type="hidden" name="name" value={p.name} /><input type="hidden" name="price" value={p.price} /><input type="hidden" name="description" value={p.description} />
       <input type="hidden" name="benefits" value={p.benefits} /><input type="hidden" name="audience" value={p.audience} /><input type="hidden" name="offer" value={p.offer} />
-      <input type="hidden" name="imageUrl" value={p.imageUrl} /><input type="hidden" name="funnelType" value={p.funnelType} /><input type="hidden" name="style" value={style} />
+      <input type="hidden" name="imageUrl" value={p.imageUrl} /><input type="hidden" name="images" value={JSON.stringify(p.images)} /><input type="hidden" name="funnelType" value={p.funnelType} /><input type="hidden" name="style" value={style} />
       <input type="hidden" name="mode" value={mode} /><input type="hidden" name="tone" value={tone} />
       {p.whatsapp && <input type="hidden" name="whatsapp" value="on" />}
 
@@ -63,7 +63,9 @@ export function Wizard({ userId }: { userId: string }) {
                 <Field label="Who is it for?" htmlFor="w-aud" optional><Input id="w-aud" value={p.audience} maxLength={300} onChange={(e) => set("audience", e.target.value)} placeholder="e.g. Busy parents and professionals" /></Field>
                 <Field label="Offer or bonus" htmlFor="w-offer" optional><Input id="w-offer" value={p.offer} maxLength={400} onChange={(e) => set("offer", e.target.value)} placeholder="e.g. Free delivery in Lagos this week" /></Field>
               </div>
-              <Field label="Product photo" htmlFor="w-img" optional hint="A clear photo makes the funnel look much better."><ImageField id="w-img" userId={userId} value={p.imageUrl} onChange={(u) => set("imageUrl", u)} /></Field>
+              <Field label="Product photos" htmlFor="w-img" optional hint="Add as many as you like (up to 8). The first is the main photo, the rest become a gallery. Clear photos make a funnel look far better.">
+                <MultiImageField id="w-img" userId={userId} values={[p.imageUrl, ...p.images].filter(Boolean)} onChange={(urls) => setP((x) => ({ ...x, imageUrl: urls[0] ?? "", images: urls.slice(1) }))} />
+              </Field>
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={p.whatsapp} onChange={(e) => set("whatsapp", e.target.checked)} />Offer a &quot;Message us on WhatsApp&quot; button after an order</label>
             </>
           )}

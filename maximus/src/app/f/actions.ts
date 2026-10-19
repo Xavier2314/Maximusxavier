@@ -30,7 +30,12 @@ export async function submitFunnelLeadAction(slug: string, pageId: string, block
   const admin = createAdminClient();
   const { data: funnel } = await admin.from("funnels").select("id, product, pages").eq("slug", slug).eq("published", true).maybeSingle();
   if (!funnel) return { ok: false, message: "This page is not available." };
-  const block = cleanPages(funnel.pages).find((p) => p.id === pageId)?.blocks.find((b) => b.id === blockId);
+  const page = cleanPages(funnel.pages).find((p) => p.id === pageId);
+  // A form is either a form block, or a form element inside a custom section.
+  const nested = page?.blocks.flatMap((b) => (b.type === "section" ? b.rows.flatMap((r) => r.columns.flatMap((c) => c.elements)) : [])).find((e) => e.type === "form" && e.id === blockId);
+  const block = nested?.type === "form"
+    ? ({ id: nested.id, type: "lead_form", title: nested.title, text: nested.text, buttonText: nested.buttonText, successMessage: nested.successMessage, askPhone: nested.askPhone, askMessage: nested.askMessage, imageUrl: "" } as const)
+    : page?.blocks.find((b) => b.id === blockId);
   if (!block || (block.type !== "lead_form" && block.type !== "order_form")) return { ok: false, message: "This form is not available." };
 
   const kind = block.type === "order_form" ? "order" : "lead";

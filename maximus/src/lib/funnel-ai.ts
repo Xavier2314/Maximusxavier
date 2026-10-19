@@ -16,9 +16,11 @@ BLOCK TYPES. Every block has "type". Optional on ANY block: "bg" (none | tint | 
 - text: title, body. Short paragraphs separated by blank lines.
 - benefits: title, subtitle, items [{icon (one emoji), title, text}] (3-6). variant: cards | list | icons.
 - steps: title, items [{title, text}] (3). variant: row | column.
-- product: name, price, oldPrice (only if the seller gave one), description, points (benefit lines separated by newlines), imageUrl, buttonText. variant: split | reverse | stacked.
+- product: name, price, oldPrice (only if the seller gave one), description, points (benefit lines separated by newlines), imageUrl (main photo), images (more photo URLs; visitors can switch between all of them), buttonText. variant: split | reverse | stacked.
 - offer: title, items [{title, text, value}], totalValue, price, buttonText, note. The "everything you get" stack. Only use values the seller provided.
 - image: url, caption. video: url, caption. gallery: title, items [{url, caption}]. Use these ONLY with URLs the seller gave.
+- section: a CUSTOM layout made of rows. {rows:[{columns:[{elements:[...]}]}]}. Elements: heading{text,level 1-4}, text{text}, bullets{items (lines)}, button{text,link,look solid|outline|soft}, image{url,alt,ratio,fit}, video{url}, divider, spacer{size}, icon{emoji,title,text}, countdown, progress{label,value}, faq{items}, form{title,text,buttonText,successMessage,askPhone,askMessage}. Use a section only when a side-by-side layout clearly helps (for example copy on the left and a photo on the right); prefer the ready-made blocks otherwise.
+- Merge fields {{business.name}}, {{business.phone}}, {{business.email}}, {{business.address}}, {{right_now.year}} may appear in text and in tel:/mailto: button links ONLY when the seller supplied those business details.
 - testimonials: title, items [{name, role, quote, imageUrl}]. variant: grid | single. ONLY if the seller supplied real testimonials.
 - stats: items [{value, label}] (2-4). ONLY real numbers the seller gave.
 - faq: title, items [{q, a}] (4-6). Answer real objections: how to order, payment, delivery, safety, how it is used, who it is for.
@@ -53,7 +55,7 @@ RULES (important):
 - Do not mention any company, brand or network unless the seller typed it in their product details. Never name a parent company on your own.
 - If there is no price, leave price fields empty. If a block would need information you do not have, leave it out.`;
 
-const BLOCK_ENUM = ["announcement", "hero", "text", "benefits", "steps", "product", "offer", "image", "video", "gallery", "testimonials", "stats", "faq", "guarantee", "about", "countdown", "event", "lead_form", "order_form", "cta", "button", "spacer", "footer"];
+const BLOCK_ENUM = ["announcement", "hero", "text", "benefits", "steps", "product", "offer", "image", "video", "gallery", "testimonials", "stats", "faq", "guarantee", "about", "countdown", "event", "lead_form", "order_form", "cta", "button", "spacer", "footer", "section"];
 
 const FUNNEL_TOOL: Anthropic.Tool = {
   name: "funnel",
@@ -94,7 +96,8 @@ function describe(p: FunnelProduct) {
     p.benefits && `Benefits and selling points:\n${p.benefits}`,
     p.audience && `Who it is for: ${p.audience}`,
     p.offer && `Offer / bonus / guarantee the seller stated: ${p.offer}`,
-    p.imageUrl && `Product photo URL (use it in the hero and product blocks): ${p.imageUrl}`,
+    p.imageUrl && `Main product photo URL (use it in the hero and the product block): ${p.imageUrl}`,
+    p.images.length > 0 && `More product photos (${p.images.length}). Put ALL of them in the product block's "images" list${p.images.length >= 3 ? ', and also show them in a "gallery" block' : ""}:\n${p.images.join("\n")}`,
   ].filter(Boolean).join("\n\n");
 }
 

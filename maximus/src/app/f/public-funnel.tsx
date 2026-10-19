@@ -27,5 +27,7 @@ export async function PublicFunnelPage({ slug, pageSlug }: { slug: string; pageS
   if (!page) notFound();
   if (index === 0) void countFunnelView(slug).then(() => undefined, () => undefined);
   const next = f.pages[index + 1];
-  return <FunnelView slug={f.slug} theme={f.theme} page={page} whatsapp={f.whatsapp ?? undefined} nextHref={next ? pagePath(f.slug, next, index + 1) : undefined} />;
+  const b = f.product.business;
+  const merge = { "business.name": b.name, "business.phone": b.phone, "business.email": b.email, "business.address": b.address, "right_now.year": String(new Date().getFullYear()) };
+  return <FunnelView slug={f.slug} theme={f.theme} page={page} merge={merge} whatsapp={f.whatsapp ?? undefined} nextHref={next ? pagePath(f.slug, next, index + 1) : undefined} />;
 }

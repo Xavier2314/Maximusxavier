@@ -1,4 +1,4 @@
-import type { Bg, FunnelTheme, StyleKey } from "@/lib/funnels";
+import type { Bg, FontKey, FunnelTheme, StyleKey } from "@/lib/funnels";
 
 /** Each style is a complete look: fonts, shapes, buttons, cards and how the hero is dressed. */
 export type StyleDef = {
@@ -78,6 +78,11 @@ export function shiftHue(hex: string, deg: number): string {
 
 // --- resolved tokens -------------------------------------------------------------------------------
 
+const FONT_VARS: Record<FontKey, string> = {
+  inter: f("--f-inter"), poppins: f("--f-poppins"), playfair: f("--f-playfair", serif), dmsans: f("--f-dmsans"), spacegrotesk: f("--f-spacegrotesk"), lora: f("--f-lora", serif),
+};
+const RADII = { sharp: { card: 4, btn: 2 }, soft: { card: 16, btn: 12 }, round: { card: 28, btn: 999 } } as const;
+
 export type Tokens = {
   style: StyleDef; dark: boolean; accent: string; accent2: string; onAccent: string;
   bg: string; surface: string; alt: string; text: string; mute: string; line: string;
@@ -93,12 +98,23 @@ export function tokens(theme: FunnelTheme): Tokens {
       ? { bg: "#0b1220", surface: "#111827", alt: "#0f172a", text: "#f1f5f9", mute: "#cbd5e1", line: st.key === "editorial" || st.key === "playful" ? "#f1f5f9" : "#1f2937" }
       : { bg: "#ffffff", surface: "#f8fafc", alt: "#f1f5f9", text: "#0f172a", mute: "#475569", line: st.key === "editorial" || st.key === "playful" ? "#111827" : "#e2e8f0" };
   const accent = theme.accent;
-  return { style: st, dark, accent, accent2: shiftHue(accent, 26), onAccent: onColor(accent), ...base };
+  // Global tokens override the style's own fonts, corner shape and button treatment.
+  const style: StyleDef = {
+    ...st,
+    heading: theme.headingFont ? FONT_VARS[theme.headingFont] : st.heading,
+    body: theme.bodyFont ? FONT_VARS[theme.bodyFont] : st.body,
+    radius: theme.radius ? RADII[theme.radius].card : st.radius,
+    btnRadius: theme.radius ? RADII[theme.radius].btn : st.btnRadius,
+    btn: theme.button ?? st.btn,
+    card: theme.button === "neo" && st.card !== "neo" ? "neo" : st.card,
+  };
+  return { style, dark, accent, accent2: shiftHue(accent, 26), onAccent: onColor(accent), ...base };
 }
 
 /** Section palettes: what text/cards look like on each section background. */
 export type Pal = { bgCss: string; text: string; mute: string; card: string; line: string; onDark: boolean; btnBg: string; btnText: string; accentText: string };
-export function palette(t: Tokens, bg: Bg | undefined, defaultBg: Bg = "none"): Pal {
+const cssUrl = (u: string) => `url("${u.replace(/\(/g, "%28").replace(/\)/g, "%29")}")`;
+export function palette(t: Tokens, bg: Bg | undefined, defaultBg: Bg = "none", custom?: { color?: string; image?: string }): Pal {
   const kind = bg ?? defaultBg;
   const normalBtn = t.style.btn === "gradient" ? `linear-gradient(135deg, ${t.accent}, ${t.accent2})` : t.accent;
   const normalBtnText = t.style.btn === "gradient" ? onColor(mix(t.accent, t.accent2, 0.5)) : t.onAccent;
@@ -108,8 +124,16 @@ export function palette(t: Tokens, bg: Bg | undefined, defaultBg: Bg = "none"): 
     const on = kind === "gradient" ? onColor(mix(t.accent, t.accent2, 0.5)) : t.onAccent;
     return { bgCss, text: on, mute: on, card: rgba(on === "#ffffff" ? "#ffffff" : "#000000", 0.14), line: rgba(on === "#ffffff" ? "#ffffff" : "#000000", 0.28), onDark: on === "#ffffff", btnBg: on, btnText: on === "#ffffff" ? t.accent : "#ffffff", accentText: on };
   }
+  if (kind === "custom" && custom?.color) {
+    const on = onColor(custom.color);
+    const light = on === "#ffffff";
+    return { bgCss: custom.color, text: on, mute: light ? "rgba(255,255,255,.85)" : "rgba(15,23,42,.72)", card: light ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.6)", line: light ? "rgba(255,255,255,0.28)" : "rgba(15,23,42,0.14)", onDark: light, btnBg: normalBtn, btnText: normalBtnText, accentText: light ? "#ffffff" : t.accent };
+  }
+  if (kind === "image" && custom?.image) {
+    return { bgCss: `linear-gradient(rgba(5,8,20,.62), rgba(5,8,20,.72)), ${cssUrl(custom.image)} center/cover no-repeat`, text: "#f8fafc", mute: "#e2e8f0", card: "rgba(255,255,255,0.1)", line: "rgba(255,255,255,0.22)", onDark: true, btnBg: normalBtn, btnText: normalBtnText, accentText: "#ffffff" };
+  }
   if (kind === "dark") return { bgCss: "#0b1220", text: "#f8fafc", mute: "#cbd5e1", card: "rgba(255,255,255,0.07)", line: "rgba(255,255,255,0.16)", onDark: true, btnBg: normalBtn, btnText: normalBtnText, accentText: t.accent };
   return { bgCss: "transparent", text: t.text, mute: t.mute, card: t.surface, line: t.line, onDark: t.dark, btnBg: normalBtn, btnText: normalBtnText, accentText: t.accent };
 }
 
-export const SPACING: Record<string, string> = { compact: "py-8 sm:py-10", normal: "py-12 sm:py-16", roomy: "py-16 sm:py-24" };
+export const SPACING: Record<string, string> = { compact: "py-8 @min-[640px]:py-10", normal: "py-12 @min-[640px]:py-16", roomy: "py-16 @min-[640px]:py-24" };

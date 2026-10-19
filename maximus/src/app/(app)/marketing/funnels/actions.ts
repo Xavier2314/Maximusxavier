@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { requireViewer } from "@/lib/auth";
+import { getViewer, requireViewer } from "@/lib/auth";
 import { designFunnel, reviseFunnel } from "@/lib/funnel-ai";
 import { STYLES } from "@/lib/funnel-styles";
 import { starterPages } from "@/lib/funnel-templates";
@@ -23,6 +23,7 @@ export async function createFunnelAction(_: State, form: FormData): Promise<Stat
   const product = cleanProduct({
     name: form.get("name"), price: form.get("price"), description: form.get("description"), benefits: form.get("benefits"),
     audience: form.get("audience"), offer: form.get("offer"), imageUrl: form.get("imageUrl"), whatsapp: form.get("whatsapp") === "on", funnelType,
+    images: (() => { try { const v = JSON.parse(String(form.get("images") ?? "[]")); return Array.isArray(v) ? v : []; } catch { return []; } })(),
   });
   if (!product.name) return { ok: false, message: "Enter the product name." };
   const picked = z.enum(["auto", ...STYLE_KEYS] as [string, ...string[]]).catch("auto").parse(form.get("style")) as StyleKey | "auto";
@@ -54,7 +55,8 @@ export async function createFunnelAction(_: State, form: FormData): Promise<Stat
 
 export async function saveFunnelAction(funnelId: string, payload: string): Promise<State> {
   if (!id.safeParse(funnelId).success) return { ok: false, message: "Unknown funnel." };
-  await requireViewer();
+  // Never redirect from an autosave: if the session expired, keep the member's edits on screen and say so.
+  if (!(await getViewer())) return { ok: false, message: "Your session expired, so changes are not being saved. Sign in again in another tab, then keep editing here." };
   let raw: Record<string, unknown>;
   try { raw = payload.length < 600_000 ? JSON.parse(payload) : {}; } catch { return { ok: false, message: "Could not read your changes." }; }
   const head = z.object({ title: z.string().trim().min(1, "Give the funnel a name.").max(80), slug: slugRule, published: z.boolean() }).safeParse(raw);
@@ -73,7 +75,8 @@ export async function saveFunnelAction(funnelId: string, payload: string): Promi
 /** Asks the AI to change the funnel (or redesign it). Returns the result for the builder to apply. */
 export async function aiFunnelAction(funnelId: string, instruction: string, current: string, focusBlockId?: string): Promise<AiResult> {
   if (!id.safeParse(funnelId).success) return { ok: false, message: "Unknown funnel." };
-  const viewer = await requireViewer();
+  const viewer = await getViewer();
+  if (!viewer) return { ok: false, message: "Your session expired. Sign in again in another tab, then try again." };
   const note = z.string().trim().min(3, "Tell the AI what to change.").max(1500).safeParse(instruction);
   if (!note.success) return { ok: false, message: note.error.issues[0]?.message ?? "Tell the AI what to change." };
   const supabase = await createClient();

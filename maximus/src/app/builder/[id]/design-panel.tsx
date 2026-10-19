@@ -3,7 +3,7 @@
 import { Check, Moon, Sun } from "lucide-react";
 import { StyleThumb } from "@/components/funnels/style-thumb";
 import { STYLES } from "@/lib/funnel-styles";
-import { STYLE_KEYS, type FunnelPage, type FunnelTheme } from "@/lib/funnels";
+import { FONT_KEYS, FONT_LABELS, STYLE_KEYS, type FontKey, type FunnelPage, type FunnelTheme } from "@/lib/funnels";
 
 const SWATCHES = ["#2563eb", "#7c3aed", "#db2777", "#e11d48", "#ea580c", "#d97706", "#16a34a", "#0d9488", "#0891b2", "#0f172a"];
 
@@ -41,6 +41,32 @@ export function DesignPanel({ theme, page, onTheme }: { theme: FunnelTheme; page
             <input type="color" value={theme.accent} onChange={(e) => onTheme({ ...theme, accent: e.target.value })} className="h-8 w-10 cursor-pointer rounded-lg border border-border" />
           </label>
         </div>
+      </div>
+
+      <div className="space-y-3 rounded-2xl border border-border p-3.5">
+        <p className="text-sm font-bold">Global styles</p>
+        <p className="-mt-2 text-xs text-fg-subtle">These apply to every page of the funnel and override the look you picked.</p>
+        <label className="block text-xs font-medium">Headline font
+          <select value={theme.headingFont ?? ""} onChange={(e) => onTheme({ ...theme, headingFont: (e.target.value || undefined) as FontKey | undefined })} className="mt-1 h-10 w-full rounded-xl border border-border bg-surface px-2 text-sm">
+            <option value="">Automatic (from the look)</option>{FONT_KEYS.map((k) => <option key={k} value={k}>{FONT_LABELS[k]}</option>)}
+          </select>
+        </label>
+        <label className="block text-xs font-medium">Body font
+          <select value={theme.bodyFont ?? ""} onChange={(e) => onTheme({ ...theme, bodyFont: (e.target.value || undefined) as FontKey | undefined })} className="mt-1 h-10 w-full rounded-xl border border-border bg-surface px-2 text-sm">
+            <option value="">Automatic (from the look)</option>{FONT_KEYS.map((k) => <option key={k} value={k}>{FONT_LABELS[k]}</option>)}
+          </select>
+        </label>
+        <label className="block text-xs font-medium">Corners
+          <select value={theme.radius ?? ""} onChange={(e) => onTheme({ ...theme, radius: (e.target.value || undefined) as FunnelTheme["radius"] })} className="mt-1 h-10 w-full rounded-xl border border-border bg-surface px-2 text-sm">
+            <option value="">Automatic</option><option value="sharp">Sharp</option><option value="soft">Soft</option><option value="round">Very round</option>
+          </select>
+        </label>
+        <label className="block text-xs font-medium">Buttons
+          <select value={theme.button ?? ""} onChange={(e) => onTheme({ ...theme, button: (e.target.value || undefined) as FunnelTheme["button"] })} className="mt-1 h-10 w-full rounded-xl border border-border bg-surface px-2 text-sm">
+            <option value="">Automatic</option><option value="solid">Solid colour</option><option value="gradient">Gradient</option><option value="neo">Outlined with shadow</option>
+          </select>
+        </label>
+        {(theme.headingFont || theme.bodyFont || theme.radius || theme.button) && <button type="button" onClick={() => onTheme({ style: theme.style, accent: theme.accent, mode: theme.mode })} className="text-xs font-medium text-primary">Reset global styles</button>}
       </div>
 
       <div className="space-y-2">

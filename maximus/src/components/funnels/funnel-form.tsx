@@ -89,7 +89,7 @@ export function FunnelForm({
       {editLabels ? (
         <div role="presentation" className="w-full" style={{ ...ui.btnStyle, width: "100%" }}>
           <span contentEditable suppressContentEditableWarning spellCheck data-ph="Button text" className="cursor-text outline-none empty:before:opacity-50 empty:before:content-[attr(data-ph)]"
-            onClick={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } }}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } }}
             onBlur={(e) => { const v = e.currentTarget.innerText.trim(); if (v !== block.buttonText) editLabels.onText(["buttonText"], v); }}>{label}</span>
         </div>
       ) : (
