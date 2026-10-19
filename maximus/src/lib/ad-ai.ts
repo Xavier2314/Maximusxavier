@@ -103,7 +103,14 @@ export async function draftAdPlan(args: { product: FunnelProduct; inputs: PlanIn
 }
 
 async function call(user: string, inputs: PlanInputs): Promise<AdPlan | null> {
-  const res = await aiClient().messages.create({ model: MODEL, max_tokens: 8000, system: SYSTEM, tools: [TOOL], tool_choice: { type: "tool", name: "ad_plan" }, messages: [{ role: "user", content: user }] });
-  const block = res.content.find((b): b is Anthropic.ToolUseBlock => b.type === "tool_use");
-  return block ? cleanPlan({ ...(block.input as object), inputs }, inputs) : null;
+  // The model decides whether to call the tool; if it answers in plain text, ask once more.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await aiClient().messages.create({
+      model: MODEL, max_tokens: 8000, system: SYSTEM, tools: [TOOL], tool_choice: { type: "auto" },
+      messages: [{ role: "user", content: attempt ? `${user}\n\nRespond now by calling the ad_plan tool. Do not write any other text.` : user }],
+    });
+    const block = res.content.find((b): b is Anthropic.ToolUseBlock => b.type === "tool_use");
+    if (block) return cleanPlan({ ...(block.input as object), inputs }, inputs);
+  }
+  return null;
 }

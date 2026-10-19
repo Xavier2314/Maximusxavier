@@ -49,12 +49,17 @@ const TOOL: Anthropic.Tool = {
 export async function draftForm(args: { kind: FormKind; description: string; ownerName: string }): Promise<{ title: string; def: FormDef } | { error: string }> {
   if (!isAiConfigured()) return { error: "Maximus AI is not configured yet. Please tell an administrator." };
   try {
-    const res = await aiClient().messages.create({
-      model: MODEL, max_tokens: 4000, system: SYSTEM, tools: [TOOL], tool_choice: { type: "tool", name: "form" },
-      messages: [{ role: "user", content: `<seller>${args.ownerName}</seller>\n<kind>${args.kind === "survey" ? "survey" : "form (leads, orders, bookings or applications)"}</kind>\n<what_the_seller_wants>\n${args.description}\n</what_the_seller_wants>\n\nDesign it.` }],
-    });
-    const block = res.content.find((b): b is Anthropic.ToolUseBlock => b.type === "tool_use");
-    const input = block?.input as { title?: string } | undefined;
+    const content = `<seller>${args.ownerName}</seller>\n<kind>${args.kind === "survey" ? "survey" : "form (leads, orders, bookings or applications)"}</kind>\n<what_the_seller_wants>\n${args.description}\n</what_the_seller_wants>\n\nDesign it.`;
+    let input: { title?: string } | undefined;
+    // The model decides whether to call the tool; if it answers in plain text, ask once more.
+    for (let attempt = 0; attempt < 2 && !input; attempt++) {
+      const res = await aiClient().messages.create({
+        model: MODEL, max_tokens: 4000, system: SYSTEM, tools: [TOOL], tool_choice: { type: "auto" },
+        messages: [{ role: "user", content: attempt ? `${content}\n\nRespond now by calling the form tool. Do not write any other text.` : content }],
+      });
+      const block = res.content.find((b): b is Anthropic.ToolUseBlock => b.type === "tool_use");
+      input = block?.input as { title?: string } | undefined;
+    }
     const def = cleanForm(input);
     if (!input || !def.steps.length) return { error: "The AI didn't return a usable form. Please try again." };
     return { title: String(input.title ?? "").trim().slice(0, 100) || def.intro.title.slice(0, 100) || "New form", def };
