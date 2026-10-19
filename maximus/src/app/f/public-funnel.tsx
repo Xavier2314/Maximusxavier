@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { AdSourceCapture } from "@/components/funnels/funnel-bits";
 import { FunnelView } from "@/components/funnels/funnel-view";
 import { pagePath } from "@/lib/funnels";
 import { countFunnelView, loadPublicFunnel } from "@/lib/funnel-public";
@@ -35,5 +36,10 @@ export async function PublicFunnelPage({ slug, pageSlug }: { slug: string; pageS
   const next = f.pages[index + 1];
   const b = f.product.business;
   const merge = { "business.name": b.name, "business.phone": b.phone, "business.email": b.email, "business.address": b.address, "right_now.year": String(new Date().getFullYear()) };
-  return <FunnelView slug={f.slug} theme={f.theme} page={page} merge={merge} whatsapp={f.whatsapp ?? undefined} nextHref={next ? pagePath(f.slug, next, index + 1) : undefined} />;
+  return (
+    <>
+      <AdSourceCapture />
+      <FunnelView slug={f.slug} theme={f.theme} page={page} merge={merge} whatsapp={f.whatsapp ?? undefined} nextHref={next ? pagePath(f.slug, next, index + 1) : undefined} />
+    </>
+  );
 }

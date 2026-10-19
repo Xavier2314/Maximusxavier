@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Filter } from "lucide-react";
+import { ArrowRight, Filter, Megaphone } from "lucide-react";
 import { Card, CardBody } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -8,6 +8,7 @@ export const metadata = { title: "Marketing" };
 
 const TOOLS = [
   { href: "/marketing/funnels", icon: Filter, title: "Funnels", text: "Design pages that sell your products. Let AI write the first draft, then drag, drop and edit.", soon: false },
+  { href: "/marketing/ads", icon: Megaphone, title: "Ads", text: "Run ads to your funnels. AI plans the ads, writes the words, briefs the pictures and videos, and checks them against Facebook's rules.", soon: false },
 ];
 
 export default async function MarketingPage() {

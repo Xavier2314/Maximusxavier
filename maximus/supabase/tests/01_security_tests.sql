@@ -1300,6 +1300,28 @@ do $$ begin
   assert (select count(*) from public.funnel_saved_sections) = 1, 'saved section not deleted by others';
 end $$;
 
+-- 0052: ad plans are private to the funnel's owner.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+insert into public.funnel_ad_plans (funnel_id, title, plan) select id, 'Plan A', '{"v":1}'::jsonb from public.funnels limit 1;
+do $$ begin
+  assert (select count(*) from public.funnel_ad_plans) = 1, 'owner reads own ad plan';
+  update public.funnel_ad_plans set title = 'Plan A2';
+  raise notice 'PASS: owner can create and edit an ad plan';
+end $$;
+select pg_temp.expect_error($$ update public.funnel_ad_plans set user_id = '00000000-0000-0000-0000-0000000000e1' $$, 'cannot hand a plan to someone else');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+select pg_temp.expect_error($$ insert into public.funnel_ad_plans (funnel_id, title, plan) select id, 'Planted', '{}'::jsonb from (select id from public.funnels where false union all select '00000000-0000-0000-0000-00000000dead'::uuid) x $$, 'cannot add a plan to a funnel that is not yours');
+do $$ begin
+  assert (select count(*) from public.funnel_ad_plans) = 0, 'others cannot read ad plans';
+  update public.funnel_ad_plans set title = 'hacked';
+  delete from public.funnel_ad_plans;
+  raise notice 'PASS: ad plans are owner-only';
+end $$;
+select pg_temp.act_as(null);
+do $$ begin
+  assert (select count(*) from public.funnel_ad_plans where title = 'Plan A2') = 1, 'ad plan untouched by others';
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

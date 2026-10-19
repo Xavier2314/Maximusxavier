@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition, type CSSProperties, type FormEvent 
 import { useRouter } from "next/navigation";
 import { submitFunnelLeadAction } from "@/app/f/actions";
 import type { FormField, FunnelBlock } from "@/lib/funnels";
+import { readAdSource } from "./funnel-bits";
 
 type FormBlock = Extract<FunnelBlock, { type: "lead_form" | "order_form" }>;
 
@@ -36,6 +37,7 @@ export function FunnelForm({
     setError(null);
     const form = e.currentTarget;
     const fd = new FormData(form);
+    fd.set("adsrc", readAdSource());
     start(async () => {
       const res = await submitFunnelLeadAction(slug, pageId, block.id, fd);
       if (!res.ok) { setError(res.message); return; }

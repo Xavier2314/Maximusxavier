@@ -65,6 +65,10 @@ export async function submitFunnelLeadAction(slug: string, pageId: string, block
     if (Object.keys(answers).length) data = answers;
   }
 
+  // Which ad brought this person (from the tagged link), kept with the lead so the seller can see what sells.
+  const adsrc = String(form.get("adsrc") ?? "");
+  if (/^[a-z0-9_.:+-]{1,40}(\/[a-z0-9_.:+-]{0,40}){0,2}$/i.test(adsrc)) data = { ...(data ?? {}), "Ad source": adsrc };
+
   // An accepted order add-on is recorded at the start of the note so the seller sees it first.
   const addOn = block.type === "order_form" && block.bumpText && form.get("bump") === "on"
     ? `[ADD-ON: ${block.bumpText}${block.bumpPrice ? ` (${block.bumpPrice})` : ""}]`

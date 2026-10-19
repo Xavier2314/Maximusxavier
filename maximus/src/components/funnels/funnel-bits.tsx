@@ -41,3 +41,21 @@ export function ProductGallery({ images, alt, radius, accent }: { images: string
     </div>
   );
 }
+
+const AD_KEY = "funnel-ad-source";
+
+/** Remembers which ad brought the visitor (from the tagged link), so the order or lead can say so even after they move to another page. */
+export function AdSourceCapture() {
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const src = q.get("utm_source");
+      if (src) sessionStorage.setItem(AD_KEY, [src, q.get("utm_campaign") ?? "", q.get("utm_content") ?? ""].join("/").slice(0, 80));
+    } catch { /* storage blocked: the lead is still saved, just without the ad tag */ }
+  }, []);
+  return null;
+}
+
+export function readAdSource(): string {
+  try { return sessionStorage.getItem(AD_KEY) ?? ""; } catch { return ""; }
+}
