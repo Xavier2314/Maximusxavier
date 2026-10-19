@@ -1086,6 +1086,32 @@ end $$;
 select pg_temp.act_as(null);
 do $$ begin assert (select count(*) from public.watch_rooms) = 1, 'room not deleted by others'; end $$;
 
+-- 0042: the Upwork analyser opens only after a confirmed payment.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+create temp table up_ref (ref text);
+grant all on up_ref to public;
+insert into up_ref select tx_ref from public.create_online_payment('upwork_analyser');
+do $$ begin
+  assert (select amount from public.online_payments where tx_ref = (select ref from up_ref)) = 1000, 'analyser costs 1000';
+  assert not public.has_tool_access('upwork_analyser'), 'no access before paying';
+end $$;
+select pg_temp.expect_error($$ insert into public.upwork_analyses (input, report) values ('{}', '{}') $$, 'cannot save report without access');
+select pg_temp.expect_error($$ insert into public.tool_access (user_id, tool) values ('00000000-0000-0000-0000-0000000000c2', 'upwork_analyser') $$, 'cannot grant self access');
+select pg_temp.act_as(null);
+select public.apply_online_payment((select ref from up_ref), 99, 999, 'NGN', true);
+do $$ begin assert not exists (select 1 from public.tool_access), 'underpayment grants nothing'; end $$;
+update public.online_payments set status = 'pending' where tx_ref = (select ref from up_ref);
+select public.apply_online_payment((select ref from up_ref), 99, 1000, 'NGN', true);
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert public.has_tool_access('upwork_analyser'), 'access after payment';
+  insert into public.upwork_analyses (input, report, score) values ('{"title":"x"}', '{}', 70);
+  raise notice 'PASS: Upwork analyser is paid access only';
+end $$;
+select pg_temp.expect_error($$ select public.create_online_payment('upwork_analyser') $$, 'no double payment');
+select pg_temp.expect_error($$ select public.grant_tool_access('MX-001001') $$, 'member cannot unlock tools');
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

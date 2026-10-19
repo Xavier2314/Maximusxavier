@@ -14,7 +14,9 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
   const { data: p } = ref
     ? await supabase.from("online_payments").select("purpose, amount, status").eq("tx_ref", ref).maybeSingle()
     : { data: null };
-  const back = p?.purpose === "white_label" ? { href: "/office/brand", label: "Back to branding" } : { href: "/finance", label: "Back to savings & payments" };
+  const back = p?.purpose === "white_label" ? { href: "/office/brand", label: "Back to branding" }
+    : p?.purpose === "upwork_analyser" ? { href: "/tools/upwork", label: "Open the Upwork Analyser" }
+    : { href: "/finance", label: "Back to savings & payments" };
   const ok = p?.status === "successful";
   const failed = p?.status === "failed" || cancelled;
   return (
@@ -25,7 +27,8 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
           <h1 className="mt-4 text-2xl font-bold">{ok ? "Payment received" : failed ? (cancelled ? "Payment cancelled" : "Payment not completed") : "Payment processing"}</h1>
           <p className="mt-2 text-fg-muted">
             {!p ? "We couldn't find this payment." : ok
-              ? p.purpose === "white_label" ? "White-label is unlocked. You can now remove “Powered by”." : `${formatMoney(p.amount)} has been added to your ${p.purpose}.`
+              ? p.purpose === "white_label" ? "White-label is unlocked. You can now remove “Powered by”."
+                : p.purpose === "upwork_analyser" ? "The Upwork Account Analyser is unlocked. Analyse your profile now." : `${formatMoney(p.amount)} has been added to your ${p.purpose}.`
               : failed ? "No money was taken, or it didn't match. You can try again." : "Bank transfers can take a few minutes. We'll update this and notify you as soon as Flutterwave confirms it."}
           </p>
           <LinkButton href={back.href} className="mt-6">{back.label}</LinkButton>

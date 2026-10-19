@@ -91,6 +91,11 @@ them into Supabase > SQL Editor.
 - Featured video: a Super Admin sets it at /admin/featured-video (app_settings key `featured_video`).
   Everyone sees it on Home, in the side menu, and once as a pop-up per new video (if pop-up is on).
 
+- Upwork Account Analyser (0042, /tools/upwork): paid tool. ₦1,000 (app_settings `upwork_analyser_price`)
+  through the in-app Flutterwave checkout unlocks it automatically (`tool_access`). Members who pay on the
+  Flutterwave page link are unlocked by an approver on the same page (`grant_tool_access`). Reports use
+  Claude with a forced tool call; 5 analyses per 24 hours per member (Super Admins unlimited).
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.
