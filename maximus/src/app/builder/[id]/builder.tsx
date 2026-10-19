@@ -9,12 +9,13 @@ import {
   aiFunnelAction, createVersionAction, deleteFunnelAction, duplicateFunnelAction, listVersionsAction, publishFunnelAction, restoreVersionAction, rollbackLiveAction, saveAsCopyAction, saveFunnelAction, unpublishFunnelAction,
   type VersionRow,
 } from "@/app/(app)/marketing/funnels/actions";
+import { deleteSavedSectionAction, listSavedSectionsAction, saveSectionAction, type SavedSection } from "@/app/(app)/marketing/funnels/library-actions";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { FunnelView, type NodeKind } from "@/components/funnels/funnel-view";
 import { ImageField, MultiImageField } from "@/components/funnels/image-upload";
 import {
-  copyNode, crumbs, deleteNode, duplicateNode, getNode, insertBlock, insertElement, insertRow, kindOf, moveNode, nudge, parentRef, pasteNode, sameRef, sectionWith, setColumnCount, setResp, updateNode,
+  copyNode, crumbs, reidentify, deleteNode, duplicateNode, getNode, insertBlock, insertElement, insertRow, kindOf, moveNode, nudge, parentRef, pasteNode, sameRef, sectionWith, setColumnCount, setResp, updateNode,
   type Clip, type Device, type Ref,
 } from "@/lib/funnel-doc";
 import { PREBUILT } from "@/lib/funnel-templates";
@@ -54,7 +55,7 @@ function setPath<T>(obj: T, path: (string | number)[], value: unknown): T {
 
 const levelOf = (p: Payload | null): "block" | "row" | "element" | null => {
   if (!p) return null;
-  if (p.t === "block" || p.t === "prebuilt") return "block";
+  if (p.t === "block" || p.t === "prebuilt" || p.t === "saved") return "block";
   if (p.t === "row") return "row";
   if (p.t === "element") return "element";
   const k = kindOf(p.ref);
@@ -103,6 +104,9 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
   const [unpublished, setUnpublished] = useState(!!funnel.live_at && Date.parse(funnel.updated_at) - Date.parse(funnel.live_at) > 2000);
   const [recover, setRecover] = useState<string | null>(null);
   const pendingKey = `funnel-pending-${funnel.id}`;
+  const [saved, setSaved] = useState<SavedSection[]>([]);
+  useEffect(() => { void listSavedSectionsAction().then(setSaved, () => undefined); }, []);
+  const removeSaved = async (sid: string) => { if (await deleteSavedSectionAction(sid)) setSaved((l) => l.filter((x) => x.id !== sid)); };
   const origin = useRef("");
   const dragRef = useRef<Payload | null>(null);
   useEffect(() => { origin.current = window.location.origin; }, []);
@@ -173,6 +177,36 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
   };
   const recoverEdits = () => { if (!recover) return; try { applyDoc(JSON.parse(recover)); touch(); } catch { /* ignore */ } setRecover(null); };
   const dismissRecover = () => { try { localStorage.removeItem(pendingKey); } catch { /* ignore */ } setRecover(null); };
+
+  const saveSection = async () => {
+    if (!selBlock) return;
+    const name = window.prompt("Name this section so you can find it later", BLOCK_LABELS[selBlock.type]?.label ?? "My section");
+    if (!name) return;
+    const r = await saveSectionAction(name, JSON.stringify(selBlock));
+    if (r.ok && r.saved) { setSaved((l) => [r.saved!, ...l]); setPanel("add"); setAiNote({ ok: true, text: `Saved “${name}”. Find it under Add → Saved.` }); }
+    else setAiNote({ ok: false, text: r.message });
+  };
+  const exportJson = () => {
+    const doc = { format: "maximus-funnel", version: 1, exportedAt: new Date().toISOString(), title, theme, product, pages };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(doc, null, 2)], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = `${slug || "funnel"}.funnel.json`; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  const importJson = async (file: File | undefined) => {
+    if (!file) return;
+    setPubMsg("");
+    try {
+      if (file.size > 600_000) throw new Error("That file is too large to be a funnel (over 600 KB).");
+      const doc = JSON.parse(await file.text()) as { format?: string; title?: string; theme?: unknown; product?: unknown; pages?: unknown };
+      if (doc.format !== "maximus-funnel") throw new Error("This is not a funnel file exported from this builder.");
+      const cp = cleanPages(doc.pages);
+      if (!cp.length) throw new Error("The file has no pages in it.");
+      if (!confirm(`Replace this funnel's pages, design and product details with the ${cp.length} page${cp.length === 1 ? "" : "s"} in this file? You can press Undo afterwards.`)) return;
+      applyDoc({ ...doc, pages: cp }); touch();
+      setPubMsg("Imported. Check it over, then publish when you are ready.");
+    } catch (e) { setPubMsg((e as Error).message || "That file could not be read."); }
+  };
 
   // --- publishing and history ---------------------------------------------------------------------
   const publish = async () => {
@@ -297,9 +331,10 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
   function execute(p: Payload, t: Target) {
     let next = blocks;
     let ref: Ref | null = null;
-    if (p.t === "block" || p.t === "prebuilt") {
+    if (p.t === "block" || p.t === "prebuilt" || p.t === "saved") {
       if (t.k !== "blockIndex" && t.k !== "wrap") return;
-      const nb = p.t === "block" ? newBlock(p.type) : PREBUILT.find((x) => x.key === p.key)?.make(product) ?? null;
+      const sv = p.t === "saved" ? saved.find((x) => x.id === p.id) : undefined;
+      const nb = p.t === "block" ? newBlock(p.type) : p.t === "saved" ? (sv ? reidentify(sv.content) : null) : PREBUILT.find((x) => x.key === p.key)?.make(product) ?? null;
       if (!nb) return;
       next = insertBlock(blocks, t.index, nb); ref = { block: nb.id };
     } else if (p.t === "row") {
@@ -449,7 +484,7 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
   const dnHint = "Click to add, or drag onto the page.";
   const leftContent = (p: Panel) => (
     <>
-      {p === "add" && <QuickAdd onAdd={addPayload} setDrag={setDrag} endDrag={endDrag} hint={dnHint} />}
+      {p === "add" && <QuickAdd onAdd={addPayload} setDrag={setDrag} endDrag={endDrag} hint={dnHint} saved={saved} onDeleteSaved={removeSaved} />}
       {p === "layers" && <LayersPanel blocks={blocks} sel={sel} device={device} onSelect={select} onToggleHidden={toggleHidden} onToggleLock={toggleLock} />}
       {p === "pages" && (
         <div className="space-y-4">
@@ -553,7 +588,7 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
   );
 
   const inspector = sel && selNode ? (
-    <Inspector blocks={blocks} sel={sel} device={device} userId={userId} onPatch={patchSel} onResp={respSel} onColumns={(n) => sel.row && editBlocks((bs) => setColumnCount(bs, sel, n))} onDelete={deleteSel} onDuplicate={duplicateSel} />
+    <Inspector blocks={blocks} sel={sel} device={device} userId={userId} onPatch={patchSel} onResp={respSel} onColumns={(n) => sel.row && editBlocks((bs) => setColumnCount(bs, sel, n))} onDelete={deleteSel} onDuplicate={duplicateSel} onSaveSection={saveSection} />
   ) : (
     <div className="space-y-3 text-sm text-fg-muted"><p className="text-base font-bold text-fg">Click anything on the page</p><p>Click a section, row, column or element to change it here. Click text to type straight on the page.</p></div>
   );
@@ -747,6 +782,10 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
             </div>
             <p className="text-xs text-fg-subtle">{funnel.views} visits so far. {status === "saved" ? "All changes saved." : status === "error" ? saveMsg : "Saving…"}</p>
             <hr className="border-border" />
+            <div className="flex flex-wrap items-center gap-2">
+              <Button size="sm" variant="ghost" onClick={exportJson}>Export JSON</Button>
+              <label className="inline-flex h-9 cursor-pointer items-center rounded-xl px-3 text-sm font-medium hover:bg-surface-muted">Import JSON<input type="file" accept="application/json,.json" hidden onChange={(e) => { void importJson(e.target.files?.[0]); e.target.value = ""; }} /></label>
+            </div>
             <div className="flex flex-wrap gap-2">
               <form action={duplicateFunnelAction.bind(null, funnel.id)}><Button type="submit" size="sm" variant="ghost"><CopyPlus className="size-4" />Duplicate funnel</Button></form>
               <form action={deleteFunnelAction.bind(null, funnel.id)} onSubmit={(e) => { if (!confirm("Delete this funnel and all its leads and orders? This cannot be undone.")) e.preventDefault(); }}><Button type="submit" size="sm" variant="ghost" className="text-danger"><Trash2 className="size-4" />Delete funnel</Button></form>

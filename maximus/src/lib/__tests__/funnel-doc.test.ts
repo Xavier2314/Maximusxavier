@@ -224,3 +224,23 @@ describe("migration of existing funnels", () => {
     assert.equal(ensureUniqueIds(pages)[0].blocks[0].id, "bbbb2222");
   });
 });
+
+describe("form fields and consent", () => {
+  it("keeps valid extra questions and drops junk", () => {
+    const [page] = cleanPages([{ id: "p1", name: "A", blocks: [{ id: "b1", type: "lead_form", fields: [
+      { label: "Your city", type: "select", options: "Lagos, Abuja", required: true },
+      { label: "", type: "text" },
+      { label: "Bad type", type: "script", required: "yes" },
+      ...Array.from({ length: 12 }, (_, i) => ({ label: `Q${i}`, type: "text" })),
+    ], consent: "I agree" }] }]);
+    const b = page.blocks[0];
+    assert.equal(b.type, "lead_form");
+    if (b.type !== "lead_form") return;
+    assert.equal(b.fields.length, 7); // capped at 8 entries, the blank one is dropped
+    assert.deepEqual(b.fields[0], { label: "Your city", type: "select", options: "Lagos, Abuja", required: true });
+    assert.equal(b.fields[1].label, "Bad type");
+    assert.equal(b.fields[1].type, "text");
+    assert.equal(b.fields[1].required, false);
+    assert.equal(b.consent, "I agree");
+  });
+});

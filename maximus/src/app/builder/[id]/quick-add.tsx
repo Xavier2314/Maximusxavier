@@ -8,16 +8,18 @@ import { BLOCK_GROUPS, BLOCK_LABELS, ELEMENT_GROUPS, ELEMENT_LABELS, ROW_PRESETS
 export type Payload =
   | { t: "block"; type: BlockType }
   | { t: "prebuilt"; key: string }
+  | { t: "saved"; id: string }
   | { t: "element"; type: ElementType }
   | { t: "row"; cols: number }
   | { t: "move"; ref: import("@/lib/funnel-doc").Ref };
 
-type Cat = "sections" | "rows" | "elements" | "prebuilt";
-const CATS: [Cat, string][] = [["sections", "Sections"], ["rows", "Rows"], ["elements", "Elements"], ["prebuilt", "Prebuilt"]];
+type Cat = "sections" | "rows" | "elements" | "prebuilt" | "saved";
+const CATS: [Cat, string][] = [["sections", "Sections"], ["rows", "Rows"], ["elements", "Elements"], ["prebuilt", "Prebuilt"], ["saved", "Saved"]];
 
 /** GoHighLevel-style "Quick Add": categories on the left, items on the right. Click to add, or drag onto the page. */
-export function QuickAdd({ onAdd, setDrag, endDrag, hint }: {
+export function QuickAdd({ onAdd, setDrag, endDrag, hint, saved = [], onDeleteSaved }: {
   onAdd: (p: Payload) => void; setDrag: (p: Payload) => void; endDrag: () => void; hint: string;
+  saved?: { id: string; name: string }[]; onDeleteSaved?: (id: string) => void;
 }) {
   const [cat, setCat] = useState<Cat>("sections");
   const [q, setQ] = useState("");
@@ -84,6 +86,24 @@ export function QuickAdd({ onAdd, setDrag, endDrag, hint }: {
           </div>
         ) : null;
       })}
+
+      {(q || cat === "saved") && (() => {
+        const list = saved.filter((x) => match(x.name));
+        if (!list.length) return q ? null : <p className="rounded-xl bg-surface-muted p-3 text-xs text-fg-muted">Nothing saved yet. Select a section on the page and press &ldquo;Save as template&rdquo; to keep it here for every funnel you build.</p>;
+        return (
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-fg-subtle">Your saved sections</p>
+            <ul className="grid grid-cols-2 gap-2">
+              {list.map((x) => (
+                <li key={x.id} className="relative">
+                  {item(`sv-${x.id}`, "⭐", x.name, "Your own section", { t: "saved", id: x.id })}
+                  {onDeleteSaved && <button type="button" aria-label={`Delete ${x.name}`} onClick={() => { if (confirm(`Delete the saved section “${x.name}”? Funnels that already use it are not changed.`)) onDeleteSaved(x.id); }} className="absolute right-1.5 top-1.5 rounded-md px-1.5 text-xs text-fg-subtle hover:bg-danger/10 hover:text-danger">✕</button>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })()}
 
       {(q || cat === "prebuilt") && (() => {
         const list = PREBUILT.filter((p) => match(p.label));

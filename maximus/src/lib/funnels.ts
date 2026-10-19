@@ -33,6 +33,10 @@ export type FunnelProduct = {
 export const EMPTY_PRODUCT: FunnelProduct = { name: "", price: "", description: "", benefits: "", audience: "", offer: "", imageUrl: "", whatsapp: true, funnelType: "sales", images: [], business: { name: "", phone: "", email: "", address: "" } };
 export const MAX_IMAGES = 8;
 
+export const FIELD_TYPES = ["text", "email", "tel", "textarea", "select", "checkbox"] as const;
+/** An extra question on a form. Answers are stored with the lead under the question's label. */
+export type FormField = { label: string; type: (typeof FIELD_TYPES)[number]; options: string; required: boolean };
+
 export type Bg = "none" | "tint" | "accent" | "dark" | "gradient" | "custom" | "image";
 export type Space = "compact" | "normal" | "roomy";
 export type Align = "left" | "center";
@@ -60,7 +64,7 @@ export type FunnelElement = ElCommon & (
   | { type: "countdown"; label: string; endsAt: string }
   | { type: "progress"; label: string; value: number }
   | { type: "faq"; items: Faq[] }
-  | { type: "form"; title: string; text: string; buttonText: string; successMessage: string; askPhone: boolean; askMessage: boolean }
+  | { type: "form"; title: string; text: string; buttonText: string; successMessage: string; askPhone: boolean; askMessage: boolean; fields: FormField[]; consent: string }
 );
 export type ElementType = FunnelElement["type"];
 export type FunnelColumn = { id: string; elements: FunnelElement[]; vAlign?: "top" | "center" | "bottom"; bg?: Bg; bgColor?: string; radius?: Radius; shadow?: Shadow; pad?: Space };
@@ -95,7 +99,7 @@ export type FunnelBlock = Common & (
   | { type: "about"; title: string; name: string; text: string; imageUrl: string }
   | { type: "countdown"; label: string; endsAt: string }
   | { type: "event"; title: string; startsAt: string; where: string; note: string }
-  | { type: "lead_form"; title: string; text: string; buttonText: string; successMessage: string; askPhone: boolean; askMessage: boolean; imageUrl: string }
+  | { type: "lead_form"; title: string; text: string; buttonText: string; successMessage: string; askPhone: boolean; askMessage: boolean; fields: FormField[]; consent: string; imageUrl: string }
   | { type: "order_form"; title: string; text: string; buttonText: string; successMessage: string; productName: string; price: string; bumpText: string; bumpPrice: string }
   | { type: "cta"; headline: string; text: string; buttonText: string; buttonLink: string }
   | { type: "button"; text: string; link: string }
@@ -194,7 +198,7 @@ export function newElement(type: ElementType): FunnelElement {
     case "countdown": return { id, type, label: "Offer ends in", endsAt: "" };
     case "progress": return { id, type, label: "Stock claimed", value: 70 };
     case "faq": return { id, type, items: [{ q: "A question?", a: "A clear answer." }] };
-    case "form": return { id, type, title: "Get in touch", text: "We reply quickly.", buttonText: "Send", successMessage: "Thank you! We will be in touch shortly.", askPhone: true, askMessage: false };
+    case "form": return { id, type, title: "Get in touch", text: "We reply quickly.", buttonText: "Send", successMessage: "Thank you! We will be in touch shortly.", askPhone: true, askMessage: false, fields: [], consent: "" };
   }
 }
 export const newColumn = (elements: FunnelElement[] = []): FunnelColumn => ({ id: uid(), elements });
@@ -222,7 +226,7 @@ export function newBlock(type: BlockType): FunnelBlock {
     case "about": return { id, type, title: "Meet your guide", name: "Your name", text: "A few lines about you and why you do this.", imageUrl: "" };
     case "countdown": return { id, type, label: "Offer ends in", endsAt: "" };
     case "event": return { id, type, title: "Join us live", startsAt: "", where: "Online (link sent after you register)", note: "" };
-    case "lead_form": return { id, type, title: "Get your free copy", text: "Leave your details and we will send it to you.", buttonText: "Send it to me", successMessage: "Thank you! We will be in touch shortly.", askPhone: true, askMessage: false, imageUrl: "" };
+    case "lead_form": return { id, type, title: "Get your free copy", text: "Leave your details and we will send it to you.", buttonText: "Send it to me", successMessage: "Thank you! We will be in touch shortly.", askPhone: true, askMessage: false, fields: [], consent: "", imageUrl: "" };
     case "order_form": return { id, type, title: "Place your order", text: "Fill in your details and we will confirm your order.", buttonText: "Order now", successMessage: "Thank you! Your order has been received. We will contact you to confirm.", productName: "", price: "", bumpText: "", bumpPrice: "" };
     case "cta": return { id, type, headline: "Ready to get started?", text: "Take the first step today.", buttonText: "Order now", buttonLink: "#order", bg: "gradient" };
     case "button": return { id, type, text: "Order now", link: "#order", align: "center" };
@@ -255,6 +259,12 @@ const safeLink = (v: unknown) => {
 };
 const arr = <T>(v: unknown, max: number, f: (x: Record<string, unknown>) => T | null): T[] =>
   (Array.isArray(v) ? v : []).slice(0, max).map((x) => (x && typeof x === "object" ? f(x as Record<string, unknown>) : null)).filter((x): x is T => x !== null);
+const cleanFields = (v: unknown): FormField[] => arr(v, 8, (f) => {
+  const label = s(f.label, 80);
+  if (!label) return null;
+  const type = (FIELD_TYPES as readonly string[]).includes(String(f.type)) ? (f.type as FormField["type"]) : "text";
+  return { label, type, options: type === "select" ? s(f.options, 400) : "", required: f.required === true || f.required === "true" };
+});
 const iso = (v: unknown) => { const t = s(v, 40); return Number.isFinite(Date.parse(t)) ? t : ""; };
 const oneOf = <T extends string>(v: unknown, list: readonly T[]): T | undefined => (typeof v === "string" && (list as readonly string[]).includes(v) ? (v as T) : undefined);
 
@@ -303,7 +313,7 @@ export function cleanElement(raw: unknown): FunnelElement | null {
       case "countdown": return { id, type: "countdown", label: s(e.label, 80), endsAt: iso(e.endsAt) };
       case "progress": return { id, type: "progress", label: s(e.label, 80), value: num(e.value, 0, 100, 50) };
       case "faq": return { id, type: "faq", items: arr(e.items, 12, (i) => ({ q: s(i.q, 200), a: s(i.a, 800) })) };
-      case "form": return { id, type: "form", title: s(e.title, 120), text: s(e.text, 300), buttonText: s(e.buttonText, 40), successMessage: s(e.successMessage, 200), askPhone: bool(e.askPhone, true), askMessage: bool(e.askMessage, false) };
+      case "form": return { id, type: "form", title: s(e.title, 120), text: s(e.text, 300), buttonText: s(e.buttonText, 40), successMessage: s(e.successMessage, 200), askPhone: bool(e.askPhone, true), askMessage: bool(e.askMessage, false), fields: cleanFields(e.fields), consent: s(e.consent, 200) };
       default: return null;
     }
   })();
@@ -382,7 +392,7 @@ export function cleanBlock(raw: unknown): FunnelBlock | null {
       case "about": return { id, type, title: s(b.title, 120), name: s(b.name, 80), text: s(b.text, 1200), imageUrl: safeUrl(b.imageUrl) };
       case "countdown": return { id, type, label: s(b.label, 80), endsAt: iso(b.endsAt) };
       case "event": return { id, type, title: s(b.title, 120), startsAt: iso(b.startsAt), where: s(b.where, 200), note: s(b.note, 300) };
-      case "lead_form": return { id, type, title: s(b.title, 120), text: s(b.text, 300), buttonText: s(b.buttonText, 40), successMessage: s(b.successMessage, 200), askPhone: bool(b.askPhone, true), askMessage: bool(b.askMessage, false), imageUrl: safeUrl(b.imageUrl) };
+      case "lead_form": return { id, type, title: s(b.title, 120), text: s(b.text, 300), buttonText: s(b.buttonText, 40), successMessage: s(b.successMessage, 200), askPhone: bool(b.askPhone, true), askMessage: bool(b.askMessage, false), fields: cleanFields(b.fields), consent: s(b.consent, 200), imageUrl: safeUrl(b.imageUrl) };
       case "order_form": return { id, type, title: s(b.title, 120), text: s(b.text, 300), buttonText: s(b.buttonText, 40), successMessage: s(b.successMessage, 200), productName: s(b.productName, 120), price: s(b.price, 40), bumpText: s(b.bumpText, 160), bumpPrice: s(b.bumpPrice, 40) };
       case "cta": return { id, type, headline: s(b.headline, 160), text: s(b.text, 300), buttonText: s(b.buttonText, 40), buttonLink: safeLink(b.buttonLink) || "#order" };
       case "button": return { id, type, text: s(b.text, 40), link: safeLink(b.link) || "#order" };

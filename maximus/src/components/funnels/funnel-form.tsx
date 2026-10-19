@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition, type CSSProperties, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { submitFunnelLeadAction } from "@/app/f/actions";
-import type { FunnelBlock } from "@/lib/funnels";
+import type { FormField, FunnelBlock } from "@/lib/funnels";
 
 type FormBlock = Extract<FunnelBlock, { type: "lead_form" | "order_form" }>;
 
@@ -83,6 +83,12 @@ export function FunnelForm({
           <input name="email" type="email" required maxLength={254} placeholder="Email address" autoComplete="email" style={field} />
           {lead?.askPhone && <input name="phone" maxLength={40} placeholder="Phone / WhatsApp number" autoComplete="tel" inputMode="tel" style={field} />}
           {lead?.askMessage && <textarea name="message" rows={3} maxLength={600} placeholder="Tell us a little about you" style={field} />}
+          {lead?.fields.map((f, n) => <CustomField key={n} f={f} n={n} style={field} ui={ui} />)}
+          {lead?.consent && (
+            <label className="flex cursor-pointer items-start gap-3 text-sm" style={{ color: ui.mute }}>
+              <input type="checkbox" name="consent" required className="mt-0.5 size-5 shrink-0" style={{ accentColor: ui.accent }} /><span>{lead.consent}</span>
+            </label>
+          )}
         </>
       )}
       {error && <p role="alert" className="text-sm" style={{ color: "#dc2626" }}>{error}</p>}
@@ -97,6 +103,24 @@ export function FunnelForm({
       )}
     </form>
   );
+}
+
+/** One extra question the seller added. Fields are named by position (x0, x1, ...) and checked against the published form on the server. */
+function CustomField({ f, n, style, ui }: { f: FormField; n: number; style: CSSProperties; ui: FormUi }) {
+  const name = `x${n}`;
+  if (f.type === "textarea") return <textarea name={name} rows={3} required={f.required} maxLength={600} placeholder={f.label + (f.required ? "" : " (optional)")} aria-label={f.label} style={style} />;
+  if (f.type === "select") {
+    return (
+      <select name={name} required={f.required} defaultValue="" aria-label={f.label} style={style}>
+        <option value="" disabled={f.required}>{f.label}{f.required ? "" : " (optional)"}</option>
+        {f.options.split(",").map((o) => o.trim()).filter(Boolean).map((o) => <option key={o} value={o}>{o}</option>)}
+      </select>
+    );
+  }
+  if (f.type === "checkbox") {
+    return <label className="flex cursor-pointer items-start gap-3 text-sm" style={{ color: ui.mute }}><input type="checkbox" name={name} required={f.required} className="mt-0.5 size-5 shrink-0" style={{ accentColor: ui.accent }} /><span>{f.label}</span></label>;
+  }
+  return <input name={name} type={f.type === "text" ? "text" : f.type} required={f.required} maxLength={300} placeholder={f.label + (f.required ? "" : " (optional)")} aria-label={f.label} inputMode={f.type === "tel" ? "tel" : undefined} style={style} />;
 }
 
 /** Counts down to a date the owner picked. */

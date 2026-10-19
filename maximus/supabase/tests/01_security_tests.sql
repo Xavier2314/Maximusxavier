@@ -1280,6 +1280,26 @@ do $$ begin
   raise notice 'PASS: funnel history keeps the newest 50';
 end $$;
 
+-- 0051: saved sections are private to their owner; extra form answers live on the lead.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+insert into public.funnel_saved_sections (name, content) values ('My hero', '{"type":"section"}');
+do $$ begin
+  assert (select count(*) from public.funnel_saved_sections) = 1, 'owner reads own saved sections';
+  raise notice 'PASS: owner can save and read sections';
+end $$;
+select pg_temp.expect_error($$ update public.funnel_saved_sections set name = 'x' $$, 'saved sections cannot be edited in place');
+select pg_temp.expect_error($$ insert into public.funnel_saved_sections (user_id, name, content) values ('00000000-0000-0000-0000-0000000000e1', 'Planted', '{}') $$, 'cannot save a section for someone else');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+do $$ begin
+  assert (select count(*) from public.funnel_saved_sections) = 0, 'others cannot read saved sections';
+  delete from public.funnel_saved_sections;
+  raise notice 'PASS: saved sections are owner-only';
+end $$;
+select pg_temp.act_as(null);
+do $$ begin
+  assert (select count(*) from public.funnel_saved_sections) = 1, 'saved section not deleted by others';
+end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { ImagePlus, LoaderCircle, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Images, ImagePlus, LoaderCircle, X } from "lucide-react";
+import { listMediaAction, type MediaItem } from "@/app/(app)/marketing/funnels/library-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/form";
 import { createClient } from "@/lib/supabase/client";
@@ -20,11 +21,35 @@ export async function uploadFunnelImage(userId: string, file: File): Promise<str
   return supabase.storage.from("portfolio").getPublicUrl(path).data.publicUrl;
 }
 
+/** The member's earlier uploads, shown as a small grid to pick from. */
+function MediaPicker({ onPick, onClose }: { onPick: (url: string) => void; onClose: () => void }) {
+  const [items, setItems] = useState<MediaItem[] | null>(null);
+  useEffect(() => { let live = true; listMediaAction().then((r) => { if (live) setItems(r); }, () => { if (live) setItems([]); }); return () => { live = false; }; }, []);
+  return (
+    <div className="space-y-2 rounded-xl border border-border bg-surface-muted p-2.5" role="group" aria-label="Your uploaded pictures">
+      <div className="flex items-center justify-between"><p className="text-xs font-semibold">Your pictures</p><Button size="sm" variant="ghost" onClick={onClose}>Close</Button></div>
+      {items === null && <p className="text-xs text-fg-muted">Loading…</p>}
+      {items?.length === 0 && <p className="text-xs text-fg-muted">Nothing uploaded yet. Use the upload button and your pictures will appear here.</p>}
+      <ul className="grid max-h-48 grid-cols-4 gap-1.5 overflow-y-auto">
+        {items?.map((m) => (
+          <li key={m.url}>
+            <button type="button" onClick={() => { onPick(m.url); onClose(); }} className="block aspect-square w-full overflow-hidden rounded-lg border border-border hover:border-primary" aria-label={`Use ${m.name}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={m.url} alt="" loading="lazy" className="size-full object-cover" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 /** An image link field with an upload button. */
 export function ImageField({ userId, value, onChange, id }: { userId: string; value: string; onChange: (url: string) => void; id: string }) {
   const ref = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lib, setLib] = useState(false);
   async function pick(file: File | undefined) {
     if (!file) return;
     setBusy(true); setError(null);
@@ -45,7 +70,9 @@ export function ImageField({ userId, value, onChange, id }: { userId: string; va
         <Button variant="outline" size="icon" onClick={() => ref.current?.click()} disabled={busy} aria-label="Upload image">
           {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <ImagePlus className="size-4" aria-hidden />}
         </Button>
+        <Button variant="outline" size="icon" onClick={() => setLib((v) => !v)} aria-label="Choose from your uploaded pictures" aria-expanded={lib}><Images className="size-4" aria-hidden /></Button>
       </div>
+      {lib && <MediaPicker onPick={onChange} onClose={() => setLib(false)} />}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     </div>
   );

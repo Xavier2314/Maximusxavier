@@ -10,7 +10,7 @@ import { deleteLeadAction } from "../../actions";
 
 export const metadata = { title: "Leads & orders" };
 
-type Lead = { id: string; kind: "lead" | "order"; name: string | null; email: string | null; phone: string | null; message: string | null; quantity: number | null; product: string | null; created_at: string };
+type Lead = { id: string; kind: "lead" | "order"; name: string | null; email: string | null; phone: string | null; message: string | null; quantity: number | null; product: string | null; created_at: string; data: Record<string, string> | null };
 
 export default async function LeadsPage({ params }: { params: Promise<{ id: string }> }) {
   await requireViewer();
@@ -19,7 +19,7 @@ export default async function LeadsPage({ params }: { params: Promise<{ id: stri
   const supabase = await createClient();
   const { data: funnel } = await supabase.from("funnels").select("id, title").eq("id", id).maybeSingle();
   if (!funnel) notFound();
-  const { data } = await supabase.from("funnel_leads").select("id, kind, name, email, phone, message, quantity, product, created_at").eq("funnel_id", id).order("created_at", { ascending: false }).limit(500).returns<Lead[]>();
+  const { data } = await supabase.from("funnel_leads").select("id, kind, name, email, phone, message, quantity, product, created_at, data").eq("funnel_id", id).order("created_at", { ascending: false }).limit(500).returns<Lead[]>();
   const leads = data ?? [];
   const when = (d: string) => new Date(d).toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" });
 
@@ -41,6 +41,11 @@ export default async function LeadsPage({ params }: { params: Promise<{ id: stri
                     {l.kind === "order" && <p className="text-sm">{l.product ?? "Product"} × {l.quantity ?? 1}</p>}
                     <p className="text-sm text-fg-muted">{[l.phone, l.email].filter(Boolean).join(" · ")}</p>
                     {l.message && <p className="whitespace-pre-line text-sm text-fg-muted">{l.message}</p>}
+                    {l.data && Object.keys(l.data).length > 0 && (
+                      <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm">
+                        {Object.entries(l.data).map(([k, v]) => <div key={k} className="contents"><dt className="text-fg-subtle">{k}</dt><dd className="whitespace-pre-line">{String(v)}</dd></div>)}
+                      </dl>
+                    )}
                     <p className="text-xs text-fg-subtle">{when(l.created_at)}</p>
                   </div>
                   <div className="flex gap-2">

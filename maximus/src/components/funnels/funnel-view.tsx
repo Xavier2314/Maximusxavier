@@ -194,7 +194,7 @@ export function FunnelView({ slug, theme, page, nextHref, whatsapp, merge, previ
           </div>
         );
       case "form": {
-        const fb = { id: el.id, type: "lead_form" as const, title: el.title, text: el.text, buttonText: el.buttonText, successMessage: el.successMessage, askPhone: el.askPhone, askMessage: el.askMessage, imageUrl: "" };
+        const fb = { id: el.id, type: "lead_form" as const, title: el.title, text: el.text, buttonText: el.buttonText, successMessage: el.successMessage, askPhone: el.askPhone, askMessage: el.askMessage, fields: el.fields, consent: el.consent, imageUrl: "" };
         return (
           <div className="p-6" style={cardStyle(cp)}>
             {(el.title || edit) && T(id, [...path, "title"], el.title, "h3", "text-xl font-bold", { color: cp.text, fontFamily: st.heading }, "Form heading")}
