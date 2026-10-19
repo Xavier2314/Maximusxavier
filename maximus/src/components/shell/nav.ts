@@ -36,18 +36,13 @@ export const NAV: NavSection[] = [
     ],
   },
   {
-    title: "Marketing",
-    items: [
-      { href: "/marketing/funnels", label: "Funnels", icon: "funnel" },
-    ],
-  },
-  {
     title: "Grow",
     items: [
       { href: "/why", label: "My Why", icon: "heart" },
       { href: "/growth", label: "Growth focus", icon: "compass" },
       { href: "/leaderboard", label: "Leaderboard", icon: "medal" },
       { href: "/academy", label: "Academy", icon: "graduation" },
+      { href: "/marketing", label: "Marketing", icon: "megaphone" },
       { href: "/ai", label: "Maximus AI", icon: "sparkles" },
       { href: "/recognition", label: "Recognition", icon: "trophy" },
       { href: "/announcements", label: "Announcements", icon: "megaphone" },

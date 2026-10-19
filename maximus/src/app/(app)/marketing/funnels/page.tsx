@@ -13,7 +13,7 @@ export default async function FunnelsPage() {
   return (
     <>
       <PageHeader eyebrow="Marketing" title="Funnels" description="Done-for-you sales funnels. Coming soon."
-        action={<LinkButton href="/funnels" variant="outline" size="sm">Public page to share</LinkButton>} />
+        action={<><LinkButton href="/marketing" variant="ghost" size="sm">All marketing</LinkButton><LinkButton href="/funnels" variant="outline" size="sm">Public page to share</LinkButton></>} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="grid gap-4 sm:grid-cols-3 lg:col-span-2">
