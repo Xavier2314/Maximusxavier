@@ -1,4 +1,4 @@
-import { STYLE_KEYS, type FunnelTheme, type StyleKey } from "@/lib/funnels";
+import { FONT_KEYS, STYLE_KEYS, type FontKey, type FunnelTheme, type StyleKey } from "@/lib/funnels";
 import { STYLES } from "@/lib/funnel-styles";
 
 export const FIELD_TYPES = [
@@ -9,12 +9,54 @@ export const FIELD_TYPES = [
 export type FieldType = (typeof FIELD_TYPES)[number]["key"];
 export const FIELD_KEYS = FIELD_TYPES.map((t) => t.key) as FieldType[];
 
-export type FormFieldDef = { id: string; type: FieldType; label: string; help: string; required: boolean; options: string[] };
+export type FormFieldDef = { id: string; type: FieldType; label: string; help: string; placeholder: string; width: "full" | "half"; required: boolean; options: string[] };
+
+/** Everything the seller can restyle. Empty colours and "look" values mean "use the chosen look". */
+export type FormDesign = {
+  headingFont: FontKey | ""; bodyFont: FontKey | "";
+  pageColor: string; cardColor: string; textColor: string;
+  bg: "look" | "color" | "gradient" | "image"; bgColor2: string; bgImage: string; overlay: number;
+  width: "narrow" | "medium" | "wide"; card: "look" | "soft" | "flat" | "glass" | "neo" | "none";
+  radius: "look" | "none" | "small" | "medium" | "large" | "pill"; shadow: "none" | "soft" | "strong";
+  density: "compact" | "comfortable" | "spacious"; headerAlign: "left" | "center";
+  fieldStyle: "outlined" | "filled" | "underline"; fieldSize: "sm" | "md" | "lg";
+  button: "look" | "solid" | "outline" | "gradient"; buttonSize: "md" | "lg"; buttonWidth: "auto" | "full"; buttonAlign: "left" | "center" | "right";
+  progress: "bar" | "dots" | "none"; logo: string; logoSize: "sm" | "md" | "lg"; logoAlign: "left" | "center" | "right";
+};
+export const DEFAULT_DESIGN: FormDesign = {
+  headingFont: "", bodyFont: "", pageColor: "", cardColor: "", textColor: "", bg: "look", bgColor2: "", bgImage: "", overlay: 40,
+  width: "medium", card: "look", radius: "look", shadow: "soft", density: "comfortable", headerAlign: "center",
+  fieldStyle: "outlined", fieldSize: "md", button: "look", buttonSize: "md", buttonWidth: "auto", buttonAlign: "right",
+  progress: "bar", logo: "", logoSize: "md", logoAlign: "center",
+};
+const oneOf = <T extends string>(v: unknown, list: readonly T[], d: T): T => ((list as readonly string[]).includes(String(v)) ? (v as T) : d);
+const hex = (v: unknown) => (/^#[0-9a-f]{6}$/i.test(String(v)) ? String(v).toLowerCase() : "");
+const imgUrl = (v: unknown) => { const u = typeof v === "string" ? v.trim().slice(0, 500) : ""; return /^https?:\/\/[^\s<>"']+$/i.test(u) ? u : ""; };
+
+export function cleanDesign(raw: unknown): FormDesign {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const D = DEFAULT_DESIGN;
+  return {
+    headingFont: (FONT_KEYS as string[]).includes(String(r.headingFont)) ? (r.headingFont as FontKey) : "",
+    bodyFont: (FONT_KEYS as string[]).includes(String(r.bodyFont)) ? (r.bodyFont as FontKey) : "",
+    pageColor: hex(r.pageColor), cardColor: hex(r.cardColor), textColor: hex(r.textColor),
+    bg: oneOf(r.bg, ["look", "color", "gradient", "image"], D.bg), bgColor2: hex(r.bgColor2), bgImage: imgUrl(r.bgImage),
+    overlay: Math.min(80, Math.max(0, Math.round(Number(r.overlay) || 0))) || (r.overlay === 0 ? 0 : D.overlay),
+    width: oneOf(r.width, ["narrow", "medium", "wide"], D.width), card: oneOf(r.card, ["look", "soft", "flat", "glass", "neo", "none"], D.card),
+    radius: oneOf(r.radius, ["look", "none", "small", "medium", "large", "pill"], D.radius), shadow: oneOf(r.shadow, ["none", "soft", "strong"], D.shadow),
+    density: oneOf(r.density, ["compact", "comfortable", "spacious"], D.density), headerAlign: oneOf(r.headerAlign, ["left", "center"], D.headerAlign),
+    fieldStyle: oneOf(r.fieldStyle, ["outlined", "filled", "underline"], D.fieldStyle), fieldSize: oneOf(r.fieldSize, ["sm", "md", "lg"], D.fieldSize),
+    button: oneOf(r.button, ["look", "solid", "outline", "gradient"], D.button), buttonSize: oneOf(r.buttonSize, ["md", "lg"], D.buttonSize),
+    buttonWidth: oneOf(r.buttonWidth, ["auto", "full"], D.buttonWidth), buttonAlign: oneOf(r.buttonAlign, ["left", "center", "right"], D.buttonAlign),
+    progress: oneOf(r.progress, ["bar", "dots", "none"], D.progress), logo: imgUrl(r.logo), logoSize: oneOf(r.logoSize, ["sm", "md", "lg"], D.logoSize),
+    logoAlign: oneOf(r.logoAlign, ["left", "center", "right"], D.logoAlign),
+  };
+}
 export type FormStep = { id: string; title: string; fields: FormFieldDef[] };
 export type FormDef = {
   intro: { title: string; text: string }; steps: FormStep[]; submitText: string;
   successTitle: string; successText: string; redirectUrl: string; consent: string;
-  theme: Pick<FunnelTheme, "style" | "accent" | "mode">;
+  theme: Pick<FunnelTheme, "style" | "accent" | "mode">; design: FormDesign;
 };
 export type FormKind = "form" | "survey";
 
@@ -24,7 +66,7 @@ const s = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0
 const OPTION_TYPES: FieldType[] = ["select", "radio", "checkbox"];
 
 export const newField = (type: FieldType = "short"): FormFieldDef => ({
-  id: uid(), type, label: type === "yesno" ? "Yes or no question" : "Your question", help: "", required: false,
+  id: uid(), type, label: type === "yesno" ? "Yes or no question" : "Your question", help: "", placeholder: "", width: "full", required: false,
   options: OPTION_TYPES.includes(type) ? ["Option 1", "Option 2"] : [],
 });
 export const newStep = (title = ""): FormStep => ({ id: uid(), title, fields: [newField()] });
@@ -34,7 +76,7 @@ export function blankForm(kind: FormKind, title: string): FormDef {
     intro: { title, text: kind === "survey" ? "It takes about a minute. Thank you for your time." : "" },
     steps: [newStep()], submitText: kind === "survey" ? "Send my answers" : "Send",
     successTitle: "Thank you!", successText: "We have received your answers.", redirectUrl: "", consent: "",
-    theme: { style: "clean", accent: st.accent, mode: st.mode },
+    theme: { style: "clean", accent: st.accent, mode: st.mode }, design: { ...DEFAULT_DESIGN },
   };
 }
 
@@ -54,7 +96,7 @@ export function cleanForm(raw: unknown): FormDef {
       if (!label) return [];
       fieldCount += 1;
       const options = OPTION_TYPES.includes(type) ? (Array.isArray(fo.options) ? fo.options : []).map((x) => s(x, 80)).filter(Boolean).slice(0, MAX_OPTIONS) : [];
-      return [{ id: uniq(fo.id), type, label, help: s(fo.help, 200), required: fo.required === true, options: OPTION_TYPES.includes(type) && options.length < 2 ? ["Option 1", "Option 2"] : options }];
+      return [{ id: uniq(fo.id), type, label, help: s(fo.help, 200), placeholder: s(fo.placeholder, 80), width: fo.width === "half" ? "half" : "full", required: fo.required === true, options: OPTION_TYPES.includes(type) && options.length < 2 ? ["Option 1", "Option 2"] : options }];
     });
     return { id: uniq(o.id), title: s(o.title, 100), fields };
   }).filter((st) => st.fields.length > 0);
@@ -67,7 +109,7 @@ export function cleanForm(raw: unknown): FormDef {
     intro: { title: s(i.title, 120), text: s(i.text, 600) }, steps: steps.length ? steps : [newStep()],
     submitText: s(r.submitText, 40) || "Send", successTitle: s(r.successTitle, 120) || "Thank you!", successText: s(r.successText, 400),
     redirectUrl: /^https?:\/\/[^\s<>"']+$/i.test(url) ? url : "", consent: s(r.consent, 200),
-    theme: { style, accent, mode: t.mode === "dark" ? "dark" : t.mode === "light" ? "light" : STYLES[style].mode },
+    theme: { style, accent, mode: t.mode === "dark" ? "dark" : t.mode === "light" ? "light" : STYLES[style].mode }, design: cleanDesign(r.design),
   };
 }
 
@@ -134,4 +176,26 @@ export function toCsv(def: FormDef, rows: { created_at: string; answers: Record<
   const head = ["Submitted", ...fields.map((f) => f.label)].map(csvCell).join(",");
   const lines = rows.map((r) => [r.created_at, ...fields.map((f) => r.answers?.[f.id] ?? "")].map((v) => csvCell(String(v))).join(","));
   return [head, ...lines].join("\r\n");
+}
+
+// --- Drag and drop (pure, so it is testable) -----------------------------------------------------
+export type Slot = { step: number; index: number };
+
+/** Moves a question to a new position. `to.index` is the position in the target step BEFORE the question is removed. */
+export function moveField(def: FormDef, from: Slot, to: Slot): FormDef {
+  const steps = def.steps.map((st) => ({ ...st, fields: [...st.fields] }));
+  const src = steps[from.step], dst = steps[to.step];
+  if (!src || !dst || from.index < 0 || from.index >= src.fields.length) return def;
+  const [f] = src.fields.splice(from.index, 1);
+  let at = Math.max(0, Math.min(to.index, dst.fields.length + (from.step === to.step ? 1 : 0)));
+  if (from.step === to.step && from.index < at) at -= 1;
+  dst.fields.splice(Math.max(0, Math.min(at, dst.fields.length)), 0, f);
+  return { ...def, steps };
+}
+
+/** Inserts a new question at a position. Returns the form unchanged when the form is full. */
+export function insertField(def: FormDef, to: Slot, field: FormFieldDef): FormDef {
+  if (allFields(def).length >= MAX_FIELDS || !def.steps[to.step]) return def;
+  const steps = def.steps.map((st, i) => (i === to.step ? { ...st, fields: [...st.fields.slice(0, to.index), field, ...st.fields.slice(to.index)] } : st));
+  return { ...def, steps };
 }

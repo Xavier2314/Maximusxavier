@@ -90,3 +90,53 @@ describe("results", () => {
     assert.equal(csv.split("\r\n").length, 2);
   });
 });
+
+import { cleanDesign, DEFAULT_DESIGN, insertField, moveField } from "@/lib/forms";
+
+describe("design", () => {
+  it("keeps valid choices and drops anything unsafe", () => {
+    const d = cleanDesign({ headingFont: "playfair", bodyFont: "comic", pageColor: "#ABCDEF", cardColor: "red", textColor: "javascript:1", bg: "image", bgImage: "javascript:alert(1)", overlay: 500, width: "huge", card: "glass", radius: "pill", logo: "https://x.com/l.png", logoSize: "xl", buttonAlign: "left" });
+    assert.equal(d.headingFont, "playfair");
+    assert.equal(d.bodyFont, "");
+    assert.equal(d.pageColor, "#abcdef");
+    assert.equal(d.cardColor, "");
+    assert.equal(d.textColor, "");
+    assert.equal(d.bgImage, "");
+    assert.equal(d.overlay, 80);
+    assert.equal(d.width, DEFAULT_DESIGN.width);
+    assert.equal(d.card, "glass");
+    assert.equal(d.radius, "pill");
+    assert.equal(d.logo, "https://x.com/l.png");
+    assert.equal(d.logoSize, "md");
+    assert.equal(d.buttonAlign, "left");
+  });
+  it("falls back to defaults for junk", () => {
+    assert.deepEqual(cleanDesign("nope"), DEFAULT_DESIGN);
+    assert.deepEqual(cleanForm({}).design, DEFAULT_DESIGN);
+  });
+  it("keeps field width and placeholder", () => {
+    const d = cleanForm({ steps: [{ fields: [{ label: "A", width: "half", placeholder: "e.g. Ada" }, { label: "B", width: "wide" }] }] });
+    assert.equal(d.steps[0].fields[0].width, "half");
+    assert.equal(d.steps[0].fields[0].placeholder, "e.g. Ada");
+    assert.equal(d.steps[0].fields[1].width, "full");
+  });
+});
+
+describe("drag and drop moves", () => {
+  const mk = () => cleanForm({ steps: [{ id: "s1", fields: ["A", "B", "C"].map((l) => ({ id: l.toLowerCase(), label: l })) }, { id: "s2", fields: [{ id: "d", label: "D" }] }] });
+  const order = (d: ReturnType<typeof mk>) => d.steps.map((s) => s.fields.map((f) => f.label).join(""));
+  it("moves down and up inside a step", () => {
+    assert.deepEqual(order(moveField(mk(), { step: 0, index: 0 }, { step: 0, index: 3 })), ["BCA", "D"]);
+    assert.deepEqual(order(moveField(mk(), { step: 0, index: 2 }, { step: 0, index: 0 })), ["CAB", "D"]);
+    assert.deepEqual(order(moveField(mk(), { step: 0, index: 1 }, { step: 0, index: 2 })), ["ABC", "D"]);
+  });
+  it("moves between steps and into an empty position", () => {
+    assert.deepEqual(order(moveField(mk(), { step: 0, index: 1 }, { step: 1, index: 0 })), ["AC", "BD"]);
+    assert.deepEqual(order(moveField(mk(), { step: 1, index: 0 }, { step: 0, index: 3 })), ["ABCD", ""]);
+  });
+  it("ignores impossible moves and inserts new questions", () => {
+    assert.deepEqual(order(moveField(mk(), { step: 0, index: 9 }, { step: 0, index: 0 })), ["ABC", "D"]);
+    assert.deepEqual(order(insertField(mk(), { step: 1, index: 0 }, newField("short"))), ["ABC", "Your questionD"]);
+    assert.equal(insertField(mk(), { step: 5, index: 0 }, newField()).steps.length, 2);
+  });
+});
