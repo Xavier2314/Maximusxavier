@@ -6,10 +6,8 @@ import { Badge, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
 import { FUNNEL_COLUMNS, type Funnel } from "@/lib/funnels";
 import { createClient } from "@/lib/supabase/server";
-import { NewFunnelForm } from "./new-funnel-form";
 
 export const metadata = { title: "Funnels" };
-export const maxDuration = 120;
 
 export default async function FunnelsPage() {
   const viewer = await requireViewer();
@@ -37,7 +35,7 @@ export default async function FunnelsPage() {
                   <span className="inline-flex items-center gap-1"><Inbox className="size-4" aria-hidden />{counts[i]} leads &amp; orders</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <LinkButton href={`/marketing/funnels/${f.id}`} size="sm"><Pencil className="size-4" aria-hidden />Edit</LinkButton>
+                  <LinkButton href={`/builder/${f.id}`} size="sm"><Pencil className="size-4" aria-hidden />Edit</LinkButton>
                   <LinkButton href={`/marketing/funnels/${f.id}/leads`} size="sm" variant="outline">Leads &amp; orders</LinkButton>
                 </div>
               </CardBody>
@@ -48,8 +46,10 @@ export default async function FunnelsPage() {
 
       <Card className="mx-auto max-w-3xl">
         <CardHeader title={funnels.length ? "Create another funnel" : "Create your first funnel"} icon={funnels.length ? <Plus className="size-4" /> : <Filter className="size-4" />}
-          description="Tell us about your product. AI writes and lays out the pages; you can change everything after." />
-        <CardBody><NewFunnelForm userId={viewer.id} /></CardBody>
+          description="Pick your product, a funnel type and a look. Your AI designer builds the pages; you change anything by clicking it." />
+        <CardBody>
+          <LinkButton href="/marketing/funnels/new" size="lg" className="w-full"><Plus className="size-5" aria-hidden />Create a funnel</LinkButton>
+        </CardBody>
       </Card>
     </>
   );

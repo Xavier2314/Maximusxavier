@@ -43,9 +43,15 @@ export async function submitFunnelLeadAction(slug: string, pageId: string, block
   const { count } = await admin.from("funnel_leads").select("id", { count: "exact", head: true }).eq("funnel_id", funnel.id).gte("created_at", since);
   if ((count ?? 0) >= 40) return { ok: false, message: "Too many requests right now. Please try again in a few minutes." };
 
+  // An accepted order add-on is recorded at the start of the note so the seller sees it first.
+  const addOn = block.type === "order_form" && block.bumpText && form.get("bump") === "on"
+    ? `[ADD-ON: ${block.bumpText}${block.bumpPrice ? ` (${block.bumpPrice})` : ""}]`
+    : "";
+  const note = [addOn, v.message].filter(Boolean).join(" ").slice(0, 1000) || null;
+
   const productName = kind === "order" ? (blockProduct || String((funnel.product as { name?: string } | null)?.name ?? "")).slice(0, 120) || null : null;
   const { error } = await admin.from("funnel_leads").insert({
-    funnel_id: funnel.id, kind, name: v.name, email: v.email ?? null, phone: v.phone, message: v.message,
+    funnel_id: funnel.id, kind, name: v.name, email: v.email ?? null, phone: v.phone, message: note,
     quantity: kind === "order" ? v.quantity ?? 1 : null, product: productName,
   });
   if (error) {
