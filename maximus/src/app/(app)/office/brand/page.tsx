@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
+import { env } from "@/lib/env";
 import { DEFAULT_BRAND, OFFICE_BRAND_COLUMNS, officeBrand, platformBrand, type OfficeBrandRow, type PlatformBrandSetting } from "@/lib/branding";
 import { createClient } from "@/lib/supabase/server";
 import { OfficePicker } from "../office-picker";
@@ -38,6 +39,12 @@ export default async function OfficeBrandPage({ searchParams }: { searchParams: 
       <PageHeader eyebrow="Office view" title="Branding"
         description={`Make ${row?.name ?? "your office"} feel like yours: your name, logo and colours. Your members see it across the app.`}
         action={<OfficePicker offices={viewer.offices} current={officeId} />} />
+      <Card className="mb-6">
+        <CardHeader title="Your members' join link" description="Anyone who signs up with this link joins this office, sees its brand and is placed under you." />
+        <CardBody>
+          <p className="break-all rounded-xl bg-surface-muted p-3 font-mono text-sm">{`${env.siteUrl}/register?office=${officeId}&ref=${encodeURIComponent(viewer.profile.referral_code)}`}</p>
+        </CardBody>
+      </Card>
       {!unlocked && fee && isFlutterwaveConfigured() && latest?.status !== "pending" && (
         <Card className="mb-6 border-2 border-primary/40">
           <CardHeader title={`Remove "Powered by": pay ₦${Number(fee.amount).toLocaleString()} online`}

@@ -19,7 +19,7 @@ const STEP_FIELDS: string[][] = [
   ["email", "password", "confirm_password", "privacy"],
 ];
 
-export function RegisterForm({ offices, referralCode, uplineCode }: { offices: { id: string; name: string }[]; referralCode?: string; uplineCode?: string }) {
+export function RegisterForm({ offices, referralCode, uplineCode, officeId }: { offices: { id: string; name: string }[]; referralCode?: string; uplineCode?: string; officeId?: string }) {
   const [state, action] = useActionState(registerAction, null);
   const [step, setStep] = useState(0);
   const [sponsor, setSponsor] = useState<{ name?: string; checking?: boolean; invalid?: boolean }>({});
@@ -148,7 +148,7 @@ export function RegisterForm({ offices, referralCode, uplineCode }: { offices: {
         <legend className="sr-only">Your team</legend>
         <Field label="Office" htmlFor="office_id" error={errors.office_id}
           hint={offices.length === 0 ? "No offices have been set up yet — ask your administrator." : undefined}>
-          <Select id="office_id" name="office_id" required defaultValue="">
+          <Select id="office_id" name="office_id" required defaultValue={officeId && offices.some((o) => o.id === officeId) ? officeId : ""}>
             <option value="" disabled>Choose your office</option>
             {offices.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
           </Select>

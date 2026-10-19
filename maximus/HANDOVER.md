@@ -101,6 +101,11 @@ them into Supabase > SQL Editor.
   notifies everyone. Home shows the banner all week. The Upwork analyser lists niche leaders via
   `upwork_niche_leaders()` (Upwork orders, last 90 days, pending included).
 
+- Self-serve company white-label (0044): public link /white-label. A company creates its admin login,
+  pays `company_whitelabel_fee` (₦5,000) via Flutterwave, and `provision_company()` creates its branded,
+  white-labelled office with the payer as office admin. Members join via /register?office=<id>&ref=<code>
+  (shown after payment and on the Branding page). Companies share the platform: Super Admins can see them.
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.

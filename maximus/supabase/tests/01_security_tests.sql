@@ -1138,6 +1138,26 @@ do $$ begin
 end $$;
 select pg_temp.act_as(null);
 
+-- 0044: a company pays and gets its own branded office automatically.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+create temp table co_ref (ref text);
+grant all on co_ref to public;
+insert into co_ref select tx_ref from public.create_company_signup('Acme Traders', '#112233', '#aabbcc');
+select pg_temp.expect_error($$ select public.provision_company((select ref from co_ref)) $$, 'members cannot provision themselves');
+do $$ begin assert not exists (select 1 from public.offices where name = 'Acme Traders'), 'no office before payment'; end $$;
+select pg_temp.act_as(null);
+select public.apply_online_payment((select ref from co_ref), 501, 5000, 'NGN', true);
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+do $$ declare v uuid; begin
+  select id into v from public.offices where name = 'Acme Traders';
+  assert v is not null, 'office created after payment';
+  assert (select white_label and white_label_paid from public.offices where id = v), 'white-label on';
+  assert public.can_manage_office(v), 'payer manages the company';
+  assert (select office_id from public.profiles where id = auth.uid()) = v, 'payer moved into company';
+  raise notice 'PASS: self-serve company white-label';
+end $$;
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
