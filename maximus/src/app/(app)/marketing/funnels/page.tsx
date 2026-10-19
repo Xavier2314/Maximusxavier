@@ -48,7 +48,10 @@ export default async function FunnelsPage() {
         <CardHeader title={funnels.length ? "Create another funnel" : "Create your first funnel"} icon={funnels.length ? <Plus className="size-4" /> : <Filter className="size-4" />}
           description="Pick your product, a funnel type and a look. Your AI designer builds the pages; you change anything by clicking it." />
         <CardBody>
-          <LinkButton href="/marketing/funnels/new" size="lg" className="w-full"><Plus className="size-5" aria-hidden />Create a funnel</LinkButton>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <LinkButton href="/marketing/funnels/new" size="lg" className="w-full"><Plus className="size-5" aria-hidden />Create a funnel</LinkButton>
+            <LinkButton href="/marketing/funnels/import" size="lg" variant="outline" className="w-full">Start from my HTML</LinkButton>
+          </div>
         </CardBody>
       </Card>
     </>

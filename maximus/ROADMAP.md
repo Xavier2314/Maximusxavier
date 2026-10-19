@@ -15,8 +15,10 @@ Legend: [x] done and live-ready · [~] started · [ ] not started · 🔌 needs 
 - [ ] Results screen: spend, messages, orders per ad, with plain-language advice
 
 ## 2. Import a funnel from HTML
-- [ ] Paste or upload HTML and turn it into editable funnel sections (sanitised)
-- [ ] Import from a link
+- [x] Paste or upload HTML and turn it into editable funnel sections (scripts, styles, event handlers and unsafe links removed)
+- [x] Two modes: keep my layout, or rebuild beautifully with AI (keeps all real copy, pictures, links and form questions)
+- [x] Start a new funnel from HTML, or import into an existing funnel (append, replace the page, or new page) with review before applying
+- [ ] Import from a web address (needs a safe server-side fetcher; deferred)
 
 ## 3. Emails
 - [ ] Email designer: drag and drop, AI draft, import your own HTML

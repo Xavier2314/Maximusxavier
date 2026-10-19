@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type DragEvent, type ReactNode } from "react";
 import {
-  ArrowDown, ArrowLeft, ArrowUp, Check, ChevronRight, Copy, CopyPlus, Eye, GripVertical, History, Laptop, Layers, LayoutTemplate, LoaderCircle, Palette, Plus, Redo2, Rocket, Smartphone, Sparkles, Tablet, Trash2, Undo2, X,
+  ArrowDown, ArrowLeft, ArrowUp, Check, ChevronRight, Copy, CopyPlus, Eye, FileCode, GripVertical, History, Laptop, Layers, LayoutTemplate, LoaderCircle, Palette, Plus, Redo2, Rocket, Smartphone, Sparkles, Tablet, Trash2, Undo2, X,
 } from "lucide-react";
 import {
   aiFunnelAction, createVersionAction, deleteFunnelAction, duplicateFunnelAction, listVersionsAction, publishFunnelAction, restoreVersionAction, rollbackLiveAction, saveAsCopyAction, saveFunnelAction, unpublishFunnelAction,
   type VersionRow,
 } from "@/app/(app)/marketing/funnels/actions";
+import { importHtmlAction } from "@/app/(app)/marketing/funnels/html-actions";
 import { deleteSavedSectionAction, listSavedSectionsAction, saveSectionAction, type SavedSection } from "@/app/(app)/marketing/funnels/library-actions";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
@@ -95,6 +96,11 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
   const baseVer = useRef<string>(funnel.updated_at);
   const [conflict, setConflict] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [htmlOpen, setHtmlOpen] = useState(false);
+  const [htmlText, setHtmlText] = useState("");
+  const [htmlMode, setHtmlMode] = useState<"keep" | "ai">("keep");
+  const [htmlTarget, setHtmlTarget] = useState<"append" | "replace" | "page">("append");
+  const [htmlMsg, setHtmlMsg] = useState("");
   const [versions, setVersions] = useState<VersionRow[] | null>(null);
   const [versionLabel, setVersionLabel] = useState("");
   const [histMsg, setHistMsg] = useState("");
@@ -207,6 +213,25 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
       applyDoc({ ...doc, pages: cp }); touch();
       setPubMsg("Imported. Check it over, then publish when you are ready.");
     } catch (e) { setPubMsg((e as Error).message || "That file could not be read."); }
+  };
+
+  const runHtmlImport = async () => {
+    setBusy(true); setHtmlMsg("");
+    let res: Awaited<ReturnType<typeof importHtmlAction>>;
+    try { res = await importHtmlAction(funnel.id, htmlText, htmlMode); } catch { res = { ok: false, message: "Could not reach the server. Please try again." }; }
+    setBusy(false);
+    if (!res.ok || !res.blocks) { setHtmlMsg(res.message); return; }
+    const imported = res.blocks;
+    const nextPages = htmlTarget === "replace" ? pages.map((p) => (p.id === page.id ? { ...p, blocks: imported } : p))
+      : htmlTarget === "page" ? (pages.length < 6 ? [...pages, newPage("Imported page", imported)] : pages)
+      : pages.map((p) => (p.id === page.id ? { ...p, blocks: [...p.blocks, ...imported] } : p));
+    const nextTheme = res.theme ?? theme;
+    const changes = diffDocs({ pages, theme }, { pages: nextPages, theme: nextTheme });
+    setHtmlOpen(false); setHtmlText("");
+    if (!changes.length) { setAiNote({ ok: false, text: "Nothing new came from that HTML." }); setPanel("ai"); return; }
+    setProposal({ pages: nextPages, theme: nextTheme, changes });
+    setAiNote({ ok: true, text: `${res.message} Review it below, then apply.${res.warnings?.length ? " " + res.warnings.join(" ") : ""}` });
+    setPanel("ai");
   };
 
   // --- publishing and history ---------------------------------------------------------------------
@@ -647,6 +672,7 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
         </div>
         <Select aria-label="Zoom" value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="!h-9 !w-24">{[50, 75, 100, 125].map((z) => <option key={z} value={z}>{z}%</option>)}</Select>
         <div className="ml-auto flex items-center gap-0.5">
+          <Button size="icon" variant="ghost" onClick={() => { setHtmlOpen(true); setHtmlMsg(""); }} aria-label="Import HTML" title="Import HTML"><FileCode className="size-4" /></Button>
           <Button size="icon" variant="ghost" onClick={openHistory} aria-label="Version history" title="Version history"><History className="size-4" /></Button>
           <Button size="icon" variant="ghost" onClick={stepUndo} disabled={!undo.length} aria-label="Undo"><Undo2 className="size-4" /></Button>
           <Button size="icon" variant="ghost" onClick={stepRedo} disabled={!redo.length} aria-label="Redo"><Redo2 className="size-4" /></Button>
@@ -750,6 +776,27 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
             <div className="flex items-start justify-between"><h2 id="dom-title" className="text-xl font-bold">Connect your own domain</h2><Button size="icon" variant="ghost" aria-label="Close" onClick={() => setDomainOpen(false)}><X className="size-4" /></Button></div>
             <p className="rounded-xl bg-surface-muted p-3 text-sm"><b>Status: not connected.</b> Custom domains are not switched on for this platform yet, so nothing is simulated here.</p>
             <p className="text-sm text-fg-muted">Your funnel works today at its Maximus link. To use your own domain it will need your domain&apos;s DNS to point here, and a platform administrator to add the domain to the hosting project. Until then, share the link above.</p>
+          </div>
+        </div>
+      )}
+
+      {htmlOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="html-title" onClick={() => !busy && setHtmlOpen(false)}>
+          <div className="flex max-h-[90dvh] w-full max-w-2xl flex-col gap-3 overflow-y-auto rounded-3xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between"><h2 id="html-title" className="text-xl font-bold">Import HTML</h2><Button size="icon" variant="ghost" aria-label="Close" onClick={() => setHtmlOpen(false)}><X className="size-4" /></Button></div>
+            <p className="text-sm text-fg-muted">Paste a page&apos;s HTML (or upload a file). Scripts are removed. You review the result before anything changes.</p>
+            <Textarea aria-label="HTML" rows={10} value={htmlText} onChange={(e) => setHtmlText(e.target.value)} className="font-mono text-xs" placeholder="<html>…</html>" />
+            <label className="inline-flex h-10 w-fit cursor-pointer items-center rounded-xl border border-border px-3 text-sm font-medium hover:bg-surface-muted">Upload an .html file<input type="file" accept=".html,.htm,text/html" hidden onChange={async (e) => { const f = e.target.files?.[0]; if (f && f.size <= 500_000) setHtmlText(await f.text()); else if (f) setHtmlMsg("That file is over 500 KB."); e.target.value = ""; }} /></label>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {([["keep", "Keep my layout"], ["ai", "Rebuild beautifully with AI"]] as const).map(([k, l]) => <label key={k} className={`flex cursor-pointer items-center gap-2 rounded-xl border p-3 text-sm ${htmlMode === k ? "border-primary bg-primary-soft" : "border-border"}`}><input type="radio" name="hmode" checked={htmlMode === k} onChange={() => setHtmlMode(k)} />{l}</label>)}
+            </div>
+            <Field label="Where should it go?" htmlFor="html-target">
+              <Select id="html-target" value={htmlTarget} onChange={(e) => setHtmlTarget(e.target.value as "append" | "replace" | "page")}>
+                <option value="append">Add to the end of this page</option><option value="replace">Replace this page</option><option value="page" disabled={pages.length >= 6}>Make it a new page</option>
+              </Select>
+            </Field>
+            {htmlMsg && <p role="alert" className="text-sm text-danger">{htmlMsg}</p>}
+            <Button onClick={runHtmlImport} disabled={busy || htmlText.trim().length < 20}>{busy ? <><LoaderCircle className="size-4 animate-spin" />{htmlMode === "ai" ? "Redesigning… (up to a minute)" : "Importing…"}</> : "Import"}</Button>
           </div>
         </div>
       )}
