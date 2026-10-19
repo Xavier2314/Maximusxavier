@@ -105,6 +105,11 @@
   --animate-shimmer: shimmer 1.6s linear infinite;
 }
 
+@keyframes confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.85; }
+  100% { transform: translateY(420px) rotate(360deg); opacity: 0; }
+}
 @keyframes rise {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }

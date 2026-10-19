@@ -1112,6 +1112,32 @@ select pg_temp.expect_error($$ select public.create_online_payment('upwork_analy
 select pg_temp.expect_error($$ select public.grant_tool_access('MX-001001') $$, 'member cannot unlock tools');
 select pg_temp.act_as(null);
 
+-- 0043: weekly winners from confirmed/delivered orders; niche leaders for analyser users.
+select pg_temp.act_as(null);
+insert into public.orders (member_id, amount, status, order_date, platform, category, description) values
+  ('00000000-0000-0000-0000-0000000000c2', 50000, 'confirmed', date_trunc('week', current_date - 7)::date + 1, 'upwork', 'Shopify design', 'Store build'),
+  ('00000000-0000-0000-0000-0000000000c2', 999999, 'pending', date_trunc('week', current_date - 7)::date + 2, 'upwork', 'Shopify design', 'Big pending'),
+  ('00000000-0000-0000-0000-0000000000e2', 20000, 'delivered', date_trunc('week', current_date - 7)::date + 3, 'fiverr', 'Logo', 'Logo job');
+do $$ declare n int; begin
+  n := public.award_weekly_winners(date_trunc('week', current_date - 7)::date);
+  assert n >= 2, 'winners awarded';
+  assert (select user_id from public.weekly_winners where office_id is null and position = 1) = '00000000-0000-0000-0000-0000000000c2', 'top earner by confirmed orders';
+  assert (select total from public.weekly_winners where office_id is null and position = 1) = 50000, 'pending orders not counted';
+  assert public.award_weekly_winners(date_trunc('week', current_date - 7)::date) = 0, 'runs once per week';
+  assert exists (select 1 from public.announcements where kind = 'recognition' and title like '%Top Earner of the Week%'), 'recognition posted';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+select pg_temp.expect_error($$ select public.award_weekly_winners() $$, 'members cannot award winners');
+select pg_temp.expect_error($$ select * from public.upwork_niche_leaders('shopify') $$, 'niche leaders need analyser access');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select count(*) from public.weekly_winners) >= 2, 'everyone sees winners';
+  assert (select orders from public.upwork_niche_leaders('Shopify store design') limit 1) = 2, 'niche counts processing orders';
+  assert (select matched from public.upwork_niche_leaders('Shopify store design') limit 1), 'niche matched';
+  raise notice 'PASS: weekly winners and niche leaders';
+end $$;
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

@@ -24,11 +24,16 @@ export async function GET(request: Request) {
   const { data: prospectingNudges } = await admin.rpc("run_prospecting_nudges");
   const { data: taskReminders } = await admin.rpc("run_task_reminders", { p_today: today });
   let growthFocus: number | null = null;
+  let weeklyWinners: number | null = null;
   if (new Date(`${today}T12:00:00Z`).getUTCDay() === 1) {
     const { data, error: focusError } = await admin.rpc("run_weekly_growth_focus");
     if (focusError) return NextResponse.json({ error: focusError.message }, { status: 500 });
     growthFocus = data as number;
+    // Celebrate last week's top earners (from confirmed/delivered orders).
+    const { data: winners, error: winnersError } = await admin.rpc("award_weekly_winners");
+    if (winnersError) console.error("[weekly-winners]", winnersError.message);
+    weeklyWinners = (winners as number | null) ?? null;
   }
   const push = await dispatchPendingPush(1000);
-  return NextResponse.json({ ok: true, reminders, prospectingNudges, taskReminders, growthFocus, push });
+  return NextResponse.json({ ok: true, reminders, prospectingNudges, taskReminders, growthFocus, weeklyWinners, push });
 }

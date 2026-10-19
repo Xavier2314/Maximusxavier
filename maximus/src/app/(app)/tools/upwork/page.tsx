@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowLeft, Briefcase, CheckCircle2, ExternalLink, History, KeyRound, Lock } from "lucide-react";
+import { ArrowLeft, Briefcase, CheckCircle2, ExternalLink, History, KeyRound, Lock, Trophy } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
-import { PageHeader } from "@/components/ui/misc";
+import { Avatar, PageHeader } from "@/components/ui/misc";
+import { rankLabel } from "@/lib/ranks";
 import { requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { UpworkInput, UpworkReport } from "@/lib/upwork";
@@ -12,6 +13,7 @@ import { AnalyserForm, ReportView, UnlockMemberForm } from "./upwork-ui";
 export const metadata = { title: "Upwork Account Analyser" };
 export const maxDuration = 60;
 
+type Leader = { full_name: string; avatar_url: string | null; business_rank: string | null; member_id: string; orders: number; in_progress: number; completed: number; matched: boolean };
 type Row = { id: string; score: number | null; created_at: string; input: UpworkInput; report: UpworkReport };
 
 export default async function UpworkAnalyserPage({ searchParams }: { searchParams: Promise<{ r?: string }> }) {
@@ -81,6 +83,10 @@ export default async function UpworkAnalyserPage({ searchParams }: { searchParam
     .order("created_at", { ascending: false }).limit(20).returns<Row[]>();
   const rows = data ?? [];
   const current = rows.find((x) => x.id === r) ?? null;
+  const basis = current?.input ?? rows[0]?.input ?? null;
+  const niche = basis ? [basis.niche, basis.title].filter(Boolean).join(" ") : "";
+  const { data: leaderRows } = await supabase.rpc("upwork_niche_leaders", { p_niche: niche, p_limit: 10 });
+  const leaders = (leaderRows as Leader[] | null) ?? [];
 
   return (
     <>
@@ -109,6 +115,31 @@ export default async function UpworkAnalyserPage({ searchParams }: { searchParam
                   ))}
                 </ul>
               )}
+            </CardBody>
+          </Card>
+          <Card className="h-fit">
+            <CardHeader title={leaders[0]?.matched ? "Top in your niche" : "Top Upwork earners"} icon={<Trophy className="size-4" />}
+              description={leaders[0]?.matched ? `Members getting the most Upwork orders for “${basis?.niche || basis?.title}” (last 90 days, including orders in progress).` : "Members getting the most Upwork orders (last 90 days, including orders in progress)."} />
+            <CardBody>
+              {leaders.length === 0 ? <p className="text-sm text-fg-muted">No Upwork orders recorded yet. Record yours in Orders to show up here.</p> : (
+                <ol className="space-y-2">
+                  {leaders.map((l, i) => (
+                    <li key={l.member_id} className="flex items-center gap-3">
+                      <span className="w-5 text-center text-sm font-bold text-fg-subtle">{i + 1}</span>
+                      <Avatar name={l.full_name} src={l.avatar_url} size={36} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold">{l.full_name}</span>
+                        <span className="block text-xs text-fg-subtle">{rankLabel(l.business_rank) ?? l.member_id}</span>
+                      </span>
+                      <span className="text-right text-xs">
+                        <b className="block text-sm tabular-nums">{l.orders} order{l.orders === 1 ? "" : "s"}</b>
+                        <span className="text-fg-subtle">{l.in_progress} in progress</span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+              <p className="mt-3 text-xs text-fg-subtle">Learn from them: send a message and ask what&apos;s working.</p>
             </CardBody>
           </Card>
           {unlockCard}

@@ -16,6 +16,7 @@ import { motivationFor } from "@/lib/motivation";
 import { rankLabel } from "@/lib/ranks";
 import { WelcomeHero } from "./welcome-hero";
 import { WhyStrip } from "./why-strip";
+import { TopEarnersBanner, type Winner } from "./top-earners";
 import { FeaturedHomeCard } from "@/components/featured/featured-video";
 import { featuredFrom } from "@/lib/featured";
 import { FOCUS, topFocus, type GrowthFocus } from "@/lib/growth";
@@ -35,6 +36,13 @@ function isoWeek(day: string) {
   return `${d.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 
+/** Monday of the week before the one containing `day` (YYYY-MM-DD). */
+function lastWeekStart(day: string) {
+  const d = new Date(`${day}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) - 7);
+  return d.toISOString().slice(0, 10);
+}
+
 function hourIn(tz: string) {
   return Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: tz }).format(new Date())) % 24;
 }
@@ -51,7 +59,7 @@ export default async function DashboardPage() {
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { data: balances },
     { data: notifications }, { data: birthdays }, { data: lessonsDone }, { data: publishedLessons }, { data: focusData },
     { data: checklistItems }, { data: checklistDone }, { data: thought }, { data: pulse }, { data: followUps },
-    { data: todayTasks }, { data: whys }, { data: featuredSetting },
+    { data: todayTasks }, { data: whys }, { data: featuredSetting }, { data: winnerRows },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -76,7 +84,11 @@ export default async function DashboardPage() {
       .order("due_date").order("priority").limit(6).returns<Task[]>(),
     supabase.from("motivations").select("*").eq("user_id", viewer.id).eq("show_on_dashboard", true).returns<Motivation[]>(),
     supabase.from("app_settings").select("value").eq("key", "featured_video").maybeSingle(),
+    supabase.from("weekly_winners").select("position, total, orders, office_id, user_id, profiles!weekly_winners_user_id_fkey(full_name, avatar_url, business_rank)")
+      .eq("week_start", lastWeekStart(today)).returns<Winner[]>(),
   ]);
+  const winners = (winnerRows ?? []).filter((w) => w.office_id === null);
+  const officeWinner = (winnerRows ?? []).find((w) => w.office_id && w.office_id === viewer.profile.office_id) ?? null;
   const featured = featuredFrom(featuredSetting?.value);
   // A different reason each day.
   const dayIndex = Math.floor(new Date(`${today}T00:00:00Z`).getTime() / 86400000);
@@ -138,6 +150,8 @@ export default async function DashboardPage() {
         streak={(streak as number | null) ?? 0} checkedInAt={checkedIn ? formatTime(openAttendance.check_in_at, tz) : null}
         evaluationDue={!evaluation} nextEvaluation={formatDate(nextEvaluationDate(today), { day: "numeric", month: "short" })}
         goalPct={goalPct} hasGoals={goalRows.length > 0} word={motivationFor(today)} />
+
+      <TopEarnersBanner winners={winners} officeWinner={officeWinner} viewerId={viewer.id} />
 
       {featured && <FeaturedHomeCard video={featured} />}
 

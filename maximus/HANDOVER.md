@@ -96,6 +96,11 @@ them into Supabase > SQL Editor.
   Flutterwave page link are unlocked by an approver on the same page (`grant_tool_access`). Reports use
   Claude with a forced tool call; 5 analyses per 24 hours per member (Super Admins unlimited).
 
+- Top earners of the week (0043): every Monday the daily cron runs `award_weekly_winners()` (top 3 +
+  each office's #1 from confirmed/delivered orders of the previous Mon–Sun), posts recognitions and
+  notifies everyone. Home shows the banner all week. The Upwork analyser lists niche leaders via
+  `upwork_niche_leaders()` (Upwork orders, last 90 days, pending included).
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.
