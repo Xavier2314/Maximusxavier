@@ -7,7 +7,7 @@ import { requireViewer } from "@/lib/auth";
 export const metadata = { title: "Marketing" };
 
 const TOOLS = [
-  { href: "/marketing/funnels", icon: Filter, title: "Funnels", text: "Done-for-you sales funnels. Packages are coming soon; join the waitlist.", soon: true },
+  { href: "/marketing/funnels", icon: Filter, title: "Funnels", text: "Design pages that sell your products. Let AI write the first draft, then drag, drop and edit.", soon: false },
 ];
 
 export default async function MarketingPage() {

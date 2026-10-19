@@ -1209,6 +1209,44 @@ do $$ begin
 end $$;
 select pg_temp.act_as(null);
 
+-- 0049: funnels are private to their owner; leads are readable only by the funnel's owner.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+insert into public.funnels (title, slug, pages) values ('Wellness pack', public.suggest_funnel_slug('Wellness pack'), '[{"id":"abcd1234","name":"Landing","slug":"landing","blocks":[]}]');
+do $$ begin
+  assert (select count(*) from public.funnels) = 1, 'owner sees own funnel';
+  raise notice 'PASS: owner can create and read a funnel';
+end $$;
+select pg_temp.expect_error($$ update public.funnels set views = 99999 $$, 'cannot fake funnel views');
+select pg_temp.expect_error($$ insert into public.funnels (user_id, title, slug) values ('00000000-0000-0000-0000-0000000000e1', 'Not mine', 'not-mine-x') $$, 'cannot create a funnel for someone else');
+select pg_temp.expect_error($$ insert into public.funnel_leads (funnel_id, name) select id, 'Fake' from public.funnels $$, 'members cannot write leads through the API');
+select pg_temp.act_as(null);
+insert into public.funnel_leads (funnel_id, kind, name, phone, product, quantity) select id, 'order', 'Buyer One', '0800000000', 'Wellness pack', 2 from public.funnels;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select count(*) from public.funnel_leads) = 1, 'owner reads own leads';
+  raise notice 'PASS: owner reads their funnel leads';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+do $$ begin
+  assert (select count(*) from public.funnels) = 0, 'others cannot read funnels';
+  assert (select count(*) from public.funnel_leads) = 0, 'others cannot read leads';
+  update public.funnels set title = 'hacked';
+  delete from public.funnel_leads;
+  raise notice 'PASS: funnels and leads are owner-only';
+end $$;
+select pg_temp.act_as(null);
+do $$ begin
+  assert (select title from public.funnels limit 1) = 'Wellness pack', 'funnel not changed by others';
+  assert (select count(*) from public.funnel_leads) = 1, 'leads not deleted by others';
+end $$;
+-- Funnels limit: 10 per member.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  for i in 2..10 loop insert into public.funnels (title, slug) values ('F' || i, public.suggest_funnel_slug('funnel ' || i)); end loop;
+end $$;
+select pg_temp.expect_error($$ insert into public.funnels (title, slug) values ('Eleven', public.suggest_funnel_slug('eleven')) $$, 'limit of 10 funnels');
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='
