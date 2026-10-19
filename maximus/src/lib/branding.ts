@@ -11,6 +11,8 @@ export type Brand = {
   whiteLabel: boolean;
   /** True for the built-in Maximus look (uses the official logo). */
   isDefault: boolean;
+  /** Premium white-label: no Maximus name anywhere for this brand's members. */
+  fullWhiteLabel?: boolean;
 };
 
 export const DEFAULT_BRAND: Brand = {
@@ -22,8 +24,9 @@ export const DEFAULT_BRAND: Brand = {
 export type OfficeBrandRow = {
   id: string; name: string; display_name: string | null; tagline: string | null; logo_url: string | null;
   primary_color: string | null; accent_color: string | null; sidebar_color: string | null; white_label: boolean;
+  full_white_label?: boolean; featured_video?: unknown; slug?: string | null;
 };
-export const OFFICE_BRAND_COLUMNS = "id, name, display_name, tagline, logo_url, primary_color, accent_color, sidebar_color, white_label";
+export const OFFICE_BRAND_COLUMNS = "id, name, display_name, tagline, logo_url, primary_color, accent_color, sidebar_color, white_label, full_white_label, featured_video, slug";
 
 export type PlatformBrandSetting = { app_name?: string; tagline?: string; logo_url?: string; primary?: string; accent?: string; sidebar?: string };
 
@@ -58,6 +61,7 @@ export function officeBrand(o: OfficeBrandRow | null | undefined, platform: Bran
     sidebar: hexOr(o.sidebar_color, platform.sidebar),
     whiteLabel: o.white_label,
     isDefault: false,
+    fullWhiteLabel: Boolean(o.full_white_label && o.white_label),
   };
 }
 

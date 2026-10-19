@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { companyFromCookie } from "@/lib/company-brand";
 import { LoginForm } from "./login-form";
 
 export const metadata = { title: "Sign in" };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
   const { next, error } = await searchParams;
+  const company = await companyFromCookie();
   return (
     <>
       <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
@@ -16,8 +18,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       )}
       <LoginForm next={next} />
       <p className="mt-8 text-center text-sm text-fg-muted">
-        New to Maximus?{" "}
-        <Link href="/register" className="font-semibold text-primary hover:underline">Create your account</Link>
+        New to {company?.full ? company.name : "Maximus"}?{" "}
+        <Link href={company ? `/register?office=${company.id}` : "/register"} className="font-semibold text-primary hover:underline">Create your account</Link>
       </p>
     </>
   );

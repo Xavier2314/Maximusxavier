@@ -13,7 +13,7 @@ type Msg = { id: string; role: "user" | "assistant"; content: string };
 const SUGGESTIONS = ["Where do I record an Upwork order?", "How do I check in?", "Help me plan my week", "I want to make a complaint"];
 
 /** Floating "Ask Maximus" bubble: chat with the AI, find anything in the app, or send a complaint. */
-export function ChatWidget({ firstName }: { firstName: string }) {
+export function ChatWidget({ firstName, assistant = "Maximus" }: { firstName: string; assistant?: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"chat" | "complaint">("chat");
@@ -63,19 +63,19 @@ export function ChatWidget({ firstName }: { firstName: string }) {
 
   return (
     <>
-      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={open ? "Close Maximus assistant" : "Ask Maximus"}
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={open ? `Close ${assistant} assistant` : `Ask ${assistant}`}
         className="bottom-bar fixed bottom-24 right-4 z-40 flex h-14 items-center gap-2 rounded-full bg-brand-navy pl-4 pr-5 text-white shadow-xl ring-1 ring-white/10 transition-transform hover:scale-105 lg:bottom-6 lg:right-6 dark:bg-primary">
         {open ? <X className="size-5" aria-hidden /> : <MessageCircle className="size-5 text-brand-lime dark:text-white" aria-hidden />}
-        <span className="text-sm font-semibold">{open ? "Close" : "Ask Maximus"}</span>
+        <span className="text-sm font-semibold">{open ? "Close" : `Ask ${assistant}`}</span>
       </button>
 
       {open && (
-        <section role="dialog" aria-label="Maximus assistant"
+        <section role="dialog" aria-label={`${assistant} assistant`}
           className="card fixed inset-x-3 bottom-40 top-20 z-40 flex flex-col overflow-hidden animate-rise sm:inset-x-auto sm:right-6 sm:top-auto sm:h-[600px] sm:max-h-[calc(100vh-8rem)] sm:w-[400px] lg:bottom-24">
           <header className="flex items-center gap-3 bg-brand-navy px-4 py-3 text-white">
-            <span className="grid size-9 place-items-center rounded-xl bg-white/10"><Logo variant="mark" className="h-5 w-auto" title="Maximus" /></span>
+            <span className="grid size-9 place-items-center rounded-xl bg-white/10">{assistant === "Maximus" ? <Logo variant="mark" className="h-5 w-auto" title="Maximus" /> : <span className="text-sm font-bold">{assistant.slice(0, 1).toUpperCase()}</span>}</span>
             <div className="min-w-0 flex-1">
-              <p className="font-semibold leading-tight">Maximus assistant</p>
+              <p className="font-semibold leading-tight">{assistant} assistant</p>
               <p className="text-xs text-white/60">Ask anything, find any page, or send a complaint</p>
             </div>
           </header>
@@ -98,7 +98,7 @@ export function ChatWidget({ firstName }: { firstName: string }) {
               <div className="flex-1 space-y-3 overflow-y-auto p-4">
                 {messages.length === 0 && (
                   <div className="space-y-3">
-                    <p className="text-sm">Hi {firstName} 👋 I can answer questions, show you where things are in Maximus, or help you plan. Type or tap <b>Speak</b>.</p>
+                    <p className="text-sm">Hi {firstName} 👋 I can answer questions, show you where things are in {assistant}, or help you plan. Type or tap <b>Speak</b>.</p>
                     <div className="flex flex-wrap gap-2">
                       {SUGGESTIONS.map((s) => (
                         <button key={s} type="button" onClick={() => (s.includes("complaint") ? setTab("complaint") : void send(s))}
@@ -122,7 +122,7 @@ export function ChatWidget({ firstName }: { firstName: string }) {
                 <div className="flex items-end gap-2">
                   <textarea value={input} onChange={(e) => setInput(e.target.value)} rows={1} maxLength={2000}
                     onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(input); } }}
-                    placeholder="Ask Maximus…" aria-label="Message"
+                    placeholder={`Ask ${assistant}…`} aria-label="Message"
                     className="max-h-28 min-h-[40px] flex-1 resize-none rounded-xl border border-border bg-surface px-3 py-2 text-sm focus:border-primary focus:outline-none" />
                   <button type="submit" disabled={!input.trim() || streaming} aria-label="Send"
                     className="grid size-10 place-items-center rounded-xl bg-primary text-white disabled:opacity-50">

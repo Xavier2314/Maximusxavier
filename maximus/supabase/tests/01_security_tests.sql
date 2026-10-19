@@ -1158,6 +1158,27 @@ do $$ declare v uuid; begin
 end $$;
 select pg_temp.act_as(null);
 
+-- 0045: Premium company gets a company link and full white-label; company videos.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+create temp table pr_ref (ref text);
+grant all on pr_ref to public;
+insert into pr_ref select tx_ref from public.start_company_signup('Acme Traders Premium', '#112233', '#aabbcc', 'premium');
+do $$ begin assert (select amount from public.online_payments where tx_ref = (select ref from pr_ref)) = 10000, 'premium costs 10000'; end $$;
+select pg_temp.act_as(null);
+select public.apply_online_payment((select ref from pr_ref), 502, 10000, 'NGN', true);
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+do $$ declare v uuid; begin
+  select id into v from public.offices where name = 'Acme Traders Premium';
+  assert (select full_white_label from public.offices where id = v), 'premium is full white-label';
+  assert (select slug from public.offices where id = v) = 'acme-traders-premium', 'company link made';
+  perform public.set_office_featured_video(v, '{"provider":"loom","video_id":"0123456789abcdef0123456789abcdef","title":"Welcome","active":true}');
+  assert (select featured_video->>'provider' from public.offices where id = v) = 'loom', 'company video saved';
+  raise notice 'PASS: premium white-label and company video';
+end $$;
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+select pg_temp.expect_error($$ select public.set_office_featured_video((select id from public.offices where name = 'Acme Traders Premium'), null) $$, 'others cannot change company video');
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

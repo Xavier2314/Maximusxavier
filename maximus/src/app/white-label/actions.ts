@@ -14,6 +14,7 @@ const schema = z.object({
   company_name: z.string().trim().min(2, "Enter your company name").max(60),
   primary_color: hex,
   accent_color: hex,
+  tier: z.enum(["standard", "premium"]).default("standard"),
   full_name: z.string().trim().min(2, "Enter your full name").max(120).optional(),
   email: z.string().trim().toLowerCase().email("Enter a valid email").optional(),
   phone: z.string().trim().regex(/^\+?[0-9\s-]{7,20}$/, "Enter a valid phone number").optional(),
@@ -48,7 +49,7 @@ export async function startCompanyAction(_: CompanyState, form: FormData): Promi
     user = signedIn.data.user;
   }
 
-  const { data, error } = await supabase.rpc("create_company_signup", { p_company: v.company_name, p_primary: v.primary_color, p_accent: v.accent_color });
+  const { data, error } = await supabase.rpc("start_company_signup", { p_company: v.company_name, p_primary: v.primary_color, p_accent: v.accent_color, p_tier: v.tier });
   const row = (data as { tx_ref: string; amount: number }[] | null)?.[0];
   if (error || !row) return { ok: false, message: friendlyError(error, error?.message), errors: { company_name: [error?.message ?? ""] } };
   const { data: profile } = await supabase.from("profiles").select("full_name, phone, email").eq("id", user!.id).single();
@@ -57,7 +58,7 @@ export async function startCompanyAction(_: CompanyState, form: FormData): Promi
   try {
     link = await createCheckout({
       txRef: row.tx_ref, amount: Number(row.amount), email: profile?.email ?? user!.email ?? "", name: profile?.full_name ?? v.company_name,
-      phone: profile?.phone ?? null, title: `${v.company_name} · Branded app`, description: "White-label company app",
+      phone: profile?.phone ?? null, title: `${v.company_name} · ${v.tier === "premium" ? "Premium" : "Standard"} branded app`, description: v.tier === "premium" ? "Premium white-label company app" : "White-label company app",
       redirectUrl: `${env.siteUrl}/api/payments/flutterwave/return`,
     });
   } catch (e) {

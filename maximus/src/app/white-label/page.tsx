@@ -21,10 +21,11 @@ const FEATURES = [
 export default async function WhiteLabelPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const fee = process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? (await createAdminClient().from("app_settings").select("value").eq("key", "company_whitelabel_fee").maybeSingle()).data
-    : null;
-  const amount = Number((fee?.value as { amount?: number } | null)?.amount ?? 5000);
+  const { data: fees } = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? await createAdminClient().from("app_settings").select("key, value").in("key", ["company_whitelabel_fee", "company_whitelabel_premium_fee"])
+    : { data: null };
+  const feeOf = (k: string, d: number) => Number(((fees ?? []).find((f) => f.key === k)?.value as { amount?: number } | undefined)?.amount ?? d);
+  const prices = { standard: feeOf("company_whitelabel_fee", 5000), premium: feeOf("company_whitelabel_premium_fee", 10000) };
 
   return (
     <div className="min-h-dvh bg-bg">
@@ -36,9 +37,18 @@ export default async function WhiteLabelPage() {
         <section>
           <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary"><BadgeCheck className="size-3.5" aria-hidden />WHITE-LABEL</p>
           <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">Your own branded team app, ready today.</h1>
-          <p className="mt-4 max-w-xl text-lg text-fg-muted">Run your team on the same system as Maximus, under your own name. Pay once and it&apos;s set up automatically. Then share your join link with your members.</p>
-          <div className="mt-6 inline-flex items-baseline gap-2 rounded-2xl bg-surface px-5 py-3 shadow-[var(--shadow-card)] ring-1 ring-border">
-            <span className="text-3xl font-extrabold">₦{amount.toLocaleString()}</span><span className="text-fg-muted">one-time</span>
+          <p className="mt-4 max-w-xl text-lg text-fg-muted">Run your team on a complete team app under your own name. Pay once and it&apos;s set up automatically. Then share your join link with your members.</p>
+          <div className="mt-6 grid max-w-xl gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl bg-surface p-4 shadow-[var(--shadow-card)] ring-1 ring-border">
+              <p className="text-sm font-bold text-fg-muted">STANDARD</p>
+              <p className="text-3xl font-extrabold">₦{prices.standard.toLocaleString()}</p>
+              <p className="mt-1 text-sm text-fg-muted">Your name, logo and colours inside the app. No “Powered by”.</p>
+            </div>
+            <div className="rounded-2xl bg-brand-navy p-4 text-white shadow-[var(--shadow-card)] ring-2 ring-brand-lime">
+              <p className="text-sm font-bold text-brand-lime">PREMIUM</p>
+              <p className="text-3xl font-extrabold">₦{prices.premium.toLocaleString()}</p>
+              <p className="mt-1 text-sm text-white/80">Everything in Standard, plus <b>no Maximus anywhere</b>: your own company link, branded sign-in and sign-up pages, and your name on the assistant and menus.</p>
+            </div>
           </div>
           <ul className="mt-8 grid gap-4 sm:grid-cols-2">
             {FEATURES.map((f) => (
@@ -57,7 +67,7 @@ export default async function WhiteLabelPage() {
         <section className="card h-fit p-5 sm:p-6">
           <h2 className="text-lg font-bold">Set up your company</h2>
           <p className="mb-4 text-sm text-fg-muted">{user ? "You're signed in. Your account becomes the company admin." : "You'll be the company's admin."}</p>
-          <CompanyForm signedIn={Boolean(user)} amount={amount} />
+          <CompanyForm signedIn={Boolean(user)} prices={prices} />
         </section>
       </main>
     </div>

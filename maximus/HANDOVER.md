@@ -106,6 +106,13 @@ them into Supabase > SQL Editor.
   white-labelled office with the payer as office admin. Members join via /register?office=<id>&ref=<code>
   (shown after payment and on the Branding page). Companies share the platform: Super Admins can see them.
 
+- Featured video accepts YouTube or Loom. White-labelled companies set their own (offices.featured_video,
+  Branding page); it replaces the platform video for their members.
+- Two company offers (0045): Standard ₦5,000 / Premium ₦10,000 (`company_whitelabel_premium_fee`).
+  Premium sets offices.full_white_label: company link /c/<slug> sets the `mx-brand` cookie so sign-in and
+  sign-up pages show only the company; in-app "Maximus" menu names and the assistant use the company name,
+  and the platform featured video is hidden.
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.

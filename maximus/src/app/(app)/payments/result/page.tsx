@@ -17,7 +17,9 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
     : { data: null };
   const company = p?.purpose === "company_whitelabel" && ref
     ? (await supabase.from("company_signups").select("company_name, office_id, status").eq("tx_ref", ref).maybeSingle()).data : null;
-  const joinLink = company?.office_id ? `${env.siteUrl}/register?office=${company.office_id}&ref=${encodeURIComponent(viewer.profile.referral_code)}` : null;
+  const slug = company?.office_id ? (await supabase.from("offices").select("slug").eq("id", company.office_id).maybeSingle()).data?.slug as string | null : null;
+  const joinLink = slug ? `${env.siteUrl}/c/${slug}`
+    : company?.office_id ? `${env.siteUrl}/register?office=${company.office_id}&ref=${encodeURIComponent(viewer.profile.referral_code)}` : null;
   const back = p?.purpose === "company_whitelabel" ? { href: "/office/brand", label: "Add your logo" }
     : p?.purpose === "white_label" ? { href: "/office/brand", label: "Back to branding" }
     : p?.purpose === "upwork_analyser" ? { href: "/tools/upwork", label: "Open the Upwork Analyser" }
@@ -39,7 +41,7 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
           </p>
           {ok && joinLink && (
             <div className="mt-5 w-full rounded-2xl bg-surface-muted p-3 text-left">
-              <p className="text-xs font-semibold text-fg-muted">Your members join with this link</p>
+              <p className="text-xs font-semibold text-fg-muted">Your company link: members join and sign in here</p>
               <p className="mt-1 break-all font-mono text-sm">{joinLink}</p>
             </div>
           )}

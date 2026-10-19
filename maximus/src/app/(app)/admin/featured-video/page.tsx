@@ -19,7 +19,7 @@ export default async function FeaturedVideoPage() {
   return (
     <>
       <PageHeader eyebrow="Administration" title="Featured video"
-        description="Paste a YouTube link and it shows for every member: a video box on Home, a box in the side menu, and an optional pop-up." />
+        description="Paste a YouTube or Loom link and it shows for every member: a video box on Home, a box in the side menu, and an optional pop-up." />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="h-fit">
           <CardHeader title={current ? "Change the video" : "Feature a video"} icon={<PlayCircle className="size-4" />} />

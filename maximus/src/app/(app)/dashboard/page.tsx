@@ -59,7 +59,7 @@ export default async function DashboardPage() {
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { data: balances },
     { data: notifications }, { data: birthdays }, { data: lessonsDone }, { data: publishedLessons }, { data: focusData },
     { data: checklistItems }, { data: checklistDone }, { data: thought }, { data: pulse }, { data: followUps },
-    { data: todayTasks }, { data: whys }, { data: featuredSetting }, { data: winnerRows },
+    { data: todayTasks }, { data: whys }, { data: featuredSetting }, { data: myOffice }, { data: winnerRows },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -84,12 +84,17 @@ export default async function DashboardPage() {
       .order("due_date").order("priority").limit(6).returns<Task[]>(),
     supabase.from("motivations").select("*").eq("user_id", viewer.id).eq("show_on_dashboard", true).returns<Motivation[]>(),
     supabase.from("app_settings").select("value").eq("key", "featured_video").maybeSingle(),
+    viewer.profile.office_id
+      ? supabase.from("offices").select("featured_video, full_white_label, white_label").eq("id", viewer.profile.office_id).maybeSingle()
+      : Promise.resolve({ data: null }),
     supabase.from("weekly_winners").select("position, total, orders, office_id, user_id, profiles!weekly_winners_user_id_fkey(full_name, avatar_url, business_rank)")
       .eq("week_start", lastWeekStart(today)).returns<Winner[]>(),
   ]);
   const winners = (winnerRows ?? []).filter((w) => w.office_id === null);
   const officeWinner = (winnerRows ?? []).find((w) => w.office_id && w.office_id === viewer.profile.office_id) ?? null;
-  const featured = featuredFrom(featuredSetting?.value);
+  const officeRow = myOffice as { featured_video: unknown; full_white_label: boolean; white_label: boolean } | null;
+  const featured = featuredFrom(officeRow?.featured_video)
+    ?? (officeRow?.full_white_label && officeRow.white_label ? null : featuredFrom(featuredSetting?.value));
   // A different reason each day.
   const dayIndex = Math.floor(new Date(`${today}T00:00:00Z`).getTime() / 86400000);
   // Today's reason first, then the rest.

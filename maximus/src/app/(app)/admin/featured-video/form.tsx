@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { Checkbox, Field, FormMessage, Input, Textarea } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
-import type { FeaturedVideo } from "@/lib/featured";
+import { videoShareLink, type FeaturedVideo } from "@/lib/featured";
 import { saveFeaturedVideoAction } from "./actions";
 
 export function FeaturedVideoForm({ current }: { current: FeaturedVideo | null }) {
@@ -11,9 +11,9 @@ export function FeaturedVideoForm({ current }: { current: FeaturedVideo | null }
   return (
     <form action={action} className="space-y-4">
       <FormMessage state={state} />
-      <Field label="YouTube link" htmlFor="url">
-        <Input id="url" name="url" required inputMode="url" autoComplete="off" placeholder="https://youtu.be/…"
-          defaultValue={current ? `https://youtu.be/${current.youtube_id}` : ""} />
+      <Field label="YouTube or Loom link" htmlFor="url">
+        <Input id="url" name="url" required inputMode="url" autoComplete="off" placeholder="https://youtu.be/… or https://www.loom.com/share/…"
+          defaultValue={current ? videoShareLink(current) : ""} />
       </Field>
       <Field label="Title" htmlFor="title">
         <Input id="title" name="title" required maxLength={120} defaultValue={current?.title ?? ""} placeholder="e.g. This week's training" />

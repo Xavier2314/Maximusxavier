@@ -125,7 +125,11 @@ export function AppShell({ sections: memberSections, office = null, brands, plat
   const mode: "me" | "office" = office && isOfficePath(pathname) ? "office" : "me";
   // Office view wears the office's brand; My view wears the member's own brand (platform, or their office's).
   const brand = mode === "office" ? brands.office : brands.me;
-  const sections = mode === "office" && office ? office.sections : memberSections;
+  // Premium white-label: no "Maximus" in menu names (e.g. "Maximus AI" becomes "Acme AI").
+  const rename = (list: NavSection[]) => brand.fullWhiteLabel
+    ? list.map((sec) => ({ ...sec, items: sec.items.map((it) => ({ ...it, label: it.label.replace(/Maximus/g, brand.name) })) }))
+    : list;
+  const sections = rename(mode === "office" && office ? office.sections : memberSections);
   const bottom = mode === "office" && office ? office.bottom : BOTTOM_NAV;
   const allSections = office ? [...memberSections, ...office.sections] : memberSections;
   const current = allSections.flatMap((s) => s.items).filter((i) => isActive(pathname, i.href)).sort((a, b) => b.href.length - a.href.length)[0];

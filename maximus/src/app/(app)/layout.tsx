@@ -29,7 +29,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       : Promise.resolve({ data: [] as OfficeBrandRow[] }),
     supabase.from("app_settings").select("value").eq("key", "featured_video").maybeSingle(),
   ]);
-  const featured = featuredFrom(featuredSetting?.value);
+  // A company's own video wins; Premium companies never see the platform's video.
+  const homeRow = (brandOffices ?? []).find((o) => o.id === viewer.profile.office_id);
+  const featured = featuredFrom(homeRow?.featured_video) ?? (homeRow?.full_white_label ? null : featuredFrom(featuredSetting?.value));
   const platform = platformBrand(brandSetting?.value as PlatformBrandSetting | null);
   const homeBrand = officeBrand((brandOffices ?? []).find((o) => o.id === viewer.profile.office_id), platform);
   const managedBrand = officeBrand((brandOffices ?? []).find((o) => o.id === brandOfficeId), platform);
@@ -77,7 +79,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         memberId: viewer.profile.member_id,
       }}>
       {children}
-      <ChatWidget firstName={viewer.profile.full_name.split(" ")[0]} />
+      <ChatWidget firstName={viewer.profile.full_name.split(" ")[0]} assistant={brands.me.fullWhiteLabel ? brands.me.name : "Maximus"} />
     </AppShell>
   );
 }

@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { companyFromCookie } from "@/lib/company-brand";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
 import { RegisterForm } from "./register-form";
 
 export const metadata = { title: "Create your account" };
 
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ ref?: string; upline?: string; office?: string }> }) {
-  const { ref, upline, office } = await searchParams;
+  const { ref, upline, office: officeParam } = await searchParams;
+  const cookieCompany = await companyFromCookie();
+  const office = officeParam ?? cookieCompany?.id;
   const supabase = await createClient();
   const [{ data: offices }, { data: invite }] = await Promise.all([
     supabase.rpc("list_public_offices"),

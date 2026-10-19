@@ -7,15 +7,28 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { startCompanyAction } from "./actions";
 
-export function CompanyForm({ signedIn, amount }: { signedIn: boolean; amount: number }) {
+export function CompanyForm({ signedIn, prices }: { signedIn: boolean; prices: { standard: number; premium: number } }) {
   const [state, action] = useActionState(startCompanyAction, null);
   const [primary, setPrimary] = useState("#1d4ed8");
   const [accent, setAccent] = useState("#84cc16");
   const [name, setName] = useState("");
+  const [tier, setTier] = useState<"standard" | "premium">("premium");
+  const amount = prices[tier];
   const e = state?.errors ?? {};
   return (
     <form action={action} className="space-y-4">
       <FormMessage state={state} />
+      <input type="hidden" name="tier" value={tier} />
+      <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Choose your offer">
+        {(["standard", "premium"] as const).map((t) => (
+          <button key={t} type="button" role="radio" aria-checked={tier === t} onClick={() => setTier(t)}
+            className={`rounded-2xl border-2 p-3 text-left ${tier === t ? "border-primary bg-primary-soft" : "border-border"}`}>
+            <span className="block text-xs font-bold uppercase text-fg-muted">{t}</span>
+            <span className="block text-lg font-extrabold">₦{prices[t].toLocaleString()}</span>
+            <span className="block text-xs text-fg-muted">{t === "premium" ? "No Maximus anywhere" : "Your brand inside"}</span>
+          </button>
+        ))}
+      </div>
       <Field label="Company name" htmlFor="company_name" error={e.company_name}>
         <Input id="company_name" name="company_name" required maxLength={60} value={name} onChange={(ev) => setName(ev.target.value)} placeholder="e.g. Kingdom Achievers" />
       </Field>
