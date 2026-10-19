@@ -36,6 +36,12 @@ export const NAV: NavSection[] = [
     ],
   },
   {
+    title: "Marketing",
+    items: [
+      { href: "/marketing/funnels", label: "Funnels", icon: "funnel" },
+    ],
+  },
+  {
     title: "Grow",
     items: [
       { href: "/why", label: "My Why", icon: "heart" },

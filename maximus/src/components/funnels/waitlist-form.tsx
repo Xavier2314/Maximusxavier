@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/form";
 
-export function WaitlistForm() {
+export function WaitlistForm({ defaultName, defaultEmail }: { defaultName?: string; defaultEmail?: string } = {}) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -33,8 +33,8 @@ export function WaitlistForm() {
 
   return (
     <form onSubmit={onSubmit} className="mx-auto mt-8 flex max-w-lg flex-wrap gap-2">
-      <Input name="name" placeholder="Your name (optional)" maxLength={120} autoComplete="name" className="flex-1 basis-48" />
-      <Input name="email" type="email" placeholder="Email address" required maxLength={254} autoComplete="email" className="flex-1 basis-48" />
+      <Input name="name" placeholder="Your name (optional)" maxLength={120} autoComplete="name" defaultValue={defaultName} className="flex-1 basis-48" />
+      <Input name="email" type="email" placeholder="Email address" required maxLength={254} autoComplete="email" defaultValue={defaultEmail} className="flex-1 basis-48" />
       <Select name="pkg" aria-label="Package of interest" className="flex-1 basis-48" defaultValue="">
         <option value="">Package of interest</option>
         <option value="starter">Starter</option>

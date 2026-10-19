@@ -1,18 +1,13 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { Card, CardBody } from "@/components/ui/card";
-import { WaitlistForm } from "./waitlist-form";
+import { WaitlistForm } from "@/components/funnels/waitlist-form";
+import { FUNNEL_PACKAGES } from "@/components/funnels/packages";
 
 export const metadata = {
   title: "Funnels done for you",
   description: "Done-for-you sales funnels, launching soon. Join the waitlist for early access.",
 };
-
-const PACKAGES = [
-  { name: "Starter", points: ["One focused funnel", "Landing page and opt-in", "Email capture setup"] },
-  { name: "Growth", points: ["Multi-step funnel", "Offer and checkout pages", "Follow-up email sequence"] },
-  { name: "Pro", points: ["Full funnel system", "Upsells and tracking", "Priority support"] },
-];
 
 export default function FunnelsPage() {
   return (
@@ -29,7 +24,7 @@ export default function FunnelsPage() {
       </header>
 
       <section className="mt-16 grid gap-4 sm:grid-cols-3" aria-label="Packages">
-        {PACKAGES.map((p) => (
+        {FUNNEL_PACKAGES.map((p) => (
           <Card key={p.name}>
             <CardBody>
               <div className="flex items-start justify-between gap-2">
