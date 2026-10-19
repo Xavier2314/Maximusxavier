@@ -47,7 +47,7 @@ export function MediaEditor({ userId, siteId, blocks, onChange }: {
     try {
       for (const f of Array.from(files).slice(0, 10)) {
         const url = await uploadPortfolioFile(userId, siteId, f);
-        const type = f.type.startsWith("image/") ? "image" : f.type.startsWith("video/") ? "video" : "file";
+        const type: PortfolioBlock["type"] = f.type.startsWith("image/") ? "image" : f.type.startsWith("video/") ? "video" : "file";
         added.push({ id: newId(), type, url, name: f.name, title: f.name.replace(/\.[^.]+$/, "") });
       }
     } catch (e) {
@@ -62,7 +62,8 @@ export function MediaEditor({ userId, siteId, blocks, onChange }: {
   function addLink() {
     const v = parseVideoLink(link);
     if (!v) { setError("Paste a YouTube or Loom video link."); return; }
-    onChange([...blocks, { id: newId(), type: "embed", provider: v.provider, video_id: v.video_id, title: "" }].slice(0, 40));
+    const block: PortfolioBlock = { id: newId(), type: "embed", provider: v.provider, video_id: v.video_id, title: "" };
+    onChange([...blocks, block].slice(0, 40));
     setLink(""); setError(null);
   }
 
@@ -75,7 +76,7 @@ export function MediaEditor({ userId, siteId, blocks, onChange }: {
           {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Upload className="size-4" aria-hidden />}
           {busy ? "Uploading…" : "Upload images, videos or files"}
         </Button>
-        <Button variant="outline" onClick={() => onChange([...blocks, { id: newId(), type: "text", title: "", text: "" }].slice(0, 40))}>
+        <Button variant="outline" onClick={() => onChange([...blocks, { id: newId(), type: "text", title: "", text: "" } satisfies PortfolioBlock].slice(0, 40))}>
           <Type className="size-4" aria-hidden />Add text
         </Button>
       </div>
