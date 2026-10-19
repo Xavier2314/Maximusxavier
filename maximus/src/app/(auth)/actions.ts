@@ -43,7 +43,14 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   if (v.referral_code) {
     const { data } = await supabase.rpc("lookup_sponsor", { code: v.referral_code });
     if (!data || (data as unknown[]).length === 0) {
-      return { message: "We couldn't find that sponsor.", errors: { referral_code: ["Unknown referral code or member ID"] } };
+      // An upline invite typed into the sponsor box: join ABOVE that member instead.
+      const { data: invite } = await supabase.rpc("upline_invite_info", { p_code: v.referral_code });
+      if ((invite as unknown[] | null)?.length) {
+        v.upline_code = v.referral_code.toUpperCase();
+        v.referral_code = undefined;
+      } else {
+        return { message: "We couldn't find that sponsor.", errors: { referral_code: ["Unknown referral code or member ID"] } };
+      }
     }
   }
 

@@ -22,7 +22,7 @@ const STEP_FIELDS: string[][] = [
 export function RegisterForm({ offices, referralCode, uplineCode, officeId }: { offices: { id: string; name: string }[]; referralCode?: string; uplineCode?: string; officeId?: string }) {
   const [state, action] = useActionState(registerAction, null);
   const [step, setStep] = useState(0);
-  const [sponsor, setSponsor] = useState<{ name?: string; checking?: boolean; invalid?: boolean }>({});
+  const [sponsor, setSponsor] = useState<{ name?: string; above?: string; checking?: boolean; invalid?: boolean }>({});
   const [preview, setPreview] = useState<string | null>(null);
   const [tz, setTz] = useState("Africa/Lagos");
   const formRef = useRef<HTMLFormElement>(null);
@@ -42,7 +42,10 @@ export function RegisterForm({ offices, referralCode, uplineCode, officeId }: { 
     setSponsor({ checking: true });
     const { data } = await createClient().rpc("lookup_sponsor", { code });
     const row = (data as { full_name: string; member_id: string }[] | null)?.[0];
-    setSponsor(row ? { name: `${row.full_name} · ${row.member_id}` } : { invalid: true });
+    if (row) return setSponsor({ name: `${row.full_name} · ${row.member_id}` });
+    const { data: invite } = await createClient().rpc("upline_invite_info", { p_code: code });
+    const inv = (invite as { for_name: string; for_member_id: string }[] | null)?.[0];
+    setSponsor(inv ? { above: `${inv.for_name} · ${inv.for_member_id}` } : { invalid: true });
   }
 
   useEffect(() => { if (referralCode) void checkSponsor(referralCode); }, [referralCode]);
@@ -167,6 +170,7 @@ export function RegisterForm({ offices, referralCode, uplineCode, officeId }: { 
         <p id="sponsor-status" className="-mt-2 text-sm" aria-live="polite">
           {sponsor.checking && <span className="text-fg-subtle">Checking…</span>}
           {sponsor.name && <span className="text-success">✓ Sponsor: {sponsor.name}</span>}
+          {sponsor.above && <span className="text-success">✓ Upline invite: you&apos;ll join as the sponsor of {sponsor.above} (above them in the team)</span>}
           {sponsor.invalid && <span className="text-danger">We couldn&apos;t find that code.</span>}
         </p>
         <Field label="Upline Member ID" htmlFor="upline_member_id" optional error={errors.upline_member_id}
