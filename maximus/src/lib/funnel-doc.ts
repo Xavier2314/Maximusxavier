@@ -4,8 +4,8 @@
  * sections, columns only in rows, so a node can never end up inside itself. Every command returns a new array.
  */
 import {
-  cleanBlock, cleanElement, newColumn, newRow, uid,
-  type Anim, type FunnelBlock, type FunnelColumn, type FunnelElement, type FunnelRow, type RespMap, type Resp,
+  BLOCK_LABELS, cleanBlock, cleanElement, newColumn, newRow, uid,
+  type Anim, type FunnelBlock, type FunnelColumn, type FunnelElement, type FunnelPage, type FunnelRow, type FunnelTheme, type RespMap, type Resp,
 } from "@/lib/funnels";
 
 export type Ref = { block: string; row?: string; col?: string; el?: string };
@@ -321,4 +321,35 @@ export function effective<K extends keyof Resp>(resp: RespMap | undefined, devic
   if (own !== undefined) return { value: own, own: true };
   if (device === "mobile") { const t = resp?.tablet?.[key]; if (t !== undefined) return { value: t, own: false }; }
   return { value: undefined, own: false };
+}
+
+export type DocChange = { kind: "added" | "removed" | "changed"; text: string };
+
+/** Plain-language summary of what an AI proposal would change, so the member can review before applying. */
+export function diffDocs(before: { pages: FunnelPage[]; theme: FunnelTheme }, after: { pages: FunnelPage[]; theme: FunnelTheme }): DocChange[] {
+  const out: DocChange[] = [];
+  const label = (b: FunnelBlock) => BLOCK_LABELS[b.type]?.label ?? b.type;
+  const beforeById = new Map(before.pages.map((p) => [p.id, p]));
+  const afterIds = new Set(after.pages.map((p) => p.id));
+  for (const p of before.pages) if (!afterIds.has(p.id)) out.push({ kind: "removed", text: `Page “${p.name}”` });
+  for (const p of after.pages) {
+    const old = beforeById.get(p.id);
+    if (!old) { out.push({ kind: "added", text: `Page “${p.name}” with ${p.blocks.length} section${p.blocks.length === 1 ? "" : "s"}` }); continue; }
+    if (old.name !== p.name) out.push({ kind: "changed", text: `Page renamed “${old.name}” → “${p.name}”` });
+    const oldBlocks = new Map(old.blocks.map((b) => [b.id, b]));
+    const newIds = new Set(p.blocks.map((b) => b.id));
+    for (const b of old.blocks) if (!newIds.has(b.id)) out.push({ kind: "removed", text: `${label(b)} on “${p.name}”` });
+    for (const b of p.blocks) {
+      const o = oldBlocks.get(b.id);
+      if (!o) out.push({ kind: "added", text: `${label(b)} on “${p.name}”` });
+      else if (JSON.stringify(o) !== JSON.stringify(b)) out.push({ kind: "changed", text: `${label(b)} on “${p.name}”` });
+    }
+    const order = (x: FunnelBlock[]) => x.filter((b) => oldBlocks.has(b.id)).map((b) => b.id).join();
+    if (order(p.blocks) !== old.blocks.filter((b) => newIds.has(b.id)).map((b) => b.id).join()) out.push({ kind: "changed", text: `Section order on “${p.name}”` });
+  }
+  const t0 = before.theme, t1 = after.theme;
+  if (t0.style !== t1.style) out.push({ kind: "changed", text: `Style ${t0.style} → ${t1.style}` });
+  if (t0.accent !== t1.accent) out.push({ kind: "changed", text: `Accent colour ${t0.accent} → ${t1.accent}` });
+  if (t0.mode !== t1.mode) out.push({ kind: "changed", text: `Light/dark mode → ${t1.mode}` });
+  return out;
 }

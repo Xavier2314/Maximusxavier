@@ -244,3 +244,20 @@ describe("form fields and consent", () => {
     assert.equal(b.consent, "I agree");
   });
 });
+
+describe("diffDocs (AI proposal review)", () => {
+  const theme = { style: "clean", accent: "#111111", mode: "light" } as const;
+  it("reports added, removed, changed sections and theme changes", async () => {
+    const { diffDocs } = await import("@/lib/funnel-doc");
+    const hero = newBlock("hero"); const faq = newBlock("faq"); const cta = newBlock("cta");
+    const before = { theme, pages: [newPage("Home", [hero, faq])] };
+    const changedHero = { ...hero, headline: "A new headline" } as FunnelBlock;
+    const after = { theme: { ...theme, accent: "#ff0000" }, pages: [{ ...before.pages[0], blocks: [changedHero, cta] }] };
+    const d = diffDocs(before, after);
+    assert.ok(d.some((c) => c.kind === "changed" && c.text.startsWith("Hero")));
+    assert.ok(d.some((c) => c.kind === "removed" && c.text.startsWith("FAQ")));
+    assert.ok(d.some((c) => c.kind === "added"));
+    assert.ok(d.some((c) => c.text.includes("Accent colour")));
+    assert.equal(diffDocs(before, before).length, 0);
+  });
+});

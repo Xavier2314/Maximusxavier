@@ -15,7 +15,7 @@ import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { FunnelView, type NodeKind } from "@/components/funnels/funnel-view";
 import { ImageField, MultiImageField } from "@/components/funnels/image-upload";
 import {
-  copyNode, crumbs, reidentify, deleteNode, duplicateNode, getNode, insertBlock, insertElement, insertRow, kindOf, moveNode, nudge, parentRef, pasteNode, sameRef, sectionWith, setColumnCount, setResp, updateNode,
+  copyNode, crumbs, diffDocs, reidentify, deleteNode, duplicateNode, getNode, insertBlock, insertElement, insertRow, kindOf, moveNode, nudge, parentRef, pasteNode, sameRef, sectionWith, setColumnCount, setResp, updateNode,
   type Clip, type Device, type Ref,
 } from "@/lib/funnel-doc";
 import { PREBUILT } from "@/lib/funnel-templates";
@@ -78,6 +78,7 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
   const [status, setStatus] = useState<Status>("saved");
   const [saveMsg, setSaveMsg] = useState("");
   const [aiBusy, setAiBusy] = useState(false);
+  const [proposal, setProposal] = useState<{ pages: FunnelPage[]; theme: FunnelTheme; changes: ReturnType<typeof diffDocs> } | null>(null);
   const [aiNote, setAiNote] = useState<{ ok: boolean; text: string } | null>(null);
   const [instruction, setInstruction] = useState("");
   const [scope, setScope] = useState<"funnel" | "block">("funnel");
@@ -429,11 +430,19 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
     catch { res = { ok: false, message: "Could not reach the AI. Please try again." }; }
     setAiBusy(false);
     if (!res.ok || !res.pages) { setAiNote({ ok: false, text: res.message }); return; }
-    commit(res.pages, res.theme);
-    setPageIdx(0); setSel(null);
-    setAiNote({ ok: true, text: res.message });
-    setInstruction("");
+    // Nothing changes on the page until the member reviews the summary and presses Apply.
+    const changes = diffDocs({ pages, theme }, { pages: res.pages, theme: res.theme ?? theme });
+    if (!changes.length) { setAiNote({ ok: true, text: "The AI had no changes to suggest for that. Try describing it differently." }); return; }
+    setProposal({ pages: res.pages, theme: res.theme ?? theme, changes });
+    setAiNote({ ok: true, text: "Review the proposed changes below." });
   }
+  const applyProposal = () => {
+    if (!proposal) return;
+    commit(proposal.pages, proposal.theme);
+    setPageIdx(0); setSel(null); setProposal(null); setInstruction("");
+    setAiNote({ ok: true, text: "Applied. Press Undo if you change your mind." });
+  };
+  const rejectProposal = () => { setProposal(null); setAiNote({ ok: true, text: "Dismissed. Nothing was changed." }); };
 
   // --- canvas wrapping ----------------------------------------------------------------------------
   const chipLabel = (kind: NodeKind, ref: Ref): string => crumbs(blocks, ref).at(-1)?.label ?? kind;
@@ -545,7 +554,7 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
       {p === "ai" && (
         <div className="space-y-4">
           <p className="flex items-center gap-2 text-base font-bold"><Sparkles className="size-5 text-primary" />Your AI designer</p>
-          <p className="text-sm text-fg-muted">Tell it what to change in plain words. It keeps everything you didn&apos;t mention, and you can always press Undo.</p>
+          <p className="text-sm text-fg-muted">Tell it what to change in plain words. It keeps everything you didn&apos;t mention. You review a summary and choose Apply or Reject; Undo works afterwards too.</p>
           {selBlock && (
             <div className="inline-flex rounded-xl bg-surface-muted p-1 text-sm">
               {([["funnel", "Whole funnel"], ["block", `Selected: ${BLOCK_LABELS[selBlock.type].label}`]] as const).map(([k, l]) => (
@@ -554,10 +563,21 @@ export function Builder({ funnel, userId, isNew }: { funnel: Funnel; userId: str
             </div>
           )}
           <Textarea value={instruction} onChange={(e) => setInstruction(e.target.value)} rows={4} maxLength={1500} placeholder="e.g. Make the headline about saving time, and add a FAQ about delivery." />
-          <Button className="w-full" disabled={aiBusy || instruction.trim().length < 3} onClick={() => askAi(instruction)}>
-            {aiBusy ? <><LoaderCircle className="size-4 animate-spin" />AI is working… (up to a minute)</> : <><Sparkles className="size-4" />Apply with AI</>}
+          <Button className="w-full" disabled={aiBusy || instruction.trim().length < 3} onClick={() => { setProposal(null); void askAi(instruction); }}>
+            {aiBusy ? <><LoaderCircle className="size-4 animate-spin" />AI is working… (up to a minute)</> : <><Sparkles className="size-4" />Ask the AI</>}
           </Button>
           {aiNote && <p role="status" className={`text-sm ${aiNote.ok ? "text-success" : "text-danger"}`}>{aiNote.text}</p>}
+          {proposal && (
+            <div className="space-y-2 rounded-2xl border border-primary bg-primary-soft p-3.5" role="region" aria-label="Proposed changes">
+              <p className="text-sm font-semibold">Proposed changes ({proposal.changes.length})</p>
+              <ul className="max-h-56 space-y-1 overflow-y-auto text-sm">
+                {proposal.changes.map((c, i) => (
+                  <li key={i} className="flex gap-2"><span className={`shrink-0 rounded px-1.5 text-[11px] font-bold uppercase ${c.kind === "added" ? "bg-success/15 text-success" : c.kind === "removed" ? "bg-danger/15 text-danger" : "bg-surface text-fg-muted"}`}>{c.kind}</span><span>{c.text}</span></li>
+                ))}
+              </ul>
+              <div className="flex gap-2"><Button size="sm" onClick={applyProposal}>Apply changes</Button><Button size="sm" variant="outline" onClick={rejectProposal}>Reject</Button></div>
+            </div>
+          )}
           <div className="flex flex-wrap gap-1.5">
             {(scope === "block" && selBlock ? BLOCK_CHIPS : FUNNEL_CHIPS).map((c) => (
               <button key={c} type="button" disabled={aiBusy} onClick={() => setInstruction(c.startsWith("Redesign") ? "Redesign the whole funnel from scratch using my product details. Keep the same look and goal." : c)} className="rounded-full border border-border px-2.5 py-1 text-xs text-fg-muted hover:border-primary hover:text-fg disabled:opacity-50">{c}</button>
