@@ -23,6 +23,7 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
   const back = p?.purpose === "company_whitelabel" ? { href: "/office/brand", label: "Add your logo" }
     : p?.purpose === "white_label" ? { href: "/office/brand", label: "Back to branding" }
     : p?.purpose === "upwork_analyser" ? { href: "/tools/upwork", label: "Open the Upwork Analyser" }
+    : p?.purpose === "portfolio_extra" ? { href: "/tools/portfolio", label: "Create another website" }
     : { href: "/finance", label: "Back to savings & payments" };
   const ok = p?.status === "successful";
   const failed = p?.status === "failed" || cancelled;
@@ -36,7 +37,8 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
             {!p ? "We couldn't find this payment." : ok
               ? p.purpose === "company_whitelabel" ? `${company?.company_name ?? "Your company"} is ready! Add your logo, then share your join link with your members.`
                 : p.purpose === "white_label" ? "White-label is unlocked. You can now remove “Powered by”."
-                : p.purpose === "upwork_analyser" ? "The Upwork Account Analyser is unlocked. Analyse your profile now." : `${formatMoney(p.amount)} has been added to your ${p.purpose}.`
+                : p.purpose === "upwork_analyser" ? "The Upwork Account Analyser is unlocked. Analyse your profile now."
+                : p.purpose === "portfolio_extra" ? "Unlocked! You can now create more portfolio websites." : `${formatMoney(p.amount)} has been added to your ${p.purpose}.`
               : failed ? "No money was taken, or it didn't match. You can try again." : "Bank transfers can take a few minutes. We'll update this and notify you as soon as Flutterwave confirms it."}
           </p>
           {ok && joinLink && (

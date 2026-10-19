@@ -1179,6 +1179,36 @@ select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
 select pg_temp.expect_error($$ select public.set_office_featured_video((select id from public.offices where name = 'Acme Traders Premium'), null) $$, 'others cannot change company video');
 select pg_temp.act_as(null);
 
+-- 0046: portfolios are edited only by their owner.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+insert into public.portfolios (slug, headline) values (public.suggest_portfolio_slug(null), 'Shopify designer');
+select pg_temp.expect_error($$ update public.portfolios set views = 99999 $$, 'cannot fake portfolio views');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e2');
+do $$ begin
+  assert (select count(*) from public.portfolios) = 0, 'others cannot read drafts through the API';
+  update public.portfolios set headline = 'hacked';
+  raise notice 'PASS: portfolios owner-only';
+end $$;
+select pg_temp.act_as(null);
+do $$ begin assert (select headline from public.portfolios limit 1) = 'Shopify designer', 'not changed by others'; end $$;
+
+-- 0047: a second portfolio needs the ₦500 add-on.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+select pg_temp.expect_error($$ insert into public.portfolios (slug) values ('second-site-c2') $$, 'second site needs add-on');
+create temp table pf_ref (ref text);
+grant all on pf_ref to public;
+insert into pf_ref select tx_ref from public.create_online_payment('portfolio_extra');
+do $$ begin assert (select amount from public.online_payments where tx_ref = (select ref from pf_ref)) = 500, 'add-on costs 500'; end $$;
+select pg_temp.act_as(null);
+select public.apply_online_payment((select ref from pf_ref), 503, 500, 'NGN', true);
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  insert into public.portfolios (slug, title) values (public.suggest_portfolio_slug('logos'), 'Logos');
+  assert (select count(*) from public.portfolios) = 2, 'second site after paying';
+  raise notice 'PASS: extra portfolio websites are a paid add-on';
+end $$;
+select pg_temp.act_as(null);
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

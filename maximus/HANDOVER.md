@@ -113,6 +113,10 @@ them into Supabase > SQL Editor.
   sign-up pages show only the company; in-app "Maximus" menu names and the assistant use the company name,
   and the platform featured video is hidden.
 
+- Portfolio websites (0046/0047, Tools > Freelance tools): one-tap AI-built site at /p/<slug> from the
+  member's profile, latest Upwork analysis and orders (no invented facts). First site free; more need the
+  ₦500 `portfolio_extra` add-on (tool_access `extra_portfolios`, max 10).
+
 ## Known follow-ups
 - Tools stage 5 is not built yet: team challenges arena, tools leaderboards, badges, AI
   productivity coach, flashcards, focus music, motivational challenge, smart reminders.

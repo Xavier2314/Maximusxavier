@@ -9,12 +9,12 @@ import { createClient } from "@/lib/supabase/server";
 import { friendlyError } from "@/lib/utils";
 
 const schema = z.object({
-  purpose: z.enum(["white_label", "savings", "contributions", "upwork_analyser"]),
+  purpose: z.enum(["white_label", "savings", "contributions", "upwork_analyser", "portfolio_extra"]),
   amount: z.coerce.number().positive().max(5000000).optional(),
   office_id: z.string().uuid().optional(),
 });
 
-const TITLES = { white_label: "White-label unlock", savings: "Savings deposit", contributions: "Contribution", upwork_analyser: "Upwork Account Analyser" } as const;
+const TITLES = { white_label: "White-label unlock", savings: "Savings deposit", contributions: "Contribution", upwork_analyser: "Upwork Account Analyser", portfolio_extra: "More portfolio websites" } as const;
 
 /** Start an online payment and send the member to Flutterwave's secure payment page. */
 export async function startOnlinePaymentAction(_prev: { ok: boolean; message: string } | null, formData: FormData) {

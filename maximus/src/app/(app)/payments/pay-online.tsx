@@ -10,10 +10,10 @@ import { safeAction } from "@/lib/report-error";
 const safe_startOnlinePaymentAction = safeAction(startOnlinePaymentAction, { ok: false, message: "Couldn't save. The app may have just updated. Refresh the page and try again." });
 
 /** Pay with card, bank transfer or USSD on Flutterwave's secure page. */
-export function PayOnline({ purpose, fixedAmount, officeId }: { purpose: "white_label" | "savings" | "contributions" | "upwork_analyser"; fixedAmount?: number; officeId?: string }) {
+export function PayOnline({ purpose, fixedAmount, officeId }: { purpose: "white_label" | "savings" | "contributions" | "upwork_analyser" | "portfolio_extra"; fixedAmount?: number; officeId?: string }) {
   const [state, action] = useActionState(safe_startOnlinePaymentAction, null);
   const [kind, setKind] = useState<"savings" | "contributions">(purpose === "contributions" ? "contributions" : "savings");
-  const fixed = purpose === "white_label" || purpose === "upwork_analyser";
+  const fixed = purpose === "white_label" || purpose === "upwork_analyser" || purpose === "portfolio_extra";
   const p = fixed ? purpose : kind;
   return (
     <form action={action} className="space-y-3">

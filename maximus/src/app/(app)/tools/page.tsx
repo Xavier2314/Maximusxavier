@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  ArrowLeft, Briefcase, ChevronRight, BookOpen, Brain, CalendarClock, Clock, Flame, Gauge, Hourglass, LayoutGrid, ListChecks, Maximize2, Medal, MessageCircle, Music,
+  ArrowLeft, Briefcase, ChevronRight, Globe, BookOpen, Brain, CalendarClock, Clock, Flame, Gauge, Hourglass, LayoutGrid, ListChecks, Maximize2, Medal, MessageCircle, Music,
   NotebookPen, Repeat, Sparkles, Target, Timer, Trophy, Users, Watch, Zap, type LucideIcon,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/misc";
@@ -42,7 +42,10 @@ const SECTIONS: Section[] = [
   },
   {
     slug: "freelance", icon: Briefcase, title: "Freelance tools", blurb: "Win more clients on Upwork and other platforms.", tone: "bg-success-soft text-success",
-    tools: [{ href: "/tools/upwork", label: "Upwork Account Analyser", desc: "Score your profile and get exact fixes (₦1,000)", icon: Briefcase }],
+    tools: [
+      { href: "/tools/portfolio", label: "Portfolio website", desc: "Your own website, built automatically. First one free", icon: Globe },
+      { href: "/tools/upwork", label: "Upwork Account Analyser", desc: "Score your profile and get exact fixes (₦1,000)", icon: Briefcase },
+    ],
   },
   {
     slug: "brain", icon: Brain, title: "Brain gym", blurb: "Fun games for focus, memory and problem-solving. Brain training, not a medical test.", tone: "bg-warning-soft text-warning",
