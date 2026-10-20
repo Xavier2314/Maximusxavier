@@ -9,6 +9,7 @@ import {
   aiStep, deliver, isGoogleConfigured, isWhatsAppConfigured, planFollowUp, searchSpotify, spotifyPreview,
   type SpotifyItem,
 } from "@/lib/followup";
+import { cleanTags, importContacts } from "@/lib/contacts";
 import { isSpotifyUrl, normalizePhone, type Prospect, type ProspectMessage } from "@/lib/prospects";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
 import { friendlyError } from "@/lib/utils";
@@ -210,4 +211,53 @@ export async function spotifySearchAction(q: string): Promise<ActionResult<Spoti
   }
   const items = await searchSpotify(query.data);
   return items.length ? { ok: true, message: "", data: items } : { ok: false, message: "No results. You can also paste a Spotify link." };
+}
+
+export async function updateTagsAction(id: string, tags: string): Promise<ActionResult<string[]>> {
+  if (!z.string().uuid().safeParse(id).success) return { ok: false, message: "Contact not found." };
+  await requireViewer();
+  const clean = cleanTags(tags);
+  const supabase = await createClient();
+  const { error } = await supabase.from("prospects").update({ tags: clean }).eq("id", id);
+  if (error) return { ok: false, message: friendlyError(error) };
+  revalidatePath(`/prospects/${id}`); revalidatePath("/prospects");
+  return { ok: true, message: "Saved", data: clean };
+}
+
+/** Adds contacts from a CSV file or pasted text. People already in the list (same phone or email) are updated, not duplicated. */
+export async function importContactsAction(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const viewer = await requireViewer();
+  const file = formData.get("file");
+  let text = String(formData.get("text") ?? "");
+  if (file instanceof File && file.size > 0) {
+    if (file.size > 1_500_000) return { ok: false, message: "That file is too large (over 1.5 MB)." };
+    text = await file.text();
+  }
+  if (text.trim().length < 5) return { ok: false, message: "Choose a CSV file or paste your list." };
+  const tag = cleanTags(formData.get("tag"));
+  const r = importContacts(text);
+  if (!r.rows.length) return { ok: false, message: r.skipped.length ? `Nothing could be imported. ${r.skipped[0].reason} (line ${r.skipped[0].line}).` : "No contacts found. The first row must be column names such as Name, Phone, Email." };
+  const supabase = await createClient();
+  const { data: existing } = await supabase.from("prospects").select("id, phone, email, tags").eq("owner_id", viewer.id).limit(20000);
+  const byKey = new Map<string, { id: string; tags: string[] }>();
+  for (const e of existing ?? []) { if (e.phone) byKey.set(e.phone, e); if (e.email) byKey.set(String(e.email).toLowerCase(), e); }
+  const fresh: Record<string, unknown>[] = [];
+  let updated = 0;
+  for (const row of r.rows) {
+    const tags = cleanTags([...row.tags, ...tag]);
+    const hit = (row.phone && byKey.get(row.phone)) || (row.email && byKey.get(row.email));
+    if (hit) {
+      const merged = cleanTags([...hit.tags, ...tags]);
+      if (merged.length !== hit.tags.length) { await supabase.from("prospects").update({ tags: merged }).eq("id", hit.id); }
+      updated += 1;
+    } else {
+      fresh.push({ owner_id: viewer.id, full_name: row.name, phone: row.phone, email: row.email, source: row.source, notes: row.notes || null, tags, channel: row.phone ? "whatsapp" : "email" });
+    }
+  }
+  for (let i = 0; i < fresh.length; i += 500) {
+    const { error } = await supabase.from("prospects").insert(fresh.slice(i, i + 500));
+    if (error) return { ok: false, message: friendlyError(error, "Some contacts could not be saved.") };
+  }
+  revalidatePath("/prospects");
+  return { ok: true, message: `Added ${fresh.length} new contact${fresh.length === 1 ? "" : "s"}${updated ? `, updated ${updated} already in your list` : ""}${r.skipped.length ? `, skipped ${r.skipped.length} (no valid phone or email, or repeated)` : ""}.` };
 }

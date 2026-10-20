@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Mail, Phone } from "lucide-react";
+import { ArrowLeft, ClipboardList, Mail, Phone, ShoppingBag, UserPlus } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
 import { isGoogleConfigured, isSpotifySearchConfigured, isWhatsAppConfigured } from "@/lib/followup";
-import { CHANNEL_LABELS, stageLabel, type Prospect, type ProspectMessage } from "@/lib/prospects";
+import { CHANNEL_LABELS, stageLabel, type ContactEvent, type Prospect, type ProspectMessage } from "@/lib/prospects";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatRelative } from "@/lib/utils";
 import { Autopilot, Conversation, EditProspect } from "./client";
+import { TagsEditor } from "./tags-editor";
 
 export const metadata = { title: "Prospect" };
 
@@ -18,9 +19,10 @@ export default async function ProspectPage({ params }: { params: Promise<{ id: s
   const supabase = await createClient();
   const { data: p } = await supabase.from("prospects").select("*").eq("id", id).maybeSingle<Prospect>();
   if (!p) notFound();
-  const [{ data: messages }, { data: integrations }] = await Promise.all([
+  const [{ data: messages }, { data: integrations }, { data: events }] = await Promise.all([
     supabase.from("prospect_messages").select("*").eq("prospect_id", id).order("created_at").returns<ProspectMessage[]>(),
     supabase.rpc("my_integrations"),
+    supabase.from("contact_events").select("id, kind, title, detail, created_at").eq("contact_id", id).order("created_at", { ascending: false }).limit(50).returns<ContactEvent[]>(),
   ]);
   const own = p.owner_id === viewer.id;
   const gmailConnected = ((integrations ?? []) as { provider: string }[]).some((i) => i.provider === "google");
@@ -53,6 +55,30 @@ export default async function ProspectPage({ params }: { params: Promise<{ id: s
         <div className="space-y-6 lg:col-span-2">
           <Conversation prospect={p} messages={messages ?? []} readOnly={!own} canAutoSend={canAutoSend}
             spotifySearch={isSpotifySearchConfigured()} />
+          <Card>
+            <CardHeader title="Activity" description="What this person has done: forms sent, orders placed, surveys answered." />
+            <CardBody>
+              {(events ?? []).length === 0 ? <p className="text-sm text-fg-muted">Nothing yet. When they send a form, place an order or answer a survey on your pages, it shows up here.</p> : (
+                <ol className="space-y-4">
+                  {(events ?? []).map((e) => {
+                    const answers = (e.detail?.answers && typeof e.detail.answers === "object" ? Object.entries(e.detail.answers as Record<string, unknown>) : []).slice(0, 8);
+                    const Icon = e.kind === "funnel_order" ? ShoppingBag : e.kind === "form_response" ? ClipboardList : UserPlus;
+                    return (
+                      <li key={e.id} className="flex gap-3">
+                        <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><Icon className="size-4" aria-hidden /></span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold">{e.title}</p>
+                          <p className="text-xs text-fg-subtle">{formatRelative(e.created_at)}</p>
+                          {typeof e.detail?.message === "string" && e.detail.message && <p className="mt-1 whitespace-pre-line text-sm text-fg-muted">{e.detail.message}</p>}
+                          {answers.length > 0 && <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm">{answers.map(([k, v]) => <div key={k} className="contents"><dt className="text-fg-subtle">{k}</dt><dd className="break-words">{String(v)}</dd></div>)}</dl>}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
+              )}
+            </CardBody>
+          </Card>
         </div>
         <div className="space-y-6">
           {own && (
@@ -67,6 +93,13 @@ export default async function ProspectPage({ params }: { params: Promise<{ id: s
               </CardBody>
             </Card>
           )}
+          {own && (
+            <Card>
+              <CardHeader title="Tags" description="Group people, then filter your list by tag." />
+              <CardBody><TagsEditor id={p.id} initial={p.tags ?? []} /></CardBody>
+            </Card>
+          )}
+          {!own && (p.tags ?? []).length > 0 && <Card><CardHeader title="Tags" /><CardBody><div className="flex flex-wrap gap-1.5">{p.tags.map((t) => <span key={t} className="rounded-full bg-surface-muted px-2.5 py-1 text-xs">{t}</span>)}</div></CardBody></Card>}
           {own ? (
             <Card>
               <CardHeader title="Details" />

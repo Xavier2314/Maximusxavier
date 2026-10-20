@@ -1,6 +1,7 @@
 "use server";
 
-import { validateAnswers } from "@/lib/forms";
+import { captureContact } from "@/lib/contact-capture";
+import { allFields, validateAnswers } from "@/lib/forms";
 import { loadPublicForm } from "@/lib/form-public";
 import { createAdminClient } from "@/lib/supabase/server";
 
@@ -25,5 +26,12 @@ export async function submitFormAction(slug: string, payload: string, trap: stri
   if ((count ?? 0) >= 60) return { ok: false, message: "Too many responses right now. Please try again in a few minutes." };
   const { error } = await admin.from("form_responses").insert({ form_id: form.id, answers: res.answers, name: res.name || null, email: res.email || null, phone: res.phone || null });
   if (error) { console.error("[form-response]", error.message); return { ok: false, message: "Sorry, we couldn't save that. Please try again." }; }
+  // Add the person to the owner's contacts when they gave a phone number or email.
+  const labelled: Record<string, string> = {};
+  for (const f of allFields(form.def)) if (res.answers[f.id]) labelled[f.label] = res.answers[f.id];
+  await captureContact({
+    ownerId: form.ownerId, name: res.name, phone: res.phone, email: res.email, source: `${form.kind === "survey" ? "Survey" : "Form"}: ${form.title}`,
+    tags: [form.kind === "survey" ? "survey" : "form"], event: { kind: "form_response", title: `Answered “${form.title}”`, detail: { answers: labelled } },
+  });
   return { ok: true, redirectUrl: form.def.redirectUrl };
 }

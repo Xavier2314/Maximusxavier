@@ -18,9 +18,13 @@ export type Prospect = {
   next_follow_up_at: string | null;
   last_contacted_at: string | null;
   last_reply_at: string | null;
+  tags: string[];
+  custom: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 };
+
+export type ContactEvent = { id: string; kind: "funnel_lead" | "funnel_order" | "form_response" | "imported" | "note"; title: string; detail: Record<string, unknown>; created_at: string };
 
 export type ProspectMessage = {
   id: string;

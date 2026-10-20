@@ -1354,6 +1354,40 @@ do $$ begin
   assert (select count(*) from public.form_responses) = 1, 'responses untouched by others';
 end $$;
 
+-- 0054: contacts hub. Server-only upsert merges by phone/email; events are readable by the owner only.
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+select pg_temp.expect_error($$ select public.upsert_contact('00000000-0000-0000-0000-0000000000c2', 'Ada', '2348011111111', null, 'Funnel: Test', 'new', array['lead']) $$, 'members cannot call the contact upsert directly');
+select pg_temp.act_as(null);
+select public.upsert_contact('00000000-0000-0000-0000-0000000000c2', 'Ada Obi', '2348011111111', null, 'Funnel: Test', 'new', array['lead']);
+select public.upsert_contact('00000000-0000-0000-0000-0000000000c2', 'Ada O.', '2348011111111', 'ada@example.com', 'Form: Survey', 'customer', array['customer', 'lead']);
+select public.upsert_contact('00000000-0000-0000-0000-0000000000c2', 'Someone', null, 'ADA@example.com', 'Form: Again', 'new', array['survey']);
+do $$ declare n int; r record; begin
+  select count(*) into n from public.prospects where owner_id = '00000000-0000-0000-0000-0000000000c2' and (phone = '2348011111111' or lower(email) = 'ada@example.com');
+  assert n = 1, 'same person merged into one contact, got ' || n;
+  select * into r from public.prospects where phone = '2348011111111';
+  assert r.email = 'ada@example.com', 'email filled in on merge';
+  assert r.stage = 'customer', 'an order moves the contact to customer';
+  assert r.tags @> array['lead', 'customer', 'survey'], 'tags merged';
+  assert r.full_name = 'Ada Obi', 'original name kept';
+  raise notice 'PASS: leads and orders merge into one contact';
+end $$;
+insert into public.contact_events (contact_id, owner_id, kind, title) select id, owner_id, 'funnel_lead', 'Sent the form' from public.prospects where phone = '2348011111111';
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000c2');
+do $$ begin
+  assert (select count(*) from public.contact_events) = 1, 'owner reads own events';
+  assert (select count(*) from public.contact_tag_counts()) >= 3, 'tag counts';
+  raise notice 'PASS: owner reads events and tag counts';
+end $$;
+select pg_temp.expect_error($$ insert into public.contact_events (contact_id, owner_id, kind, title) select id, owner_id, 'note', 'forged' from public.prospects limit 1 $$, 'members cannot write events directly');
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000e1');
+do $$ begin
+  assert (select count(*) from public.contact_events) = 0, 'others cannot read events';
+  delete from public.contact_events;
+  raise notice 'PASS: events are owner-only';
+end $$;
+select pg_temp.act_as(null);
+do $$ begin assert (select count(*) from public.contact_events) = 1, 'events untouched by others'; end $$;
+
 \echo '=========================================='
 \echo 'ALL SECURITY TESTS PASSED'
 \echo '=========================================='

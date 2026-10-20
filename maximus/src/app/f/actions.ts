@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { cleanPages } from "@/lib/funnels";
+import { captureContact } from "@/lib/contact-capture";
 import { createAdminClient } from "@/lib/supabase/server";
 
 type Result = { ok: true } | { ok: false; message: string };
@@ -28,7 +29,7 @@ export async function submitFunnelLeadAction(slug: string, pageId: string, block
   const v = parsed.data;
 
   const admin = createAdminClient();
-  const { data: funnel } = await admin.from("funnels").select("id, product, pages, live").eq("slug", slug).eq("published", true).maybeSingle();
+  const { data: funnel } = await admin.from("funnels").select("id, user_id, title, product, pages, live").eq("slug", slug).eq("published", true).maybeSingle();
   if (!funnel) return { ok: false, message: "This page is not available." };
   const page = cleanPages((funnel.live && typeof funnel.live === "object" ? (funnel.live as { pages?: unknown }).pages : null) ?? funnel.pages).find((p) => p.id === pageId);
   // A form is either a form block, or a form element inside a custom section.
@@ -84,5 +85,12 @@ export async function submitFunnelLeadAction(slug: string, pageId: string, block
     console.error("[funnel-lead]", error.message);
     return { ok: false, message: "Sorry, we couldn't save that. Please try again." };
   }
+  // Everyone who sends a form or an order is added to the owner's contacts, with a note of what they did.
+  const fromAd = typeof data?.["Ad source"] === "string";
+  await captureContact({
+    ownerId: funnel.user_id as string, name: v.name, phone: v.phone, email: v.email, source: `Funnel: ${funnel.title}`,
+    stage: kind === "order" ? "customer" : "new", tags: [kind === "order" ? "customer" : "lead", ...(fromAd ? ["from-ad"] : [])],
+    event: { kind: kind === "order" ? "funnel_order" : "funnel_lead", title: kind === "order" ? `Ordered ${productName ?? "a product"} × ${v.quantity ?? 1}` : `Sent the form on “${funnel.title}”`, detail: { funnel: funnel.title, product: productName, message: note, answers: data } },
+  });
   return { ok: true };
 }

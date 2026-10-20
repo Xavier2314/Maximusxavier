@@ -58,11 +58,12 @@ Legend: [x] built · [~] partly · [ ] not started · 🔌 needs a connection (s
 - [ ] Communities
 
 ## B. Contacts (CRM)
-- [~] Prospects pipeline already exists in Maximus → [ ] one contact record that gathers funnel leads, orders, form answers and prospects
-- [ ] Tags, smart lists, custom fields, notes, tasks
-- [ ] Import and export contacts, find duplicates and merge
-- [ ] Opportunity pipelines with stages and values (from the Prospects board)
-- [ ] Timeline of everything a contact did
+- [x] One contact record: the Prospects list now also gathers funnel leads, orders and form/survey answers automatically (matched by phone or email, no duplicates)
+- [x] Tags with a filter bar, search, board and list views
+- [x] Import contacts from CSV (phones cleaned, Nigerian numbers fixed, duplicates merged) and export to CSV
+- [x] Activity timeline on each contact (forms sent, orders, surveys answered)
+- [x] Pipeline stages (the Prospects board)
+- [ ] Smart lists (saved filters), custom fields editor, tasks, find and merge duplicates by hand, deal values
 
 ## C. Conversations
 - [~] Internal inbox exists → [ ] one inbox for WhatsApp, SMS, email and web chat 🔌 (WhatsApp Business / SMS provider)
