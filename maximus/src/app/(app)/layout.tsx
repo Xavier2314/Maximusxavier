@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { ChatWidget } from "@/components/chat-widget";
 import { AppShell } from "@/components/shell/app-shell";
 import { featuredFrom } from "@/lib/featured";
-import { BOTTOM_NAV, OFFICE_BOTTOM_NAV, visibleNav, visibleOfficeNav } from "@/components/shell/nav";
+import { BOTTOM_NAV, OFFICE_BOTTOM_NAV, visibleNav, visibleOfficeNav, visibleTeamNav } from "@/components/shell/nav";
 import { getViewer, primaryRole, ROLE_LABELS } from "@/lib/auth";
 import { OFFICE_BRAND_COLUMNS, officeBrand, platformBrand, type OfficeBrandRow, type PlatformBrandSetting } from "@/lib/branding";
 import { createClient } from "@/lib/supabase/server";
@@ -43,28 +43,46 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   };
 
   const managesOffice = viewer.offices.length > 0;
-  const officeSections = viewer.hasOfficeView ? visibleOfficeNav(viewer.permissions, managesOffice, viewer.roles) : [];
-  const officeHome = managesOffice ? "/office" : viewer.isLeader ? "/office/team" : officeSections[0]?.items[0]?.href;
+  // Team view: anyone leading a downline, whether or not they're tied to an office.
+  const teamSections = viewer.isLeader ? visibleTeamNav(viewer.permissions, viewer.roles) : [];
+  const team = teamSections.length > 0 ? {
+    home: "/office/team",
+    label: "Team view",
+    sections: teamSections,
+    bottom: teamSections.flatMap((s) => s.items).slice(0, 4),
+  } : null;
+
+  // Office view: the office itself (full dashboard, roster, and, for managers only, settings/branding/QR).
+  // Team leaders assigned to an office get the read-only subset; office managers get everything.
+  const canOfficeView = managesOffice || (viewer.isLeader && Boolean(viewer.profile.office_id));
+  const officeSections = canOfficeView ? visibleOfficeNav(viewer.permissions, viewer.roles) : [];
   // Everyone who belongs to an office gets a read-only "My office" page in Office view.
   const myOffice = viewer.profile.office_id && !managesOffice
     ? { title: "Office", items: [{ href: "/office/my", label: "My office", icon: "building" }] } : null;
-  const office = officeHome ? {
-    home: officeHome,
-    label: managesOffice ? "Office view" : viewer.isLeader ? "Team view" : "Approvals",
-    officeName: viewer.offices.length === 1 ? viewer.offices[0].name : managesOffice ? `${viewer.offices.length} offices` : undefined,
+  const approvals = { title: "Office", items: [{ href: "/admin/approvals", label: "Approvals", icon: "check" }] };
+  const office = canOfficeView && officeSections.length > 0 ? {
+    home: "/office",
+    label: "Office view",
+    officeName: viewer.offices.length === 1 ? viewer.offices[0].name : viewer.offices.length > 1 ? `${viewer.offices.length} offices` : undefined,
     sections: myOffice ? [myOffice, ...officeSections] : officeSections,
     bottom: managesOffice ? OFFICE_BOTTOM_NAV : [...(myOffice?.items ?? []), ...officeSections.flatMap((s) => s.items)].slice(0, 4),
   } : myOffice ? {
     home: "/office/my",
     label: "Office view",
-    sections: [myOffice],
-    bottom: [{ href: "/office/my", label: "My office", icon: "building" }, ...BOTTOM_NAV.slice(0, 3)],
+    sections: !team && viewer.hasOfficeView ? [myOffice, approvals] : [myOffice],
+    bottom: [...myOffice.items, ...BOTTOM_NAV.slice(0, 3)],
+  } : !team && viewer.hasOfficeView ? {
+    home: "/admin/approvals",
+    label: "Approvals",
+    sections: [approvals],
+    bottom: [],
   } : null;
 
   return (
     <AppShell
       featured={featured}
       sections={visibleNav(viewer.permissions)}
+      team={team}
       office={office}
       brands={brands}
       platformName={platform.name}

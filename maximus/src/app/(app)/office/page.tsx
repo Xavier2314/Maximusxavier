@@ -32,10 +32,15 @@ type OfficeDashboard = {
 
 export default async function OfficePage({ searchParams }: { searchParams: Promise<{ office?: string }> }) {
   const viewer = await requireViewer();
-  if (viewer.offices.length === 0) redirect(viewer.isLeader ? "/office/team" : "/forbidden");
+  // Office managers can browse every office they manage; team leaders without a managed
+  // office can still see the dashboard of their own office, read-only (no manage_office needed).
+  const canViewDashboard = viewer.offices.length > 0 || (viewer.isLeader && Boolean(viewer.profile.office_id));
+  if (!canViewDashboard) redirect("/forbidden");
   const { office: wanted } = await searchParams;
   const officeId = viewer.offices.find((o) => o.id === wanted)?.id
-    ?? viewer.offices.find((o) => o.id === viewer.profile.office_id)?.id ?? viewer.offices[0].id;
+    ?? viewer.offices.find((o) => o.id === viewer.profile.office_id)?.id
+    ?? viewer.offices[0]?.id
+    ?? viewer.profile.office_id!;
 
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("office_dashboard", { p_office: officeId });
@@ -58,7 +63,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
           ? <span className="text-success">Open today</span> : <span>Closed today</span>}</>}
         action={<>
           <OfficePicker offices={viewer.offices} current={officeId} />
-          <LinkButton href={`/admin/offices/${officeId}/qr`} variant="outline" size="sm"><QrCode className="size-4" aria-hidden />QR poster</LinkButton>
+          {viewer.can("manage_office") && <LinkButton href={`/admin/offices/${officeId}/qr`} variant="outline" size="sm"><QrCode className="size-4" aria-hidden />QR poster</LinkButton>}
           {viewer.can("publish_announcements") && <LinkButton href="/announcements" variant="outline" size="sm"><Megaphone className="size-4" aria-hidden />Announce</LinkButton>}
         </>} />
 
