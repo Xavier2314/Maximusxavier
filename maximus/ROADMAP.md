@@ -37,3 +37,74 @@ Legend: [x] done and live-ready · [~] started · [ ] not started · 🔌 needs 
 ## 5. Templates
 - [x] 5 funnel types, 8 looks, 10 prebuilt sections, saved sections
 - [ ] Large template library by industry and goal, previewed before choosing
+
+---
+
+# Goal: everything a GoHighLevel-style platform offers, inside Maximus
+We build our own versions of the features (not GoHighLevel's code, name, logo or exact look).
+Legend: [x] built · [~] partly · [ ] not started · 🔌 needs a connection (service account or key) from the owner
+
+## A. Pages and sites
+- [x] Funnels with drag and drop builder, AI design, 8 looks, versions, publishing, SEO
+- [x] Forms and surveys with drag and drop, AI, full design controls, responses and CSV
+- [x] Import a page from HTML
+- [~] Templates (5 funnel types, 10 prebuilt sections) → [ ] large template library
+- [ ] Multi-page websites with menus and a blog
+- [ ] Popups and sticky bars
+- [ ] Quizzes with scoring and results pages
+- [ ] Courses and memberships (lessons, drip, member login, progress)
+- [ ] Online store (product catalogue, cart, checkout)
+- [ ] Custom domains 🔌 (DNS + hosting project)
+- [ ] Communities
+
+## B. Contacts (CRM)
+- [~] Prospects pipeline already exists in Maximus → [ ] one contact record that gathers funnel leads, orders, form answers and prospects
+- [ ] Tags, smart lists, custom fields, notes, tasks
+- [ ] Import and export contacts, find duplicates and merge
+- [ ] Opportunity pipelines with stages and values (from the Prospects board)
+- [ ] Timeline of everything a contact did
+
+## C. Conversations
+- [~] Internal inbox exists → [ ] one inbox for WhatsApp, SMS, email and web chat 🔌 (WhatsApp Business / SMS provider)
+- [ ] Templates and saved replies, assign to team members
+- [ ] Missed-call text back, web chat widget
+
+## D. Email and messaging
+- [ ] Email designer: drag and drop, AI, import HTML 🔌 (Resend + sending domain)
+- [ ] Email broadcasts and sequences, unsubscribe, open and click tracking
+- [ ] SMS and WhatsApp campaigns 🔌
+- [ ] Social media planner 🔌 (Facebook and Instagram approval)
+
+## E. Automation
+- [ ] Workflows: trigger (form submitted, order placed, tag added...) → actions (send message, add tag, move stage, wait, if/else, notify team)
+- [ ] Trigger links and QR codes
+- [ ] AI assistant that replies to leads (with human hand-off)
+- [ ] Webhooks in and out
+
+## F. Booking
+- [ ] Calendars and booking pages, availability, reminders
+- [ ] Round-robin between team members, Google Calendar sync 🔌
+
+## G. Payments
+- [~] Order forms capture orders → [ ] invoices, product catalogue, payment links, subscriptions 🔌 (Paystack and/or Flutterwave)
+
+## H. Ads, reputation and reports
+- [x] Ad plans per funnel with Facebook-rules checker and tagged links
+- [ ] Publish ads from the app 🔌 (Meta app approval)
+- [ ] Ads results screen, source of every lead and sale
+- [ ] Review requests and reputation inbox 🔌 (Google Business)
+- [ ] Affiliate and referral tracking
+- [ ] Reports dashboard
+
+## I. Agency / white-label
+- [~] Maximus already has admins, teams and white-label pages → [ ] sub-accounts per business, reusable "snapshots" (copy a whole setup to a new account), plans and limits, resell with own branding
+
+## Suggested order
+1. Contacts hub (everything lands in one place)
+2. Email sending and templates 🔌
+3. Workflows (the heart of the platform)
+4. Booking calendars
+5. Unified inbox 🔌
+6. Payments and invoices 🔌
+7. Courses, memberships, store, websites
+8. Sub-accounts and snapshots
