@@ -50,12 +50,24 @@ export const NAV: NavSection[] = [
   },
 ];
 
-/** Office view: running an office or leading a team. Shown only to those who can. */
+/** Team view: leading a downline, independent of any office affiliation. Shown to anyone who leads a team. */
+export const TEAM_NAV: NavSection[] = [
+  {
+    title: "Team",
+    items: [
+      { href: "/office/team", label: "Team overview", icon: "network", anyPermission: ["view_team_dashboard", "view_direct_downlines"] },
+      { href: "/office/alerts", label: "Coaching alerts", icon: "bell", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics"] },
+      { href: "/office/place", label: "Place in an office", icon: "building", roles: ["super_admin", "team_leader"] },
+    ],
+  },
+];
+
+/** Office view: the office itself — its dashboard, roster, and (for managers) its settings. */
 export const OFFICE_NAV: NavSection[] = [
   {
     title: "Office",
     items: [
-      { href: "/office", label: "Office overview", icon: "chart", anyPermission: ["manage_office", "view_org_analytics"] },
+      { href: "/office", label: "Office overview", icon: "chart", anyPermission: ["manage_office", "view_org_analytics", "view_team_dashboard", "view_direct_downlines"] },
       { href: "/office/members", label: "Office members", icon: "users", anyPermission: ["manage_office", "view_org_analytics", "view_team_dashboard", "view_direct_downlines"] },
       { href: "/attendance/live", label: "Live attendance", icon: "map-pin", anyPermission: ["manage_office", "approve_attendance_exceptions", "view_org_analytics"] },
       { href: "/attendance/register", label: "Attendance register", icon: "clipboard", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics"] },
@@ -64,14 +76,6 @@ export const OFFICE_NAV: NavSection[] = [
       { href: "/admin/approvals", label: "Approvals", icon: "check", anyPermission: ["approve_financial_transactions", "approve_attendance_exceptions", "manage_office"] },
       { href: "/admin/offices", label: "Office setup & QR", icon: "building", permission: "manage_office" },
       { href: "/office/brand", label: "Branding", icon: "palette", anyPermission: ["manage_office", "view_org_analytics"] },
-    ],
-  },
-  {
-    title: "Team",
-    items: [
-      { href: "/office/team", label: "Team overview", icon: "network", anyPermission: ["view_team_dashboard", "view_direct_downlines"] },
-      { href: "/office/alerts", label: "Coaching alerts", icon: "bell", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics"] },
-      { href: "/office/place", label: "Place in an office", icon: "building", roles: ["super_admin", "team_leader"] },
     ],
   },
   {
@@ -90,10 +94,15 @@ export const OFFICE_NAV: NavSection[] = [
   },
 ];
 
+/** Paths that belong to the Team view. Checked before the Office paths, since they share the "/office/" prefix. */
+export const TEAM_PATHS = ["/office/team", "/office/alerts", "/office/place"];
+export const isTeamPath = (pathname: string) =>
+  TEAM_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+
 /** Paths that belong to the Office view (the switch and sidebar follow these). */
 export const OFFICE_PATHS = ["/office", "/admin", "/attendance/live", "/attendance/register"];
 export const isOfficePath = (pathname: string) =>
-  OFFICE_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  !isTeamPath(pathname) && OFFICE_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
 export const BOTTOM_NAV: NavItem[] = [
   { href: "/dashboard", label: "Home", icon: "home" },
@@ -120,15 +129,18 @@ export function visibleNav(perms: Set<string>): NavSection[] {
   return filterNav(NAV, perms);
 }
 
-/** Office-view sections. Team leaders without an office get the Team part only. */
-export function visibleOfficeNav(perms: Set<string>, managesOffice: boolean, roles: string[] = []): NavSection[] {
-  const sections = filterNav(OFFICE_NAV, perms, roles);
-  if (managesOffice) return sections;
-  // Without a managed office, keep Approvals (e.g. earnings managers) and Office members
-  // (e.g. team leaders, who can see their own office's roster but not manage it).
-  return sections
-    .map((s) => (s.title === "Office" ? { ...s, items: s.items.filter((i) => i.href === "/admin/approvals" || i.href === "/office/members") } : s))
-    .filter((s) => s.items.length > 0);
+/** Team-view sections: downline/coaching tools for anyone who leads a team. */
+export function visibleTeamNav(perms: Set<string>, roles: string[] = []): NavSection[] {
+  return filterNav(TEAM_NAV, perms, roles);
+}
+
+/**
+ * Office-view sections. Each item is already permission-gated for the right audience:
+ * office managers see the full set (including settings/branding/QR), and team leaders see
+ * the read-only subset their permissions unlock (overview, roster, live/attendance, approvals).
+ */
+export function visibleOfficeNav(perms: Set<string>, roles: string[] = []): NavSection[] {
+  return filterNav(OFFICE_NAV, perms, roles);
 }
 
 /** Shortcuts used by the "+ New" menu and search. */

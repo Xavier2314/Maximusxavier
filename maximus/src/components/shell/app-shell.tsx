@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { Building2, LogOut, Menu, Search, Settings, User, X } from "lucide-react";
+import { Building2, LogOut, Menu, Network, Search, Settings, User, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { brandVars, type Brand } from "@/lib/branding";
 import { Avatar } from "@/components/ui/misc";
 import { cn } from "@/lib/utils";
 import { AnnouncementBar, type BarAnnouncement } from "./announcement-bar";
 import { CommandPalette } from "./command-palette";
-import { BOTTOM_NAV, OFFICE_BOTTOM_NAV, isOfficePath, type NavItem, type NavSection } from "./nav";
+import { BOTTOM_NAV, isOfficePath, isTeamPath, type NavItem, type NavSection } from "./nav";
 import { NAV_ICONS } from "./nav-icons";
 import { NotificationBell } from "./notification-bell";
 import { QuickAdd } from "./quick-add";
@@ -38,10 +38,11 @@ function BrandMark({ brand, compact = false, onDark = true }: { brand: Brand; co
   );
 }
 
-/** Where the Office view starts and what it is called for this member. */
+/** Where the Team / Office views start and what they are called for this member. */
+export type TeamView = { home: string; label: string; sections: NavSection[]; bottom: NavItem[] } | null;
 export type OfficeView = { home: string; label: string; officeName?: string; sections: NavSection[]; bottom: NavItem[] } | null;
 
-function ViewSwitch({ office, mode, dark = false, className }: { office: NonNullable<OfficeView>; mode: "me" | "office"; dark?: boolean; className?: string }) {
+function ViewSwitch({ team, office, mode, dark = false, className }: { team: TeamView; office: OfficeView; mode: "me" | "team" | "office"; dark?: boolean; className?: string }) {
   const base = "flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-3 py-1.5 text-sm font-medium transition-colors";
   const on = dark ? "bg-white text-brand-navy shadow-sm" : "bg-surface text-fg shadow-sm";
   const off = dark ? "text-white/60 hover:text-white" : "text-fg-muted hover:text-fg";
@@ -51,9 +52,16 @@ function ViewSwitch({ office, mode, dark = false, className }: { office: NonNull
       <Link href="/dashboard" role="tab" aria-selected={mode === "me"} className={cn(base, mode === "me" ? on : off)}>
         <User className="size-4" aria-hidden />My view
       </Link>
-      <Link href={office.home} role="tab" aria-selected={mode === "office"} className={cn(base, mode === "office" ? on : off)}>
-        <Building2 className="size-4" aria-hidden />{office.label}
-      </Link>
+      {team && (
+        <Link href={team.home} role="tab" aria-selected={mode === "team"} className={cn(base, mode === "team" ? on : off)}>
+          <Network className="size-4" aria-hidden />{team.label}
+        </Link>
+      )}
+      {office && (
+        <Link href={office.home} role="tab" aria-selected={mode === "office"} className={cn(base, mode === "office" ? on : off)}>
+          <Building2 className="size-4" aria-hidden />{office.label}
+        </Link>
+      )}
     </div>
   );
 }
@@ -113,17 +121,18 @@ function UserCard({ user, signOut }: { user: ShellUser; signOut: () => void }) {
   );
 }
 
-export function AppShell({ sections: memberSections, office = null, brands, platformName, user, unread, signOut, announcements = [], children }: {
-  sections: NavSection[]; office?: OfficeView; brands: { me: Brand; office: Brand }; platformName: string;
+export function AppShell({ sections: memberSections, team = null, office = null, brands, platformName, user, unread, signOut, announcements = [], children }: {
+  sections: NavSection[]; team?: TeamView; office?: OfficeView; brands: { me: Brand; office: Brand }; platformName: string;
   user: ShellUser; unread: number; signOut: () => void; announcements?: BarAnnouncement[]; children: ReactNode;
 }) {
   const pathname = usePathname();
-  const mode: "me" | "office" = office && isOfficePath(pathname) ? "office" : "me";
-  // Office view wears the office's brand; My view wears the member's own brand (platform, or their office's).
+  const mode: "me" | "team" | "office" =
+    team && isTeamPath(pathname) ? "team" : office && isOfficePath(pathname) ? "office" : "me";
+  // Office view wears the office's brand; My view and Team view wear the member's own brand (platform, or their office's).
   const brand = mode === "office" ? brands.office : brands.me;
-  const sections = mode === "office" && office ? office.sections : memberSections;
-  const bottom = mode === "office" && office ? office.bottom : BOTTOM_NAV;
-  const allSections = office ? [...memberSections, ...office.sections] : memberSections;
+  const sections = mode === "team" && team ? team.sections : mode === "office" && office ? office.sections : memberSections;
+  const bottom = mode === "team" && team ? team.bottom : mode === "office" && office ? office.bottom : BOTTOM_NAV;
+  const allSections = [...memberSections, ...(team?.sections ?? []), ...(office?.sections ?? [])];
   const current = allSections.flatMap((s) => s.items).filter((i) => isActive(pathname, i.href)).sort((a, b) => b.href.length - a.href.length)[0];
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -143,11 +152,11 @@ export function AppShell({ sections: memberSections, office = null, brands, plat
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col bg-brand-navy px-4 pb-4 pt-6 lg:flex">
         <Link href="/dashboard" className="px-3"><BrandMark brand={brand} /></Link>
         {brand.tagline && <p className="mt-2 truncate px-3 text-xs text-white/50">{brand.tagline}</p>}
-        {office && <ViewSwitch office={office} mode={mode} dark className="mt-6" />}
+        {(team || office) && <ViewSwitch team={team} office={office} mode={mode} dark className="mt-6" />}
         {mode === "office" && office?.officeName && (
           <p className="mt-3 truncate px-3 text-xs text-white/50">Managing <span className="font-medium text-white/80">{office.officeName}</span></p>
         )}
-        <div className={cn("scrollbar-none flex-1 overflow-y-auto", office ? "mt-6" : "mt-8")}>
+        <div className={cn("scrollbar-none flex-1 overflow-y-auto", (team || office) ? "mt-6" : "mt-8")}>
           <NavLinks sections={sections} pathname={pathname} />
         </div>
         <UserCard user={user} signOut={signOut} />
@@ -159,9 +168,9 @@ export function AppShell({ sections: memberSections, office = null, brands, plat
       {/* Top bar */}
       <header className="sticky top-0 z-30 border-b border-border/60 bg-bg/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
         <AnnouncementBar items={announcements} />
-        {office && (
+        {(team || office) && (
           <div className="border-b border-border/60 px-4 py-2 lg:hidden">
-            <ViewSwitch office={office} mode={mode} className="mx-auto max-w-md" />
+            <ViewSwitch team={team} office={office} mode={mode} className="mx-auto max-w-md" />
           </div>
         )}
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
