@@ -27,14 +27,24 @@ const WEEK = 7 * 864e5;
 
 export default async function OfficeMembersPage({ searchParams }: { searchParams: Promise<{ office?: string; filter?: string; q?: string }> }) {
   const viewer = await requireViewer();
-  if (viewer.offices.length === 0) redirect("/forbidden");
+  // Office managers can browse every office they manage; team leaders without a managed
+  // office can still see the roster of their own office, read-only (no manage_office needed).
+  const canViewRoster = viewer.offices.length > 0 || (viewer.isLeader && Boolean(viewer.profile.office_id));
+  if (!canViewRoster) redirect("/forbidden");
   const { office: wanted, filter = "all", q = "" } = await searchParams;
   const officeId = viewer.offices.find((o) => o.id === wanted)?.id
-    ?? viewer.offices.find((o) => o.id === viewer.profile.office_id)?.id ?? viewer.offices[0].id;
-  const officeName = viewer.offices.find((o) => o.id === officeId)?.name;
+    ?? viewer.offices.find((o) => o.id === viewer.profile.office_id)?.id
+    ?? viewer.offices[0]?.id
+    ?? viewer.profile.office_id!;
 
   const supabase = await createClient();
-  const { data } = await supabase.rpc("office_members", { p_office: officeId });
+  const [{ data }, { data: officeRow }] = await Promise.all([
+    supabase.rpc("office_members", { p_office: officeId }),
+    viewer.offices.find((o) => o.id === officeId)
+      ? Promise.resolve({ data: null as { name: string } | null })
+      : supabase.from("offices").select("name").eq("id", officeId).maybeSingle(),
+  ]);
+  const officeName = viewer.offices.find((o) => o.id === officeId)?.name ?? officeRow?.name ?? "your office";
   const all = (data as Row[] | null) ?? [];
   const now = Date.now();
   const quiet = (r: Row) => !r.last_activity || now - new Date(r.last_activity).getTime() > WEEK;

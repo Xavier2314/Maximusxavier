@@ -56,7 +56,7 @@ export const OFFICE_NAV: NavSection[] = [
     title: "Office",
     items: [
       { href: "/office", label: "Office overview", icon: "chart", anyPermission: ["manage_office", "view_org_analytics"] },
-      { href: "/office/members", label: "Office members", icon: "users", anyPermission: ["manage_office", "view_org_analytics"] },
+      { href: "/office/members", label: "Office members", icon: "users", anyPermission: ["manage_office", "view_org_analytics", "view_team_dashboard", "view_direct_downlines"] },
       { href: "/attendance/live", label: "Live attendance", icon: "map-pin", anyPermission: ["manage_office", "approve_attendance_exceptions", "view_org_analytics"] },
       { href: "/attendance/register", label: "Attendance register", icon: "clipboard", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics"] },
       { href: "/office/weekly", label: "Weekly office report", icon: "clipboard", anyPermission: ["manage_office", "view_org_analytics"] },
@@ -124,9 +124,10 @@ export function visibleNav(perms: Set<string>): NavSection[] {
 export function visibleOfficeNav(perms: Set<string>, managesOffice: boolean, roles: string[] = []): NavSection[] {
   const sections = filterNav(OFFICE_NAV, perms, roles);
   if (managesOffice) return sections;
-  // Without an office, only Approvals is useful from the Office section (e.g. earnings managers).
+  // Without a managed office, keep Approvals (e.g. earnings managers) and Office members
+  // (e.g. team leaders, who can see their own office's roster but not manage it).
   return sections
-    .map((s) => (s.title === "Office" ? { ...s, items: s.items.filter((i) => i.href === "/admin/approvals") } : s))
+    .map((s) => (s.title === "Office" ? { ...s, items: s.items.filter((i) => i.href === "/admin/approvals" || i.href === "/office/members") } : s))
     .filter((s) => s.items.length > 0);
 }
 
