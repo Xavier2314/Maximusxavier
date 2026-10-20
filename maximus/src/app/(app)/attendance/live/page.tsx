@@ -20,11 +20,25 @@ export default async function LiveBoardPage() {
   const supabase = await createClient();
   const today = todayIn(viewer.profile.timezone);
 
-  // RLS returns only offices/records this person may see.
+  // RLS on `offices` deliberately exposes every active office (the registration dropdown
+  // needs that), and RLS on `attendance` can surface records outside your own office via
+  // downline visibility — neither is "which offices can this board show". Org-wide roles
+  // see everything; an office manager sees only the offices they manage; a team leader with
+  // no managed office sees only their own office's board.
+  const seesAllOffices = viewer.can("view_org_analytics") || viewer.isAdmin;
+  const officeIds = seesAllOffices ? null
+    : viewer.offices.length > 0 ? viewer.offices.map((o) => o.id)
+    : viewer.profile.office_id ? [viewer.profile.office_id]
+    : [];
+
+  let officesQuery = supabase.from("offices").select("id, name, radius_m").eq("is_active", true);
+  if (officeIds) officesQuery = officesQuery.in("id", officeIds);
+  let attendanceQuery = supabase.from("attendance").select("*, profiles!attendance_user_id_fkey(full_name, avatar_url, member_id)")
+    .eq("attendance_date", today);
+  if (officeIds) attendanceQuery = attendanceQuery.in("office_id", officeIds);
   const [{ data: offices }, { data: rows }] = await Promise.all([
-    supabase.from("offices").select("id, name, radius_m").eq("is_active", true).order("name"),
-    supabase.from("attendance").select("*, profiles!attendance_user_id_fkey(full_name, avatar_url, member_id)")
-      .eq("attendance_date", today).order("check_in_at", { ascending: false }).returns<Row[]>(),
+    officesQuery.order("name"),
+    attendanceQuery.order("check_in_at", { ascending: false }).returns<Row[]>(),
   ]);
   const records = rows ?? [];
 
