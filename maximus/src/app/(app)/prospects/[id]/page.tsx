@@ -11,7 +11,7 @@ import { formatDate, formatRelative } from "@/lib/utils";
 import { Autopilot, Conversation, EditProspect } from "./client";
 import { TagsEditor } from "./tags-editor";
 
-export const metadata = { title: "Prospect" };
+export const metadata = { title: "Contact" };
 
 export default async function ProspectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -32,7 +32,7 @@ export default async function ProspectPage({ params }: { params: Promise<{ id: s
   return (
     <>
       <Link href={own ? "/prospects" : `/prospects?member=${p.owner_id}`} className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg">
-        <ArrowLeft className="size-4" aria-hidden /> Prospects
+        <ArrowLeft className="size-4" aria-hidden /> Contacts
       </Link>
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <Avatar name={p.full_name} size={56} />

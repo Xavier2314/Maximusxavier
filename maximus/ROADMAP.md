@@ -30,7 +30,7 @@ Legend: [x] done and live-ready · [~] started · [ ] not started · 🔌 needs 
 - [x] Standalone forms and multi-step surveys with their own public link (/s/…), 12 question types, required fields, consent box, redirect or thank-you message, 8 looks
 - [x] AI builds a form or survey from a description
 - [x] Responses inbox with counts per choice, averages, Net Promoter Score and CSV download
-- [x] Drag and drop: drag question types into the form, drag questions to reorder or move between steps (buttons also work)
+- [x] Drag and drop on the form itself: click a question to select it, drag its handle to move it (even to another step), drop a question type onto the form, type over the question to rename, duplicate or delete from the form (the list on the left and arrow buttons also work)
 - [x] Design controls: background (colour, gradient, picture + darkening), card colour, text colour, 6 fonts, card style, corners, shadow, spacing, width, answer-box style and size, button style/size/width/position, progress bar or dots, logo, half-width fields, placeholders
 - [ ] Show/hide questions based on earlier answers (skip logic), hidden fields from the link, and embedding a form inside a funnel page
 

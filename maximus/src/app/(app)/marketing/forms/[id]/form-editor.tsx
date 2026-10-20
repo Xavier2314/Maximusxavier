@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowDown, ArrowUp, Check, Copy, Eye, GripVertical, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
-import { FormView } from "@/components/forms/form-view";
+import { FormView, type FormEditApi } from "@/components/forms/form-view";
 import { ImageField } from "@/components/funnels/image-upload";
 import { FIELD_TYPES, MAX_FIELDS, MAX_STEPS, insertField, moveField, newField, newStep, type FieldType, type FormDef, type FormDesign, type FormFieldDef, type FormKind, type FormStep, type Slot } from "@/lib/forms";
 import { STYLES } from "@/lib/funnel-styles";
@@ -23,6 +23,8 @@ export function FormEditor({ id, initial, userId }: { id: string; initial: Doc; 
   const dragRef = useRef<Drag | null>(null);
   const setDrag = (d: Drag | null) => { dragRef.current = d; setDragState(d); };
   const [over, setOver] = useState<Slot | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [pvStep, setPvStep] = useState(0);
   const [doc, setDoc] = useState<Doc>(initial);
   const [status, setStatus] = useState<"saved" | "dirty" | "saving" | "error">("saved");
   const [msg, setMsg] = useState("");
@@ -57,6 +59,45 @@ export function FormEditor({ id, initial, userId }: { id: string; initial: Doc; 
   };
   const line = (step: number, index: number) => over && over.step === step && over.index === index ? <div aria-hidden className="h-1 rounded-full bg-primary" /> : null;
 
+  const locate = (id: string): Slot | null => {
+    for (let i = 0; i < doc.def.steps.length; i++) { const j = doc.def.steps[i].fields.findIndex((f) => f.id === id); if (j >= 0) return { step: i, index: j }; }
+    return null;
+  };
+  const select = (id: string, scrollList = true) => {
+    setSelected(id);
+    const at = locate(id);
+    if (at) setPvStep(at.step);
+    if (scrollList) document.getElementById(`q-${id}`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  };
+  const total = doc.def.steps.reduce((a, s) => a + s.fields.length, 0);
+  const canvas: FormEditApi = {
+    step: Math.min(pvStep, doc.def.steps.length - 1), setStep: setPvStep, selected, select: (id) => select(id),
+    draggingId: drag?.kind === "field" ? (doc.def.steps[drag.from.step]?.fields[drag.from.index]?.id ?? null) : null, over,
+    startDrag: (stepI, index) => setDrag({ kind: "field", from: { step: stepI, index } }), endDrag,
+    hover, drop: (e, stepI, index) => { e.preventDefault(); e.stopPropagation(); drop(slotAt(e, stepI, index)); },
+    hoverAt: (e, stepI, index) => { if (!dragRef.current) return; e.preventDefault(); e.stopPropagation(); setOver({ step: stepI, index }); },
+    dropAt: (e, stepI, index) => { e.preventDefault(); e.stopPropagation(); drop({ step: stepI, index }); },
+    remove: (id) => { def((d) => ({ ...d, steps: d.steps.map((s) => ({ ...s, fields: s.fields.filter((f) => f.id !== id) })) })); setSelected((x) => (x === id ? null : x)); },
+    duplicate: (id) => {
+      const at = locate(id); const src = at && doc.def.steps[at.step].fields[at.index];
+      if (!at || !src) return;
+      const copy = { ...src, id: newField().id, options: [...src.options] };
+      def((d) => insertField(d, { step: at.step, index: at.index + 1 }, copy)); setSelected(copy.id);
+    },
+    relabel: (id, text) => { const at = locate(id); if (at) field(at.step, at.index, { label: text.slice(0, 200) }); },
+    canRemove: total > 1, canAdd: total < MAX_FIELDS,
+  };
+  const palette = (
+    <div className="flex flex-wrap gap-1.5" role="group" aria-label="Question types">
+      {FIELD_TYPES.map((t) => (
+        <button key={t.key} type="button" draggable disabled={total >= MAX_FIELDS}
+          onDragStart={(e) => { e.dataTransfer.setData("text/plain", t.key); e.dataTransfer.effectAllowed = "copy"; setDrag({ kind: "new", type: t.key }); }} onDragEnd={endDrag}
+          onClick={() => { const st = Math.min(pvStep, doc.def.steps.length - 1); const f = newField(t.key); def((d) => insertField(d, { step: st, index: d.steps[st].fields.length }, f)); setSelected(f.id); }}
+          className="cursor-grab rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium hover:border-primary hover:bg-primary-soft active:cursor-grabbing disabled:opacity-40">{t.label}</button>
+      ))}
+    </div>
+  );
+
   const save = useCallback(async () => {
     const v = ver.current;
     setStatus("saving");
@@ -77,12 +118,11 @@ export function FormEditor({ id, initial, userId }: { id: string; initial: Doc; 
     return () => window.removeEventListener("beforeunload", h);
   }, [status]);
 
-  const total = doc.def.steps.reduce((a, s) => a + s.fields.length, 0);
   const url = `${origin}/s/${doc.slug}`;
   const move = <T,>(a: T[], i: number, d: number) => { const b = [...a]; const j = i + d; if (j < 0 || j >= b.length) return b; [b[i], b[j]] = [b[j], b[i]]; return b; };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)]">
       <div className="space-y-5">
         <div className="flex flex-wrap items-center gap-2">
           <Input aria-label="Name" value={doc.title} maxLength={120} onChange={(e) => edit((d) => ({ ...d, title: e.target.value }))} className="!w-60 font-semibold" />
@@ -127,14 +167,7 @@ export function FormEditor({ id, initial, userId }: { id: string; initial: Doc; 
           <h2 className="text-base font-semibold">Questions ({total})</h2>
           <div className="rounded-2xl border border-dashed border-border p-3" aria-label="Question types">
             <p className="mb-2 text-xs text-fg-muted">Drag a type into your form, or click it to add at the end. Drag the <GripVertical className="inline size-3.5" aria-hidden /> handle on a question to move it, even to another step.</p>
-            <div className="flex flex-wrap gap-1.5">
-              {FIELD_TYPES.map((t) => (
-                <button key={t.key} type="button" draggable disabled={total >= MAX_FIELDS}
-                  onDragStart={(e) => { e.dataTransfer.setData("text/plain", t.key); e.dataTransfer.effectAllowed = "copy"; setDrag({ kind: "new", type: t.key }); }} onDragEnd={endDrag}
-                  onClick={() => def((d) => insertField(d, { step: d.steps.length - 1, index: d.steps[d.steps.length - 1].fields.length }, newField(t.key)))}
-                  className="cursor-grab rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium hover:border-primary hover:bg-primary-soft active:cursor-grabbing disabled:opacity-40">{t.label}</button>
-              ))}
-            </div>
+            {palette}
           </div>
           {doc.def.steps.map((s, i) => (
             <div key={s.id} className="space-y-3 rounded-2xl border border-border p-4"
@@ -147,9 +180,9 @@ export function FormEditor({ id, initial, userId }: { id: string; initial: Doc; 
                 <Button size="icon" variant="ghost" aria-label="Delete step" disabled={doc.def.steps.length <= 1} onClick={() => { if (confirm("Delete this step and its questions?")) def((d) => ({ ...d, steps: d.steps.filter((_, k) => k !== i) })); }}><Trash2 className="size-4" /></Button>
               </div>
               {s.fields.map((f, j) => (
-                <div key={f.id} data-q={`${i}-${j}`}>
+                <div key={f.id} id={`q-${f.id}`} data-q={`${i}-${j}`} onFocusCapture={() => { if (selected !== f.id) select(f.id, false); }}>
                   {line(i, j)}
-                  <div className={`space-y-2.5 rounded-xl bg-surface-muted p-3 ${drag?.kind === "field" && drag.from.step === i && drag.from.index === j ? "opacity-40" : ""}`} onDragOver={(e) => hover(e, i, j)} onDrop={(e) => { e.preventDefault(); e.stopPropagation(); drop(slotAt(e, i, j)); }}>
+                  <div className={`space-y-2.5 rounded-xl bg-surface-muted p-3 ${selected === f.id ? "ring-2 ring-primary" : ""} ${drag?.kind === "field" && drag.from.step === i && drag.from.index === j ? "opacity-40" : ""}`} onDragOver={(e) => hover(e, i, j)} onDrop={(e) => { e.preventDefault(); e.stopPropagation(); drop(slotAt(e, i, j)); }}>
                     <div className="grid gap-2 sm:grid-cols-[auto_1fr_11rem]">
                       <span role="button" tabIndex={-1} aria-label="Drag to move this question" title="Drag to move" draggable
                         onDragStart={(e) => { e.dataTransfer.setData("text/plain", f.id); e.dataTransfer.effectAllowed = "move"; setDrag({ kind: "field", from: { step: i, index: j } }); }} onDragEnd={endDrag}
@@ -187,10 +220,14 @@ export function FormEditor({ id, initial, userId }: { id: string; initial: Doc; 
         </form>
       </div>
 
-      <aside className="lg:sticky lg:top-4 lg:self-start" aria-label="Preview">
-        <p className="mb-2 text-sm font-semibold">Preview</p>
+      <aside className="space-y-3 lg:sticky lg:top-4 lg:self-start" aria-label="Form canvas">
+        <div>
+          <p className="mb-1 text-sm font-semibold">Edit right on the form</p>
+          <p className="mb-2 text-xs text-fg-muted">Click a question to edit it. Drag its ⠿ handle to move it. Drag a type below onto the form to add it. Type over the question text to rename it.</p>
+          {palette}
+        </div>
         <div className="max-h-[80dvh] overflow-y-auto rounded-2xl border border-border">
-          <FormView key={JSON.stringify(doc.def.steps.map((s) => s.id)) + doc.def.theme.style} slug={doc.slug} title={doc.title} def={doc.def} preview />
+          <FormView key={JSON.stringify(doc.def.steps.map((s) => s.id)) + doc.def.theme.style} slug={doc.slug} title={doc.title} def={doc.def} preview edit={canvas} />
         </div>
       </aside>
     </div>

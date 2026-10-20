@@ -10,7 +10,7 @@ import { AddProspect } from "./add-prospect";
 import { ImportContacts } from "./import-contacts";
 import { StageMenu } from "./stage-menu";
 
-export const metadata = { title: "Prospects" };
+export const metadata = { title: "Contacts" };
 
 export default async function ProspectsPage({ searchParams }: { searchParams: Promise<{ member?: string; q?: string; tag?: string; view?: string }> }) {
   const viewer = await requireViewer();
@@ -39,9 +39,9 @@ export default async function ProspectsPage({ searchParams }: { searchParams: Pr
 
   return (
     <>
-      <PageHeader eyebrow="Prospecting" title={readOnly ? `${owner?.full_name ?? "Member"}'s prospects` : "My prospects"}
+      <PageHeader eyebrow="Contacts" title={readOnly ? `${owner?.full_name ?? "Member"}'s contacts` : "My contacts"}
         description={readOnly ? "Read-only view of your team member's pipeline, so you can coach their follow-ups."
-          : "Everyone you're talking to, stage by stage. Let Maximus AI follow up for you."}
+          : "Everyone you talk to or sell to, in one place: people you met, funnel leads, customers and survey answers. Tag them, search them, and let Maximus AI follow up."}
         action={!readOnly && <div className="flex flex-wrap gap-2"><a href="/prospects/export" className="inline-flex h-11 items-center gap-2 rounded-xl border border-border px-4 text-sm font-medium hover:bg-surface-muted"><Download className="size-4" aria-hidden />Export</a><ImportContacts /><AddProspect /></div>} />
 
       <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Pipeline summary">
@@ -80,7 +80,7 @@ export default async function ProspectsPage({ searchParams }: { searchParams: Pr
         <Card><EmptyState icon={<Search className="size-6" />} title="No contacts match" description="Try a different search or clear the filters." action={<Link href={href({ q: "", tag: "" })} className="text-sm font-medium text-primary">Clear filters</Link>} /></Card>
       ) : prospects.length === 0 ? (
         <Card>
-          <EmptyState icon={<UserPlus className="size-6" />} title={readOnly ? "No prospects yet" : "Add your first prospect"}
+          <EmptyState icon={<UserPlus className="size-6" />} title={readOnly ? "No contacts yet" : "Add your first contact"}
             description={readOnly ? "This member hasn't added anyone yet." : "Add someone you met: their name, number and a note about them. Maximus AI can then write and send your follow-ups."}
             action={!readOnly && <AddProspect />} />
         </Card>
