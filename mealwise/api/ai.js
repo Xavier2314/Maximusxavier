@@ -6,6 +6,8 @@ const SUPABASE_URL = process.env.SUPABASE_URL || 'https://hmkhglqychrtdifkxwhd.s
 const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_vRoL7Kj220RX_I2KtHvjvQ_TP_ceLP0';
 const MODEL = process.env.MEALWISE_MODEL || 'claude-opus-5-5';
 const DAILY_LIMIT = Number(process.env.MEALWISE_DAILY_LIMIT || 150);
+// The key may be stored as ANTHROPIC_API_KEY or under the project's own name, Mealwise_key.
+const API_KEY = process.env.ANTHROPIC_API_KEY || process.env.Mealwise_key || process.env.MEALWISE_KEY;
 const MAX_PROMPT = 120000;
 const MAX_IMAGES = 2;
 const MAX_IMAGE_B64 = 4_000_000;
@@ -41,7 +43,7 @@ async function supa(path, token, init = {}) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'invalid_request');
-  if (!process.env.ANTHROPIC_API_KEY) return fail(res, 503, 'not_configured');
+  if (!API_KEY) return fail(res, 503, 'not_configured');
 
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
   if (!token || token.length > 4096) return fail(res, 401, 'session_expired');
@@ -69,7 +71,7 @@ export default async function handler(req, res) {
   }
   const effort = body.tier === 'quick' ? 'low' : 'medium';
 
-  const client = new Anthropic({ timeout: 280_000, maxRetries: 1 });
+  const client = new Anthropic({ apiKey: API_KEY, timeout: 280_000, maxRetries: 1 });
   try {
     const msg = await client.beta.messages.create({
       model: MODEL,

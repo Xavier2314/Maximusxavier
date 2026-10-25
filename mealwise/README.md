@@ -16,7 +16,7 @@ Self-contained in this folder; unrelated to the Maximus app in the rest of the r
 
 | Variable | Required | Notes |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | yes | Server-only. Without it the app works but AI calls return "not switched on". |
+| `ANTHROPIC_API_KEY` (or `Mealwise_key`) | yes | Server-only. Without it the app works but AI calls return "not switched on". |
 | `MEALWISE_MODEL` | no | Default `claude-opus-5-5`. |
 | `MEALWISE_DAILY_LIMIT` | no | AI calls per user per day, default 150. |
 
