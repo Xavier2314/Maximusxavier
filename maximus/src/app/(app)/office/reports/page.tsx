@@ -145,7 +145,7 @@ export default async function AttendanceReportsPage({ searchParams }: {
                   {shown.map((r) => (
                     <tr key={r.member} className="hover:bg-surface-muted/40">
                       <td className="px-4 py-3">
-                        <Link href={`/team/${r.member}`} className="flex items-center gap-3">
+                        <Link href={`/team/${r.member}?view=office`} className="flex items-center gap-3">
                           <Avatar name={r.full_name} src={r.avatar_url} size={32} />
                           <span><span className="block font-medium hover:text-primary">{r.full_name}</span><span className="text-xs text-fg-subtle">{r.member_code}</span></span>
                         </Link>

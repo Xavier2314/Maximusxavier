@@ -23,8 +23,10 @@ import { formatDate, formatMoney, formatRelative, formatTime, monthStart, percen
 
 export const metadata = { title: "Team member" };
 
-export default async function MemberPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function MemberPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ view?: string }> }) {
   const { id } = await params;
+  const { view } = await searchParams;
+  const backHref = view === "office" ? "/office" : view === "team" ? "/office/team" : "/team";
   const viewer = await requireViewer();
   if (id === viewer.id) redirect("/profile");
   const supabase = await createClient();
@@ -84,8 +86,8 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
 
   return (
     <>
-      <Link href="/team" className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg">
-        <ArrowLeft className="size-4" aria-hidden /> Team
+      <Link href={backHref} className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg">
+        <ArrowLeft className="size-4" aria-hidden /> {view === "office" ? "Office" : "Team"}
       </Link>
       <section className="hero-gradient relative overflow-hidden rounded-[1.75rem] p-6 text-white sm:p-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">

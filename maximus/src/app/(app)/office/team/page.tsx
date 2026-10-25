@@ -90,7 +90,7 @@ async function LeaderSection({ viewerId, canSeeExtended, period }: { viewerId: s
                 <ul className="space-y-2">
                   {inactive.map((m) => (
                     <li key={m.member}>
-                      <Link href={`/team/${m.member}`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
+                      <Link href={`/team/${m.member}?view=team`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
                         <Avatar name={m.full_name} src={m.avatar_url} size={32} />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm">{m.full_name}</span>

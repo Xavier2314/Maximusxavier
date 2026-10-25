@@ -48,7 +48,7 @@ export default async function AlertsPage({ searchParams }: { searchParams: Promi
           ) : concerns.map((g) => (
             <Card key={g.member}>
               <CardBody className="space-y-3">
-                <Link href={`/team/${g.member}`} className="group flex items-center gap-3">
+                <Link href={`/team/${g.member}?view=team`} className="group flex items-center gap-3">
                   <Avatar name={g.full_name} src={g.avatar_url} size={40} />
                   <span className="flex-1 font-semibold group-hover:text-primary">{g.full_name}</span>
                   <Badge tone={g.items.length >= 3 ? "amber" : "neutral"}>{g.items.length} {g.items.length === 1 ? "thing" : "things"} to talk about</Badge>
@@ -75,7 +75,7 @@ export default async function AlertsPage({ searchParams }: { searchParams: Promi
                 <ul className="space-y-2">
                   {wins.map((w) => (
                     <li key={w.member}>
-                      <Link href={`/team/${w.member}`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
+                      <Link href={`/team/${w.member}?view=team`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
                         <Avatar name={w.full_name} src={w.avatar_url} size={34} />
                         <span className="min-w-0"><span className="block truncate text-sm font-medium">{w.full_name}</span><span className="text-xs text-fg-muted">{w.detail}</span></span>
                       </Link>

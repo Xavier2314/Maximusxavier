@@ -101,7 +101,7 @@ export default async function OfficeMembersPage({ searchParams }: { searchParams
                 {rows.map((r) => (
                   <tr key={r.member} className="hover:bg-surface-muted/40">
                     <td className="px-4 py-3">
-                      <Link href={`/team/${r.member}`} className="flex items-center gap-3">
+                      <Link href={`/team/${r.member}?view=office`} className="flex items-center gap-3">
                         <Avatar name={r.full_name} src={r.avatar_url} size={34} />
                         <span className="min-w-0">
                           <span className="flex items-center gap-1.5 font-medium hover:text-primary">{r.full_name}{r.is_manager && <Badge tone="blue">Manager</Badge>}</span>

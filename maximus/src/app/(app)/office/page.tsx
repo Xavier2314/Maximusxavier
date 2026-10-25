@@ -193,7 +193,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
               <ol className="space-y-1">
                 {d.top_earners.map((p, i) => (
                   <li key={p.id}>
-                    <Link href={`/team/${p.id}`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
+                    <Link href={`/team/${p.id}?view=office`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
                       <span className={cn("w-5 text-center text-sm font-bold", i === 0 ? "text-warning" : "text-fg-subtle")}>{i + 1}</span>
                       <Avatar name={p.full_name} src={p.avatar_url} size={34} />
                       <span className="flex-1 truncate text-sm font-medium">{p.full_name}</span>
@@ -215,7 +215,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
               <ul className="space-y-1">
                 {d.needs_attention.map((p) => (
                   <li key={p.id}>
-                    <Link href={`/team/${p.id}`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
+                    <Link href={`/team/${p.id}?view=office`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
                       <Avatar name={p.full_name} src={p.avatar_url} size={34} />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-medium">{p.full_name}</span>

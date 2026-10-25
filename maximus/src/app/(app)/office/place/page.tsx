@@ -50,7 +50,7 @@ export default async function PlaceInOfficePage({ searchParams }: { searchParams
         <Card className="divide-y divide-border">
           {people.map((p) => (
             <div key={p.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-              <Link href={`/team/${p.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+              <Link href={`/team/${p.id}?view=team`} className="flex min-w-0 flex-1 items-center gap-3">
                 <Avatar name={p.full_name} src={p.avatar_url} size={38} />
                 <span className="min-w-0">
                   <span className="block truncate font-medium hover:text-primary">{p.full_name}</span>
