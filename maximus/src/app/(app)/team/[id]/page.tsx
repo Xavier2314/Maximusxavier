@@ -34,7 +34,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
   if (!member) notFound();
 
   const month = monthStart(todayIn());
-  const [{ data: roles }, { data: attendance }, { data: goal }, { data: evaluations }, { data: orders }, { data: streak }, { data: focusData }] = await Promise.all([
+  const [{ data: roles }, { data: attendance }, { data: goal }, { data: evaluations }, { data: orders }, { data: streak }, { data: focusData }, { data: canChat }] = await Promise.all([
     supabase.from("user_roles").select("roles(key)").eq("user_id", id),
     supabase.from("attendance").select("*").eq("user_id", id).order("check_in_at", { ascending: false }).limit(8).returns<Attendance[]>(),
     supabase.from("monthly_goals").select("*").eq("user_id", id).eq("month", month).maybeSingle<MonthlyGoal>(),
@@ -42,6 +42,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
     supabase.from("orders").select("*").eq("member_id", id).order("order_date", { ascending: false }).limit(5).returns<Order[]>(),
     supabase.rpc("attendance_streak", { p_user: id }),
     supabase.rpc("growth_focus", { p_user: id }),
+    supabase.rpc("can_chat_with", { p_other: id }),
   ]);
   // Upline tools: add a photo, remove someone who left, and (Super Admin / Team Leader) set their office.
   const { data: link } = await supabase.from("team_relationships").select("depth")
@@ -98,14 +99,14 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
             <div className="mt-3 flex flex-wrap gap-1.5">
               {rankLabel(member.business_rank) && <span className="rounded-full bg-brand-lime px-2.5 py-0.5 text-xs font-semibold text-brand-navy">{rankLabel(member.business_rank)}</span>}
               {neolife && <span className="rounded-full bg-white/10 px-2.5 py-0.5 font-mono text-xs ring-1 ring-white/15">NeoLife ID {neolife}</span>}
-              {roleKeys.filter((r) => r !== "member").map((r) => (
+              {roleKeys.filter((r) => r !== "member" && r !== "downline").map((r) => (
                 <span key={r} className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs ring-1 ring-white/15">{ROLE_LABELS[r]}</span>
               ))}
               {member.status !== "active" && <span className="rounded-full bg-danger px-2.5 py-0.5 text-xs">{member.status}</span>}
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {member.id !== viewer.id && member.status === "active" && (inDownline || member.id === viewer.profile.sponsor_id) && <ChatButton memberId={member.id} />}
+            {member.id !== viewer.id && member.status === "active" && canChat && <ChatButton memberId={member.id} />}
             {member.phone && <a href={`tel:${member.phone}`} className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15" aria-label={`Call ${member.full_name}`}><Phone className="size-5" /></a>}
             <a href={`mailto:${member.email}`} className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15" aria-label={`Email ${member.full_name}`}><Mail className="size-5" /></a>
             {member.whatsapp && <a href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center rounded-xl bg-brand-green px-4 font-medium text-brand-navy">WhatsApp</a>}
