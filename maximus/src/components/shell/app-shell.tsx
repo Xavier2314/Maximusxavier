@@ -126,13 +126,15 @@ export function AppShell({ sections: memberSections, team = null, office = null,
   user: ShellUser; unread: number; signOut: () => void; announcements?: BarAnnouncement[]; children: ReactNode;
 }) {
   const pathname = usePathname();
-  // /team/[id] (a member's profile) is shared by My Team, Team view and Office view alike, so the
-  // path alone can't say which tab you came from. Links into it from a Team/Office context carry
-  // ?view=team or ?view=office so the switcher stays on the right tab instead of bouncing to My view.
+  // /team/[id] (a member's profile) and /messages (a chat) are shared by My Team, Team view and
+  // Office view alike, so the path alone can't say which tab you came from. Links into them from a
+  // Team/Office context carry ?view=team or ?view=office so the switcher stays on the right tab
+  // instead of bouncing to My view.
   const viewParam = useSearchParams().get("view");
+  const sharedRoute = pathname.startsWith("/team/") || pathname === "/messages";
   const mode: "me" | "team" | "office" =
-    team && (isTeamPath(pathname) || (viewParam === "team" && pathname.startsWith("/team/"))) ? "team"
-    : office && (isOfficePath(pathname) || (viewParam === "office" && pathname.startsWith("/team/"))) ? "office"
+    team && (isTeamPath(pathname) || (viewParam === "team" && sharedRoute)) ? "team"
+    : office && (isOfficePath(pathname) || (viewParam === "office" && sharedRoute)) ? "office"
     : "me";
   // Office view wears the office's brand; My view and Team view wear the member's own brand (platform, or their office's).
   const brand = mode === "office" ? brands.office : brands.me;

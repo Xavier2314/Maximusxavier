@@ -13,9 +13,14 @@ export const metadata = { title: "Private chats" };
 type Conv = { id: string; other_id: string; full_name: string; avatar_url: string | null; last_message_at: string | null; unread: number; can_send: boolean; last_seen: string | null; kind: "partner" | "team" };
 type Goal = { id: string; title: string; progress: number; target: number | null; unit: string | null };
 
-export default async function MessagesPage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
+export default async function MessagesPage({ searchParams }: { searchParams: Promise<{ c?: string; view?: string }> }) {
   const viewer = await requireViewer();
-  const { c } = await searchParams;
+  const { c, view } = await searchParams;
+  // Chat is reached from Accountability, My Team, Team view and Office view alike; ?view carries
+  // where this one came from so Back returns there instead of always Accountability.
+  const backHref = view === "office" ? "/office" : view === "team" ? "/office/team" : "/tools/accountability";
+  const backLabel = view === "office" ? "Office" : view === "team" ? "Team" : "Accountability";
+  const viewQs = view === "team" || view === "office" ? `&view=${view}` : "";
   const supabase = await createClient();
   const { data: partner } = await supabase.rpc("my_partnership");
   if (((partner ?? []) as unknown[]).length) await supabase.rpc("open_partner_chat");
@@ -53,7 +58,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
   return (
     <>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <Link href="/tools/accountability" className="inline-flex items-center gap-1 text-sm text-primary"><ArrowLeft className="size-4" aria-hidden /> Accountability</Link>
+        <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-primary"><ArrowLeft className="size-4" aria-hidden /> {backLabel}</Link>
         <p className="inline-flex items-center gap-1.5 text-xs text-fg-muted"><Lock className="size-3.5" aria-hidden /> Each chat is private to the two people in it.</p>
       </div>
       <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
@@ -63,7 +68,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
               <p className="px-2 pt-1 text-xs font-semibold uppercase tracking-wide text-fg-subtle">Chats</p>
               {list.length === 0 && <p className="px-2 py-3 text-sm text-fg-muted">No chats yet.</p>}
               {list.map((x) => (
-                <Link key={x.id} href={`/messages?c=${x.id}`} className={cn("flex items-center gap-3 rounded-xl px-2 py-2", current?.id === x.id ? "bg-primary-soft" : "hover:bg-surface-muted")}>
+                <Link key={x.id} href={`/messages?c=${x.id}${viewQs}`} className={cn("flex items-center gap-3 rounded-xl px-2 py-2", current?.id === x.id ? "bg-primary-soft" : "hover:bg-surface-muted")}>
                   <Avatar name={x.full_name} src={x.avatar_url} size={36} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium">{x.full_name}</span>

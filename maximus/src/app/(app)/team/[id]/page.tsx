@@ -106,7 +106,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {member.id !== viewer.id && member.status === "active" && canChat && <ChatButton memberId={member.id} />}
+            {member.id !== viewer.id && member.status === "active" && canChat && <ChatButton memberId={member.id} view={view} />}
             {member.phone && <a href={`tel:${member.phone}`} className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15" aria-label={`Call ${member.full_name}`}><Phone className="size-5" /></a>}
             <a href={`mailto:${member.email}`} className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15" aria-label={`Email ${member.full_name}`}><Mail className="size-5" /></a>
             {member.whatsapp && <a href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center rounded-xl bg-brand-green px-4 font-medium text-brand-navy">WhatsApp</a>}
