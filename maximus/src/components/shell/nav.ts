@@ -44,7 +44,6 @@ export const NAV: NavSection[] = [
       { href: "/academy", label: "Academy", icon: "graduation" },
       { href: "/ai", label: "Maximus AI", icon: "sparkles" },
       { href: "/recognition", label: "Recognition", icon: "trophy" },
-      { href: "/announcements", label: "Announcements", icon: "megaphone" },
       { href: "/support", label: "Help & complaints", icon: "lifebuoy" },
     ],
   },
@@ -76,6 +75,7 @@ export const OFFICE_NAV: NavSection[] = [
       { href: "/admin/approvals", label: "Approvals", icon: "check", anyPermission: ["approve_financial_transactions", "approve_attendance_exceptions", "manage_office"] },
       { href: "/admin/offices", label: "Office setup & QR", icon: "building", permission: "manage_office" },
       { href: "/office/brand", label: "Branding", icon: "palette", anyPermission: ["manage_office", "view_org_analytics"] },
+      { href: "/announcements", label: "Announcements", icon: "megaphone", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics", "publish_announcements"] },
     ],
   },
   {
@@ -100,7 +100,7 @@ export const isTeamPath = (pathname: string) =>
   TEAM_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
 /** Paths that belong to the Office view (the switch and sidebar follow these). */
-export const OFFICE_PATHS = ["/office", "/admin", "/attendance/live", "/attendance/register"];
+export const OFFICE_PATHS = ["/office", "/admin", "/attendance/live", "/attendance/register", "/announcements"];
 export const isOfficePath = (pathname: string) =>
   !isTeamPath(pathname) && OFFICE_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
