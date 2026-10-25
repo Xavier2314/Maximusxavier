@@ -7,11 +7,11 @@ import { publishAction } from "./actions";
 
 type Option = { id: string; name: string };
 
-export function PostForm({ mode, offices, members, canOrgWide }: {
-  mode: "announcement" | "recognition"; offices: Option[]; members: Option[]; canOrgWide: boolean;
+export function PostForm({ mode, offices, members, canOrgWide, canTeam = true }: {
+  mode: "announcement" | "recognition"; offices: Option[]; members: Option[]; canOrgWide: boolean; canTeam?: boolean;
 }) {
   const [state, action] = useActionState(publishAction, null);
-  const [audience, setAudience] = useState(mode === "recognition" ? "team" : canOrgWide ? "all" : "team");
+  const [audience, setAudience] = useState(mode === "recognition" ? "team" : canOrgWide ? "all" : canTeam ? "team" : "office");
   const ref = useRef<HTMLFormElement>(null);
   const e = state?.errors ?? {};
   useEffect(() => { if (state?.ok) ref.current?.reset(); }, [state]);
@@ -42,7 +42,7 @@ export function PostForm({ mode, offices, members, canOrgWide }: {
             <Select id="audience" name="audience" value={audience} onChange={(ev) => setAudience(ev.target.value)}>
               {canOrgWide && <option value="all">Everyone</option>}
               {offices.length > 0 && <option value="office">One office</option>}
-              <option value="team">My team</option>
+              {canTeam && <option value="team">My team</option>}
             </Select>
           </Field>
           {audience === "office" && (

@@ -15,12 +15,17 @@ type Post = { id: string; kind: string; audience: string; title: string; body: s
 export default async function AnnouncementsPage() {
   const viewer = await requireViewer();
   const supabase = await createClient();
-  const canPublish = viewer.can("publish_announcements");
-  const [{ data: posts }, { data: offices }] = await Promise.all([
+  const canOrgPublish = viewer.can("publish_announcements");
+  const [{ data: posts }, { data: allOffices }, { data: postableOffices }] = await Promise.all([
     supabase.from("announcements").select("id, kind, audience, title, body, pinned, published_at, profiles!announcements_author_id_fkey(full_name, avatar_url)")
       .in("kind", ["announcement", "training"]).order("pinned", { ascending: false }).order("published_at", { ascending: false }).limit(50).returns<Post[]>(),
-    canPublish ? supabase.from("offices").select("id, name").eq("is_active", true) : Promise.resolve({ data: [] }),
+    // Org-wide publishers can address any office; everyone else (e.g. a Team Leader) only the
+    // office(s) they're assigned to and can already see the roster of.
+    canOrgPublish ? supabase.from("offices").select("id, name").eq("is_active", true) : Promise.resolve({ data: [] }),
+    canOrgPublish ? Promise.resolve({ data: [] }) : supabase.rpc("my_postable_offices"),
   ]);
+  const offices = ((canOrgPublish ? allOffices : postableOffices) as { id: string; name: string }[] | null) ?? [];
+  const canPublish = canOrgPublish || offices.length > 0;
 
   return (
     <>
@@ -52,8 +57,8 @@ export default async function AnnouncementsPage() {
           <Card className="h-fit lg:sticky lg:top-24">
             <CardHeader title="New announcement" icon={<Plus className="size-4" />} />
             <CardBody>
-              <PostForm mode="announcement" offices={((offices ?? []) as { id: string; name: string }[]).map((o) => ({ id: o.id, name: o.name }))}
-                members={[]} canOrgWide={viewer.isAdmin} />
+              <PostForm mode="announcement" offices={offices.map((o) => ({ id: o.id, name: o.name }))}
+                members={[]} canOrgWide={viewer.isAdmin} canTeam={canOrgPublish} />
             </CardBody>
           </Card>
         )}
