@@ -1,0 +1,130 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+
+<style>@font-face{font-family:Poppins;font-weight:600;src:url(fonts/p600.woff2)}@font-face{font-family:Poppins;font-weight:700;src:url(fonts/p700.woff2)}@font-face{font-family:Poppins;font-weight:800;src:url(fonts/p800.woff2)}@font-face{font-family:Poppins;font-weight:900;src:url(fonts/p900.woff2)}@font-face{font-family:Poppins;font-weight:500;src:url(fonts/p600.woff2)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1280px;height:769px;overflow:hidden;font-family:Poppins,sans-serif;background:#07051a}
+.c{position:relative;width:1280px;height:769px;overflow:hidden;
+ background:
+  radial-gradient(700px 500px at 88% 20%, rgba(124,58,237,.55), transparent 60%),
+  radial-gradient(600px 420px at 70% 100%, rgba(255,106,0,.45), transparent 60%),
+  radial-gradient(650px 500px at 0% 0%, rgba(0,170,255,.40), transparent 60%),
+  linear-gradient(135deg,#0a0830 0%,#120a3a 50%,#1a0b2e 100%);}
+/* perspective neon grid floor */
+.grid{position:absolute;left:-200px;right:-200px;bottom:-60px;height:330px;
+ background-image:linear-gradient(rgba(0,200,255,.35) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(168,85,247,.35) 1.5px,transparent 1.5px);
+ background-size:60px 40px;transform:perspective(420px) rotateX(62deg);transform-origin:bottom;
+ -webkit-mask-image:linear-gradient(to top,#000 10%,transparent 85%)}
+/* sparkles */
+.dot{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px #8be9ff}
+/* neon ring behind person */
+.ring{position:absolute;left:820px;top:70px;width:430px;height:430px;border-radius:50%;
+ background:conic-gradient(from 200deg,#ff7a00,#ff3d9a,#a855f7,#00b4ff,#00e5ff,#ff7a00);
+ filter:drop-shadow(0 0 22px rgba(168,85,247,.9)) drop-shadow(0 0 40px rgba(255,122,0,.6));
+ -webkit-mask:radial-gradient(circle,transparent 205px,#000 207px,#000 214px,transparent 216px)}
+.ring2{position:absolute;left:790px;top:40px;width:490px;height:490px;border-radius:50%;
+ border:2px dashed rgba(0,229,255,.45)}
+.disc{position:absolute;left:832px;top:82px;width:406px;height:406px;border-radius:50%;
+ background:radial-gradient(circle at 50% 40%,rgba(255,140,40,.35),rgba(124,58,237,.35) 55%,rgba(0,150,255,.15) 75%,transparent 76%)}
+.person{position:absolute;left:818px;top:86px;width:480px;height:auto;
+ filter:drop-shadow(0 0 2px rgba(255,255,255,.35)) drop-shadow(-12px 0 30px rgba(0,180,255,.45)) drop-shadow(12px 0 30px rgba(255,106,0,.35));
+}
+/* floating glass cards */
+.float{position:absolute;padding:12px 16px;border-radius:16px;background:rgba(20,14,60,.72);
+ border:1.5px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);color:#fff;display:flex;align-items:center;gap:10px;
+ font-weight:700;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center}
+.small{font-size:11.5px;font-weight:500;color:#b9b4e8;display:block;line-height:1.1}
+/* left content */
+.pill{position:absolute;left:58px;top:58px;display:flex;align-items:center;gap:9px;padding:9px 18px;border-radius:999px;
+ border:1.5px solid rgba(0,229,255,.7);color:#bff6ff;font-weight:700;font-size:15px;letter-spacing:2.5px;
+ background:rgba(0,180,255,.1);box-shadow:0 0 16px rgba(0,229,255,.45),inset 0 0 12px rgba(0,229,255,.25)}
+.pill i{width:9px;height:9px;border-radius:50%;background:#00ff9c;box-shadow:0 0 10px #00ff9c}
+h1{position:absolute;left:54px;top:116px;font-weight:900;line-height:.98;letter-spacing:-1px;color:#fff}
+h1 .l1{font-size:52px;display:block}
+h1 .l2{font-size:80px;display:block;
+ background:linear-gradient(90deg,#ff8a00 0%,#ff4fa3 45%,#b26bff 70%,#3bc9ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 0 14px rgba(255,106,0,.55)) drop-shadow(0 0 28px rgba(168,85,247,.5))}
+h1 .l3{font-size:52px;display:block;color:#fff;text-shadow:0 0 18px rgba(0,200,255,.75)}
+.tag{position:absolute;left:58px;top:338px;font-size:22px;font-weight:600;color:#d9d6ff}
+.tag b{color:#ffb15c}
+/* workflow strip */
+.flow{position:absolute;left:58px;top:400px;display:flex;align-items:center}
+.node{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;background:rgba(255,255,255,.06);
+ border:2px solid;position:relative}
+.node span{position:absolute;top:68px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:600;color:#cfcaf7;white-space:nowrap}
+.wire{width:44px;height:3px;border-radius:3px;position:relative}
+.wire:after{content:"";position:absolute;right:-2px;top:-4px;border-left:9px solid currentColor;border-top:5.5px solid transparent;border-bottom:5.5px solid transparent}
+/* button */
+.btn{position:absolute;left:58px;top:562px;display:flex;align-items:center;gap:14px;padding:20px 40px 20px 30px;border-radius:999px;
+ font-weight:800;font-size:28px;letter-spacing:1.5px;color:#fff;
+ background:linear-gradient(90deg,#ff7a00,#ff3d7f 55%,#a855f7);
+ box-shadow:0 0 0 3px rgba(255,255,255,.18),0 0 28px rgba(255,106,0,.85),0 0 60px rgba(168,85,247,.6),inset 0 2px 0 rgba(255,255,255,.35)}
+.btn .arrow{width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;margin-left:6px}
+.cursor{position:absolute;left:380px;top:618px}
+.online{position:absolute;left:66px;top:676px;color:#cfcaf7;font-size:15px;font-weight:600;line-height:1.35}
+.online{display:flex;gap:14px;align-items:center}.online b{color:#00ff9c;display:flex;align-items:center;gap:7px;font-size:16px}
+.online b i{width:9px;height:9px;border-radius:50%;background:#00ff9c;box-shadow:0 0 10px #00ff9c}
+/* tool chips */
+.tools{position:absolute;right:28px;bottom:26px;display:flex;gap:9px}
+.chip{padding:8px 14px;border-radius:12px;font-weight:700;font-size:14px;color:#fff;background:rgba(10,8,40,.8);border:1.5px solid}
+</style></head>
+<body><div class="c">
+ <div class="grid"></div>
+ <div class="dot" style="left:640px;top:70px;width:4px;height:4px"></div>
+ <div class="dot" style="left:720px;top:300px;width:3px;height:3px"></div>
+ <div class="dot" style="left:560px;top:180px;width:3px;height:3px"></div>
+ <div class="dot" style="left:1230px;top:560px;width:4px;height:4px"></div>
+ <div class="dot" style="left:470px;top:40px;width:3px;height:3px"></div>
+
+ <div class="ring2"></div><div class="disc"></div><div class="ring"></div>
+ <img class="person" src="person.png">
+
+ <!-- floating cards -->
+ <div class="float" style="left:740px;top:96px;border-color:rgba(0,229,255,.55);box-shadow:0 0 22px rgba(0,229,255,.35)">
+  <div class="ico" style="background:linear-gradient(135deg,#00b4ff,#7c3aed)">
+   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 7V3M9 13h.01M15 13h.01M2 12v3M22 12v3"/></svg></div>
+  <div>AI Agents<span class="small">& Chatbots</span></div></div>
+ <div class="float" style="left:1060px;top:470px;border-color:rgba(255,122,0,.6);box-shadow:0 0 22px rgba(255,122,0,.4)">
+  <div class="ico" style="background:linear-gradient(135deg,#ff7a00,#ff3d7f)">
+   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+  <div>24/7<span class="small">Workflows</span></div></div>
+ <div class="float" style="left:716px;top:330px;border-color:rgba(168,85,247,.65);box-shadow:0 0 22px rgba(168,85,247,.45)">
+  <div class="ico" style="background:linear-gradient(135deg,#a855f7,#00b4ff)">
+   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg></div>
+  <div>Scale<span class="small">Save hours</span></div></div>
+
+ <!-- left -->
+ <div class="pill"><i></i>AI AUTOMATION EXPERT</div>
+ <h1><span class="l1">I'll Automate</span><span class="l2">YOUR BUSINESS</span><span class="l3">With AI</span></h1>
+ <div class="tag">Work less. <b>Grow faster.</b></div>
+
+ <div class="flow">
+  <div class="node" style="border-color:#3bc9ff;box-shadow:0 0 16px rgba(59,201,255,.6)">
+   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3bc9ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Leads</span></div>
+  <div class="wire" style="background:linear-gradient(90deg,#3bc9ff,#a855f7);color:#a855f7"></div>
+  <div class="node" style="border-color:#a855f7;box-shadow:0 0 16px rgba(168,85,247,.7)">
+   <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#c48bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V4a1 1 0 0 0-3-1zM15 3a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/></svg><span>AI Brain</span></div>
+  <div class="wire" style="background:linear-gradient(90deg,#a855f7,#ff3d7f);color:#ff3d7f"></div>
+  <div class="node" style="border-color:#ff3d7f;box-shadow:0 0 16px rgba(255,61,127,.6)">
+   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff6fa0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Automate</span></div>
+  <div class="wire" style="background:linear-gradient(90deg,#ff3d7f,#ff8a00);color:#ff8a00"></div>
+  <div class="node" style="border-color:#ff8a00;box-shadow:0 0 16px rgba(255,138,0,.7)">
+   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffa53b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Revenue</span></div>
+ </div>
+
+ <div class="btn">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+  MESSAGE NOW
+  <div class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff4f6a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+ </div>
+ <svg class="cursor" width="34" height="40" viewBox="0 0 24 28"><path d="M3 2l17 12-7.5 1.2L17 24l-3.4 1.6-4.6-8.8L3 22z" fill="#fff" stroke="#1a0b2e" stroke-width="1.5" stroke-linejoin="round"/></svg>
+ <div class="online"><b><i></i>Online now</b>Fast replies</div>
+
+ <div class="tools">
+  <div class="chip" style="border-color:#ff6d5a;box-shadow:0 0 12px rgba(255,109,90,.5)">n8n</div>
+  <div class="chip" style="border-color:#a855f7;box-shadow:0 0 12px rgba(168,85,247,.55)">Make</div>
+  <div class="chip" style="border-color:#ff8a00;box-shadow:0 0 12px rgba(255,138,0,.55)">Zapier</div>
+  <div class="chip" style="border-color:#3bc9ff;box-shadow:0 0 12px rgba(59,201,255,.55)">OpenAI</div>
+ </div>
+</div></body></html>
