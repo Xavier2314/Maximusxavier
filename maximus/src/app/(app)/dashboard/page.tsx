@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
-  ArrowRight, Bell, Building2, Cake, Compass, ListChecks, MessageCircle, MessageSquare, Phone, Quote, CalendarClock, ClipboardCheck, Flame,
-  GraduationCap, Heart, ListTodo, MapPin, PiggyBank, Sparkles, Target, TrendingUp,
+  ArrowRight, Bell, Bot, Building2, Cake, Compass, ListChecks, MessageCircle, MessageSquare, Phone, Quote, CalendarClock, ClipboardCheck, Flame,
+  GraduationCap, Heart, ListTodo, MapPin, PiggyBank, Target, TrendingUp,
 } from "lucide-react";
 import { TaskQuickAdd, TaskRow } from "../planner/task-ui";
 import type { Motivation, Task } from "@/lib/planner";
@@ -112,42 +112,42 @@ export default async function DashboardPage() {
   const checkedIn = openAttendance && !openAttendance.check_out_at;
 
   return (
-    <div className="space-y-6">
-      {/* Hero */}
-      <section className="hero-gradient relative overflow-hidden rounded-[1.75rem] p-6 text-white sm:p-8 animate-rise">
-        <div className="wedge absolute -right-6 -top-4 h-[74px] w-[100px] scale-[2.4] bg-brand-green/25" aria-hidden />
-        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+    <div className="space-y-10">
+      {/* Hero: navy banner with the orange highlight */}
+      <section className="hero-gradient relative overflow-hidden rounded-2xl text-white">
+        <div className="h-1.5 bg-brand-orange" aria-hidden />
+        <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div className="min-w-0">
             <p className="text-sm text-white/70">{greeting(tz)},</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">{firstName} 👋</h1>
+            <h1 className="mt-1 break-words text-3xl font-bold tracking-tight sm:text-4xl">{firstName}</h1>
             <p className="mt-2 text-white/70">
               {formatDate(today, { weekday: "long", day: "numeric", month: "long" }, tz)} · Member {viewer.profile.member_id}
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               {checkedIn ? (
                 <span className="inline-flex h-11 items-center gap-2 rounded-xl bg-white/10 px-4 text-sm ring-1 ring-white/20">
-                  <span className="size-2 rounded-full bg-brand-green" aria-hidden /> Checked in at {formatTime(openAttendance.check_in_at, tz)}
+                  <span className="size-2 rounded-full bg-brand-orange" aria-hidden /> Checked in at {formatTime(openAttendance.check_in_at, tz)}
                 </span>
               ) : (
-                <LinkButton href="/attendance" variant="lime"><MapPin className="size-4" aria-hidden /> Check in</LinkButton>
+                <LinkButton href="/attendance" variant="orange"><MapPin className="size-4" aria-hidden /> Check in</LinkButton>
               )}
               {!evaluation && (
-                <LinkButton href="/evaluations/new" variant="outline" className="border-white/25 bg-white/5 text-white hover:bg-white/10">
+                <LinkButton href="/evaluations/new" variant="outline" className="border-white/25 bg-transparent text-white hover:bg-white/10">
                   <ClipboardCheck className="size-4" aria-hidden /> Complete evaluation
                 </LinkButton>
               )}
             </div>
           </div>
           <div className="flex items-center gap-5">
-            <ProgressRing value={goalPct} size={112}>
+            <ProgressRing value={goalPct} size={112} color="var(--brand-orange)">
               <div>
-                <p className="text-2xl font-bold">{goalPct}%</p>
-                <p className="text-[11px] text-white/60">month goals</p>
+                <p className="text-2xl font-bold tabular-nums">{goalPct}%</p>
+                <p className="text-xs text-white/70">month goals</p>
               </div>
             </ProgressRing>
             <div className="space-y-3 text-sm">
-              <p className="flex items-center gap-2"><Flame className="size-4 text-brand-lime" aria-hidden /><span><b>{(streak as number | null) ?? 0}</b> day streak</span></p>
-              <p className="flex items-center gap-2"><CalendarClock className="size-4 text-brand-lime" aria-hidden /><span>Next evaluation <b>{formatDate(nextEvaluationDate(today), { day: "numeric", month: "short" })}</b></span></p>
+              <p className="flex items-center gap-2"><Flame className="size-4 text-brand-orange" aria-hidden /><span><b>{(streak as number | null) ?? 0}</b> day streak</span></p>
+              <p className="flex items-center gap-2"><CalendarClock className="size-4 text-brand-orange" aria-hidden /><span>Next evaluation <b>{formatDate(nextEvaluationDate(today), { day: "numeric", month: "short" })}</b></span></p>
             </div>
           </div>
         </div>
@@ -157,16 +157,6 @@ export default async function DashboardPage() {
         key: a.key, title: FOCUS[a.key].title, why: FOCUS[a.key].why(a, "You"), tip: FOCUS[a.key].tips[0],
       }))} />
 
-      {/* Personal stats */}
-      <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Your numbers this month">
-        <StatCard label="Earnings entered" value={formatMoney(progress?.income ?? 0)} hint="From your evaluations this month" icon={<TrendingUp className="size-4" />} />
-        <StatCard label="Savings (confirmed)" value={formatMoney(savings?.confirmed_balance ?? 0)}
-          hint={savings && savings.pending_in > 0 ? `${formatMoney(savings.pending_in)} awaiting approval` : "Approved ledger entries only"}
-          icon={<PiggyBank className="size-4" />} tone="green" />
-        <StatCard label="Evaluation" value={evaluation ? "Done" : "Due"} hint={`Period of ${formatDate(period, { day: "numeric", month: "short" })}`}
-          icon={<ClipboardCheck className="size-4" />} tone={evaluation ? "green" : "lime"} />
-        <StatCard label="Learning" value={`${learningPct}%`} hint={`${lessonsDone?.length ?? 0} lessons completed`} icon={<GraduationCap className="size-4" />} tone="navy" />
-      </section>
 
       {viewer.hasOfficeView && (
         <Link href={viewer.offices.length ? "/office" : viewer.isLeader ? "/office/team" : "/admin/approvals"}
@@ -183,270 +173,293 @@ export default async function DashboardPage() {
         </Link>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card>
-          <CardHeader title="Follow-ups due" icon={<Phone className="size-4" />} description="Prospects waiting to hear from you"
-            action={<Link href="/prospects" className="text-sm font-medium text-primary hover:underline">All</Link>} />
-          <CardBody className="pt-3">
-            {(followUps ?? []).length > 0 ? (
-              <ul className="space-y-1">
-                {(followUps as { id: string; full_name: string; phone: string | null; next_follow_up_at: string }[]).map((p) => (
-                  <li key={p.id} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
-                    <Avatar name={p.full_name} size={32} />
-                    <Link href={`/prospects/${p.id}`} className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium">{p.full_name}</span>
-                      <span className="text-xs text-fg-subtle">{p.next_follow_up_at < today ? "Overdue" : "Today"}</span>
-                    </Link>
-                    {p.phone && (
-                      <a href={`https://wa.me/${p.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
-                        className="grid size-8 place-items-center rounded-lg text-success hover:bg-success-soft" aria-label={`WhatsApp ${p.full_name}`}>
-                        <MessageCircle className="size-4" aria-hidden />
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="py-4 text-center">
-                <p className="text-sm text-fg-muted">No follow-ups due today.</p>
-                <Link href="/prospects" className="mt-1 inline-block text-sm font-medium text-primary hover:underline">Add someone new to talk to</Link>
-              </div>
-            )}
-          </CardBody>
-        </Card>
-
-        <Card>
-          <CardHeader title={officePulse ? officePulse.office.name : "Your office"} icon={<Building2 className="size-4" />}
-            description={officePulse ? (officePulse.open_today ? "Open today" : "Closed today") : "Choose your office in your profile"} />
-          <CardBody>
-            {officePulse ? (
-              <div className="flex items-center gap-5">
-                <div>
-                  <p className="text-4xl font-bold tabular-nums">{officePulse.present_now}</p>
-                  <p className="text-sm text-fg-muted">in the office now</p>
+      <section aria-labelledby="today-heading" className="space-y-4">
+        <div>
+          <h2 id="today-heading" className="text-lg font-semibold tracking-tight">Today</h2>
+          <p className="text-sm text-fg-muted">Your tasks, checklist and the people to follow up with</p>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-3">
+          <Card className="lg:col-span-2">
+            <CardHeader title="Today's tasks" icon={<ListTodo className="size-4" />}
+              description={(todayTasks ?? []).length ? "Tap the circle when it's done" : "Plan your day in a minute"}
+              action={<Link href="/planner" className="text-sm font-medium text-primary hover:underline">Planner</Link>} />
+            <CardBody className="pt-2">
+              {(todayTasks ?? []).length > 0 ? (
+                <ul className="divide-y divide-border/60">
+                  {(todayTasks ?? []).map((t) => <TaskRow key={t.id} task={t} today={today} />)}
+                </ul>
+              ) : (
+                <TaskQuickAdd today={today} compact />
+              )}
+            </CardBody>
+          </Card>
+          <Card className="relative overflow-hidden">
+            {whyImage && <img src={whyImage} alt="" className="h-36 w-full object-cover" />}
+            <CardHeader title="My Why" icon={<Heart className="size-4" />}
+              action={<Link href="/why" className="text-sm font-medium text-primary hover:underline">{why ? "All" : "Write it"}</Link>} />
+            <CardBody>
+              {why ? (
+                <>
+                  <p className="text-lg font-semibold leading-snug tracking-tight">{why.title}</p>
+                  {why.body && <p className="mt-2 line-clamp-4 text-sm text-fg-muted">{why.body}</p>}
+                </>
+              ) : (
+                <p className="text-sm text-fg-muted">Who are you doing this for? Write it down and see it here every day.</p>
+              )}
+            </CardBody>
+          </Card>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-3">
+          <Card className="lg:col-span-2">
+            <CardHeader title="Today's checklist" icon={<ListChecks className="size-4" />} description="Small daily actions build big results" />
+            <CardBody>
+              {(checklistItems ?? []).length > 0
+                ? <DailyChecklist date={today} items={(checklistItems ?? []) as { id: string; title: string }[]} done={(checklistDone ?? []).map((c) => c.item_id as string)} />
+                : <p className="text-sm text-fg-muted">No checklist items yet.</p>}
+            </CardBody>
+          </Card>
+          <Card className="relative overflow-hidden">
+            <CardHeader title="Thought of the day" icon={<Quote className="size-4" />} />
+            <CardBody>
+              {thought ? (
+                <blockquote>
+                  <p className="text-lg font-semibold leading-snug tracking-tight">“{thought.body as string}”</p>
+                  {thought.author && <footer className="mt-3 text-sm text-fg-muted">— {thought.author as string}</footer>}
+                </blockquote>
+              ) : <p className="text-sm text-fg-muted">Check back tomorrow.</p>}
+            </CardBody>
+          </Card>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-3">
+          <Card>
+            <CardHeader title="Follow-ups due" icon={<Phone className="size-4" />} description="Prospects waiting to hear from you"
+              action={<Link href="/prospects" className="text-sm font-medium text-primary hover:underline">All</Link>} />
+            <CardBody className="pt-3">
+              {(followUps ?? []).length > 0 ? (
+                <ul className="space-y-1">
+                  {(followUps as { id: string; full_name: string; phone: string | null; next_follow_up_at: string }[]).map((p) => (
+                    <li key={p.id} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
+                      <Avatar name={p.full_name} size={32} />
+                      <Link href={`/prospects/${p.id}`} className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium">{p.full_name}</span>
+                        <span className="text-xs text-fg-subtle">{p.next_follow_up_at < today ? "Overdue" : "Today"}</span>
+                      </Link>
+                      {p.phone && (
+                        <a href={`https://wa.me/${p.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
+                          className="grid size-11 place-items-center rounded-xl text-success hover:bg-success-soft" aria-label={`WhatsApp ${p.full_name}`}>
+                          <MessageCircle className="size-4" aria-hidden />
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="py-4 text-center">
+                  <p className="text-sm text-fg-muted">No follow-ups due today.</p>
+                  <Link href="/prospects" className="mt-1 inline-block text-sm font-medium text-primary hover:underline">Add someone new to talk to</Link>
                 </div>
-                <div className="flex-1 space-y-2 text-sm">
-                  <p className="flex justify-between"><span className="text-fg-muted">Checked in today</span><b className="tabular-nums">{officePulse.checked_in_today}</b></p>
-                  <p className="flex justify-between"><span className="text-fg-muted">Members</span><b className="tabular-nums">{officePulse.members}</b></p>
-                </div>
-              </div>
-            ) : <LinkButton href="/profile" variant="outline" size="sm">Open profile</LinkButton>}
-          </CardBody>
-        </Card>
+              )}
+            </CardBody>
+          </Card>
 
-        <Card>
-          <CardHeader title="From your sponsor" icon={<MessageSquare className="size-4" />} description="Feedback on this month's goals" />
-          <CardBody className="pt-3">
-            {feedback.length > 0 ? (
-              <ul className="space-y-3">
-                {feedback.map((f) => (
-                  <li key={f.id}>
-                    <Link href={`/goals/${goal!.id}`} className="flex gap-3 hover:opacity-80">
-                      <Avatar name={f.profiles?.full_name ?? "Sponsor"} src={f.profiles?.avatar_url} size={32} />
-                      <span className="min-w-0">
-                        <span className="block text-sm font-medium">{f.profiles?.full_name} <span className="font-normal text-fg-subtle">· {formatRelative(f.created_at)}</span></span>
-                        <span className="line-clamp-2 text-sm text-fg-muted">{f.comment}</span>
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="py-4 text-center text-sm text-fg-muted">
-                {goal && goal.status !== "draft" ? "No feedback yet. Your sponsor will reply here." : "Submit your goals and your sponsor's advice will show up here."}
+          <Card>
+            <CardHeader title={officePulse ? officePulse.office.name : "Your office"} icon={<Building2 className="size-4" />}
+              description={officePulse ? (officePulse.open_today ? "Open today" : "Closed today") : "Choose your office in your profile"} />
+            <CardBody>
+              {officePulse ? (
+                <div className="flex items-center gap-5">
+                  <div>
+                    <p className="text-4xl font-bold tabular-nums">{officePulse.present_now}</p>
+                    <p className="text-sm text-fg-muted">in the office now</p>
+                  </div>
+                  <div className="flex-1 space-y-2 text-sm">
+                    <p className="flex justify-between"><span className="text-fg-muted">Checked in today</span><b className="tabular-nums">{officePulse.checked_in_today}</b></p>
+                    <p className="flex justify-between"><span className="text-fg-muted">Members</span><b className="tabular-nums">{officePulse.members}</b></p>
+                  </div>
+                </div>
+              ) : <LinkButton href="/profile" variant="outline" size="sm">Open profile</LinkButton>}
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardHeader title="From your sponsor" icon={<MessageSquare className="size-4" />} description="Feedback on this month's goals" />
+            <CardBody className="pt-3">
+              {feedback.length > 0 ? (
+                <ul className="space-y-3">
+                  {feedback.map((f) => (
+                    <li key={f.id}>
+                      <Link href={`/goals/${goal!.id}`} className="flex gap-3 hover:opacity-80">
+                        <Avatar name={f.profiles?.full_name ?? "Sponsor"} src={f.profiles?.avatar_url} size={32} />
+                        <span className="min-w-0">
+                          <span className="block text-sm font-medium">{f.profiles?.full_name} <span className="font-normal text-fg-subtle">· {formatRelative(f.created_at)}</span></span>
+                          <span className="line-clamp-2 text-sm text-fg-muted">{f.comment}</span>
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="py-4 text-center text-sm text-fg-muted">
+                  {goal && goal.status !== "draft" ? "No feedback yet. Your sponsor will reply here." : "Submit your goals and your sponsor's advice will show up here."}
+                </p>
+              )}
+            </CardBody>
+          </Card>
+        </div>
+      </section>
+
+      <section aria-labelledby="month-heading" className="space-y-4">
+        <div>
+          <h2 id="month-heading" className="text-lg font-semibold tracking-tight">This month</h2>
+          <p className="text-sm text-fg-muted">Progress on your goals, numbers and updates</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          <StatCard label="Earnings entered" value={formatMoney(progress?.income ?? 0)} hint="From your evaluations this month" icon={<TrendingUp className="size-4" />} />
+          <StatCard label="Savings (confirmed)" value={formatMoney(savings?.confirmed_balance ?? 0)}
+            hint={savings && savings.pending_in > 0 ? `${formatMoney(savings.pending_in)} awaiting approval` : "Approved ledger entries only"}
+            icon={<PiggyBank className="size-4" />} tone="green" />
+          <StatCard label="Evaluation" value={evaluation ? "Done" : "Due"} hint={`Period of ${formatDate(period, { day: "numeric", month: "short" })}`}
+            icon={<ClipboardCheck className="size-4" />} tone={evaluation ? "green" : "lime"} />
+          <StatCard label="Learning" value={`${learningPct}%`} hint={`${lessonsDone?.length ?? 0} lessons completed`} icon={<GraduationCap className="size-4" />} tone="navy" />
+        </div>
+        <div className="grid gap-4 lg:grid-cols-3">
+          {/* Goals */}
+          <Card className="lg:col-span-2">
+            <CardHeader title="This month's goals" icon={<Target className="size-4" />}
+              description={goal ? <GoalStatusBadge status={goal.status} /> : "Set your targets to start tracking progress"}
+              action={<Link href="/goals" className="text-sm font-medium text-primary hover:underline">Open</Link>} />
+            <CardBody>
+              {goalRows.length > 0 ? (
+                <ul className="grid gap-4 sm:grid-cols-2">
+                  {goalRows.map((g) => (
+                    <li key={g.label}>
+                      <div className="mb-1.5 flex justify-between text-sm">
+                        <span className="text-fg-muted">{g.label}</span>
+                        <span className="tabular-nums"><b>{g.money ? formatMoney(g.value) : g.value}</b>
+                          <span className="text-fg-subtle"> / {g.money ? formatMoney(g.target) : g.target}</span></span>
+                      </div>
+                      <Progress value={percent(g.value, g.target)} tone={percent(g.value, g.target) >= 100 ? "green" : "blue"} label={`${g.label} progress`} />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <EmptyState icon={<Target className="size-6" />} title="No goals for this month yet"
+                  description="Members who write their goals down achieve more. It takes two minutes."
+                  action={<LinkButton href="/goals/new">Set my goals</LinkButton>} />
+              )}
+            </CardBody>
+          </Card>
+
+          {/* Notifications */}
+          <Card>
+            <CardHeader title="Latest updates" icon={<Bell className="size-4" />}
+              action={<Link href="/notifications" className="text-sm font-medium text-primary hover:underline">All</Link>} />
+            <CardBody className="pt-3">
+              {notifications && notifications.length > 0 ? (
+                <ul className="divide-y divide-border">
+                  {notifications.map((n) => (
+                    <li key={n.id}>
+                      <Link href={n.link ?? "/notifications"} className="flex gap-3 py-3 hover:opacity-80">
+                        <span className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read_at ? "bg-transparent" : "bg-brand-green"}`} aria-hidden />
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-medium">{n.title}</span>
+                          {n.body && <span className="line-clamp-2 text-sm text-fg-muted">{n.body}</span>}
+                          <span className="text-xs text-fg-subtle">{formatRelative(n.created_at)}</span>
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="py-8 text-center text-sm text-fg-muted">You&apos;re all caught up.</p>
+              )}
+            </CardBody>
+          </Card>
+        </div>
+      </section>
+
+      <section aria-labelledby="more-heading" className="space-y-4">
+        <div>
+          <h2 id="more-heading" className="text-lg font-semibold tracking-tight">Keep growing</h2>
+          <p className="text-sm text-fg-muted">Your focus areas, savings and the people around you</p>
+        </div>
+        {growth && focusTop.length > 0 && (
+          <Card>
+            <CardHeader title="Your focus this week" icon={<Compass className="size-4" />}
+              description="The three areas that will grow you and your team the most right now"
+              action={<Link href="/growth" className="text-sm font-medium text-primary hover:underline">Open</Link>} />
+            <CardBody className="space-y-5">
+              <DuplicationSummary focus={growth} />
+              <FocusList areas={focusTop} courses={focusCourses} compact />
+            </CardBody>
+          </Card>
+        )}
+        <div className="grid gap-4 lg:grid-cols-3">
+          {/* Finance summary */}
+          <Card>
+            <CardHeader title="Savings & contributions" icon={<PiggyBank className="size-4" />}
+              action={<Link href="/finance" className="text-sm font-medium text-primary hover:underline">Ledger</Link>} />
+            <CardBody className="space-y-4">
+              {[savings, contributions].filter(Boolean).map((b) => (
+                <div key={b!.account_id}>
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-sm text-fg-muted">{b!.name}</span>
+                    <span className="text-lg font-bold tabular-nums">{formatMoney(b!.confirmed_balance)}</span>
+                  </div>
+                  {b!.target_amount ? (
+                    <>
+                      <Progress value={percent(b!.confirmed_balance, b!.target_amount)} tone="green" className="mt-2" label={`${b!.name} target`} />
+                      <p className="mt-1 text-xs text-fg-subtle">Target {formatMoney(b!.target_amount)}</p>
+                    </>
+                  ) : null}
+                </div>
+              ))}
+              <p className="rounded-xl bg-surface-muted p-3 text-xs text-fg-muted">
+                Balances include approved entries only. They are organisation records, not bank balances.
               </p>
-            )}
-          </CardBody>
-        </Card>
-      </div>
+            </CardBody>
+          </Card>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader title="Today's tasks" icon={<ListTodo className="size-4" />}
-            description={(todayTasks ?? []).length ? "Tap the circle when it's done" : "Plan your day in a minute"}
-            action={<Link href="/planner" className="text-sm font-medium text-primary hover:underline">Planner</Link>} />
-          <CardBody className="pt-2">
-            {(todayTasks ?? []).length > 0 ? (
-              <ul className="divide-y divide-border/60">
-                {(todayTasks ?? []).map((t) => <TaskRow key={t.id} task={t} today={today} />)}
-              </ul>
-            ) : (
-              <TaskQuickAdd today={today} compact />
-            )}
-          </CardBody>
-        </Card>
-        <Card className="relative overflow-hidden">
-          {whyImage && <img src={whyImage} alt="" className="h-36 w-full object-cover" />}
-          <CardHeader title="My Why" icon={<Heart className="size-4" />}
-            action={<Link href="/why" className="text-sm font-medium text-primary hover:underline">{why ? "All" : "Write it"}</Link>} />
-          <CardBody>
-            {why ? (
-              <>
-                <p className="text-lg font-semibold leading-snug tracking-tight">{why.title}</p>
-                {why.body && <p className="mt-2 line-clamp-4 text-sm text-fg-muted">{why.body}</p>}
-              </>
-            ) : (
-              <p className="text-sm text-fg-muted">Who are you doing this for? Write it down and see it here every day.</p>
-            )}
-          </CardBody>
-        </Card>
-      </div>
+          {/* Birthdays */}
+          <Card>
+            <CardHeader title="Celebrations" icon={<Cake className="size-4" />}
+              action={<Link href="/recognition" className="text-sm font-medium text-primary hover:underline">More</Link>} />
+            <CardBody className="pt-3">
+              {(birthdays as { member: string; full_name: string; avatar_url: string | null; birthday_month: number; birthday_day: number; days_until: number }[] | null)?.length ? (
+                <ul className="space-y-3">
+                  {(birthdays as { member: string; full_name: string; avatar_url: string | null; birthday_month: number; birthday_day: number; days_until: number }[]).slice(0, 4).map((b) => (
+                    <li key={b.member} className="flex items-center gap-3">
+                      <Avatar name={b.full_name} src={b.avatar_url} size={36} />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">{b.full_name}</p>
+                        <p className="text-xs text-fg-subtle">
+                          {new Date(Date.UTC(2000, b.birthday_month - 1, b.birthday_day)).toLocaleDateString("en-NG", { day: "numeric", month: "long", timeZone: "UTC" })}
+                        </p>
+                      </div>
+                      {b.days_until === 0 ? <Badge tone="lime">Today</Badge> : <Badge>In {b.days_until} {b.days_until === 1 ? "day" : "days"}</Badge>}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="py-8 text-center text-sm text-fg-muted">No birthdays in the next two weeks.</p>
+              )}
+            </CardBody>
+          </Card>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader title="Today's checklist" icon={<ListChecks className="size-4" />} description="Small daily actions build big results" />
-          <CardBody>
-            {(checklistItems ?? []).length > 0
-              ? <DailyChecklist date={today} items={(checklistItems ?? []) as { id: string; title: string }[]} done={(checklistDone ?? []).map((c) => c.item_id as string)} />
-              : <p className="text-sm text-fg-muted">No checklist items yet.</p>}
-          </CardBody>
-        </Card>
-        <Card className="relative overflow-hidden">
-          <CardHeader title="Thought of the day" icon={<Quote className="size-4" />} />
-          <CardBody>
-            {thought ? (
-              <blockquote>
-                <p className="text-lg font-semibold leading-snug tracking-tight">“{thought.body as string}”</p>
-                {thought.author && <footer className="mt-3 text-sm text-fg-muted">— {thought.author as string}</footer>}
-              </blockquote>
-            ) : <p className="text-sm text-fg-muted">Check back tomorrow.</p>}
-          </CardBody>
-        </Card>
-      </div>
-
-      {growth && focusTop.length > 0 && (
-        <Card>
-          <CardHeader title="Your focus this week" icon={<Compass className="size-4" />}
-            description="The three areas that will grow you and your team the most right now"
-            action={<Link href="/growth" className="text-sm font-medium text-primary hover:underline">Open</Link>} />
-          <CardBody className="space-y-5">
-            <DuplicationSummary focus={growth} />
-            <FocusList areas={focusTop} courses={focusCourses} compact />
-          </CardBody>
-        </Card>
-      )}
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Goals */}
-        <Card className="lg:col-span-2">
-          <CardHeader title="This month's goals" icon={<Target className="size-4" />}
-            description={goal ? <GoalStatusBadge status={goal.status} /> : "Set your targets to start tracking progress"}
-            action={<Link href="/goals" className="text-sm font-medium text-primary hover:underline">Open</Link>} />
-          <CardBody>
-            {goalRows.length > 0 ? (
-              <ul className="grid gap-4 sm:grid-cols-2">
-                {goalRows.map((g) => (
-                  <li key={g.label}>
-                    <div className="mb-1.5 flex justify-between text-sm">
-                      <span className="text-fg-muted">{g.label}</span>
-                      <span className="tabular-nums"><b>{g.money ? formatMoney(g.value) : g.value}</b>
-                        <span className="text-fg-subtle"> / {g.money ? formatMoney(g.target) : g.target}</span></span>
-                    </div>
-                    <Progress value={percent(g.value, g.target)} tone={percent(g.value, g.target) >= 100 ? "green" : "blue"} label={`${g.label} progress`} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <EmptyState icon={<Target className="size-6" />} title="No goals for this month yet"
-                description="Members who write their goals down achieve more. It takes two minutes."
-                action={<LinkButton href="/goals/new">Set my goals</LinkButton>} />
-            )}
-          </CardBody>
-        </Card>
-
-        {/* Notifications */}
-        <Card>
-          <CardHeader title="Latest updates" icon={<Bell className="size-4" />}
-            action={<Link href="/notifications" className="text-sm font-medium text-primary hover:underline">All</Link>} />
-          <CardBody className="pt-3">
-            {notifications && notifications.length > 0 ? (
-              <ul className="divide-y divide-border">
-                {notifications.map((n) => (
-                  <li key={n.id}>
-                    <Link href={n.link ?? "/notifications"} className="flex gap-3 py-3 hover:opacity-80">
-                      <span className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read_at ? "bg-transparent" : "bg-brand-green"}`} aria-hidden />
-                      <span className="min-w-0">
-                        <span className="block truncate text-sm font-medium">{n.title}</span>
-                        {n.body && <span className="line-clamp-2 text-sm text-fg-muted">{n.body}</span>}
-                        <span className="text-xs text-fg-subtle">{formatRelative(n.created_at)}</span>
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="py-8 text-center text-sm text-fg-muted">You&apos;re all caught up.</p>
-            )}
-          </CardBody>
-        </Card>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Finance summary */}
-        <Card>
-          <CardHeader title="Savings & contributions" icon={<PiggyBank className="size-4" />}
-            action={<Link href="/finance" className="text-sm font-medium text-primary hover:underline">Ledger</Link>} />
-          <CardBody className="space-y-4">
-            {[savings, contributions].filter(Boolean).map((b) => (
-              <div key={b!.account_id}>
-                <div className="flex items-baseline justify-between">
-                  <span className="text-sm text-fg-muted">{b!.name}</span>
-                  <span className="text-lg font-bold tabular-nums">{formatMoney(b!.confirmed_balance)}</span>
-                </div>
-                {b!.target_amount ? (
-                  <>
-                    <Progress value={percent(b!.confirmed_balance, b!.target_amount)} tone="green" className="mt-2" label={`${b!.name} target`} />
-                    <p className="mt-1 text-xs text-fg-subtle">Target {formatMoney(b!.target_amount)}</p>
-                  </>
-                ) : null}
-              </div>
-            ))}
-            <p className="rounded-xl bg-surface-muted p-3 text-xs text-fg-muted">
-              Balances include approved entries only. They are organisation records, not bank balances.
-            </p>
-          </CardBody>
-        </Card>
-
-        {/* Birthdays */}
-        <Card>
-          <CardHeader title="Celebrations" icon={<Cake className="size-4" />}
-            action={<Link href="/recognition" className="text-sm font-medium text-primary hover:underline">More</Link>} />
-          <CardBody className="pt-3">
-            {(birthdays as { member: string; full_name: string; avatar_url: string | null; birthday_month: number; birthday_day: number; days_until: number }[] | null)?.length ? (
-              <ul className="space-y-3">
-                {(birthdays as { member: string; full_name: string; avatar_url: string | null; birthday_month: number; birthday_day: number; days_until: number }[]).slice(0, 4).map((b) => (
-                  <li key={b.member} className="flex items-center gap-3">
-                    <Avatar name={b.full_name} src={b.avatar_url} size={36} />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{b.full_name}</p>
-                      <p className="text-xs text-fg-subtle">
-                        {new Date(Date.UTC(2000, b.birthday_month - 1, b.birthday_day)).toLocaleDateString("en-NG", { day: "numeric", month: "long", timeZone: "UTC" })}
-                      </p>
-                    </div>
-                    {b.days_until === 0 ? <Badge tone="lime">Today 🎉</Badge> : <Badge>in {b.days_until}d</Badge>}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="py-8 text-center text-sm text-fg-muted">No birthdays in the next two weeks.</p>
-            )}
-          </CardBody>
-        </Card>
-
-        {/* AI */}
-        <Card className="relative overflow-hidden">
-          <div className="wedge absolute -bottom-6 -right-4 h-[74px] w-[100px] scale-150 bg-brand-lime/30" aria-hidden />
-          <CardHeader title="Maximus AI" icon={<Sparkles className="size-4" />} description="Your personal growth coach" />
-          <CardBody className="relative space-y-2">
-            {["Plan my week to hit my prospecting target", "Help me follow up with a prospect", "How do I support a struggling downline?"].map((q) => (
-              <Link key={q} href={`/ai?q=${encodeURIComponent(q)}`}
-                className="flex items-center justify-between gap-2 rounded-xl border border-border px-3 py-2.5 text-sm hover:border-primary hover:bg-primary-soft">
-                {q} <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden />
-              </Link>
-            ))}
-          </CardBody>
-        </Card>
-      </div>
+          {/* AI */}
+          <Card className="relative overflow-hidden">
+            <CardHeader title="Maximus AI" icon={<Bot className="size-4" />} description="Your personal growth coach" />
+            <CardBody className="relative space-y-2">
+              {["Plan my week to hit my prospecting target", "Help me follow up with a prospect", "How do I support a struggling downline?"].map((q) => (
+                <Link key={q} href={`/ai?q=${encodeURIComponent(q)}`}
+                  className="flex items-center justify-between gap-2 rounded-xl border border-border px-3 py-2.5 text-sm hover:border-primary hover:bg-primary-soft">
+                  {q} <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden />
+                </Link>
+              ))}
+            </CardBody>
+          </Card>
+        </div>
+      </section>
 
     </div>
   );
