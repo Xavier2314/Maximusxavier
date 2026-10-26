@@ -66,7 +66,7 @@ export function GameHost({ slug, best: initialBest, unit, higherIsBetter }: { sl
         <Card className={isRecord ? "border-2 border-brand-green" : undefined}>
           <CardBody className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-lg font-semibold">{isRecord ? "🎉 New personal best!" : result.won === false ? "Game over" : "Well played!"}</p>
+              <p className="text-lg font-semibold">{isRecord ? "New personal best!" : result.won === false ? "Game over" : "Well played!"}</p>
               <p className="text-sm text-fg-muted">Score: <b className="text-fg">{result.score} {unit}</b>{result.level ? ` · ${result.level}` : ""}{result.duration_ms ? ` · ${Math.round(result.duration_ms / 1000)}s` : ""}</p>
               {msg && <p className="text-xs text-danger">{msg}</p>}
             </div>

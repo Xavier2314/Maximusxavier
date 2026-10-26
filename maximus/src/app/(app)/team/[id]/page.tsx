@@ -90,7 +90,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
       <Link href={backHref} className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg">
         <ArrowLeft className="size-4" aria-hidden /> {view === "office" ? "Office" : "Team"}
       </Link>
-      <section className="hero-gradient relative overflow-hidden rounded-[1.75rem] p-6 text-white sm:p-8">
+      <section className="hero-gradient relative overflow-hidden rounded-2xl p-6 text-white sm:p-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
           <Avatar name={member.full_name} src={member.avatar_url} size={80} className="ring-4 ring-white/15" />
           <div className="flex-1">

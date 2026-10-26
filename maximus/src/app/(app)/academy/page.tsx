@@ -30,8 +30,7 @@ export default async function AcademyPage() {
 
   return (
     <>
-      <section className="hero-gradient relative mb-8 overflow-hidden rounded-[1.75rem] p-6 text-white sm:p-8">
-        <div className="wedge absolute -right-6 -top-4 h-[74px] w-[100px] scale-[2.4] bg-brand-green/25" aria-hidden />
+      <section className="hero-gradient relative mb-8 overflow-hidden rounded-2xl p-6 text-white sm:p-8">
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-lime">Maximus Academy</p>

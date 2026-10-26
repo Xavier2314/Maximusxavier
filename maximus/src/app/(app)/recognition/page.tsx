@@ -43,9 +43,7 @@ export default async function RecognitionPage() {
         <section className="mb-6 grid gap-4 md:grid-cols-2" aria-label="Today's birthdays">
           {today.map((b) => (
             // Birthday announcement card
-            <article key={b.member} className="relative overflow-hidden rounded-[1.75rem] bg-brand-navy p-6 text-white">
-              <div className="wedge absolute -right-4 -top-2 h-[74px] w-[100px] scale-[2.2] bg-brand-green/40" aria-hidden />
-              <div className="wedge absolute -bottom-10 left-6 h-[74px] w-[100px] rotate-180 scale-150 bg-brand-blue/50" aria-hidden />
+            <article key={b.member} className="relative overflow-hidden rounded-2xl bg-brand-navy p-6 text-white">
               <div className="relative flex items-center gap-5">
                 <Avatar name={b.full_name} src={b.avatar_url} size={84} className="ring-4 ring-brand-lime" />
                 <div>

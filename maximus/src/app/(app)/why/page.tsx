@@ -33,7 +33,7 @@ export default async function MyWhyPage() {
         <div className="space-y-4 lg:col-span-3">
           {items.length === 0 ? (
             <div className="card p-8 text-center">
-              <p className="text-4xl" aria-hidden>🔥</p>
+              <span className="mx-auto grid size-12 place-items-center rounded-xl bg-primary-soft text-primary" aria-hidden><Heart className="size-6" /></span>
               <h2 className="mt-3 text-lg font-semibold">Why did you start?</h2>
               <p className="mx-auto mt-1 max-w-md text-sm text-fg-muted">
                 Members who write down their why keep going when it gets hard. Start with one line: who are you doing this for?

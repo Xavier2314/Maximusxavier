@@ -53,7 +53,7 @@ export default function ChessGame({ onDone }: GameProps) {
     const moves = Math.ceil(game.history().length / 2);
     if (game.isCheckmate()) {
       const youWon = game.turn() === "b";
-      setStatus(youWon ? "Checkmate. You win! 🎉" : "Checkmate. The computer wins.");
+      setStatus(youWon ? "Checkmate. You win!" : "Checkmate. The computer wins.");
       onDone({ score: youWon ? Math.max(100, (level === "medium" ? 1500 : 800) - moves * 5) : Math.max(0, 50 + material(game) * -5), level: level ?? undefined, won: youWon, duration_ms: Date.now() - t0 });
     } else {
       setStatus("Draw.");

@@ -21,7 +21,7 @@ export function CodeCard({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
   const text = `Be my accountability partner on Maximus! My code is ${code}. Open Tools > Accountability and enter it.`;
   return (
-    <div className="h-fit rounded-3xl bg-brand-navy p-5 text-white shadow-lg ring-1 ring-black/5">
+    <div className="h-fit rounded-2xl bg-brand-navy p-5 text-white shadow-lg ring-1 ring-black/5">
       <p className="text-sm text-white/80">Your partner code</p>
       <p className="mt-2 inline-block rounded-xl bg-white/10 px-3 py-1.5 font-mono text-3xl font-bold tracking-wider text-brand-lime">{code || "—"}</p>
       <p className="mt-2 text-sm text-white/80">Share it with the person you want as your partner.</p>
@@ -30,7 +30,7 @@ export function CodeCard({ code }: { code: string }) {
           {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />} {copied ? "Copied" : "Copy"}
         </Button>
         <a href={`https://wa.me/?text=${encodeURIComponent(text)}`} target="_blank" rel="noreferrer"
-          className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-white/15 px-3 text-sm font-medium hover:bg-white/25">
+          className="inline-flex h-11 items-center gap-1.5 rounded-xl bg-white/15 px-3 text-sm font-medium hover:bg-white/25">
           <Share2 className="size-4" aria-hidden /> WhatsApp
         </a>
       </div>

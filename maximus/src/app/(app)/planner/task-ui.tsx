@@ -89,12 +89,12 @@ export function TaskRow({ task, today, assignerName }: { task: Task; today: stri
       {!done && (
         <div className="flex shrink-0 gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
           {task.due_date !== today && (
-            <Button variant="ghost" size="icon" className="size-8" aria-label="Move to today" title="Move to today"
+            <Button variant="ghost" size="icon" className="size-11" aria-label="Move to today" title="Move to today"
               onClick={() => start(async () => { await moveTasksAction([task.id], today); })}>
               <CalendarClock className="size-4" aria-hidden />
             </Button>
           )}
-          <Button variant="ghost" size="icon" className="size-8 hover:text-danger" aria-label="Delete task" title="Delete"
+          <Button variant="ghost" size="icon" className="size-11 hover:text-danger" aria-label="Delete task" title="Delete"
             onClick={() => { if (confirm(`Delete "${task.title}"?`)) start(async () => { await deleteTaskAction(task.id); }); }}>
             <Trash2 className="size-4" aria-hidden />
           </Button>

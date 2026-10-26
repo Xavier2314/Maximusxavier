@@ -38,7 +38,7 @@ export default async function QrPosterPage({ params }: { params: Promise<{ id: s
         </div>
       </div>
       <p className="mb-4 text-sm text-fg-muted print:hidden">Print this and put it on the wall at the entrance. If the code is shared outside the office, press “New code” and print again; the old poster stops working.</p>
-      <article className="mx-auto max-w-[640px] rounded-[2rem] bg-white p-10 text-center text-[#0f172a] shadow-[var(--shadow-card)] print:max-w-none print:shadow-none">
+      <article className="mx-auto max-w-[640px] rounded-2xl bg-white p-10 text-center text-[#0f172a] shadow-[var(--shadow-card)] print:max-w-none print:shadow-none">
         <div className="flex justify-center"><Logo className="h-12" /></div>
         <h1 className="mt-6 text-4xl font-bold tracking-tight">Check in here</h1>
         <p className="mt-2 text-lg text-[#475569]">{office.name as string}</p>

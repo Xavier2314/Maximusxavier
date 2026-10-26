@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  CalendarCheck, ClipboardCheck, GraduationCap, MessageCircle, Network, PhoneCall, Send, ShoppingBag, Sparkles, UserPlus, Users,
+  CalendarCheck, ClipboardCheck, GraduationCap, MessageCircle, Network, PhoneCall, Send, ShoppingBag, Bot, UserPlus, Users,
   type LucideIcon,
 } from "lucide-react";
 import { categoryOf } from "@/lib/academy";
@@ -74,7 +74,7 @@ export function FocusList({ areas, who = "You", courses = [], compact = false }:
               )}
               {who === "You" && (
                 <Link href={`/ai?q=${encodeURIComponent(info.ask)}`} className="inline-flex items-center gap-1.5 rounded-lg bg-primary-soft px-2.5 py-1.5 font-medium text-primary hover:brightness-95">
-                  <Sparkles className="size-3.5" aria-hidden /> Ask Maximus AI
+                  <Bot className="size-3.5" aria-hidden /> Ask Maximus AI
                 </Link>
               )}
             </div>

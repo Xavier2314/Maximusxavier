@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { ArrowUp, Brain, LoaderCircle, MessageSquarePlus, Plus, Sparkles, Trash2, X } from "lucide-react";
+import { ArrowUp, Brain, LoaderCircle, MessageSquarePlus, Plus, Bot, Trash2, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { RichText as Rich } from "@/components/rich-text";
 import { Button } from "@/components/ui/button";
@@ -97,7 +97,7 @@ export function Chat({ conversationId, initialQuestion, conversations, initialMe
               </Link>
               <button type="button" aria-label={`Delete conversation ${c.title}`} disabled={pending}
                 onClick={() => { if (confirm("Delete this conversation?")) start(async () => { await deleteConversationAction(c.id); if (c.id === convId) router.push("/ai"); }); }}
-                className="mr-1 grid size-8 place-items-center rounded-lg text-fg-subtle opacity-0 hover:text-danger group-hover:opacity-100 focus:opacity-100">
+                className="mr-1 grid size-11 place-items-center rounded-lg text-fg-subtle opacity-0 hover:text-danger group-hover:opacity-100 focus:opacity-100">
                 <Trash2 className="size-4" aria-hidden />
               </button>
             </div>
@@ -108,9 +108,9 @@ export function Chat({ conversationId, initialQuestion, conversations, initialMe
 
       <section className="card flex min-h-[70dvh] flex-col overflow-hidden" aria-label="Chat">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <p className="flex items-center gap-2 text-sm font-medium"><Sparkles className="size-4 text-primary" aria-hidden /> Maximus AI</p>
+          <p className="flex items-center gap-2 text-sm font-medium"><Bot className="size-4 text-primary" aria-hidden /> Maximus AI</p>
           <div className="flex gap-1">
-            <Link href="/ai" className="grid size-9 place-items-center rounded-lg text-fg-muted hover:bg-surface-muted lg:hidden" aria-label="New conversation"><Plus className="size-4" /></Link>
+            <Link href="/ai" className="grid size-11 place-items-center rounded-lg text-fg-muted hover:bg-surface-muted lg:hidden" aria-label="New conversation"><Plus className="size-4" /></Link>
             <Button variant="ghost" size="sm" onClick={() => setShowMemory((s) => !s)} aria-expanded={showMemory}>
               <Brain className="size-4" aria-hidden /> Memory
             </Button>

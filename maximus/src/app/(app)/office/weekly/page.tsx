@@ -52,7 +52,7 @@ export default async function WeeklyReportsPage({ searchParams }: { searchParams
               </Link>
               <Badge tone={r.status === "submitted" ? "green" : "neutral"}>{r.status === "submitted" ? "Submitted" : "Draft"}</Badge>
               <a href={`/print/office-report/${r.id}`} target="_blank" rel="noopener noreferrer" aria-label="Download PDF"
-                className="grid size-9 place-items-center rounded-xl text-fg-muted hover:bg-surface-muted hover:text-fg"><Download className="size-4" aria-hidden /></a>
+                className="grid size-11 place-items-center rounded-xl text-fg-muted hover:bg-surface-muted hover:text-fg"><Download className="size-4" aria-hidden /></a>
               <ChevronRight className="size-4 text-fg-subtle" aria-hidden />
             </div>
           ))}

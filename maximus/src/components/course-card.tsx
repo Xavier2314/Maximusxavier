@@ -17,17 +17,16 @@ export function CourseCard({ c }: { c: CourseCardData }) {
   const pct = c.lessons ? Math.round((c.completed / c.lessons) * 100) : 0;
   const body = (
     <>
-      <div className={cn("relative aspect-[16/9] overflow-hidden bg-gradient-to-br", cat.gradient)}>
+      <div className={cn("relative aspect-[16/9] overflow-hidden", cat.gradient)}>
         {c.thumbnail_url ? (
           <Image src={c.thumbnail_url} alt="" fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover" />
         ) : (
           <>
-            <div className="wedge absolute -right-3 -top-1 h-[74px] w-[100px] scale-150 bg-white/15" aria-hidden />
             <Logo variant="mark" mono className="absolute bottom-3 left-4 h-10 w-auto text-white/30" title="" />
           </>
         )}
         {soon && (
-          <span className="absolute inset-0 grid place-items-center bg-brand-navy/40 backdrop-blur-[1px]">
+          <span className="absolute inset-0 grid place-items-center bg-brand-navy/60">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-brand-navy"><Lock className="size-3" aria-hidden /> Coming soon</span>
           </span>
         )}

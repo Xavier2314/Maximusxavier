@@ -118,7 +118,7 @@ export default async function OfficeMembersPage({ searchParams }: { searchParams
                     <td className="px-4 py-3 text-right">
                       {r.phone && (
                         <a href={`https://wa.me/${r.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
-                          className="inline-grid size-9 place-items-center rounded-xl text-success hover:bg-success-soft" aria-label={`WhatsApp ${r.full_name}`}>
+                          className="inline-grid size-11 place-items-center rounded-xl text-success hover:bg-success-soft" aria-label={`WhatsApp ${r.full_name}`}>
                           <MessageCircle className="size-4" aria-hidden />
                         </a>
                       )}

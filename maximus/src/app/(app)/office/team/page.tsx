@@ -100,7 +100,7 @@ async function LeaderSection({ viewerId, canSeeExtended, period }: { viewerId: s
                     </li>
                   ))}
                 </ul>
-              ) : <p className="py-4 text-center text-sm text-fg-muted">Everyone is active. Great leadership! 🏆</p>}
+              ) : <p className="py-4 text-center text-sm text-fg-muted">Everyone is active.</p>}
             </CardBody>
           </Card>
         </div>

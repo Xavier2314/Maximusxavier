@@ -61,7 +61,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
 
       <section className="grid gap-4 sm:grid-cols-2" aria-label="Balances">
         {(balances ?? []).map((b) => (
-          <div key={b.account_id} className={`relative overflow-hidden rounded-[1.5rem] p-6 text-white ${b.kind === "savings" ? "hero-gradient" : "bg-gradient-to-br from-[#14532d] via-[#3f7d0f] to-[#7ed321]"}`}>
+          <div key={b.account_id} className={`relative overflow-hidden rounded-2xl p-6 text-white ${b.kind === "savings" ? "hero-gradient" : "bg-[#14532d]"}`}>
             <div className="flex items-center justify-between">
               <p className="flex items-center gap-2 text-sm text-white/80">
                 {b.kind === "savings" ? <PiggyBank className="size-4" aria-hidden /> : <HandCoins className="size-4" aria-hidden />} {b.name}
@@ -129,7 +129,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
                     </li>
                   ))}
                 </ul>
-              ) : <p className="py-4 text-center text-sm text-fg-muted">Nothing outstanding. 🎉</p>}
+              ) : <p className="py-4 text-center text-sm text-fg-muted">Nothing outstanding.</p>}
             </CardBody>
           </Card>
           {isSelf && (

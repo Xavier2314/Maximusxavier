@@ -39,12 +39,12 @@ export function AnnouncementBar({ items }: { items: BarAnnouncement[] }) {
         </Link>
         {visible.length > 1 && (
           <span className="flex items-center">
-            <button type="button" onClick={() => setI((n) => (n - 1 + visible.length) % visible.length)} aria-label="Previous announcement" className="grid size-7 place-items-center rounded-lg hover:bg-white/10"><ChevronLeft className="size-4" /></button>
+            <button type="button" onClick={() => setI((n) => (n - 1 + visible.length) % visible.length)} aria-label="Previous announcement" className="grid size-11 place-items-center rounded-lg hover:bg-white/10"><ChevronLeft className="size-4" /></button>
             <span className="w-8 text-center text-xs text-white/60 tabular-nums">{(i % visible.length) + 1}/{visible.length}</span>
-            <button type="button" onClick={() => setI((n) => (n + 1) % visible.length)} aria-label="Next announcement" className="grid size-7 place-items-center rounded-lg hover:bg-white/10"><ChevronRight className="size-4" /></button>
+            <button type="button" onClick={() => setI((n) => (n + 1) % visible.length)} aria-label="Next announcement" className="grid size-11 place-items-center rounded-lg hover:bg-white/10"><ChevronRight className="size-4" /></button>
           </span>
         )}
-        <button type="button" onClick={dismiss} aria-label="Dismiss announcement" className="grid size-7 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white"><X className="size-4" /></button>
+        <button type="button" onClick={dismiss} aria-label="Dismiss announcement" className="grid size-11 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white"><X className="size-4" /></button>
       </div>
     </div>
   );

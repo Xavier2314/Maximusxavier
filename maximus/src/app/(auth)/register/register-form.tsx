@@ -59,7 +59,7 @@ export function RegisterForm({ offices, referralCode, uplineCode }: { offices: {
 
   if (state?.ok) {
     return (
-      <div className="mt-8 rounded-3xl bg-success-soft p-6 text-center">
+      <div className="mt-8 rounded-2xl bg-success-soft p-6 text-center">
         <CircleCheck className="mx-auto size-10 text-success" aria-hidden />
         <h2 className="mt-3 text-lg font-semibold">Check your email</h2>
         <p className="mt-1 text-sm text-fg-muted">{state.message}</p>

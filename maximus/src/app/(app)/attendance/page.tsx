@@ -48,10 +48,9 @@ export default async function AttendancePage() {
       <p className="-mt-3 mb-6 flex items-center gap-2 text-sm text-fg-muted"><QrCode className="size-4 shrink-0" aria-hidden />At the office? Just scan the QR poster on the wall with your phone camera.</p>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <section className="hero-gradient relative overflow-hidden rounded-[1.75rem] p-6 text-white lg:col-span-2" aria-label="Check in">
-          <div className="wedge absolute -right-8 -top-6 h-[74px] w-[100px] scale-[2] bg-brand-green/20" aria-hidden />
+        <section className="hero-gradient relative overflow-hidden rounded-2xl p-6 text-white lg:col-span-2" aria-label="Check in">
           <p className="text-sm text-white/70">{formatDate(today, { weekday: "long", day: "numeric", month: "long" }, tz)}</p>
-          <h2 className="mt-1 text-2xl font-bold">{open ? "You're at work 💪" : "Ready to start your day?"}</h2>
+          <h2 className="mt-1 text-2xl font-bold">{open ? "You're at work" : "Ready to start your day?"}</h2>
           <div className="relative mt-5">
             <CheckInPanel offices={offices} open={open ?? null} />
           </div>

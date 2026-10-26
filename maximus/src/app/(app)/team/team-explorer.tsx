@@ -40,7 +40,7 @@ function TreeNode({ node, level }: { node: Node; level: number }) {
         {node.children.length > 0 ? (
           <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
             aria-label={`${open ? "Collapse" : "Expand"} ${node.full_name}'s team`}
-            className="grid size-7 shrink-0 place-items-center rounded-lg text-fg-subtle hover:bg-surface-muted">
+            className="grid size-11 shrink-0 place-items-center rounded-lg text-fg-subtle hover:bg-surface-muted">
             <ChevronRight className={cn("size-4 transition-transform", open && "rotate-90")} aria-hidden />
           </button>
         ) : <span className="size-7 shrink-0" aria-hidden />}
@@ -128,7 +128,7 @@ export function TeamExplorer({ rootId, rootName, rootCode, rootAvatar, rootRank 
         <OrgChart rootId={rootId} rootName={rootName} rootCode={rootCode} rootAvatar={rootAvatar} rootRank={rootRank} members={members} focus={focus} target={target} />
       ) : view === "tree" && !filtering ? (
         <div className="overflow-x-auto p-4">
-          <div className="mb-2 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-brand-navy to-[#1e3a8a] px-3 py-2.5 text-white">
+          <div className="mb-2 flex items-center gap-3 rounded-2xl bg-brand-navy px-3 py-2.5 text-white">
             <Avatar name={rootName} src={rootAvatar} size={38} className="ring-white/20" />
             <div>
               <p className="text-sm font-semibold">{rootName} <span className="font-normal text-white/60">(you)</span></p>

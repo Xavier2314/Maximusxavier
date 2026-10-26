@@ -28,7 +28,7 @@ export function RemoveMember({ officeId, userId, name }: { officeId: string; use
   return (
     <button type="button" disabled={pending} aria-label={`Remove ${name} from office`}
       onClick={() => { if (confirm(`Remove ${name} from this office?`)) start(async () => { await removeMemberAction(officeId, userId); }); }}
-      className="grid size-7 place-items-center rounded-lg text-fg-subtle hover:bg-danger-soft hover:text-danger">
+      className="grid size-11 place-items-center rounded-lg text-fg-subtle hover:bg-danger-soft hover:text-danger">
       <X className="size-3.5" aria-hidden />
     </button>
   );

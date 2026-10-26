@@ -38,7 +38,7 @@ export function LiveTeam({ viewerId }: { viewerId: string }) {
         <div role="status" className="fixed inset-x-4 bottom-24 z-40 mx-auto flex max-w-sm items-center gap-3 rounded-2xl bg-brand-navy p-3 text-white shadow-xl animate-rise lg:bottom-6">
           <span className="grid size-9 place-items-center rounded-xl bg-brand-lime text-brand-navy"><UserPlus className="size-4" aria-hidden /></span>
           <p className="flex-1 text-sm"><b>{joined === 1 ? "Someone new" : `${joined} new people`}</b> just joined your team. The chart has been updated.</p>
-          <button type="button" onClick={() => setJoined(0)} aria-label="Dismiss" className="grid size-8 place-items-center rounded-lg hover:bg-white/10"><X className="size-4" /></button>
+          <button type="button" onClick={() => setJoined(0)} aria-label="Dismiss" className="grid size-11 place-items-center rounded-lg hover:bg-white/10"><X className="size-4" /></button>
         </div>
       )}
     </>

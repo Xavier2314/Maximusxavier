@@ -226,7 +226,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
                   </li>
                 ))}
               </ul>
-            ) : <p className="py-6 text-center text-sm text-fg-muted">Everyone has been active this week. 🎉</p>}
+            ) : <p className="py-6 text-center text-sm text-fg-muted">Everyone has been active this week.</p>}
           </CardBody>
         </Card>
       </div>

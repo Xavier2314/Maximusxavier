@@ -174,10 +174,6 @@
   .auth-gradient {
     background: #0f172a;
   }
-  /* Wedge = the green "fan" from the logo, used as a decorative motif. */
-  .wedge {
-    clip-path: path("M4 6 C 30 -2, 70 -2, 96 6 C 99 7, 100 10, 98 13 C 80 42, 62 62, 52 72 C 50.5 73.5, 49.5 73.5, 48 72 C 38 62, 20 42, 2 13 C 0 10, 1 7, 4 6 Z");
-  }
   .card {
     background: var(--surface);
     border: 1px solid var(--border);

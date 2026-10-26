@@ -184,7 +184,7 @@ function BrandPreview({ brand }: { brand: Brand }) {
   return (
     <aside aria-label="Live preview" className="xl:sticky xl:top-24 xl:self-start">
       <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-fg-subtle">Live preview</p>
-      <div className="branded overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-card)]" style={brandVars(brand) as React.CSSProperties}>
+      <div className="branded overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-card)]" style={brandVars(brand) as React.CSSProperties}>
         <div className="flex min-h-[340px]">
           <div className="w-40 shrink-0 bg-brand-navy p-3">
             <div className="mb-4 flex items-center gap-2">

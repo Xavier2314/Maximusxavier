@@ -144,7 +144,7 @@ export function HabitRow({ habit, week, today, checked, streak, rate }: {
             <Flame className="size-4" aria-hidden />{streak} day{streak === 1 ? "" : "s"}
           </span>
           {rate !== null && <span className="rounded-full bg-surface-muted px-2.5 py-1 text-xs font-semibold text-fg-muted">{rate}% this month</span>}
-          <Button variant="ghost" size="icon" className="size-9" aria-label={`Archive ${habit.name}`} title="Archive habit" disabled={pending}
+          <Button variant="ghost" size="icon" className="size-11" aria-label={`Archive ${habit.name}`} title="Archive habit" disabled={pending}
             onClick={() => { if (confirm("Archive this habit? Its history is kept.")) start(async () => { await archiveHabitAction(habit.id); }); }}>
             <Archive className="size-4" aria-hidden />
           </Button>

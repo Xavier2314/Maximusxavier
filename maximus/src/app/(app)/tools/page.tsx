@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   ArrowLeft, ChevronRight, BookOpen, Brain, CalendarClock, Clock, Flame, Gauge, Hourglass, LayoutGrid, ListChecks, Maximize2, Medal, MessageCircle, Music,
-  NotebookPen, Repeat, Sparkles, Target, Timer, Trophy, Users, Watch, Zap, type LucideIcon,
+  NotebookPen, Repeat, Bot, Sprout, Target, Timer, Trophy, Users, Watch, Zap, type LucideIcon,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -59,9 +59,9 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    slug: "growth", icon: Sparkles, title: "Personal growth", blurb: "Learn, reflect and stay motivated.", tone: "bg-brand-lime/25 text-brand-navy dark:text-brand-lime",
+    slug: "growth", icon: Sprout, title: "Personal growth", blurb: "Learn, reflect and stay motivated.", tone: "bg-brand-lime/25 text-brand-navy dark:text-brand-lime",
     tools: [
-      { href: "/ai", label: "Maximus AI coach", desc: "Ask for a plan or advice", icon: Sparkles },
+      { href: "/ai", label: "Maximus AI coach", desc: "Ask for a plan or advice", icon: Bot },
       { href: "/academy", label: "Academy", desc: "Courses and lessons", icon: BookOpen },
       { href: "/why", label: "My Why", desc: "Remember what drives you", icon: Target },
       { label: "Focus music", desc: "Background sounds while you work", icon: Music },

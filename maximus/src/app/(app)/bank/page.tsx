@@ -30,8 +30,7 @@ export default async function BankPage() {
     <>
       <PageHeader eyebrow="Maximus Bank" title="Your money, in Naira" description="Banking built into Maximus. Coming soon." />
 
-      <section className="hero-gradient relative mb-6 overflow-hidden rounded-[1.75rem] p-6 text-white sm:p-8">
-        <div className="wedge absolute -right-6 -top-4 h-[74px] w-[100px] scale-[2.4] bg-brand-green/25" aria-hidden />
+      <section className="hero-gradient relative mb-6 overflow-hidden rounded-2xl p-6 text-white sm:p-8">
         <div className="relative grid gap-6 lg:grid-cols-2 lg:items-center">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-lime px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-navy">Coming soon</span>
@@ -40,7 +39,7 @@ export default async function BankPage() {
             <p className="mt-4 text-sm text-white/60">{(count as number | null) ?? 0} member{count === 1 ? "" : "s"} on the waitlist</p>
           </div>
           {/* Preview of the account dashboard. No real balances are shown until launch. */}
-          <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur" aria-label="Preview of the Maximus Bank dashboard">
+          <div className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/15" aria-label="Preview of the Maximus Bank dashboard">
             <div className="flex items-center justify-between text-sm text-white/70">
               <span>Available balance</span><span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">NGN</span>
             </div>

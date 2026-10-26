@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useActionState, useState, useTransition } from "react";
-import { Bot, Music2, Reply, Send, Sparkles, Trash2, X } from "lucide-react";
+import { Bot, Music2, PenLine, Reply, Send, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { FormMessage, Input, Textarea } from "@/components/ui/form";
@@ -98,7 +98,7 @@ export function Conversation({ prospect: p, messages, readOnly, canAutoSend, spo
             <div className="flex flex-col gap-2 sm:flex-row">
               <Input value={situation} onChange={(e) => setSituation(e.target.value)} aria-label="Describe the situation (optional)"
                 placeholder={`Optional: describe the situation, e.g. "${first} says she has no time"`} />
-              <Button variant="secondary" onClick={suggest} disabled={pending}><Sparkles className="size-4" aria-hidden />Help me write</Button>
+              <Button variant="secondary" onClick={suggest} disabled={pending}><PenLine className="size-4" aria-hidden />Help me write</Button>
             </div>
             {options.length > 0 && (
               <ul className="grid gap-2">
@@ -157,7 +157,7 @@ function SpotifyPicker({ value, onChange, searchEnabled }: { value: SpotifyItem 
       <div className="flex items-center gap-3 rounded-xl border border-[#1db954]/40 bg-[#1db954]/10 p-2">
         {value.image ? <Image src={value.image} alt="" width={40} height={40} className="rounded-lg" unoptimized /> : <Music2 className="size-5 text-[#1db954]" />}
         <div className="min-w-0 flex-1 text-sm"><p className="truncate font-medium">{value.title}</p><p className="truncate text-xs text-fg-muted">{value.subtitle}</p></div>
-        <button type="button" onClick={() => onChange(null)} aria-label="Remove Spotify link" className="grid size-8 place-items-center rounded-lg hover:bg-surface"><X className="size-4" /></button>
+        <button type="button" onClick={() => onChange(null)} aria-label="Remove Spotify link" className="grid size-11 place-items-center rounded-lg hover:bg-surface"><X className="size-4" /></button>
       </div>
     );
   }

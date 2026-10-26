@@ -20,7 +20,7 @@ export default async function ProfilePage() {
 
   return (
     <>
-      <section className="hero-gradient relative mb-6 overflow-hidden rounded-[1.75rem] p-6 text-white sm:p-8">
+      <section className="hero-gradient relative mb-6 overflow-hidden rounded-2xl p-6 text-white sm:p-8">
         <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
           <AvatarUploader name={p.full_name} src={p.avatar_url} />
           <div>

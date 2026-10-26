@@ -129,7 +129,7 @@ export default async function PlannerPage({ searchParams }: { searchParams: Prom
                   </div>
                   <SuggestionButton title={s.title} category={s.category} today={today} />
                 </div>
-              )) : <p className="py-4 text-center text-sm text-fg-muted">You&apos;ve planned everything we&apos;d suggest. 💪</p>}
+              )) : <p className="py-4 text-center text-sm text-fg-muted">You&apos;ve planned everything we&apos;d suggest.</p>}
             </CardBody>
           </Card>
           <Card>

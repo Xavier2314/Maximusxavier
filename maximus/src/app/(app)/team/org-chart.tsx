@@ -86,7 +86,7 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
     </>
   );
   const cls = cn("group relative flex w-[150px] flex-col items-center rounded-2xl border px-2 pb-3 pt-3 text-center transition-all",
-    isRoot ? "border-transparent bg-gradient-to-b from-brand-navy to-[#1e3a8a] text-white"
+    isRoot ? "border-transparent bg-brand-navy text-white"
       : "border-border bg-surface hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-card)]",
     isNew && "ring-2 ring-brand-lime");
   const card = isRoot ? <div className={cls}>{body}</div> : <Link href={`/team/${node.id}`} className={cls}>{body}</Link>;
@@ -145,9 +145,9 @@ export function OrgChart({ rootId, rootName, rootCode, rootAvatar, rootRank = nu
   return (
     <div className="relative">
       <div className="absolute right-3 top-3 z-20 flex gap-1 rounded-xl bg-surface p-1 shadow-[var(--shadow-card)] ring-1 ring-border">
-        <button type="button" onClick={() => setZoom((z) => Math.max(0.4, +(z - 0.15).toFixed(2)))} aria-label="Zoom out" className="grid size-8 place-items-center rounded-lg hover:bg-surface-muted"><Minus className="size-4" /></button>
-        <button type="button" onClick={() => setZoom(1)} aria-label="Reset zoom" className="grid size-8 place-items-center rounded-lg hover:bg-surface-muted"><RotateCcw className="size-4" /></button>
-        <button type="button" onClick={() => setZoom((z) => Math.min(1.6, +(z + 0.15).toFixed(2)))} aria-label="Zoom in" className="grid size-8 place-items-center rounded-lg hover:bg-surface-muted"><Plus className="size-4" /></button>
+        <button type="button" onClick={() => setZoom((z) => Math.max(0.4, +(z - 0.15).toFixed(2)))} aria-label="Zoom out" className="grid size-11 place-items-center rounded-lg hover:bg-surface-muted"><Minus className="size-4" /></button>
+        <button type="button" onClick={() => setZoom(1)} aria-label="Reset zoom" className="grid size-11 place-items-center rounded-lg hover:bg-surface-muted"><RotateCcw className="size-4" /></button>
+        <button type="button" onClick={() => setZoom((z) => Math.min(1.6, +(z + 0.15).toFixed(2)))} aria-label="Zoom in" className="grid size-11 place-items-center rounded-lg hover:bg-surface-muted"><Plus className="size-4" /></button>
       </div>
       <div ref={scroller} className="max-h-[75vh] overflow-auto px-4 pb-8 pt-14">
         <div className="org-tree mx-auto w-max min-w-full" style={{ zoom }}>

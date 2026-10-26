@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ListChecks, PenLine, Sparkles } from "lucide-react";
+import { ListChecks, PenLine, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form";
 import { VoiceTextarea } from "@/components/voice";
@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 
 export type FormMode = "ai" | "write" | "form";
 
-const MODES: { key: FormMode; label: string; hint: string; icon: typeof Sparkles }[] = [
-  { key: "ai", label: "Talk to Maximus AI", hint: "Speak or type freely; AI arranges it", icon: Sparkles },
+const MODES: { key: FormMode; label: string; hint: string; icon: typeof Bot }[] = [
+  { key: "ai", label: "Talk to Maximus AI", hint: "Speak or type freely; AI arranges it", icon: Bot },
   { key: "write", label: "Write it myself", hint: "In your own words", icon: PenLine },
   { key: "form", label: "Fill the form", hint: "Step by step", icon: ListChecks },
 ];
@@ -48,7 +48,7 @@ export function TalkToAi({ placeholder, arrange, onArranged }: {
       <FormMessage state={notice} />
       <Button disabled={pending || text.trim().length < 5}
         onClick={() => start(async () => { const r = await arrange(text); setNotice(r.ok ? null : r); if (r.ok && r.data) onArranged(r.data, text); })}>
-        <Sparkles className="size-4" aria-hidden />{pending ? "Arranging…" : "Arrange it for me"}
+        <Bot className="size-4" aria-hidden />{pending ? "Arranging…" : "Arrange it for me"}
       </Button>
     </div>
   );

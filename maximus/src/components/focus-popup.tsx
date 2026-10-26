@@ -32,7 +32,7 @@ export function FocusPopup({ areas, week }: { areas: PopupArea[]; week: string }
 
   if (!open || areas.length === 0) return null;
   return (
-    <div className="fixed inset-0 z-50 grid place-items-end bg-black/50 p-0 backdrop-blur-sm animate-fade sm:place-items-center sm:p-4"
+    <div className="fixed inset-0 z-50 grid place-items-end bg-black/50 p-0 animate-fade sm:place-items-center sm:p-4"
       onClick={close}>
       <div role="dialog" aria-modal="true" aria-labelledby="focus-title" onClick={(e) => e.stopPropagation()}
         className="card w-full max-w-lg rounded-b-none p-6 animate-rise sm:rounded-b-[var(--radius-card)] safe-bottom">
@@ -44,7 +44,7 @@ export function FocusPopup({ areas, week }: { areas: PopupArea[]; week: string }
               <h2 id="focus-title" className="text-lg font-bold tracking-tight">Work on these {areas.length} things</h2>
             </div>
           </div>
-          <button type="button" onClick={close} aria-label="Close" className="grid size-9 place-items-center rounded-lg text-fg-subtle hover:bg-surface-muted">
+          <button type="button" onClick={close} aria-label="Close" className="grid size-11 place-items-center rounded-lg text-fg-subtle hover:bg-surface-muted">
             <X className="size-5" />
           </button>
         </div>

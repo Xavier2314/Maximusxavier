@@ -87,7 +87,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
                   <div key={s.id} className="flex items-center gap-2">
                     <Avatar name={s.full_name} src={s.avatar_url} size={32} />
                     <span className="min-w-0 flex-1"><span className="block truncate text-sm">{s.full_name}</span><span className="text-xs text-fg-subtle">{s.tag}</span></span>
-                    <ChatButton memberId={s.id} label="Chat" className="h-8 bg-primary px-3 text-sm text-primary-fg ring-0 hover:bg-primary-hover" />
+                    <ChatButton memberId={s.id} label="Chat" className="h-11 bg-primary px-3 text-sm text-primary-fg ring-0 hover:bg-primary-hover" />
                   </div>
                 ))}
                 <p className="text-xs text-fg-subtle">You can also tap Chat on anyone&apos;s page in My Team.</p>

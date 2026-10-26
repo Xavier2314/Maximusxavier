@@ -1,14 +1,14 @@
 export const CATEGORIES = [
-  { key: "getting_started", label: "Getting Started", gradient: "from-[#305ee6] to-[#1e3a8a]" },
-  { key: "onboarding_academy", label: "Onboarding Academy", gradient: "from-[#0f172a] to-[#305ee6]" },
-  { key: "prospecting_masterclass", label: "Prospecting Masterclass", gradient: "from-[#3f7d0f] to-[#7ed321]" },
-  { key: "sales_follow_up", label: "Sales and Follow-Up", gradient: "from-[#1e3a8a] to-[#4f9a10]" },
-  { key: "leadership_development", label: "Leadership Development", gradient: "from-[#0f172a] to-[#4f9a10]" },
-  { key: "team_building", label: "Team Building", gradient: "from-[#305ee6] to-[#7ed321]" },
-  { key: "financial_discipline", label: "Financial Discipline", gradient: "from-[#14532d] to-[#305ee6]" },
-  { key: "product_knowledge", label: "Product Knowledge", gradient: "from-[#1e293b] to-[#305ee6]" },
-  { key: "personal_development", label: "Personal Development", gradient: "from-[#4f9a10] to-[#0f172a]" },
-  { key: "recognition_success_stories", label: "Recognition and Success Stories", gradient: "from-[#305ee6] to-[#0f172a]" },
+  { key: "getting_started", label: "Getting Started", gradient: "bg-[#305ee6]" },
+  { key: "onboarding_academy", label: "Onboarding Academy", gradient: "bg-[#0f172a]" },
+  { key: "prospecting_masterclass", label: "Prospecting Masterclass", gradient: "bg-[#3f7d0f]" },
+  { key: "sales_follow_up", label: "Sales and Follow-Up", gradient: "bg-[#1e3a8a]" },
+  { key: "leadership_development", label: "Leadership Development", gradient: "bg-[#0f172a]" },
+  { key: "team_building", label: "Team Building", gradient: "bg-[#305ee6]" },
+  { key: "financial_discipline", label: "Financial Discipline", gradient: "bg-[#14532d]" },
+  { key: "product_knowledge", label: "Product Knowledge", gradient: "bg-[#1e293b]" },
+  { key: "personal_development", label: "Personal Development", gradient: "bg-[#4f9a10]" },
+  { key: "recognition_success_stories", label: "Recognition and Success Stories", gradient: "bg-[#305ee6]" },
 ] as const;
 
 export type CategoryKey = (typeof CATEGORIES)[number]["key"];

@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { Download, ListChecks, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Download, ListChecks, Plus, Bot, Trash2 } from "lucide-react";
 import { AiFilledBanner, TalkToAi } from "@/components/form-modes";
 import { VoiceTextarea } from "@/components/voice";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ export function ReportEditor({ initial, prev, reportId }: { initial: OfficeRepor
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-2" role="tablist" aria-label="How do you want to fill the report?">
-        {[{ k: "ai" as const, l: "Talk to Maximus AI", h: "Say everything; AI fills the report", I: Sparkles },
+        {[{ k: "ai" as const, l: "Talk to Maximus AI", h: "Say everything; AI fills the report", I: Bot },
           { k: "form" as const, l: "Fill the report", h: "Table by table", I: ListChecks }].map((m) => (
           <button key={m.k} type="button" role="tab" aria-selected={mode === m.k} onClick={() => setMode(m.k)}
             className={cn("flex flex-col items-center gap-1 rounded-2xl border p-3 text-center",
@@ -197,7 +197,7 @@ function RowsTable<T extends object>({ title, rows, onChange, cols }: { title: s
                   ))}
                   <td className={cn(cell, "p-0 text-center")}>
                     <button type="button" onClick={() => onChange(rows.filter((_, j) => j !== i))} aria-label={`Remove row ${i + 1}`}
-                      className="grid size-9 place-items-center text-fg-subtle hover:text-danger"><Trash2 className="size-4" /></button>
+                      className="grid size-11 place-items-center text-fg-subtle hover:text-danger"><Trash2 className="size-4" /></button>
                   </td>
                 </tr>
               ))}

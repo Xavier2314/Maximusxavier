@@ -48,11 +48,11 @@ export default async function SharedItemPage({ params }: { params: Promise<{ id:
             <ReadAloud text={`${s.title}. ${s.message ?? ""} ${s.body}`} />
             {s.attachment_path && (
               <a href={`/api/attachments?path=${encodeURIComponent(s.attachment_path)}`} target="_blank" rel="noreferrer"
-                className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-border px-3 text-sm font-medium hover:bg-surface-muted">
+                className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-border px-3 text-sm font-medium hover:bg-surface-muted">
                 <Paperclip className="size-4" aria-hidden /> View attachment
               </a>
             )}
-            {open && <Link href={open} className="inline-flex h-9 items-center rounded-xl bg-primary px-3 text-sm font-medium text-primary-fg">Open the full record</Link>}
+            {open && <Link href={open} className="inline-flex h-11 items-center rounded-xl bg-primary px-3 text-sm font-medium text-primary-fg">Open the full record</Link>}
           </div>
         </CardBody>
       </Card>
