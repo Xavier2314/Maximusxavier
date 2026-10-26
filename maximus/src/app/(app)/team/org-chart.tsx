@@ -59,7 +59,7 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
   const top = node.focus[0];
   const body = (
     <>
-      {isNew && <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-brand-lime px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand-navy">New</span>}
+      {isNew && <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-brand-lime px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-brand-navy">New</span>}
       <RecruitRing count={count} target={target}>
         <span className="relative">
           <Avatar name={node.name} src={node.avatar} size={56} />
@@ -70,16 +70,16 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
       <span className={cn("mt-2 block max-w-full truncate text-sm font-semibold", isRoot ? "text-white" : "group-hover:text-primary")}>
         {node.name}{isRoot && <span className="font-normal text-white/60"> (you)</span>}
       </span>
-      <span className={cn("block text-[11px]", isRoot ? "text-white/60" : "text-fg-subtle")}>{node.code}</span>
+      <span className={cn("block text-xs", isRoot ? "text-white/60" : "text-fg-subtle")}>{node.code}</span>
       {rankLabel(node.rank) && (
-        <span className={cn("mt-0.5 block max-w-full truncate text-[11px] font-semibold", isRoot ? "text-brand-lime" : "text-primary")}>{rankLabel(node.rank)}</span>
+        <span className={cn("mt-0.5 block max-w-full truncate text-xs font-semibold", isRoot ? "text-brand-lime" : "text-primary")}>{rankLabel(node.rank)}</span>
       )}
-      <span className={cn("mt-1.5 inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums",
+      <span className={cn("mt-1.5 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums",
         count >= target ? "bg-success-soft text-success" : isRoot ? "bg-white/10 text-white" : "bg-primary-soft text-primary")}>
         {count >= target ? `${count} brought in ✓` : `${count}/${target} brought in`}
       </span>
       {top && FOCUS[top] && (
-        <span className="mt-1 block max-w-full truncate rounded-full bg-warning-soft px-2 py-0.5 text-[11px] font-medium text-warning" title={`Needs work: ${FOCUS[top].title}`}>
+        <span className="mt-1 block max-w-full truncate rounded-full bg-warning-soft px-2 py-0.5 text-xs font-medium text-warning" title={`Needs work: ${FOCUS[top].title}`}>
           Focus: {FOCUS[top].short}
         </span>
       )}
@@ -117,7 +117,7 @@ function Branch({ node, target, level }: { node: ChartNode; target: number; leve
       {node.children.length > 0 && (
         <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
           aria-label={`${open ? "Hide" : "Show"} ${node.name}'s team`}
-          className="relative z-10 -mt-2 rounded-full border border-border bg-surface px-2 py-0.5 text-[11px] font-semibold text-fg-muted hover:text-primary">
+          className="relative z-10 -mt-2 rounded-full border border-border bg-surface px-2 py-0.5 text-xs font-semibold text-fg-muted hover:text-primary">
           {open ? "−" : `+${node.children.length}`}
         </button>
       )}

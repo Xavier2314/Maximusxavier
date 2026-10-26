@@ -47,7 +47,7 @@ export function FocusList({ areas, who = "You", courses = [], compact = false }:
             <div className="flex items-start gap-3">
               <span className="relative grid size-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary">
                 <Icon className="size-5" aria-hidden />
-                <span className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-brand-navy text-[11px] font-bold text-brand-lime ring-2 ring-surface dark:bg-brand-lime dark:text-brand-navy">{i + 1}</span>
+                <span className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-brand-navy text-xs font-bold text-brand-lime ring-2 ring-surface dark:bg-brand-lime dark:text-brand-navy">{i + 1}</span>
               </span>
               <div className="min-w-0">
                 <h3 className="font-semibold leading-tight">{info.title}</h3>

@@ -111,7 +111,7 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
                   <span className={cn("grid size-10 place-items-center rounded-xl", open.tone)}><t.icon className="size-5" aria-hidden /></span>
                   <p className="mt-3 font-medium">{t.label}</p>
                   <p className="text-xs text-fg-muted">{t.desc}</p>
-                  {!t.href && <span className="mt-2 inline-block rounded-full bg-surface-muted px-2 py-0.5 text-[11px] text-fg-muted">Coming in the next update</span>}
+                  {!t.href && <span className="mt-2 inline-block rounded-full bg-surface-muted px-2 py-0.5 text-xs text-fg-muted">Coming in the next update</span>}
                 </>
               );
               return t.href ? (

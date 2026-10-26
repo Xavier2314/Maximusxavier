@@ -53,7 +53,7 @@ export function NotificationList({ items, filter }: { items: Notification[]; fil
             <li key={n.id}>
               <button type="button" onClick={() => open(n)} disabled={pending}
                 className={cn("flex w-full gap-3 px-4 py-4 text-left transition-colors hover:bg-surface-muted/60", !n.read_at && "bg-primary-soft/40")}>
-                <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", n.read_at ? "bg-surface-muted text-fg-subtle" : "bg-primary text-white")}>
+                <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", n.read_at ? "bg-surface-muted text-fg-subtle" : "bg-primary text-primary-fg")}>
                   <Icon className="size-5" aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">

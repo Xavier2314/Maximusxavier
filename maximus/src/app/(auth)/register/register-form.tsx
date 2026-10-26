@@ -94,7 +94,7 @@ export function RegisterForm({ offices, referralCode, uplineCode }: { offices: {
             ) : (
               <UserRound className="size-8 text-fg-subtle" aria-hidden />
             )}
-            <span className="absolute bottom-0 right-0 grid size-7 place-items-center rounded-full bg-primary text-white ring-2 ring-bg">
+            <span className="absolute bottom-0 right-0 grid size-7 place-items-center rounded-full bg-primary text-primary-fg ring-2 ring-bg">
               <Camera className="size-3.5" aria-hidden />
             </span>
           </label>

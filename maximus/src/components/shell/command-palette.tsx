@@ -46,7 +46,7 @@ export function CommandPalette({ sections }: { sections: NavSection[] }) {
   const go = (href: string) => { setOpen(false); router.push(href); };
   let lastGroup = "";
   return (
-    <div className="fixed inset-0 z-[60] grid place-items-start bg-black/50 px-4 pt-[12vh] backdrop-blur-sm animate-fade" onClick={() => setOpen(false)}>
+    <div className="fixed inset-0 z-[60] grid place-items-start bg-black/50 px-4 pt-[12vh] animate-fade" onClick={() => setOpen(false)}>
       <div role="dialog" aria-modal="true" aria-label="Search" onClick={(e) => e.stopPropagation()} className="card mx-auto w-full max-w-lg overflow-hidden animate-rise">
         <div className="flex items-center gap-3 border-b border-border px-4">
           <Search className="size-5 text-fg-subtle" aria-hidden />
@@ -58,7 +58,7 @@ export function CommandPalette({ sections }: { sections: NavSection[] }) {
               if (e.key === "Escape") setOpen(false);
             }}
             className="h-14 flex-1 bg-transparent text-[15px] focus:outline-none" />
-          <kbd className="rounded-md border border-border px-1.5 py-0.5 text-[11px] text-fg-subtle">Esc</kbd>
+          <kbd className="rounded-md border border-border px-1.5 py-0.5 text-xs text-fg-subtle">Esc</kbd>
         </div>
         <ul className="max-h-[50vh] overflow-y-auto p-2" role="listbox">
           {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-fg-muted">No matches. Try “prospect”, “order” or “goals”.</li>}
@@ -67,7 +67,7 @@ export function CommandPalette({ sections }: { sections: NavSection[] }) {
             const header = r.group !== lastGroup ? (lastGroup = r.group) : null;
             return (
               <li key={`${r.group}-${r.href}-${r.label}`} role="option" aria-selected={idx === active}>
-                {header && <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-fg-subtle">{header}</p>}
+                {header && <p className="px-3 pb-1 pt-3 text-xs font-semibold uppercase tracking-[0.12em] text-fg-subtle">{header}</p>}
                 <button type="button" onMouseEnter={() => setActive(idx)} onClick={() => go(r.href)}
                   className={cn("flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm", idx === active ? "bg-primary text-primary-fg" : "hover:bg-surface-muted")}>
                   <Icon className="size-4 shrink-0" aria-hidden />

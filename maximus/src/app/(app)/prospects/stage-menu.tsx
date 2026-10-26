@@ -10,7 +10,7 @@ export function StageMenu({ id, stage }: { id: string; stage: ProspectStage }) {
   return (
     <select aria-label="Move to stage" value={stage} disabled={pending}
       onChange={(e) => { const s = e.target.value; start(async () => { await setStageAction(id, s); }); }}
-      className="h-7 max-w-[92px] rounded-lg border border-border bg-surface px-1.5 text-[11px] text-fg-muted">
+      className="h-7 max-w-[92px] rounded-lg border border-border bg-surface px-1.5 text-xs text-fg-muted">
       {STAGES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
     </select>
   );

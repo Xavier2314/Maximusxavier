@@ -298,7 +298,7 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
               <div className={cn("group flex", mine ? "justify-end" : "justify-start")}>
                 <div className={cn("max-w-[82%] rounded-2xl px-3 py-2 text-[15px] shadow-sm", mine ? "rounded-br-md bg-primary text-primary-fg" : "rounded-bl-md bg-surface-muted")}>
                   {quoted && (
-                    <p className={cn("mb-1 border-l-2 pl-2 text-xs", mine ? "border-white/50 text-white/80" : "border-primary text-fg-muted")}>
+                    <p className={cn("mb-1 border-l-2 pl-2 text-xs", mine ? "border-primary-fg/50 text-primary-fg/80" : "border-primary text-fg-muted")}>
                       {quoted.deleted_at ? "Deleted message" : quoted.body ?? quoted.attachment_name ?? "Attachment"}
                     </p>
                   )}
@@ -318,7 +318,7 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
                         ? <audio controls src={urls[m.attachment_path]} className="h-10 max-w-60" preload="metadata" />
                         : <p className="text-sm opacity-80">Voice note…</p>)}
                       {m.kind === "goal" && (
-                        <div className={cn("mb-1 rounded-xl p-2.5", mine ? "bg-white/15" : "bg-surface")}>
+                        <div className={cn("mb-1 rounded-xl p-2.5", mine ? "bg-primary-fg/15" : "bg-surface")}>
                           <p className="flex items-center gap-1.5 text-xs opacity-80"><Target className="size-3.5" aria-hidden /> Goal</p>
                           {g ? (
                             <>
@@ -329,7 +329,7 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
                         </div>
                       )}
                       {m.kind === "focus_invite" && (
-                        <div className={cn("mb-1 rounded-xl p-2.5", mine ? "bg-white/15" : "bg-surface")}>
+                        <div className={cn("mb-1 rounded-xl p-2.5", mine ? "bg-primary-fg/15" : "bg-surface")}>
                           <p className="flex items-center gap-1.5 font-medium"><Timer className="size-4" aria-hidden /> Focus together: {m.focus_minutes} min</p>
                           {!mine && <Link href={`/tools/pomodoro?label=${encodeURIComponent(`Focus with ${first}`)}`} className="mt-1 inline-block text-sm font-semibold text-primary">Start my timer</Link>}
                           <p className="mt-1 text-xs opacity-75">Each of you runs your own timer. Check in when it ends.</p>
@@ -338,7 +338,7 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
                       {m.body && <p className="whitespace-pre-wrap break-words">{m.body}</p>}
                     </>
                   )}
-                  <p className={cn("mt-0.5 flex items-center justify-end gap-1 text-[11px]", mine ? "text-white/75" : "text-fg-subtle")}>
+                  <p className={cn("mt-0.5 flex items-center justify-end gap-1 text-xs", mine ? "text-primary-fg/80" : "text-fg-subtle")}>
                     {m.edited_at && !m.deleted_at && "edited · "}{time(m.created_at)}
                     {mine && (read ? <CheckCheck className="size-3.5" aria-label="Read" /> : <Check className="size-3.5" aria-label="Sent" />)}
                   </p>
@@ -410,7 +410,7 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
               )}
             </form>
           )}
-          <p className="mt-1 text-center text-[11px] text-fg-subtle">Only you and {first} can read this chat, not admins or anyone else. Not end-to-end encrypted.</p>
+          <p className="mt-1 text-center text-xs text-fg-subtle">Only you and {first} can read this chat, not admins or anyone else. Not end-to-end encrypted.</p>
         </div>
       )}
     </div>

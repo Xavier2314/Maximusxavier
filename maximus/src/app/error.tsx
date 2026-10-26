@@ -16,7 +16,7 @@ export default function RootError({ error, reset }: { error: Error & { digest?: 
         <p className="mt-1 text-sm text-fg-muted">Please try again. We&apos;ve been sent the details so we can fix it.</p>
         {error.digest && <p className="mt-2 font-mono text-xs text-fg-subtle">Ref: {error.digest}</p>}
         <div className="mt-5 flex justify-center gap-2">
-          <button type="button" onClick={reset} className="h-11 rounded-xl bg-primary px-5 font-medium text-white">Try again</button>
+          <button type="button" onClick={reset} className="h-11 rounded-xl bg-primary px-5 font-medium text-primary-fg">Try again</button>
           <button type="button" onClick={() => location.assign("/dashboard")} className="h-11 rounded-xl border border-border px-5 font-medium">Go home</button>
         </div>
       </div>

@@ -57,7 +57,7 @@ export function ReportEditor({ initial, prev, reportId }: { initial: OfficeRepor
           <button key={m.k} type="button" role="tab" aria-selected={mode === m.k} onClick={() => setMode(m.k)}
             className={cn("flex flex-col items-center gap-1 rounded-2xl border p-3 text-center",
               mode === m.k ? "border-primary bg-primary-soft text-primary" : "border-border bg-surface text-fg-muted hover:border-primary/40")}>
-            <m.I className="size-5" aria-hidden /><span className="text-sm font-semibold">{m.l}</span><span className="hidden text-[11px] sm:block">{m.h}</span>
+            <m.I className="size-5" aria-hidden /><span className="text-sm font-semibold">{m.l}</span><span className="hidden text-xs sm:block">{m.h}</span>
           </button>
         ))}
       </div>

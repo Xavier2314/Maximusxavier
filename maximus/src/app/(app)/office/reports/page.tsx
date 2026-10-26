@@ -93,7 +93,7 @@ export default async function AttendanceReportsPage({ searchParams }: {
           <span className="text-fg-subtle">to</span>
           <label className="sr-only" htmlFor="to">To</label>
           <input id="to" type="date" name="to" defaultValue={range.to} max={today} className="h-9 rounded-xl border border-border bg-surface px-2" />
-          <button className="h-9 rounded-xl bg-primary px-3 font-medium text-white">Apply</button>
+          <button className="h-9 rounded-xl bg-primary px-3 font-medium text-primary-fg">Apply</button>
         </form>
       </div>
 

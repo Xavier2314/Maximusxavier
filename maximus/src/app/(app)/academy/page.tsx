@@ -38,7 +38,7 @@ export default async function AcademyPage() {
             <h1 className="mt-2 text-3xl font-bold tracking-tight">Learn. Lead. Maximise.</h1>
             <p className="mt-2 max-w-md text-white/70">Practical courses on prospecting, sales, leadership and personal growth — at your own pace.</p>
           </div>
-          <ProgressRing value={overall} size={110}><div><p className="text-2xl font-bold">{overall}%</p><p className="text-[11px] text-white/60">{completed}/{total} lessons</p></div></ProgressRing>
+          <ProgressRing value={overall} size={110}><div><p className="text-2xl font-bold">{overall}%</p><p className="text-xs text-white/60">{completed}/{total} lessons</p></div></ProgressRing>
         </div>
       </section>
       {cards.length === 0 ? <EmptyState icon={<GraduationCap className="size-6" />} title="No courses yet" /> : CATEGORIES.map((cat) => {

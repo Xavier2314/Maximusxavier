@@ -98,7 +98,7 @@ export function BlockPlanner({ date, today, blocks: initial }: { date: string; t
           <div className="relative select-none" style={{ height: total * PX_PER_MIN }} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
             {Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => (
               <div key={i} className="absolute inset-x-0 flex items-start border-t border-border/60" style={{ top: i * 60 * PX_PER_MIN }}>
-                <span className="-mt-2.5 w-14 bg-surface pr-2 text-right text-[11px] text-fg-subtle">{label((START_HOUR + i) * 60)}</span>
+                <span className="-mt-2.5 w-14 bg-surface pr-2 text-right text-xs text-fg-subtle">{label((START_HOUR + i) * 60)}</span>
               </div>
             ))}
             {blocks.map((b) => {
@@ -112,7 +112,7 @@ export function BlockPlanner({ date, today, blocks: initial }: { date: string; t
                   <div className="flex items-start justify-between gap-1">
                     <div className="min-w-0">
                       <p className={cn("truncate text-sm font-semibold", b.done && "line-through")}>{b.title}</p>
-                      {height > 36 && <p className="text-[11px] opacity-90">{label(v.s)} – {label(v.e)}</p>}
+                      {height > 36 && <p className="text-xs opacity-90">{label(v.s)} – {label(v.e)}</p>}
                     </div>
                     <div className="flex shrink-0 gap-0.5" onPointerDown={(e) => e.stopPropagation()}>
                       <Link href={`/tools/pomodoro?label=${encodeURIComponent(b.title)}`} className="rounded p-1 hover:bg-white/20" aria-label={`Focus on ${b.title}`}><Play className="size-3.5" aria-hidden /></Link>

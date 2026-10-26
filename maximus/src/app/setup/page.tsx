@@ -28,7 +28,7 @@ export default function SetupPage() {
           {items.map((i) => (
             <li key={i.name} className="flex items-start gap-3 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
               {i.ok ? <CircleCheck className="mt-0.5 size-5 text-brand-green" aria-label="Configured" />
-                : <CircleDashed className="mt-0.5 size-5 text-white/40" aria-label="Not configured" />}
+                : <CircleDashed className="mt-0.5 size-5 text-white/60" aria-label="Not configured" />}
               <div>
                 <p className="font-medium">{i.name} {!i.required && <span className="text-xs text-white/50">(optional)</span>}</p>
                 <p className="mt-0.5 font-mono text-xs text-white/50">{i.env}</p>

@@ -33,7 +33,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </ul>
         </div>
         <Logo variant="mark" mono className="pointer-events-none absolute -bottom-24 -right-24 h-[26rem] w-auto text-white/[0.04]" title="" />
-        <p className="relative z-10 text-xs text-white/40">© {new Date().getFullYear()} Maximus. All rights reserved.</p>
+        <p className="relative z-10 text-xs text-white/60">© {new Date().getFullYear()} Maximus. All rights reserved.</p>
       </aside>
       <main className="flex min-h-dvh flex-col bg-bg">
         <div className="auth-gradient px-6 pb-10 pt-[max(2rem,env(safe-area-inset-top))] text-white lg:hidden">

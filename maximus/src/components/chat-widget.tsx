@@ -64,7 +64,7 @@ export function ChatWidget({ firstName }: { firstName: string }) {
   return (
     <>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={open ? "Close Maximus assistant" : "Ask Maximus"}
-        className="fixed bottom-24 right-4 z-40 flex h-14 items-center gap-2 rounded-full bg-brand-navy pl-4 pr-5 text-white shadow-xl ring-1 ring-white/10 transition-transform hover:scale-105 lg:bottom-6 lg:right-6 dark:bg-primary">
+        className="fixed bottom-24 right-4 z-40 flex h-14 items-center gap-2 rounded-full bg-brand-navy pl-4 pr-5 text-primary-fg shadow-xl ring-1 ring-white/10 transition-transform hover:scale-105 lg:bottom-6 lg:right-6 dark:bg-primary">
         {open ? <X className="size-5" aria-hidden /> : <MessageCircle className="size-5 text-brand-lime dark:text-white" aria-hidden />}
         <span className="text-sm font-semibold">{open ? "Close" : "Ask Maximus"}</span>
       </button>
@@ -109,7 +109,7 @@ export function ChatWidget({ firstName }: { firstName: string }) {
                 )}
                 {messages.map((m) => (
                   <div key={m.id} className={cn("flex", m.role === "user" && "justify-end")}>
-                    <div className={cn("max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm", m.role === "user" ? "bg-primary text-white" : "bg-surface-muted")}>
+                    <div className={cn("max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm", m.role === "user" ? "bg-primary text-primary-fg" : "bg-surface-muted")}>
                       {m.content ? (m.role === "assistant" ? <RichText text={m.content} /> : <p className="whitespace-pre-line">{m.content}</p>)
                         : <LoaderCircle className="size-4 animate-spin text-fg-subtle" aria-label="Thinking" />}
                       {m.role === "assistant" && m.content && !streaming && <ReadAloud text={m.content.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/[*_#`>|]+/g, " ")} label="Listen" className="mt-2 h-8 bg-surface" />}
@@ -125,7 +125,7 @@ export function ChatWidget({ firstName }: { firstName: string }) {
                     placeholder="Ask Maximus…" aria-label="Message"
                     className="max-h-28 min-h-[40px] flex-1 resize-none rounded-xl border border-border bg-surface px-3 py-2 text-sm focus:border-primary focus:outline-none" />
                   <button type="submit" disabled={!input.trim() || streaming} aria-label="Send"
-                    className="grid size-10 place-items-center rounded-xl bg-primary text-white disabled:opacity-50">
+                    className="grid size-10 place-items-center rounded-xl bg-primary text-primary-fg disabled:opacity-50">
                     {streaming ? <LoaderCircle className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
                   </button>
                 </div>

@@ -7,13 +7,18 @@
    Maximus brand tokens — from the official logo manual
    Main:   Blue  #305EE6   Green #7ED321
    Accent: Lime  #B5F44A   Navy  #0F172A
+   Highlight: Orange #F97316 — the Home banner only; always with navy text on it
    Typeface: Futura (Jost is used as the web fallback, see layout.tsx)
+
+   Every text colour below meets WCAG AA (4.5:1) on --surface, --surface-muted
+   and --bg, in both light and dark mode.
 ----------------------------------------------------------------------------- */
 :root {
   --brand-blue: #305ee6;
   --brand-green: #7ed321;
   --brand-lime: #b5f44a;
   --brand-navy: #0f172a;
+  --brand-orange: #f97316;
 
   --bg: #f4f6fb;
   --bg-elevated: #ffffff;
@@ -21,20 +26,20 @@
   --surface-muted: #eef1f8;
   --border: #e2e7f1;
   --fg: #0f172a;
-  --fg-muted: #55617a;
-  --fg-subtle: #8792a8;
+  --fg-muted: #4b566d;
+  --fg-subtle: #5f6b82;
   --primary: #305ee6;
   --primary-hover: #244fd0;
   --primary-fg: #ffffff;
   --primary-soft: #e8eefd;
-  --success: #4f9a10;          /* darker green for text contrast on light */
+  --success: #3f7d0c;          /* darker green for text contrast on light */
   --success-soft: #ecf9dc;
   --warning: #b45309;
   --warning-soft: #fef3c7;
-  --danger: #dc2626;
+  --danger: #b91c1c;
   --danger-soft: #fee2e2;
   --ring: #305ee6;
-  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12);
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.05);
   /* Chart series (validated for CVD separation and contrast on each surface) */
   --chart-1: #305ee6;
   --chart-2: #4f9a10;
@@ -50,10 +55,10 @@
   --border: #22304d;
   --fg: #eef2fb;
   --fg-muted: #a3afc7;
-  --fg-subtle: #6f7d99;
-  --primary: #4d76f0;
-  --primary-hover: #6489f3;
-  --primary-fg: #ffffff;
+  --fg-subtle: #8794b2;
+  --primary: #6489f3;
+  --primary-hover: #7d9bf5;
+  --primary-fg: #0a0f1d;     /* navy on the lighter dark-mode blue: 5.8:1 (white would be 3.4:1) */
   --primary-soft: #1a2a55;
   --success: #8fe03a;
   --success-soft: #1c3312;
@@ -62,7 +67,7 @@
   --danger: #f87171;
   --danger-soft: #3b1414;
   --ring: #6489f3;
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(0 0 0 / 0.6);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
   --chart-1: #6489f3;
   --chart-2: #5fa81a;
   --chart-grid: #1d2942;
@@ -76,6 +81,7 @@
   --color-brand-green: var(--brand-green);
   --color-brand-lime: var(--brand-lime);
   --color-brand-navy: var(--brand-navy);
+  --color-brand-orange: var(--brand-orange);
 
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);
@@ -98,7 +104,7 @@
   --color-ring: var(--ring);
 
   --shadow-card: var(--shadow-card);
-  --radius-card: 1.25rem;
+  --radius-card: 1rem;
 
   --animate-rise: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   --animate-fade: fade 0.3s ease-out both;
@@ -124,11 +130,7 @@
     text-size-adjust: 100%;
   }
   body {
-    background:
-      radial-gradient(60rem 30rem at 100% -10%, color-mix(in srgb, var(--brand-blue) 7%, transparent), transparent 70%),
-      radial-gradient(40rem 24rem at -10% 110%, color-mix(in srgb, var(--brand-green) 6%, transparent), transparent 70%),
-      var(--bg);
-    background-attachment: fixed;
+    background: var(--bg);
     color: var(--fg);
     font-feature-settings: "ss01";
     -webkit-font-smoothing: antialiased;
@@ -145,13 +147,11 @@
 }
 
 @layer components {
-  /* The signature Maximus hero: navy → blue with the trophy-wedge glow. */
+  /* Navy banner surface for page heroes. Flat brand navy; no glows. */
   .hero-gradient {
-    background:
-      radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--brand-green) 28%, transparent) 0%, transparent 45%),
-      radial-gradient(90% 120% at 0% 100%, color-mix(in srgb, var(--brand-blue) 55%, transparent) 0%, transparent 60%),
-      linear-gradient(135deg, var(--brand-navy) 0%, color-mix(in srgb, var(--brand-navy) 72%, var(--brand-blue)) 55%, var(--brand-blue) 130%);
+    background: var(--brand-navy);
   }
+  .dark .hero-gradient { box-shadow: inset 0 0 0 1px var(--border); }
   /* Office / platform branding: the app shell sets --brand-primary, --brand-accent and
      --brand-sidebar; everything else is derived so a brand can't break the design. */
   .branded {
@@ -172,10 +172,7 @@
     --ring: color-mix(in srgb, var(--brand-primary) 75%, white);
   }
   .auth-gradient {
-    background:
-      radial-gradient(60% 50% at 85% 10%, rgb(181 244 74 / 0.22) 0%, transparent 60%),
-      radial-gradient(70% 60% at 10% 90%, rgb(48 94 230 / 0.5) 0%, transparent 65%),
-      #0f172a;
+    background: #0f172a;
   }
   /* Wedge = the green "fan" from the logo, used as a decorative motif. */
   .wedge {

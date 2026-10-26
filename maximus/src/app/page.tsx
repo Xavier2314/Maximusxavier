@@ -43,7 +43,7 @@ export default function Landing() {
             </div>
           ))}
         </div>
-        <p className="mt-16 flex items-center gap-2 text-xs text-white/40"><BarChart3 className="size-3.5" aria-hidden /> Built for the Maximus organisation.</p>
+        <p className="mt-16 flex items-center gap-2 text-xs text-white/60"><BarChart3 className="size-3.5" aria-hidden /> Built for the Maximus organisation.</p>
       </section>
     </main>
   );

@@ -33,7 +33,7 @@ export function Avatar({ name, src, size = 40, className }: { name: string; src?
 }
 
 export function Progress({ value, tone = "blue", className, label }: { value: number; tone?: "blue" | "green" | "lime"; className?: string; label?: string }) {
-  const bar = tone === "green" ? "bg-brand-green" : tone === "lime" ? "bg-brand-lime" : "bg-gradient-to-r from-brand-blue to-[#5b82f0]";
+  const bar = tone === "green" ? "bg-brand-green" : tone === "lime" ? "bg-brand-lime" : "bg-primary";
   const v = Math.max(0, Math.min(100, value));
   return (
     <div className={cn("h-2.5 w-full overflow-hidden rounded-full bg-surface-muted", className)}
@@ -43,8 +43,10 @@ export function Progress({ value, tone = "blue", className, label }: { value: nu
   );
 }
 
-/** The logo's base arc, reused as a circular progress indicator. */
-export function ProgressRing({ value, size = 96, stroke = 10, children }: { value: number; size?: number; stroke?: number; children?: ReactNode }) {
+/** The logo's base arc, reused as a circular progress indicator. Drawn on dark banners; `color` is any CSS colour. */
+export function ProgressRing({ value, size = 96, stroke = 10, color = "var(--brand-lime)", children }: {
+  value: number; size?: number; stroke?: number; color?: string; children?: ReactNode;
+}) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const v = Math.max(0, Math.min(100, value));
@@ -52,14 +54,8 @@ export function ProgressRing({ value, size = 96, stroke = 10, children }: { valu
     <div className="relative inline-grid place-items-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90" aria-hidden>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="currentColor" strokeWidth={stroke} className="text-white/15" />
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="url(#mx-ring)" strokeWidth={stroke} strokeLinecap="round"
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"
           strokeDasharray={c} strokeDashoffset={c - (v / 100) * c} className="transition-[stroke-dashoffset] duration-1000 ease-out" />
-        <defs>
-          <linearGradient id="mx-ring" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#B5F44A" />
-            <stop offset="100%" stopColor="#7ED321" />
-          </linearGradient>
-        </defs>
       </svg>
       <div className="absolute inset-0 grid place-items-center text-center">{children}</div>
     </div>
@@ -75,10 +71,7 @@ export function EmptyState({ icon, title, description, action, className }: {
 }) {
   return (
     <div className={cn("flex flex-col items-center px-6 py-12 text-center", className)}>
-      <div className="relative mb-4">
-        <div className="wedge absolute -top-3 left-1/2 h-[74px] w-[100px] -translate-x-1/2 bg-brand-lime/30" aria-hidden />
-        <span className="relative grid size-14 place-items-center rounded-2xl bg-primary-soft text-primary">{icon}</span>
-      </div>
+      <span className="mb-4 grid size-12 place-items-center rounded-xl bg-primary-soft text-primary">{icon}</span>
       <h3 className="text-base font-semibold">{title}</h3>
       {description && <p className="mt-1 max-w-sm text-sm text-fg-muted">{description}</p>}
       {action && <div className="mt-5">{action}</div>}
@@ -88,7 +81,7 @@ export function EmptyState({ icon, title, description, action, className }: {
 
 export function PageHeader({ title, description, action, eyebrow }: { title: string; description?: ReactNode; action?: ReactNode; eyebrow?: string }) {
   return (
-    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between animate-rise">
+    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
         {eyebrow && <p className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary">{eyebrow}</p>}
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
@@ -109,13 +102,13 @@ export function StatCard({ label, value, hint, icon, tone = "blue", className }:
     navy: "bg-brand-navy text-brand-lime dark:bg-surface-muted",
   }[tone];
   return (
-    <div className={cn("card p-4 sm:p-5 animate-rise", className)}>
+    <div className={cn("card p-4 sm:p-5", className)}>
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm text-fg-muted">{label}</p>
         <span className={cn("grid size-9 place-items-center rounded-xl", iconTone)}>{icon}</span>
       </div>
       <p className="mt-2 text-2xl font-bold tracking-tight tabular-nums">{value}</p>
-      {hint && <p className="mt-1 text-xs text-fg-subtle">{hint}</p>}
+      {hint && <p className="mt-1 text-sm text-fg-subtle">{hint}</p>}
     </div>
   );
 }

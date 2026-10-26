@@ -75,7 +75,7 @@ function NavLinks({ sections, pathname, onNavigate }: { sections: NavSection[]; 
     <nav aria-label="Main" className="space-y-6">
       {sections.map((section, i) => (
         <div key={section.title ?? i}>
-          {section.title && <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">{section.title}</p>}
+          {section.title && <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/60">{section.title}</p>}
           <ul className="space-y-0.5">
             {section.items.map((item) => {
               const Icon = NAV_ICONS[item.icon];
@@ -113,7 +113,7 @@ function UserCard({ user, signOut }: { user: ShellUser; signOut: () => void }) {
       </Link>
       <form action={signOut} className="mt-3">
         <button type="submit"
-          className="flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-white/10 text-sm font-medium text-white/80 hover:bg-white/15 hover:text-white">
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-white/10 text-sm font-medium text-white/80 hover:bg-white/15 hover:text-white">
           <LogOut className="size-4" aria-hidden />Log out
         </button>
       </form>
@@ -152,7 +152,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
 
   return (
     <div className="branded min-h-dvh lg:pl-72" style={brandVars(brand) as React.CSSProperties}>
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-white">
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-fg">
         Skip to content
       </a>
 
@@ -169,12 +169,12 @@ export function AppShell({ sections: memberSections, team = null, office = null,
         </div>
         <UserCard user={user} signOut={signOut} />
         {!brand.isDefault && !brand.whiteLabel && brand.name !== platformName && (
-          <p className="mt-3 text-center text-[11px] text-white/35">Powered by {platformName}</p>
+          <p className="mt-3 text-center text-xs text-white/60">Powered by {platformName}</p>
         )}
       </aside>
 
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-bg/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-border bg-bg/95 pt-[env(safe-area-inset-top)] backdrop-blur">
         <AnnouncementBar items={announcements} />
         {(team || office) && (
           <div className="border-b border-border/60 px-4 py-2 lg:hidden">
@@ -185,20 +185,20 @@ export function AppShell({ sections: memberSections, team = null, office = null,
           <Link href="/dashboard" className="lg:hidden"><BrandMark brand={brand} compact onDark={false} /></Link>
           <p className="hidden min-w-0 truncate text-sm font-semibold text-fg-muted md:block">{current?.label}</p>
           <button type="button" onClick={() => window.dispatchEvent(new Event("maximus:search"))}
-            className="ml-auto flex h-10 min-w-0 items-center gap-2 rounded-xl border border-border bg-surface px-3 text-sm text-fg-subtle hover:border-primary/40 sm:w-64 md:ml-6"
+            className="ml-auto flex h-11 min-w-0 items-center gap-2 rounded-xl border border-border bg-surface px-3 text-sm text-fg-subtle hover:border-primary/40 sm:w-64 md:ml-6"
             aria-label="Search pages and actions">
             <Search className="size-4 shrink-0" aria-hidden />
             <span className="hidden flex-1 truncate text-left sm:inline">Search or jump to…</span>
-            <kbd className="hidden rounded-md border border-border px-1.5 text-[11px] lg:inline">Ctrl K</kbd>
+            <kbd className="hidden rounded-md border border-border px-1.5 text-xs lg:inline">Ctrl K</kbd>
           </button>
           <div className="flex-1" />
           <QuickAdd />
           <ThemeToggle />
           <NotificationBell userId={user.id} initialUnread={unread} />
-          <Link href="/profile" className="hidden sm:block lg:hidden" aria-label="Your profile">
+          <Link href="/profile" className="hidden size-11 place-items-center sm:grid lg:hidden" aria-label="Your profile">
             <Avatar name={user.name} src={user.avatar} size={36} />
           </Link>
-          <Link href="/settings" className="hidden size-10 place-items-center rounded-xl text-fg-muted hover:bg-surface-muted hover:text-fg lg:grid" aria-label="Settings">
+          <Link href="/settings" className="hidden size-11 place-items-center rounded-xl text-fg-muted hover:bg-surface-muted hover:text-fg lg:grid" aria-label="Settings">
             <Settings className="size-5" aria-hidden />
           </Link>
         </div>
@@ -208,7 +208,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
       <CommandPalette sections={allSections} />
 
       {/* Mobile bottom navigation */}
-      <nav aria-label="Quick" className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-bg-elevated/90 backdrop-blur-xl lg:hidden">
+      <nav aria-label="Quick" className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg-elevated lg:hidden">
         <ul className="mx-auto grid max-w-md grid-cols-5">
           {bottom.map((item) => {
             const Icon = NAV_ICONS[item.icon];
@@ -217,9 +217,9 @@ export function AppShell({ sections: memberSections, team = null, office = null,
             return (
               <li key={item.href}>
                 <Link href={item.href} aria-current={active ? "page" : undefined}
-                  className={cn("flex flex-col items-center gap-1 pb-2 pt-2.5 text-[11px] font-medium", active ? "text-primary" : "text-fg-subtle")}>
+                  className={cn("flex min-h-14 flex-col items-center justify-end gap-1 pb-2 pt-2 text-xs font-medium", active ? "text-primary" : "text-fg-muted")}>
                   {isCheckIn ? (
-                    <span className="-mt-6 grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-brand-blue to-[#1e3a8a] text-white shadow-lg shadow-brand-blue/40 ring-4 ring-bg">
+                    <span className="-mt-5 grid size-12 place-items-center rounded-xl bg-primary text-primary-fg ring-4 ring-bg-elevated">
                       <Icon className="size-5" aria-hidden />
                     </span>
                   ) : (
@@ -232,7 +232,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
           })}
           <li>
             <button type="button" onClick={() => setMenuOpen(true)} aria-expanded={menuOpen} aria-controls="mobile-menu"
-              className="flex w-full flex-col items-center gap-1 pb-2 pt-2.5 text-[11px] font-medium text-fg-subtle">
+              className="flex min-h-14 w-full flex-col items-center justify-end gap-1 pb-2 pt-2 text-xs font-medium text-fg-muted">
               <Menu className="size-[22px]" aria-hidden />
               More
             </button>
@@ -247,7 +247,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
           <div className="safe-bottom absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto rounded-t-3xl bg-brand-navy px-4 pb-6 pt-4 animate-rise">
             <div className="mb-4 flex items-center justify-between px-2">
               <BrandMark brand={brand} />
-              <button type="button" onClick={() => setMenuOpen(false)} className="grid size-10 place-items-center rounded-xl text-white/70 hover:bg-white/10" aria-label="Close menu">
+              <button type="button" onClick={() => setMenuOpen(false)} className="grid size-11 place-items-center rounded-xl text-white/70 hover:bg-white/10" aria-label="Close menu">
                 <X className="size-5" aria-hidden />
               </button>
             </div>

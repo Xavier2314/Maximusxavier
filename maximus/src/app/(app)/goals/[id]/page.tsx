@@ -77,7 +77,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
         description={goal.submitted_at ? `Submitted ${formatRelative(goal.submitted_at)}` : "Not submitted yet"}
         action={<>
           <GoalStatus status={goal.status} />
-          {editable && <Link href={`/goals/${id}?edit=1`} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-sm font-medium text-white"><Pencil className="size-4" aria-hidden /> Edit</Link>}
+          {editable && <Link href={`/goals/${id}?edit=1`} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-sm font-medium text-primary-fg"><Pencil className="size-4" aria-hidden /> Edit</Link>}
         </>} />
 
       {saved && (

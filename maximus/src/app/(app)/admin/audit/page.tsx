@@ -34,7 +34,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
             <option value="">All actions</option>
             {actions.map((a) => <option key={a} value={a}>{a.replace(/_/g, " ")}</option>)}
           </Select>
-          <button className="rounded-xl bg-primary px-4 text-sm font-medium text-white">Filter</button>
+          <button className="rounded-xl bg-primary px-4 text-sm font-medium text-primary-fg">Filter</button>
         </form>
         {(data ?? []).length === 0 ? <EmptyState icon={<ScrollText className="size-6" />} title="No audit entries" /> : (
           <div className="overflow-x-auto">

@@ -55,7 +55,7 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
       <PageHeader eyebrow={isOwner ? "Your evaluation" : ev.profiles?.full_name ?? "Member"}
         title={formatDate(ev.period_date, { weekday: "long", day: "numeric", month: "long" })}
         description={`Submitted ${formatRelative(ev.submitted_at)}`}
-        action={editable && <Link href={`/evaluations/${id}?edit=1`} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-sm font-medium text-white"><Pencil className="size-4" aria-hidden /> Edit</Link>} />
+        action={editable && <Link href={`/evaluations/${id}?edit=1`} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-sm font-medium text-primary-fg"><Pencil className="size-4" aria-hidden /> Edit</Link>} />
       {saved && <p className="mb-6 rounded-2xl bg-success-soft px-4 py-3 text-sm text-success" role="status">Evaluation saved. Your sponsor has been notified. 🎉</p>}
 
       <div className="grid gap-6 lg:grid-cols-3">

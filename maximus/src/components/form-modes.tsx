@@ -25,7 +25,7 @@ export function ModeTabs({ mode, onChange }: { mode: FormMode; onChange: (m: For
             mode === m.key ? "border-primary bg-primary-soft text-primary" : "border-border bg-surface text-fg-muted hover:border-primary/40")}>
           <m.icon className="size-5" aria-hidden />
           <span className="text-sm font-semibold leading-tight">{m.label}</span>
-          <span className="hidden text-[11px] leading-tight opacity-80 sm:block">{m.hint}</span>
+          <span className="hidden text-xs leading-tight opacity-80 sm:block">{m.hint}</span>
         </button>
       ))}
     </div>

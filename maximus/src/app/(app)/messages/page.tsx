@@ -74,7 +74,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
                     <span className="block truncate text-sm font-medium">{x.full_name}</span>
                     <span className="block text-xs text-fg-muted">{x.kind === "partner" ? "Accountability partner" : "Sponsor line"}{x.can_send ? "" : " · read-only"}</span>
                   </span>
-                  {x.unread > 0 && <span className="grid min-w-5 place-items-center rounded-full bg-brand-green px-1.5 text-[11px] font-bold text-brand-navy">{x.unread}</span>}
+                  {x.unread > 0 && <span className="grid min-w-5 place-items-center rounded-full bg-brand-green px-1.5 text-xs font-bold text-brand-navy">{x.unread}</span>}
                 </Link>
               ))}
             </CardBody>

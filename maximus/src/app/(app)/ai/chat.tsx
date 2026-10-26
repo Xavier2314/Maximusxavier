@@ -85,7 +85,7 @@ export function Chat({ conversationId, initialQuestion, conversations, initialMe
     <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
       {/* Conversation history */}
       <aside className="hidden lg:block">
-        <Link href="/ai" className="mb-3 flex items-center gap-2 rounded-xl bg-primary px-3 py-2.5 text-sm font-medium text-white hover:bg-primary-hover">
+        <Link href="/ai" className="mb-3 flex items-center gap-2 rounded-xl bg-primary px-3 py-2.5 text-sm font-medium text-primary-fg hover:bg-primary-hover">
           <MessageSquarePlus className="size-4" aria-hidden /> New conversation
         </Link>
         <nav aria-label="Conversation history" className="space-y-1">
@@ -167,7 +167,7 @@ export function Chat({ conversationId, initialQuestion, conversations, initialMe
                 <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-brand-navy"><Logo variant="mark" className="h-5 w-auto" title="Maximus AI" /></span>
               )}
               <div className={cn("max-w-[85%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed",
-                m.role === "user" ? "bg-primary text-white" : "bg-surface-muted")}>
+                m.role === "user" ? "bg-primary text-primary-fg" : "bg-surface-muted")}>
                 {m.content ? (m.role === "assistant" ? <Rich text={m.content} /> : <p className="whitespace-pre-line">{m.content}</p>)
                   : <LoaderCircle className="size-4 animate-spin text-fg-subtle" aria-label="Thinking" />}
                 {m.role === "assistant" && m.content && !(streaming && m === messages[messages.length - 1]) && (
@@ -192,7 +192,7 @@ export function Chat({ conversationId, initialQuestion, conversations, initialMe
               {streaming ? <LoaderCircle className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
             </Button>
           </div>
-          <p className="mt-1.5 px-1 text-[11px] text-fg-subtle">Maximus AI can make mistakes. Check important information with your sponsor.</p>
+          <p className="mt-1.5 px-1 text-xs text-fg-subtle">Maximus AI can make mistakes. Check important information with your sponsor.</p>
         </form>
       </section>
     </div>

@@ -73,7 +73,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
         <div className="flex gap-1 overflow-x-auto scrollbar-none" role="tablist" aria-label="Month">
           {monthOptions.slice(0, 6).map((m) => (
             <Link key={m} href={href({ month: m })} role="tab" aria-selected={m === month}
-              className={cn("whitespace-nowrap rounded-lg px-3 py-1.5 text-sm", m === month ? "bg-primary text-white" : "text-fg-muted hover:bg-surface-muted")}>
+              className={cn("whitespace-nowrap rounded-lg px-3 py-1.5 text-sm", m === month ? "bg-primary text-primary-fg" : "text-fg-muted hover:bg-surface-muted")}>
               {formatDate(m, { month: "short", year: "2-digit" })}
             </Link>
           ))}

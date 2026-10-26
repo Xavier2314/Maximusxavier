@@ -20,12 +20,12 @@ export function QuickAdd() {
   }, [open]);
   return (
     <div className="relative" ref={ref}>
-      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu"
-        className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-primary px-3 text-sm font-semibold text-primary-fg shadow-[0_8px_20px_-8px_rgb(48_94_230/0.7)] hover:bg-primary-hover">
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu" aria-label="New"
+        className="inline-flex h-11 items-center gap-1.5 rounded-xl bg-primary px-3 text-sm font-semibold text-primary-fg hover:bg-primary-hover">
         <Plus className="size-4" aria-hidden /><span className="hidden sm:inline">New</span>
       </button>
       {open && (
-        <div role="menu" className="card absolute right-0 top-12 z-50 w-60 p-1.5 animate-rise">
+        <div role="menu" className="card absolute right-0 top-12 z-50 w-60 p-1.5 shadow-lg animate-rise">
           {QUICK_ACTIONS.map((a) => {
             const Icon = NAV_ICONS[a.icon];
             return (

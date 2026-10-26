@@ -26,11 +26,11 @@ export function NotificationBell({ userId, initialUnread }: { userId: string; in
   }, [userId]);
 
   return (
-    <Link href="/notifications" className="relative grid size-10 place-items-center rounded-xl text-fg-muted hover:bg-surface-muted hover:text-fg"
+    <Link href="/notifications" className="relative grid size-11 place-items-center rounded-xl text-fg-muted hover:bg-surface-muted hover:text-fg"
       aria-label={unread > 0 ? `Notifications, ${unread} unread` : "Notifications"}>
       <Bell className="size-5" aria-hidden />
       {unread > 0 && (
-        <span className="absolute right-1 top-1 grid min-w-[18px] place-items-center rounded-full bg-brand-green px-1 text-[10px] font-bold leading-[18px] text-brand-navy ring-2 ring-bg">
+        <span className="absolute right-1 top-1 grid min-w-[18px] place-items-center rounded-full bg-brand-green px-1 text-xs font-bold leading-[18px] text-brand-navy ring-2 ring-bg">
           {unread > 99 ? "99+" : unread}
         </span>
       )}

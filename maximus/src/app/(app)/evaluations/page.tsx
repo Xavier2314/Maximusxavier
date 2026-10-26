@@ -46,7 +46,7 @@ export default async function EvaluationsPage() {
             const done = evals.some((e) => e.period_date === d);
             const isCurrent = d === period;
             return (
-              <li key={d} className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm ${done ? "bg-success-soft text-success" : isCurrent ? "bg-primary text-white" : d > today ? "bg-surface-muted text-fg-subtle" : "bg-warning-soft text-warning"}`}>
+              <li key={d} className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm ${done ? "bg-success-soft text-success" : isCurrent ? "bg-primary text-primary-fg" : d > today ? "bg-surface-muted text-fg-subtle" : "bg-warning-soft text-warning"}`}>
                 <span className="font-semibold tabular-nums">{formatDate(d, { day: "numeric", month: "short" })}</span>
                 <span className="text-xs">{done ? "Done" : isCurrent ? "Due now" : d > today ? "Upcoming" : "Missed"}</span>
               </li>

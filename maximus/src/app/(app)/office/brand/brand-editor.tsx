@@ -209,7 +209,7 @@ function BrandPreview({ brand }: { brand: Brand }) {
               <p className="text-xs font-semibold">Today&apos;s tasks</p>
               <div className="h-1.5 rounded-full bg-surface-muted"><div className="h-full w-2/3 rounded-full bg-primary" /></div>
               <span className="inline-block rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-medium text-primary">3 of 5 done</span>
-              <button type="button" className="block w-full rounded-lg bg-primary py-1.5 text-xs font-medium text-white">Add a task</button>
+              <button type="button" className="block w-full rounded-lg bg-primary py-1.5 text-xs font-medium text-primary-fg">Add a task</button>
             </div>
           </div>
         </div>

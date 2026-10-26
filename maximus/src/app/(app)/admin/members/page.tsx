@@ -57,7 +57,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
           <Select name="status" defaultValue={sp.status ?? ""} aria-label="Status"><option value="">Any status</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="deactivated">Deactivated</option></Select>
           <Select name="role" defaultValue={sp.role ?? ""} aria-label="Role"><option value="">Any role</option>{Object.entries(ROLE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select>
           <Select name="office" defaultValue={sp.office ?? ""} aria-label="Office"><option value="">Any office</option>{(offices ?? []).map((o) => <option key={o.id as string} value={o.id as string}>{o.name as string}</option>)}</Select>
-          <button className="h-11 rounded-xl bg-primary px-4 text-sm font-medium text-white">Filter</button>
+          <button className="h-11 rounded-xl bg-primary px-4 text-sm font-medium text-primary-fg">Filter</button>
         </form>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-sm">

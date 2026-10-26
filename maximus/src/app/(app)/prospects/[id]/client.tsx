@@ -26,7 +26,7 @@ function Bubble({ m, name }: { m: ProspectMessage; name: string }) {
         out ? "rounded-br-md bg-primary text-primary-fg" : "rounded-bl-md bg-surface-muted",
         m.status === "failed" && "bg-danger-soft text-danger")}>
         <p className="whitespace-pre-wrap break-words">{m.body}</p>
-        <p className={cn("mt-1 flex flex-wrap items-center gap-1.5 text-[11px]", out && m.status !== "failed" ? "text-white/70" : "text-fg-subtle")}>
+        <p className={cn("mt-1 flex flex-wrap items-center gap-1.5 text-xs", out && m.status !== "failed" ? "text-primary-fg/80" : "text-fg-subtle")}>
           {!out && <span>{name} ·</span>}
           {m.ai_generated && <span className="inline-flex items-center gap-0.5"><Bot className="size-3" aria-hidden />AI ·</span>}
           <span>{m.status === "sent" ? "Sent by Maximus" : m.status === "logged" ? "You sent" : m.status === "failed" ? `Not sent: ${m.error ?? "error"}` : ""}</span>
@@ -106,7 +106,7 @@ export function Conversation({ prospect: p, messages, readOnly, canAutoSend, spo
                   <li key={i}>
                     <button type="button" onClick={() => { setBody(o); setFromAi(true); }}
                       className="w-full rounded-xl border border-primary/30 bg-primary-soft/50 p-3 text-left text-sm hover:border-primary">
-                      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-primary">Option {i + 1} · tap to use</span>{o}
+                      <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-primary">Option {i + 1} · tap to use</span>{o}
                     </button>
                   </li>
                 ))}
