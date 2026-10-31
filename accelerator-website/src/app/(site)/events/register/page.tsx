@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarDays, MapPin } from "lucide-react";
 import { RegisterFlow } from "@/components/RegisterFlow";
+import { isLateRegistration } from "@/lib/fees";
 import { Facets } from "@/components/Facets";
 import { EarlyBirdCountdown } from "@/components/EarlyBirdCountdown";
 import { getEventSettings, getTickets } from "@/lib/content";
@@ -45,7 +46,7 @@ export default async function RegisterPage() {
 
       <section className="bg-cream py-12 md:py-16">
         <div className="container-x">
-          <RegisterFlow formUrl={site.registrationFormUrl} />
+          <RegisterFlow formUrl={site.registrationFormUrl} late={isLateRegistration(now)} />
           <p className="mt-12 text-center text-sm text-slate">Questions about registration? <Link href="/contact?topic=Event%20enquiry" className="underline">Contact the events team</Link>.</p>
         </div>
       </section>

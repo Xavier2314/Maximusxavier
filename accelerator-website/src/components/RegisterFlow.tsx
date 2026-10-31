@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform, type Variants } from "framer-motion";
 import { ArrowUpRight, Check, CircleCheck, Copy, Landmark, Lock } from "lucide-react";
-import { BANK_ACCOUNT, POSITIONS, type PositionId } from "@/lib/fees";
+import { BANK_ACCOUNT, LATE_FROM, positionsAt, type PositionId } from "@/lib/fees";
 import { formatNaira } from "@/lib/tickets";
 import { ReceiptCheck, type ReceiptVerdict } from "./ReceiptCheck";
 import { PartPaymentLetter } from "./PartPaymentLetter";
@@ -47,7 +47,9 @@ function AnimatedAmount({ naira }: { naira: number }) {
  * a position and uploaded receipt(s) that, read on their device, add up to the fee paid into
  * the official account. This catches honest mistakes; the team still verifies every payment.
  */
-export function RegisterFlow({ formUrl }: { formUrl: string }) {
+export function RegisterFlow({ formUrl, late = false }: { formUrl: string; late?: boolean }) {
+  // Fees are fixed for this page view by the server clock: Early Bird before 1 Nov 2026, Late Registration after.
+  const POSITIONS = positionsAt(late ? Date.parse(LATE_FROM) : 0);
   const [positionId, setPositionId] = useState<PositionId | null>(null);
   const [verdict, setVerdict] = useState<ReceiptVerdict>({ ok: false, partial: false, totalNaira: 0, receipts: 0 });
   const onVerdict = useCallback((v: ReceiptVerdict) => setVerdict((old) => (old.ok === v.ok && old.partial === v.partial && old.totalNaira === v.totalNaira && old.receipts === v.receipts ? old : v)), []);
@@ -78,7 +80,7 @@ export function RegisterFlow({ formUrl }: { formUrl: string }) {
           <span className="shrink-0 font-display text-3xl italic text-red sm:text-4xl">01</span>
           <div>
             <h2 className="display-md text-navy">Choose your position</h2>
-            <p className="mt-1 text-sm text-ink/70">Your registration fee depends on your membership position.</p>
+            <p className="mt-1 text-sm text-ink/70">Your registration fee depends on your membership position.{late ? <> <b className="text-red">Late Registration fees</b> apply from 1 November.</> : <> <b className="text-red">Early Bird fees</b> until 31 October, 11:59 PM.</>}</p>
           </div>
         </div>
 

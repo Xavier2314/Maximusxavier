@@ -27,8 +27,10 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ saved: false, message: "Invalid details." }, { status: 422 });
   const p = parsed.data;
-  const fee = POSITIONS.find((x) => x.name === p.position)!.feeKobo / 100;
-  if (p.feeNaira !== fee || p.paidNaira >= fee) return NextResponse.json({ saved: false, message: "Invalid amounts." }, { status: 422 });
+  const pos = POSITIONS.find((x) => x.name === p.position)!;
+  // Accept the Early Bird or Late Registration fee (a letter signed just before midnight may arrive after it).
+  const fee = [pos.feeKobo / 100, pos.lateFeeKobo / 100].includes(p.feeNaira) ? p.feeNaira : NaN;
+  if (Number.isNaN(fee) || p.paidNaira >= fee) return NextResponse.json({ saved: false, message: "Invalid amounts." }, { status: 422 });
 
   const url = process.env.PART_PAYMENT_SHEET_URL;
   if (!url) return NextResponse.json({ saved: false, message: "Sheet not connected yet." });

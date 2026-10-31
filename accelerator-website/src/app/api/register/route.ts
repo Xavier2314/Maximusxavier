@@ -4,7 +4,7 @@ import { db, dbConfigured } from "@/lib/db";
 import { initializeTransaction, paystackConfigured } from "@/lib/paystack";
 import { getTickets } from "@/lib/content";
 import { ticketStatus } from "@/lib/tickets";
-import { positionById } from "@/lib/fees";
+import { feeAt, positionById } from "@/lib/fees";
 import { hasPaidRegistration, newReference } from "@/lib/registrations";
 import { site } from "@/lib/site";
 
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   const position = positionById(input.position);
   if (!position) return NextResponse.json({ message: "Choose a valid membership position." }, { status: 422 });
-  const amountKobo = position.feeKobo;
+  const amountKobo = feeAt(position.id) ?? position.feeKobo;
 
   if (await hasPaidRegistration(input.email)) {
     return NextResponse.json({ message: "This email address already has a confirmed registration. Contact us if you need help." }, { status: 409 });

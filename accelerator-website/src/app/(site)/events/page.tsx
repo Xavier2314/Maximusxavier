@@ -12,7 +12,7 @@ import { TicketCards } from "@/components/TicketCards";
 import { CONTEST_STATUS_LABEL, getAwards, getContests, getEventSettings, getSpeakers, getTickets } from "@/lib/content";
 import { formatLagos, formatLagosDate, formatNaira } from "@/lib/tickets";
 import { FeeTable } from "@/components/FeeTable";
-import { MAX_FEE_KOBO, MIN_FEE_KOBO } from "@/lib/fees";
+import { isLateRegistration, maxFeeAt, minFeeAt } from "@/lib/fees";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -181,12 +181,12 @@ export default async function EventsPage() {
             <Reveal className="lg:col-span-4">
               <p className="eyebrow">Registration</p>
               <h2 className="display-lg mt-5 text-navy">Secure your place.</h2>
-              <p className="mt-6 leading-relaxed text-ink/75">Early Bird registration is open until 31 October 2026 at 11:59 PM (Lagos time). Late Registration opens automatically on 1 November 2026.</p>
+              <p className="mt-6 leading-relaxed text-ink/75">{isLateRegistration(now) ? "Early Bird has closed. Late Registration is open: fees below are the Late Registration fees (from 1 November 2026)." : "Early Bird registration is open until 31 October 2026 at 11:59 PM (Lagos time). Late Registration opens automatically on 1 November 2026, with fees 10% higher."}</p>
               <p className="mt-6 text-sm text-slate">Your fee depends on your membership position. Pay by bank transfer to the official account, then submit the official registration form with your proof of payment. Your place is confirmed once the team verifies your payment.</p>
             </Reveal>
             <div className="lg:col-span-8">
               <EarlyBirdCountdown tickets={tickets} serverNow={now} className="mb-8" />
-              <TicketCards tickets={tickets} serverNow={now} feeLabel={`${formatNaira(MIN_FEE_KOBO)} \u2013 ${formatNaira(MAX_FEE_KOBO)}`} />
+              <TicketCards tickets={tickets} serverNow={now} feeLabel={`${formatNaira(minFeeAt(now))} \u2013 ${formatNaira(maxFeeAt(now))}`} />
               <div className="mt-14 grid gap-10 border-t border-sand pt-12 md:grid-cols-5">
                 <div className="md:col-span-2">
                   <p className="eyebrow">Registration fees</p>
@@ -194,7 +194,7 @@ export default async function EventsPage() {
                   <p className="mt-4 text-sm text-ink/75">Choose your position when you register and the correct fee is applied automatically.</p>
                   <Link href="/events/register" className="btn btn-red mt-8">Register now</Link>
                 </div>
-                <div className="md:col-span-3"><FeeTable /></div>
+                <div className="md:col-span-3"><FeeTable now={now} /></div>
               </div>
             </div>
           </div>

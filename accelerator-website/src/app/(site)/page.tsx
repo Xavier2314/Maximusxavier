@@ -13,7 +13,7 @@ import { Logo } from "@/components/Logo";
 import { gallery, site } from "@/lib/site";
 import { getEventSettings, getTickets } from "@/lib/content";
 import { formatLagos, formatLagosDate, formatNaira, ticketStatus } from "@/lib/tickets";
-import { MIN_FEE_KOBO } from "@/lib/fees";
+import { minFeeAt } from "@/lib/fees";
 
 export const dynamic = "force-dynamic";
 
@@ -84,7 +84,7 @@ export default async function HomePage() {
             <div key={k} className="flex gap-12" aria-hidden={k === 1}>
               <span>{event.name}</span><span>&#9670;</span>
               <span>{open ? `${open.name} registration now open${open.salesEnd ? ` until ${formatLagos(open.salesEnd)} WAT` : ""}` : "Registration details coming soon"}</span><span>&#9670;</span>
-              <span>{formatLagosDate(event.startsAt, true)}{event.city ? ` \u00b7 ${event.city}` : ""}</span><span>&#9670;</span>{event.theme && <><span>{event.theme}</span><span>&#9670;</span></>}<span>Registration from {formatNaira(MIN_FEE_KOBO)}</span><span>&#9670;</span><span>₦100K Content Challenge</span><span>&#9670;</span>
+              <span>{formatLagosDate(event.startsAt, true)}{event.city ? ` \u00b7 ${event.city}` : ""}</span><span>&#9670;</span>{event.theme && <><span>{event.theme}</span><span>&#9670;</span></>}<span>Registration from {formatNaira(minFeeAt())}</span><span>&#9670;</span><span>₦100K Content Challenge</span><span>&#9670;</span>
               <span>Recognition</span><span>&#9670;</span><span>Training</span><span>&#9670;</span><span>Networking</span><span>&#9670;</span><span>Competitions</span><span>&#9670;</span>
             </div>
           ))}
