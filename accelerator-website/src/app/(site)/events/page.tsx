@@ -181,7 +181,7 @@ export default async function EventsPage() {
             <Reveal className="lg:col-span-4">
               <p className="eyebrow">Registration</p>
               <h2 className="display-lg mt-5 text-navy">Secure your place.</h2>
-              <p className="mt-6 leading-relaxed text-ink/75">{isLateRegistration(now) ? "Early Bird has closed. Late Registration is open: fees below are the Late Registration fees (from 1 November 2026)." : "Early Bird registration is open until 31 October 2026 at 11:59 PM (Lagos time). Late Registration opens automatically on 1 November 2026, with fees 10% higher."}</p>
+              <p className="mt-6 leading-relaxed text-ink/75">{isLateRegistration(now) ? "Early Bird has closed. Late Registration is open: fees below are the Late Registration fees (from 1 November 2026)." : "Early Bird registration is open until 31 October 2026 at 11:59 PM (Lagos time). Late Registration opens automatically on 1 November 2026, with updated fees."}</p>
               <p className="mt-6 text-sm text-slate">Your fee depends on your membership position. Pay by bank transfer to the official account, then submit the official registration form with your proof of payment. Your place is confirmed once the team verifies your payment.</p>
             </Reveal>
             <div className="lg:col-span-8">

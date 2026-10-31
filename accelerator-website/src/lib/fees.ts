@@ -1,18 +1,17 @@
 /**
  * Registration fees for Accelerators Events 2026, by membership position. Amounts are in kobo (₦1 = 100 kobo).
  * - Early Bird (until 31 Oct 2026, 11:59 PM Lagos): the official "Grab your ticket now" flyer (October 2026).
- * - Late Registration (from 1 Nov 2026, 12:00 AM Lagos): Early Bird + 10%, rounded up to the nearest ₦500
- *   (as instructed by the organisers, 31 October 2026).
+ * - Late Registration (from 1 Nov 2026, 12:00 AM Lagos): fee list supplied by the organisers (31 October 2026).
  */
 export const POSITIONS = [
-  { id: "member", name: "Member", feeKobo: 2_000_00, lateFeeKobo: 2_500_00 },
+  { id: "member", name: "Member", feeKobo: 2_000_00, lateFeeKobo: 2_000_00 },
   { id: "distributor", name: "Distributor", feeKobo: 10_000_00, lateFeeKobo: 11_000_00 },
-  { id: "manager", name: "Manager", feeKobo: 15_000_00, lateFeeKobo: 16_500_00 },
+  { id: "manager", name: "Manager", feeKobo: 15_000_00, lateFeeKobo: 16_000_00 },
   { id: "senior_manager", name: "Senior Manager", feeKobo: 20_000_00, lateFeeKobo: 22_000_00 },
-  { id: "executive_manager", name: "Executive Manager", feeKobo: 25_000_00, lateFeeKobo: 27_500_00 },
+  { id: "executive_manager", name: "Executive Manager", feeKobo: 25_000_00, lateFeeKobo: 27_000_00 },
   { id: "director", name: "Director", feeKobo: 50_000_00, lateFeeKobo: 55_000_00 },
-  { id: "emerald_director", name: "Emerald Director", feeKobo: 55_000_00, lateFeeKobo: 60_500_00 },
-  { id: "sapphire_director", name: "Sapphire Director", feeKobo: 80_000_00, lateFeeKobo: 88_000_00 },
+  { id: "emerald_director", name: "Emerald Director", feeKobo: 55_000_00, lateFeeKobo: 60_000_00 },
+  { id: "sapphire_director", name: "Sapphire Director", feeKobo: 80_000_00, lateFeeKobo: 85_000_00 },
   { id: "ruby_director", name: "Ruby Director", feeKobo: 100_000_00, lateFeeKobo: 110_000_00 },
 ] as const;
 
