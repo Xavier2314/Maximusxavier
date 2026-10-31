@@ -9,7 +9,7 @@
 export const site = {
   name: "Accelerator Community",
   legacyName: "Accelerators Billionaires",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://accelerator-community.vercel.app",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.acceleratorsbillionaires.com",
   // Working tagline from the brief. Not yet an approved slogan.
   tagline: "Accelerating people. Building leaders. Celebrating excellence.",
   shortDescription:
