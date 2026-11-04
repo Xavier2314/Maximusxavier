@@ -111,6 +111,7 @@ function photo(cat, idx = 0, spec = "", sizes, eager = false) {
 /* ---------------------------------------------------------- navigation ---- */
 const NAV = [
   { id: "home", href: "index.html", label: "Home" },
+  { id: "what-is", href: "what-is-maximus.html", label: "What is MAXIMUS?" },
   { id: "about", href: "about.html", label: "About" },
   { id: "what-we-do", href: "what-we-do.html", label: "What We Do" },
   { id: "development", href: "development.html", label: "Development" },
@@ -132,7 +133,7 @@ function socials(cls = "") {
 }
 
 function header(active) {
-  const links = NAV.filter((n) => n.id !== "home");
+  const links = NAV.filter((n) => !["home", "development", "contact"].includes(n.id));
   return `
 <a class="skip" href="#main">Skip to content</a>
 <header class="nav" data-nav>

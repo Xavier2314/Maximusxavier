@@ -103,7 +103,7 @@
 
   /* ---------- render ---------- */
   var state = {};
-  var ready = Promise.all([get("events"), get("announcements"), get("leadership"), get("achievements"), get("programmes"), get("site")]).then(function (r) {
+  var ready = Promise.all([get("events"), get("announcements"), get("leadership"), get("achievements"), get("programmes"), get("site"), get("testimonials")]).then(function (r) {
     state.events = upcoming(r[0]);
     state.announcements = liveAnnouncements(r[1]);
     state.profiles = ((r[2] && r[2].profiles) || []).filter(function (p) { return p.published === true && p.name; });
@@ -114,6 +114,32 @@
     state.stories = (ach.stories || []).filter(ok);
     state.programmes = ((r[4] && r[4].items) || []).filter(function (p) { return p.published === true && p.title; });
     state.site = r[5] || {};
+    state.testimonials = ((r[6] && r[6].items) || []).filter(function (t) { return t.published === true && t.quote && t.name; });
+
+    // testimonials
+    each("[data-cms=testimonials]", function (el) {
+      var sec = el.closest("[data-cms-section]");
+      if (!state.testimonials.length) { if (sec) sec.hidden = true; return; }
+      if (sec) sec.hidden = false;
+      el.innerHTML = state.testimonials.map(function (t) {
+        var img = safeUrl(t.photo);
+        var initials = String(t.name).split(/\s+/).map(function (w) { return w.charAt(0); }).slice(0, 2).join("").toUpperCase();
+        return '<figure class="tcard" data-fade><div class="tcard__q" aria-hidden="true">&ldquo;</div><blockquote>' + esc(t.quote) + '</blockquote><figcaption><span class="tcard__av">' +
+          (img ? '<img src="' + esc(img) + '" alt="" loading="lazy">' : esc(initials)) + '</span><span><span class="tcard__n">' + esc(t.name) + '</span><br><span class="tcard__r">' + esc(t.role || "MAXIMUS member") + "</span></span></figcaption></figure>";
+      }).join("");
+    });
+
+    // explainer video
+    each("[data-cms=video]", function (el) {
+      var sec = el.closest("[data-cms-section]");
+      var v = String(state.site.explainerVideo || "").trim();
+      var yt = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/.exec(v);
+      if (!v || (!yt && !/\.(mp4|webm)(\?|$)/i.test(v))) { if (sec) sec.hidden = true; return; }
+      if (sec) sec.hidden = false;
+      el.innerHTML = yt
+        ? '<iframe src="https://www.youtube-nocookie.com/embed/' + yt[1] + '?rel=0" title="MAXIMUS explained" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+        : '<video src="' + esc(safeUrl(v)) + '" controls playsinline preload="metadata"></video>';
+    });
 
     // events
     each("[data-cms=events]", function (el) {

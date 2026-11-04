@@ -122,10 +122,52 @@ collections:
               - { name: story, label: Story, widget: text }
               - { name: verified, label: Verified (with consent), widget: boolean, default: false }
 
+  - name: testimonials
+    label: Testimonials
+    description: Only real quotes, shared with the member's permission.
+    files:
+      - name: testimonials
+        label: Testimonials
+        file: website/content/testimonials.json
+        format: json
+        fields:
+          - { name: _readme, label: Note, widget: hidden }
+          - name: items
+            label: Testimonials
+            widget: list
+            summary: "{{fields.name}} — {{fields.role}}"
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: role, label: "Role (e.g. Web designer, Team leader)", widget: string, required: false }
+              - { name: quote, label: Testimonial, widget: text }
+              - { name: photo, label: Photo, widget: image, required: false }
+              - { name: published, label: Published (member agreed), widget: boolean, default: false }
+
   - name: programmes
     label: Learning & programmes
     files:
-      - name: programmes
+      - name: testimonials
+    label: Testimonials
+    description: Only real quotes, shared with the member's permission.
+    files:
+      - name: testimonials
+        label: Testimonials
+        file: website/content/testimonials.json
+        format: json
+        fields:
+          - { name: _readme, label: Note, widget: hidden }
+          - name: items
+            label: Testimonials
+            widget: list
+            summary: "{{fields.name}} — {{fields.role}}"
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: role, label: "Role (e.g. Web designer, Team leader)", widget: string, required: false }
+              - { name: quote, label: Testimonial, widget: text }
+              - { name: photo, label: Photo, widget: image, required: false }
+              - { name: published, label: Published (member agreed), widget: boolean, default: false }
+
+  - name: programmes
         label: Learning resources, training & programmes
         file: website/content/programmes.json
         format: json
@@ -155,6 +197,7 @@ collections:
           - { name: contactEmail, label: Official contact email, widget: string, required: false }
           - { name: contactPhone, label: Official phone, widget: string, required: false }
           - { name: location, label: Location, widget: string, required: false }
+          - { name: explainerVideo, label: "'What is MAXIMUS?' video (YouTube link or .mp4 file)", widget: string, required: false }
           - name: forms
             label: Form endpoints (e.g. Formspree URLs)
             widget: object
