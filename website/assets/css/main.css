@@ -803,3 +803,11 @@ body.menu-open .nav::before { opacity: 0; }
 .tilt-wrap { overflow: hidden; padding-block: clamp(30px, 5vw, 70px); }
 .dark .ach { background: rgba(255,255,255,.04); border-color: var(--line-d); color: var(--white); }
 .dark .ach p { color: rgba(255,255,255,.62); }
+
+/* photo marquee */
+.marquee--photos { background: none; border: 0; padding-block: 10px; }
+.marquee--photos .ph { flex: none; width: clamp(200px, 22vw, 340px); aspect-ratio: 4 / 5; margin-right: clamp(10px, 1.4vw, 18px); border-radius: var(--r); }
+.marquee--photos .marquee__group:nth-child(odd) .ph:nth-child(even) { transform: translateY(28px); }
+.marquee--photos { padding-bottom: 40px; }
+.marquee--photos .ph img { transition: transform 1s var(--ease); }
+.marquee--photos .ph:hover img { transform: scale(1.06); }

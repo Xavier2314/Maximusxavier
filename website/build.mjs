@@ -98,7 +98,9 @@ function photo(cat, idx = 0, spec = "", sizes, eager = false) {
   const tag = inline ? "span" : "figure";
   const list = byCat[cat] || [];
   const p = list.length ? list[idx % list.length] : null;
-  const inner = p
+  const inner = p && p.local
+    ? `<img src="${p.local}-1600.jpg" srcset="${p.local}-800.jpg 800w, ${p.local}-1600.jpg 1600w" sizes="${sizes}" alt="${(p.alt || "").replace(/"/g, "&quot;")}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" onerror="this.remove()">`
+    : p
     ? `<img src="${unsplash(p.url, 1200)}" srcset="${[600, 900, 1200, 1600, 2200].map((w) => `${unsplash(p.url, w)} ${w}w`).join(", ")}" sizes="${sizes}" alt="${(p.alt || "").replace(/"/g, "&quot;")}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" onerror="this.remove()">`
     : "";
   const credit = p && p.photographer ? ` data-credit="Photo: ${p.photographer} / Unsplash"` : "";
