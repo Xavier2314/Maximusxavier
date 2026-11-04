@@ -1,0 +1,4 @@
+{
+  "_readme": "Short announcements shown on the home and events pages. Set published to true to show one; expires (YYYY-MM-DD) hides it automatically.",
+  "items": []
+}

@@ -1,0 +1,20 @@
+{
+  "url": "",
+  "contactEmail": "",
+  "contactPhone": "",
+  "location": "",
+  "forms": {
+    "contactEndpoint": "",
+    "newsletterEndpoint": "",
+    "registrationEndpoint": ""
+  },
+  "social": {
+    "instagram": "",
+    "linkedin": "",
+    "x": "",
+    "facebook": "",
+    "youtube": "",
+    "tiktok": "",
+    "whatsapp": ""
+  }
+}

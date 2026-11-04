@@ -1,0 +1,4 @@
+{
+  "_readme": "Only add events that are confirmed and verified. Events whose date has passed are hidden automatically. Set published to true to show an event.",
+  "events": []
+}

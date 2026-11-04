@@ -1,0 +1,175 @@
+# MAXIMUS content admin (Decap CMS) — edits the JSON files in /website/content.
+# Editors sign in with GitHub; every save is a commit, so the site redeploys automatically.
+# Set `branch` to the branch your hosting deploys from. For local editing run
+# `npx decap-server` in /website and open http://localhost:<port>/admin/.
+backend:
+  name: github
+  repo: Xavier2314/Maximusxavier
+  branch: claude/general-session-MCx2H
+  # base_url: https://your-oauth-proxy.example.com   # needed when not hosted on Netlify
+local_backend: true
+publish_mode: editorial_workflow
+media_folder: website/assets/uploads
+public_folder: /assets/uploads
+site_url: /
+logo_url: /assets/brand/logo-mark.svg
+
+collections:
+  - name: events
+    label: Events
+    description: Only add confirmed, verified events. Past dates are hidden automatically.
+    files:
+      - name: events
+        label: Events
+        file: website/content/events.json
+        format: json
+        fields:
+          - { name: _readme, label: Note, widget: hidden }
+          - name: events
+            label: Events
+            widget: list
+            summary: "{{fields.date}} — {{fields.title}}"
+            fields:
+              - { name: title, label: Event title, widget: string }
+              - name: type
+                label: Type
+                widget: select
+                options: [Seminar, Training session, Conference, Leadership event, Community gathering, Professional development session]
+              - { name: description, label: Description, widget: text }
+              - { name: date, label: Date, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+              - { name: time, label: Start time (e.g. 10:00), widget: string, required: false }
+              - { name: endTime, label: End time, widget: string, required: false }
+              - { name: venue, label: Venue, widget: string, required: false }
+              - { name: registrationUrl, label: External registration link (optional — leave empty to use the built-in form), widget: string, required: false }
+              - { name: verified, label: Details verified, widget: boolean, default: false }
+              - { name: published, label: Published, widget: boolean, default: false }
+
+  - name: announcements
+    label: Announcements
+    files:
+      - name: announcements
+        label: Announcements
+        file: website/content/announcements.json
+        format: json
+        fields:
+          - { name: _readme, label: Note, widget: hidden }
+          - name: items
+            label: Announcements
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: body, label: Text, widget: text, required: false }
+              - { name: link, label: Link, widget: string, required: false }
+              - { name: linkLabel, label: Link label, widget: string, required: false }
+              - { name: expires, label: Hide after, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false }
+              - { name: published, label: Published, widget: boolean, default: false }
+
+  - name: leadership
+    label: Leadership profiles
+    files:
+      - name: leadership
+        label: Leadership profiles
+        file: website/content/leadership.json
+        format: json
+        fields:
+          - { name: _readme, label: Note, widget: hidden }
+          - name: profiles
+            label: Profiles
+            widget: list
+            summary: "{{fields.name}} — {{fields.role}}"
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: role, label: Role, widget: string }
+              - { name: bio, label: Short bio, widget: text, required: false }
+              - { name: photo, label: Photo, widget: image, required: false }
+              - { name: published, label: Published (with consent, details verified), widget: boolean, default: false }
+
+  - name: achievements
+    label: Achievements & recognition
+    files:
+      - name: achievements
+        label: Achievements & recognition
+        file: website/content/achievements.json
+        format: json
+        fields:
+          - { name: _readme, label: Note, widget: hidden }
+          - name: milestones
+            label: Community milestones
+            widget: list
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: date, label: Date, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+              - { name: description, label: Description, widget: text, required: false }
+              - { name: verified, label: Verified, widget: boolean, default: false }
+          - name: recognitions
+            label: Recognitions
+            widget: list
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: category, label: Category, widget: select, options: [Leadership, Growth milestone, Community impact, Excellence] }
+              - { name: recipient, label: Recipient, widget: string, required: false }
+              - { name: date, label: Date, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+              - { name: description, label: Description, widget: text, required: false }
+              - { name: verified, label: Verified (with consent), widget: boolean, default: false }
+          - name: stories
+            label: Personal growth stories
+            widget: list
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: name, label: Name, widget: string, required: false }
+              - { name: date, label: Date, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+              - { name: story, label: Story, widget: text }
+              - { name: verified, label: Verified (with consent), widget: boolean, default: false }
+
+  - name: programmes
+    label: Learning & programmes
+    files:
+      - name: programmes
+        label: Learning resources, training & programmes
+        file: website/content/programmes.json
+        format: json
+        fields:
+          - { name: _readme, label: Note, widget: hidden }
+          - name: items
+            label: Items
+            widget: list
+            summary: "{{fields.type}} — {{fields.title}}"
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: type, label: Type, widget: select, options: [Learning resource, Training session, Educational programme] }
+              - { name: description, label: Description, widget: text, required: false }
+              - { name: link, label: Link, widget: string, required: false }
+              - { name: linkLabel, label: Link label, widget: string, required: false }
+              - { name: published, label: Published, widget: boolean, default: false }
+
+  - name: settings
+    label: Site settings
+    files:
+      - name: site
+        label: Contact, social & forms
+        file: website/content/site.json
+        format: json
+        fields:
+          - { name: url, label: Site URL (e.g. https://maximus.example), widget: string, required: false }
+          - { name: contactEmail, label: Official contact email, widget: string, required: false }
+          - { name: contactPhone, label: Official phone, widget: string, required: false }
+          - { name: location, label: Location, widget: string, required: false }
+          - name: forms
+            label: Form endpoints (e.g. Formspree URLs)
+            widget: object
+            fields:
+              - { name: contactEndpoint, label: Contact form endpoint, widget: string, required: false }
+              - { name: newsletterEndpoint, label: Newsletter endpoint, widget: string, required: false }
+              - { name: registrationEndpoint, label: Event registration endpoint, widget: string, required: false }
+          - name: social
+            label: Official social links (leave empty if none)
+            widget: object
+            fields:
+              - { name: instagram, label: Instagram, widget: string, required: false }
+              - { name: linkedin, label: LinkedIn, widget: string, required: false }
+              - { name: x, label: X, widget: string, required: false }
+              - { name: facebook, label: Facebook, widget: string, required: false }
+              - { name: youtube, label: YouTube, widget: string, required: false }
+              - { name: tiktok, label: TikTok, widget: string, required: false }
+              - { name: whatsapp, label: WhatsApp, widget: string, required: false }
