@@ -240,15 +240,14 @@
       var counter = { v: 0 };
       var cnt = $("[data-count]", pre);
       intro
-        .to(paths, { strokeDashoffset: 0, duration: 1.6, stagger: .18, ease: "power2.inOut" }, 0)
-        .to(counter, { v: 100, duration: 1.9, ease: "power3.inOut", onUpdate: function () { cnt.textContent = Math.round(counter.v); } }, 0)
-        .to(paths, { fillOpacity: 1, strokeWidth: 0, duration: .6, stagger: .08 }, 1.35)
-        .to(".preloader__mark", { scale: 1.15, rotate: -6, duration: .5, ease: "power2.in" }, 2.05)
-        .to(".preloader__core", { autoAlpha: 0, y: -30, duration: .5, ease: "power2.in" }, 2.15)
-        .to(".preloader__panel--a", { yPercent: -100, duration: 1.1, ease: "expo.inOut" }, 2.4)
-        .to(".preloader__panel--b", { yPercent: 100, duration: 1.1, ease: "expo.inOut" }, 2.4)
+        .to(paths, { strokeDashoffset: 0, duration: .8, stagger: .08, ease: "power2.inOut" }, 0)
+        .to(counter, { v: 100, duration: .95, ease: "power2.inOut", onUpdate: function () { cnt.textContent = Math.round(counter.v); } }, 0)
+        .to(paths, { fillOpacity: 1, strokeWidth: 0, duration: .35, stagger: .05 }, .6)
+        .to(".preloader__core", { autoAlpha: 0, y: -20, scale: 1.05, duration: .3, ease: "power2.in" }, 1.0)
+        .to(".preloader__panel--a", { yPercent: -100, duration: .8, ease: "expo.inOut" }, 1.1)
+        .to(".preloader__panel--b", { yPercent: 100, duration: .8, ease: "expo.inOut" }, 1.1)
         .set(pre, { display: "none" });
-      intro.add(pageIn(), 2.75);
+      intro.add(pageIn(), 1.35);
     } else {
       if (pre) pre.style.display = "none";
       if (fromTransition && pt) {
@@ -269,7 +268,7 @@
     /* Wait for fonts + CMS content so split lines measure correctly */
     var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     var content = window.MX && window.MX.content ? window.MX.content : Promise.resolve({});
-    var timeout = new Promise(function (r) { setTimeout(r, 2500); });
+    var timeout = new Promise(function (r) { setTimeout(r, 1200); });
     Promise.race([Promise.all([fontsReady, content]), timeout]).then(function () {
       if (window.MX && window.MX.state) SITE = window.MX.state.site || SITE;
       scenes();

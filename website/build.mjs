@@ -126,7 +126,7 @@ const SOCIAL_LABEL = { instagram: "Instagram", linkedin: "LinkedIn", x: "X", fac
 function socials(cls = "") {
   const s = site.social || {};
   const set = SOCIAL_KEYS.filter((k) => s[k]);
-  if (!set.length) return `<p class="socials-pending ${cls}">Official MAXIMUS social channels will be listed here once published.</p>`;
+  if (!set.length) return `<p class="socials-pending ${cls}">Our social pages are coming soon.</p>`;
   return `<ul class="socials ${cls}">${set
     .map((k) => `<li><a href="${s[k]}" target="_blank" rel="noopener" aria-label="MAXIMUS on ${SOCIAL_LABEL[k]}" data-magnetic>${icon(k)}</a></li>`)
     .join("")}</ul>`;
@@ -154,7 +154,7 @@ function header(active) {
     </nav>
     <div class="menu__foot">
       <p class="menu__tag">Fulfilment in Maximized Potential.</p>
-      <a class="btn btn--lime" href="contact.html"><span>Take your next step</span>${icon("arrow")}</a>
+      <a class="btn btn--lime" href="contact.html"><span>Join MAXIMUS</span>${icon("arrow")}</a>
     </div>
   </div>
 </div>`;
@@ -168,7 +168,7 @@ function footer() {
     <div class="footer__top">
       <div class="footer__brand">
         <a href="index.html" aria-label="MAXIMUS home">${logoSvg("full", { label: "MAXIMUS — Fulfilment in Maximized Potential." })}</a>
-        <p>An environment dedicated to personal growth, freelancing, entrepreneurship and the development of meaningful careers.</p>
+        <p>A business community helping people learn to build online and offline businesses. Two businesses. One platform.</p>
         ${socials()}
       </div>
       <nav class="footer__nav" aria-label="Footer">
@@ -183,7 +183,7 @@ function footer() {
       </nav>
       <form class="footer__news" data-form="newsletter" novalidate>
         <h2 class="footer__h">The MAXIMUS Letter</h2>
-        <p>Ideas on growth, skills and independence — plus verified event announcements.</p>
+        <p>Event dates, new trainings and the odd useful tip. No spam.</p>
         <div class="newsfield">
           <label class="sr-only" for="news-email">Email address</label>
           <input id="news-email" name="email" type="email" placeholder="you@email.com" autocomplete="email" required>
@@ -210,7 +210,7 @@ function head(meta) {
     "@type": "Organization",
     name: "MAXIMUS",
     slogan: "Fulfilment in Maximized Potential.",
-    description: "A personal growth, freelancing, entrepreneurship and career-development community empowering young, driven individuals to maximise their potential.",
+    description: "A business community that helps people learn to build two types of business: an online business using digital skills and an offline product-based business.",
     logo: BASE_URL ? `${BASE_URL}/assets/brand/icon-512.png` : undefined,
     url: BASE_URL || undefined,
     sameAs: Object.values(site.social || {}).filter(Boolean),
