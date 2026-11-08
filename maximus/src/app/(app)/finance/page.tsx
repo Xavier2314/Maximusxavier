@@ -4,11 +4,11 @@ import { ArrowLeft, HandCoins, PiggyBank } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { LedgerTable } from "@/components/ledger-table";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
-import { Avatar, Badge, EmptyState, PageHeader, Progress } from "@/components/ui/misc";
+import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { AccountBalance, FinancialTransaction } from "@/lib/types";
-import { addMonths, formatDate, formatMoney, monthStart, percent, todayIn } from "@/lib/utils";
+import { addMonths, cn, formatDate, formatMoney, monthStart, percent, todayIn } from "@/lib/utils";
 import { ShareToggle } from "./share-toggle";
 import { TargetForm } from "./target-form";
 import { TransactionForm } from "./transaction-form";
@@ -56,32 +56,41 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
   return (
     <>
       {!isSelf && <Link href={`/team/${subjectId}`} className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg"><ArrowLeft className="size-4" aria-hidden /> Member</Link>}
-      <PageHeader eyebrow="Finance" title={isSelf ? "Savings & contributions" : `${subject?.full_name}'s finances`}
+      <PageHeader title={isSelf ? "Savings & contributions" : `${subject?.full_name}'s finances`}
         description="Balances are calculated from approved ledger entries. They are organisation records, not verified bank balances." />
 
       <section className="grid gap-4 sm:grid-cols-2" aria-label="Balances">
-        {(balances ?? []).map((b) => (
-          <div key={b.account_id} className={`relative overflow-hidden rounded-2xl p-6 text-white ${b.kind === "savings" ? "hero-gradient" : "bg-[#14532d]"}`}>
-            <div className="flex items-center justify-between">
-              <p className="flex items-center gap-2 text-sm text-white/80">
-                {b.kind === "savings" ? <PiggyBank className="size-4" aria-hidden /> : <HandCoins className="size-4" aria-hidden />} {b.name}
-              </p>
-              {isSelf && b.kind === "savings" && <TargetForm accountId={b.account_id} target={b.target_amount} />}
-            </div>
-            <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight sm:text-4xl">{formatMoney(b.confirmed_balance)}</p>
-            <p className="mt-1 text-sm text-white/70">
-              {Number(b.pending_in) > 0 && <>+{formatMoney(b.pending_in)} pending · </>}
-              {Number(b.pending_out) > 0 && <>−{formatMoney(b.pending_out)} withdrawal pending · </>}
-              Confirmed balance
-            </p>
-            {b.target_amount ? (
-              <div className="mt-4">
-                <div className="mb-1 flex justify-between text-xs text-white/70"><span>Target {formatMoney(b.target_amount)}</span><span>{percent(b.confirmed_balance, b.target_amount)}%</span></div>
-                <Progress value={percent(b.confirmed_balance, b.target_amount)} tone="lime" className="bg-white/15" label={`${b.name} target progress`} />
+        {(balances ?? []).map((b) => {
+          // Savings is the page's one bold element; other balances sit quietly beside it.
+          const bold = b.kind === "savings";
+          const pending = [
+            Number(b.pending_in) > 0 ? `+${formatMoney(b.pending_in)} pending` : null,
+            Number(b.pending_out) > 0 ? `−${formatMoney(b.pending_out)} withdrawal pending` : null,
+          ].filter(Boolean).join(", ");
+          return (
+            <div key={b.account_id} className={cn("relative overflow-hidden rounded-2xl p-6", bold ? "hero-gradient text-white" : "border border-border bg-surface")}>
+              <div className="flex items-center justify-between gap-3">
+                <p className={cn("flex items-center gap-2 text-sm", bold ? "text-white/80" : "text-fg-muted")}>
+                  {bold ? <PiggyBank className="size-4" aria-hidden /> : <HandCoins className="size-4 text-fg-subtle" aria-hidden />}{b.name}
+                </p>
+                {isSelf && bold && <TargetForm accountId={b.account_id} target={b.target_amount} />}
               </div>
-            ) : null}
-          </div>
-        ))}
+              <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight sm:text-4xl">{formatMoney(b.confirmed_balance)}</p>
+              <p className={cn("mt-1 text-sm", bold ? "text-white/70" : "text-fg-subtle")}>{pending ? `Confirmed balance, ${pending}` : "Confirmed balance"}</p>
+              {b.target_amount ? (
+                <div className="mt-4">
+                  <div className={cn("mb-1 flex justify-between text-sm", bold ? "text-white/70" : "text-fg-subtle")}>
+                    <span>Target {formatMoney(b.target_amount)}</span><span className="tabular-nums">{percent(b.confirmed_balance, b.target_amount)}%</span>
+                  </div>
+                  <div className={cn("h-2 overflow-hidden rounded-full", bold ? "bg-white/15" : "bg-surface-muted")} role="progressbar"
+                    aria-valuenow={Math.min(100, percent(b.confirmed_balance, b.target_amount))} aria-valuemin={0} aria-valuemax={100} aria-label={`${b.name} target progress`}>
+                    <div className={cn("h-full rounded-full", bold ? "bg-brand-orange" : "bg-success")} style={{ width: `${Math.min(100, percent(b.confirmed_balance, b.target_amount))}%` }} />
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
       </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">

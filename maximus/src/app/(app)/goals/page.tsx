@@ -52,16 +52,12 @@ export default async function GoalsPage() {
         <div className="space-y-6 lg:col-span-2">
           {[{ label: "This month", month: thisMonth, goal: current }, { label: "Next month", month: nextMonth, goal: upcoming }].map(({ label, month, goal }) => (
             <Card key={month}>
-              <CardHeader title={`${label} · ${formatDate(month, { month: "long", year: "numeric" })}`}
+              <CardHeader title={formatDate(month, { month: "long", year: "numeric" })} description={label}
                 action={goal && <GoalStatus status={goal.status} />} />
               <CardBody>
                 {goal ? (
-                  <Link href={`/goals/${goal.id}`} className="flex items-center justify-between rounded-2xl bg-surface-muted p-4 hover:bg-border/60">
-                    <span className="text-sm">
-                      {[goal.income_target && "Income", goal.sales_target && "Sales", goal.prospecting_target && "Prospecting", goal.recruitment_target && "Recruitment", goal.order_target && "Orders", goal.savings_target && "Savings"]
-                        .filter(Boolean).join(" · ") || "Personal goals"}
-                      {goal.custom_goals?.length ? ` · ${goal.custom_goals.length} custom` : ""}
-                    </span>
+                  <Link href={`/goals/${goal.id}`} className="flex items-center justify-between gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-surface-muted/60">
+                    <span>{goalSummary(goal)}</span>
                     <ChevronRight className="size-4 text-fg-subtle" aria-hidden />
                   </Link>
                 ) : (
@@ -116,4 +112,16 @@ export default async function GoalsPage() {
       </div>
     </>
   );
+}
+
+/** "Targets for income, sales and savings, plus 2 custom goals" */
+function goalSummary(goal: MonthlyGoal): string {
+  const names = [
+    goal.income_target && "income", goal.sales_target && "sales", goal.prospecting_target && "prospecting",
+    goal.recruitment_target && "recruitment", goal.order_target && "orders", goal.savings_target && "savings",
+  ].filter(Boolean) as string[];
+  const custom = goal.custom_goals?.length ?? 0;
+  const extra = custom ? `${custom} custom ${custom === 1 ? "goal" : "goals"}` : "";
+  if (!names.length) return extra ? `${extra.charAt(0).toUpperCase()}${extra.slice(1)}` : "Personal goals";
+  return `Targets for ${new Intl.ListFormat("en", { type: "conjunction" }).format(names)}${extra ? `, plus ${extra}` : ""}`;
 }

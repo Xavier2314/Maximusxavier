@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { Download, ListChecks, Plus, Bot, Trash2 } from "lucide-react";
+import { Download, Plus, Trash2 } from "lucide-react";
 import { AiFilledBanner, TalkToAi } from "@/components/form-modes";
 import { VoiceTextarea } from "@/components/voice";
 import { Button } from "@/components/ui/button";
@@ -51,15 +51,17 @@ export function ReportEditor({ initial, prev, reportId }: { initial: OfficeRepor
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-2" role="tablist" aria-label="How do you want to fill the report?">
-        {[{ k: "ai" as const, l: "Talk to Maximus AI", h: "Say everything; AI fills the report", I: Bot },
-          { k: "form" as const, l: "Fill the report", h: "Table by table", I: ListChecks }].map((m) => (
-          <button key={m.k} type="button" role="tab" aria-selected={mode === m.k} onClick={() => setMode(m.k)}
-            className={cn("flex flex-col items-center gap-1 rounded-2xl border p-3 text-center",
-              mode === m.k ? "border-primary bg-primary-soft text-primary" : "border-border bg-surface text-fg-muted hover:border-primary/40")}>
-            <m.I className="size-5" aria-hidden /><span className="text-sm font-semibold">{m.l}</span><span className="hidden text-xs sm:block">{m.h}</span>
-          </button>
-        ))}
+      <div>
+        <div className="grid grid-cols-2 gap-1 rounded-lg bg-surface-muted p-1" role="tablist" aria-label="How do you want to fill the report?">
+          {[{ k: "ai" as const, l: "Ask AI" }, { k: "form" as const, l: "Fill the report" }].map((m) => (
+            <button key={m.k} type="button" role="tab" aria-selected={mode === m.k} onClick={() => setMode(m.k)}
+              className={cn("min-h-10 rounded-md px-2 text-sm font-medium transition-colors",
+                mode === m.k ? "bg-surface text-fg shadow-sm" : "text-fg-muted hover:text-fg")}>
+              {m.l}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-sm text-fg-subtle">{mode === "ai" ? "Say everything, and Maximus AI fills in the report" : "Fill in the report table by table"}</p>
       </div>
 
       {mode === "ai" ? (

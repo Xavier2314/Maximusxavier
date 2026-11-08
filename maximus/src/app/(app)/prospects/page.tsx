@@ -29,7 +29,7 @@ export default async function ProspectsPage({ searchParams }: { searchParams: Pr
 
   return (
     <>
-      <PageHeader eyebrow="Prospecting" title={readOnly ? `${owner?.full_name ?? "Member"}'s prospects` : "My prospects"}
+      <PageHeader title={readOnly ? `${owner?.full_name ?? "Member"}'s prospects` : "My prospects"}
         description={readOnly ? "Read-only view of your team member's pipeline, so you can coach their follow-ups."
           : "Everyone you're talking to, stage by stage. Let Maximus AI follow up for you."}
         action={!readOnly && <AddProspect />} />

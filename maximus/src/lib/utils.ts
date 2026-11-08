@@ -18,7 +18,19 @@ export const DEFAULT_TZ = "Africa/Lagos";
 
 export function formatMoney(value: number | string | null | undefined, currency = "NGN"): string {
   const n = Number(value ?? 0);
+  // Naira is written out by hand: the server's and the browser's locale data disagree on the
+  // "en-NG" currency format ("₦" vs "NGN"), which made React re-render the page on load.
+  if (currency === "NGN") {
+    const digits = new Intl.NumberFormat("en-US", { maximumFractionDigits: n % 1 === 0 ? 0 : 2, minimumFractionDigits: n % 1 === 0 ? 0 : 2 }).format(Math.abs(n));
+    return `${n < 0 ? "−" : ""}₦${digits}`;
+  }
   return new Intl.NumberFormat(LOCALE, { style: "currency", currency, maximumFractionDigits: n % 1 === 0 ? 0 : 2 }).format(n);
+}
+
+/** Short naira amounts for chart axes, e.g. ₦1.2M; same output on the server and in the browser. */
+export function formatMoneyCompact(value: number): string {
+  const digits = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(Math.abs(value));
+  return `${value < 0 ? "−" : ""}₦${digits}`;
 }
 
 export function formatCompact(value: number | string | null | undefined): string {

@@ -3,6 +3,7 @@
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
+import { formatMoneyCompact } from "@/lib/utils";
 
 export type Series = { key: string; label: string; color?: "1" | "2"; dashed?: boolean };
 type Datum = Record<string, string | number | null>;
@@ -75,7 +76,7 @@ type ChartProps = {
 
 const FORMATS = {
   number: (v: number) => new Intl.NumberFormat("en-NG", { notation: "compact", maximumFractionDigits: 1 }).format(v),
-  money: (v: number) => new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", notation: "compact", maximumFractionDigits: 1 }).format(v),
+  money: (v: number) => formatMoneyCompact(v),
 };
 
 export function TrendArea({ data, xKey, series, caption, height = 220, valueFormat = "number" }: ChartProps) {

@@ -76,10 +76,10 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
       )}
       <span className={cn("mt-1.5 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums",
         count >= target ? "bg-success-soft text-success" : isRoot ? "bg-white/10 text-white" : "bg-primary-soft text-primary")}>
-        {count >= target ? `${count} brought in ✓` : `${count}/${target} brought in`}
+        {count >= target ? `${count} brought in` : `${count}/${target} brought in`}
       </span>
       {top && FOCUS[top] && (
-        <span className="mt-1 block max-w-full truncate rounded-full bg-warning-soft px-2 py-0.5 text-xs font-medium text-warning" title={`Needs work: ${FOCUS[top].title}`}>
+        <span className={cn("mt-1 block max-w-full truncate text-xs font-medium", isRoot ? "text-brand-orange" : "text-warning")} title={`Needs work: ${FOCUS[top].title}`}>
           Focus: {FOCUS[top].short}
         </span>
       )}
@@ -163,7 +163,7 @@ export function OrgChart({ rootId, rootName, rootCode, rootAvatar, rootRank = nu
         <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-brand-blue" aria-hidden /> Ring fills toward their first {target} (no limit after that)</span>
         <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-brand-green" aria-hidden /> First {target} reached</span>
         <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-brand-lime" aria-hidden /> Joined in the last {NEW_DAYS} days</span>
-        <span className="flex items-center gap-1.5"><span className="rounded-full bg-warning-soft px-1.5 text-warning">Focus</span> What they should work on next</span>
+        <span className="flex items-center gap-1.5"><span className="font-medium text-warning">Focus:</span> what they should work on next</span>
       </div>
     </div>
   );

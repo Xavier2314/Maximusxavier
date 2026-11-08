@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Camera, Download, Medal } from "lucide-react";
+import { Camera, Download, Medal, ChevronRight } from "lucide-react";
 import { FocusList } from "@/components/growth-focus";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
@@ -67,17 +67,22 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
           {Number(moved) > 0 && ` ${moved} ${moved === "1" ? "person who stayed is" : "people who stayed are"} now directly under you.`}
         </p>
       )}
-      {!viewer.profile.business_rank && (
-        <Link href="/profile" className="mb-3 flex items-center gap-3 rounded-2xl border border-dashed border-primary/40 bg-primary-soft/50 p-4 text-sm hover:bg-primary-soft">
-          <Medal className="size-5 text-primary" aria-hidden />
-          <span className="flex-1"><b>Choose your business status</b> (Newbie to Diamond Director) so it shows in the structure.</span>
-        </Link>
-      )}
-      {!viewer.profile.avatar_url && (
-        <Link href="/profile" className="mb-6 flex items-center gap-3 rounded-2xl border border-dashed border-primary/40 bg-primary-soft/50 p-4 text-sm hover:bg-primary-soft">
-          <Camera className="size-5 text-primary" aria-hidden />
-          <span className="flex-1"><b>Add your profile photo</b> so your team recognises you in the structure.</span>
-        </Link>
+      {(!viewer.profile.business_rank || !viewer.profile.avatar_url) && (
+        <section aria-labelledby="finish-profile" className="mb-6 rounded-xl border border-border bg-surface">
+          <h2 id="finish-profile" className="px-4 pt-3 text-sm font-medium text-fg-muted">Finish your profile so your team recognises you in the structure</h2>
+          <ul className="divide-y divide-border">
+            {!viewer.profile.business_rank && (
+              <li><Link href="/profile" className="flex min-h-12 items-center gap-3 px-4 hover:bg-surface-muted/60">
+                <Medal className="size-4 text-fg-subtle" aria-hidden /><span className="flex-1">Choose your business status, Newbie to Diamond Director</span>
+                <ChevronRight className="size-4 text-fg-subtle" aria-hidden /></Link></li>
+            )}
+            {!viewer.profile.avatar_url && (
+              <li><Link href="/profile" className="flex min-h-12 items-center gap-3 px-4 hover:bg-surface-muted/60">
+                <Camera className="size-4 text-fg-subtle" aria-hidden /><span className="flex-1">Add your profile photo</span>
+                <ChevronRight className="size-4 text-fg-subtle" aria-hidden /></Link></li>
+            )}
+          </ul>
+        </section>
       )}
 
       <div className="grid gap-6 lg:grid-cols-3">

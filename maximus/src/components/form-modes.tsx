@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ListChecks, PenLine, Bot } from "lucide-react";
+import { Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form";
 import { VoiceTextarea } from "@/components/voice";
@@ -9,25 +9,27 @@ import { cn } from "@/lib/utils";
 
 export type FormMode = "ai" | "write" | "form";
 
-const MODES: { key: FormMode; label: string; hint: string; icon: typeof Bot }[] = [
-  { key: "ai", label: "Talk to Maximus AI", hint: "Speak or type freely; AI arranges it", icon: Bot },
-  { key: "write", label: "Write it myself", hint: "In your own words", icon: PenLine },
-  { key: "form", label: "Fill the form", hint: "Step by step", icon: ListChecks },
+const MODES: { key: FormMode; short: string; hint: string }[] = [
+  { key: "ai", short: "Ask AI", hint: "Speak or type freely, and Maximus AI arranges it into the form" },
+  { key: "write", short: "Write it", hint: "Write it in your own words" },
+  { key: "form", short: "Fill the form", hint: "Fill in each field, step by step" },
 ];
 
-/** The three ways to fill anything in Maximus. */
+/** The three ways to fill anything in Maximus, as one segmented control. */
 export function ModeTabs({ mode, onChange }: { mode: FormMode; onChange: (m: FormMode) => void }) {
+  const current = MODES.find((m) => m.key === mode) ?? MODES[0];
   return (
-    <div className="grid grid-cols-3 gap-2" role="tablist" aria-label="How do you want to do this?">
-      {MODES.map((m) => (
-        <button key={m.key} type="button" role="tab" aria-selected={mode === m.key} onClick={() => onChange(m.key)}
-          className={cn("flex flex-col items-center gap-1 rounded-2xl border p-3 text-center transition-colors",
-            mode === m.key ? "border-primary bg-primary-soft text-primary" : "border-border bg-surface text-fg-muted hover:border-primary/40")}>
-          <m.icon className="size-5" aria-hidden />
-          <span className="text-sm font-semibold leading-tight">{m.label}</span>
-          <span className="hidden text-xs leading-tight opacity-80 sm:block">{m.hint}</span>
-        </button>
-      ))}
+    <div>
+      <div className="grid grid-cols-3 gap-1 rounded-lg bg-surface-muted p-1" role="tablist" aria-label="How do you want to do this?">
+        {MODES.map((m) => (
+          <button key={m.key} type="button" role="tab" aria-selected={mode === m.key} onClick={() => onChange(m.key)}
+            className={cn("min-h-10 rounded-md px-2 text-sm font-medium leading-tight transition-colors",
+              mode === m.key ? "bg-surface text-fg shadow-sm" : "text-fg-muted hover:text-fg")}>
+            {m.short}
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-sm text-fg-subtle">{current.hint}</p>
     </div>
   );
 }
@@ -42,7 +44,7 @@ export function TalkToAi({ placeholder, arrange, onArranged }: {
   const [notice, setNotice] = useState<{ ok: boolean; message: string } | null>(null);
   const [pending, start] = useTransition();
   return (
-    <div className="space-y-3 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
+    <div className="space-y-3 rounded-xl border border-border bg-surface-muted/50 p-4">
       <p className="text-sm text-fg-muted">Tap <b>Speak</b> and just talk, or type it however you like. Maximus AI will arrange everything into the form for you to check.</p>
       <VoiceTextarea value={text} onValueChange={setText} rows={5} maxLength={4000} placeholder={placeholder} aria-label="Tell Maximus AI" />
       <FormMessage state={notice} />

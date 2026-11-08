@@ -31,23 +31,29 @@ export function TaskQuickAdd({ today, memberId, compact = false }: { today: stri
       </div>
       <div className={cn("flex flex-wrap items-center gap-2", compact && "text-sm")}>
         <MicButton onText={(t) => setTitle((cur) => (cur ? `${cur} ${t}` : t))} />
-        <div className="flex rounded-xl bg-surface-muted p-1 text-sm" role="radiogroup" aria-label="When">
+        <div className="flex rounded-lg bg-surface-muted p-1 text-sm" role="radiogroup" aria-label="When">
           {[{ v: today, l: "Today" }, { v: tomorrow, l: "Tomorrow" }, { v: "", l: "Someday" }].map((o) => (
             <button key={o.l} type="button" role="radio" aria-checked={when === o.v} onClick={() => setWhen(o.v)}
-              className={cn("rounded-lg px-2.5 py-1", when === o.v ? "bg-surface font-medium shadow-sm" : "text-fg-muted")}>{o.l}</button>
+              className={cn("min-h-8 rounded-md px-2.5", when === o.v ? "bg-surface font-medium shadow-sm" : "text-fg-muted hover:text-fg")}>{o.l}</button>
           ))}
         </div>
-        <Input type="date" value={when} onChange={(e) => setWhen(e.target.value)} aria-label="Due date" className="h-9 w-auto text-sm" />
+        <div className="w-40"><Input type="date" value={when} onChange={(e) => setWhen(e.target.value)} aria-label="Due date" className="h-10 text-sm" /></div>
         <input type="hidden" name="due_date" value={when} />
-        <Select name="priority" defaultValue="2" aria-label="Priority" className="h-9 w-auto text-sm">
-          {PRIORITIES.map((p) => <option key={p.key} value={p.key}>{p.label} priority</option>)}
-        </Select>
-        <Select name="category" defaultValue={memberId ? "prospecting" : "other"} aria-label="Category" className="h-9 w-auto text-sm">
-          {TASK_CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
-        </Select>
-        <Select name="repeat" defaultValue="none" aria-label="Repeat" className="h-9 w-auto text-sm">
-          <option value="none">Doesn&apos;t repeat</option><option value="daily">Every day</option><option value="weekly">Every week</option>
-        </Select>
+        <div className="w-40">
+          <Select name="priority" defaultValue="2" aria-label="Priority" className="h-10 text-sm">
+            {PRIORITIES.map((p) => <option key={p.key} value={p.key}>{p.label} priority</option>)}
+          </Select>
+        </div>
+        <div className="w-36">
+          <Select name="category" defaultValue={memberId ? "prospecting" : "other"} aria-label="Category" className="h-10 text-sm">
+            {TASK_CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+          </Select>
+        </div>
+        <div className="w-40">
+          <Select name="repeat" defaultValue="none" aria-label="Repeat" className="h-10 text-sm">
+            <option value="none">Doesn&apos;t repeat</option><option value="daily">Every day</option><option value="weekly">Every week</option>
+          </Select>
+        </div>
       </div>
     </form>
   );
