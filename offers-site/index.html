@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Automation, e-learning, website and marketing packages by Valentine Xavier. Standard and Premium options with fixed prices and timelines.">
-<title>Bridgepoint Offers</title>
+<title>Offers | Valentine Xavier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <style>
@@ -134,9 +134,9 @@ footer .wrap{padding-block:28px;display:flex;justify-content:space-between;flex-
 </head>
 <body>
 <header class="nav"><div class="wrap">
-  <a class="brand" href="#home"><svg viewBox="300 235 500 670" aria-hidden="true" class="sym"><defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF9A3C"/><stop offset="1" stop-color="#FF6B1A"/></linearGradient><mask id="vxgap" maskUnits="userSpaceOnUse" x="0" y="0" width="1100" height="1100"><rect x="0" y="0" width="1100" height="1100" fill="#fff"/><g transform="translate(540,595) rotate(-55.66)"><rect x="-62" y="-60" width="124" height="120" fill="#000"/></g></mask></defs><g mask="url(#vxgap)"><g transform="translate(540,595) rotate(55.66)"><rect x="-321" y="-48.5" width="642" height="97" fill="#FFFFFF"/></g></g><g transform="translate(540,595) rotate(-55.66)"><rect x="-321" y="-48.5" width="402" height="97" fill="#FFFFFF"/><rect x="93" y="-48.5" width="214" height="97" fill="url(#og)"/><polygon points="300,-82 404,0 300,82" fill="url(#og)"/></g><circle cx="540" cy="318" r="64" fill="url(#og)"/></svg><span><b style="color:var(--fg)">VALENTINE</b> XAVIER</span></a>
+  <a class="brand" href="https://scalewithvalentinexavier.com/"><svg viewBox="300 235 500 670" aria-hidden="true" class="sym"><defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF9A3C"/><stop offset="1" stop-color="#FF6B1A"/></linearGradient><mask id="vxgap" maskUnits="userSpaceOnUse" x="0" y="0" width="1100" height="1100"><rect x="0" y="0" width="1100" height="1100" fill="#fff"/><g transform="translate(540,595) rotate(-55.66)"><rect x="-62" y="-60" width="124" height="120" fill="#000"/></g></mask></defs><g mask="url(#vxgap)"><g transform="translate(540,595) rotate(55.66)"><rect x="-321" y="-48.5" width="642" height="97" fill="#FFFFFF"/></g></g><g transform="translate(540,595) rotate(-55.66)"><rect x="-321" y="-48.5" width="402" height="97" fill="#FFFFFF"/><rect x="93" y="-48.5" width="214" height="97" fill="url(#og)"/><polygon points="300,-82 404,0 300,82" fill="url(#og)"/></g><circle cx="540" cy="318" r="64" fill="url(#og)"/></svg><span><b style="color:var(--fg)">VALENTINE</b> XAVIER</span></a>
   <nav class="navlinks" aria-label="Main">
-    <a href="#home">Home</a><a href="#offers">Offers</a><a href="#custom">Custom project</a>
+    <a href="https://scalewithvalentinexavier.com/">Home</a><a href="#offers">Offers</a><a href="#custom">Custom project</a>
   </nav>
 </div></header>
 <main id="app"></main>
@@ -252,7 +252,7 @@ function home(){return `
   <a class="btn" href="#start">Start a project <span class="dot">${ic('arrow')}</span></a>
   <a class="link" href="#offers">See custom offers ${ic('arrow')}</a>
  </div>
- <div class="note">${ic('bolt')}<span><b>The change on your home page:</b> the "See selected work" link becomes <b>"See custom offers"</b> and opens the offers page. Keep selected work in your menu instead.</span></div>
+
 </div></div></section>`}
 
 function hub(){return `
@@ -326,8 +326,8 @@ function start(){const sel=chosen?(()=>{const [id,t]=chosen.split('|');const c=C
  </form>
 </div></div></section>`}
 
-function render(){const h=(location.hash||'#home').slice(1);let html;
- if(h==='offers')html=hub();else if(h==='start')html=start();else{const c=CATS.find(x=>x.id===h);html=c?cat(c):home()}
+function render(){const h=(location.hash||'#offers').slice(1);let html;
+ if(h==='offers')html=hub();else if(h==='start')html=start();else{const c=CATS.find(x=>x.id===h);html=c?cat(c):(h==='home'?home():hub())}
  app.innerHTML=html;window.scrollTo(0,0);
  document.querySelectorAll('.navlinks a').forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+h||(h==='home'&&a.getAttribute('href')==='#home')?'page':'false'));
  app.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{chosen=b.dataset.pick}));
