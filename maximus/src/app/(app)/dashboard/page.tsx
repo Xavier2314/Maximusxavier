@@ -5,6 +5,7 @@ import { TASK_CATEGORIES, type Task } from "@/lib/planner";
 import { FocusPopup } from "@/components/focus-popup";
 import { TodayList, type TodayItem } from "./today-list";
 import { MonthTrack } from "./month-track";
+import { Avatar } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
 import { FOCUS, topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
@@ -35,7 +36,7 @@ export default async function DashboardPage() {
   const [
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { count: unread },
     { data: focusData }, { data: checklistItems }, { data: checklistDone }, { data: followUps }, { data: todayTasks },
-    { data: monthDays },
+    { data: monthDays }, { data: team },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -52,6 +53,7 @@ export default async function DashboardPage() {
     supabase.from("tasks").select("*").eq("user_id", viewer.id).is("completed_at", null).lte("due_date", today)
       .order("due_date").order("priority").limit(6).returns<Task[]>(),
     supabase.from("attendance").select("attendance_date").eq("user_id", viewer.id).gte("attendance_date", month).lte("attendance_date", today),
+    viewer.can("view_direct_downlines") ? supabase.rpc("team_member_stats", { p_root: viewer.id, p_max_depth: 1 }) : Promise.resolve({ data: [] }),
   ]);
   const focusTop = topFocus(focusData as GrowthFocus | null);
   const focusWeek = isoWeek(today);
@@ -71,6 +73,13 @@ export default async function DashboardPage() {
   const checkedIn = openAttendance && !openAttendance.check_out_at;
   const [year, monthNum, dayNum] = today.split("-").map(Number);
   const daysInMonth = new Date(Date.UTC(year, monthNum, 0)).getUTCDate();
+  // The people you lead: active today means they did something in the app today.
+  const dayIn = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+  type Member = { member: string; full_name: string; avatar_url: string | null; depth: number; last_activity: string | null };
+  const directs = ((team ?? []) as Member[]).filter((m) => m.depth === 1)
+    .map((m) => ({ ...m, today: Boolean(m.last_activity) && dayIn(new Date(m.last_activity!)) === today }))
+    .sort((a, b) => Number(b.today) - Number(a.today) || a.full_name.localeCompare(b.full_name));
+  const activeToday = directs.filter((m) => m.today).length;
   const checkInDays = [...new Set((monthDays ?? []).map((d) => Number(String(d.attendance_date).slice(8, 10))))];
 
   type FollowUp = { id: string; full_name: string; phone: string | null; next_follow_up_at: string };
@@ -155,6 +164,25 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </section>
+
+      {directs.length > 0 && (
+        <Link href="/team" className="flex items-center gap-4 rounded-[22px] bg-surface px-5 py-4 transition-colors hover:bg-surface-muted">
+          <span className="flex shrink-0 -space-x-2.5">
+            {directs.slice(0, 5).map((m) => (
+              <span key={m.member} className={m.today ? "rounded-full ring-2 ring-tile-green" : "rounded-full ring-2 ring-surface"} title={m.full_name}>
+                <Avatar name={m.full_name} src={m.avatar_url} size={36} className="ring-0" />
+              </span>
+            ))}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-medium">Your team today</span>
+            <span className="block truncate text-sm text-fg-muted tabular-nums">
+              {activeToday} of {directs.length} active{directs.length > 5 ? `, ${directs.length - 5} more in your team` : ""}
+            </span>
+          </span>
+          <ArrowRight className="size-5 shrink-0" aria-hidden />
+        </Link>
+      )}
 
       <FocusPopup week={focusWeek} areas={focusTop.map((a) => ({
         key: a.key, title: FOCUS[a.key].title, why: FOCUS[a.key].why(a, "You"), tip: FOCUS[a.key].tips[0],
