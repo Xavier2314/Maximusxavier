@@ -124,7 +124,7 @@ export function BrandEditor({ mode, officeId, initial, fallbackName, save, reset
               <input type="file" accept="image/*" className="sr-only" onChange={pickLogo} />
             </label>
             {preview.logo && <button type="button" className="text-sm text-danger underline" onClick={() => { setRemoveLogo(true); setLogoFile(null); }}>Remove</button>}
-            <p className="w-full text-xs text-fg-subtle">A wide logo with a transparent background looks best. It&apos;s resized automatically.</p>
+            <p className="w-full text-xs text-fg-subtle">Wide logo, transparent background</p>
             {logoError && <p className="w-full text-xs text-danger" role="alert">{logoError}</p>}
           </div>
         </section>

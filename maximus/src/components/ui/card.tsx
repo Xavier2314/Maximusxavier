@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { brief } from "./misc";
 
 export function Card({ className, ...props }: ComponentProps<"div">) {
   return <div className={cn("card", className)} {...props} />;
@@ -12,7 +13,7 @@ export function CardHeader({
     <div className={cn("flex items-start justify-between gap-3 px-5 pt-5", className)}>
       <div className="min-w-0">
         <h2 className="text-[15px] font-semibold leading-6">{title}</h2>
-        {description && <p className="mt-0.5 text-sm text-fg-muted">{description}</p>}
+        {brief(description, 48) && <p className="mt-0.5 text-sm text-fg-muted">{description}</p>}
       </div>
       {action}
     </div>

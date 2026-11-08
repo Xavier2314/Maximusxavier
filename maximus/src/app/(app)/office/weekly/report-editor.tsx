@@ -109,7 +109,7 @@ export function ReportEditor({ initial, prev, reportId }: { initial: OfficeRepor
                 </tbody>
               </table>
             </div>
-            <p className="px-4 py-2 text-xs text-fg-subtle">Last week and the week before come from your earlier reports. Some numbers were filled from the app; check them.</p>
+            <p className="px-4 py-2 text-xs text-fg-subtle">Some numbers were filled in for you. Check them.</p>
           </section>
 
           <RowsTable<ServiceRow> title="Services offered this week" rows={r.services} onChange={(v) => set("services", v)}

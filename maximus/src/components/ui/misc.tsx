@@ -77,10 +77,19 @@ export function EmptyState({ title, description, action, className, art = "gener
     <div className={cn("px-5 py-10 text-center", className)}>
       {illustration ?? <EmptyIllustration art={art} className="mx-auto mb-4 w-40 sm:w-44" />}
       <h3 className="font-medium">{title}</h3>
-      {description && <p className="mx-auto mt-1 max-w-sm text-sm text-fg-muted">{description}</p>}
+      {brief(description, 100) && <p className="mx-auto mt-1 max-w-sm text-sm text-fg-muted">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
+}
+
+/**
+ * Keeps screens quiet: a supporting line shows only when it's short (a status like "3 to go today").
+ * Long explanations are left out; the screen itself should make them unnecessary.
+ */
+export function brief(text: ReactNode, max: number) {
+  if (text == null || text === false || text === "") return false;
+  return typeof text !== "string" || text.length <= max;
 }
 
 export function PageHeader({ title, description, action, eyebrow }: { title: string; description?: ReactNode; action?: ReactNode; eyebrow?: string }) {
@@ -89,7 +98,7 @@ export function PageHeader({ title, description, action, eyebrow }: { title: str
       <div className="min-w-0">
         {eyebrow && <p className="mb-1 text-sm text-fg-subtle">{eyebrow}</p>}
         <h1 className="text-[34px] leading-none tracking-[-0.03em] sm:text-[40px]">{title}</h1>
-        {description && <p className="mt-1.5 max-w-2xl text-fg-muted">{description}</p>}
+        {brief(description, 40) && <p className="mt-2 max-w-2xl text-fg-muted">{description}</p>}
       </div>
       {action && <div className="flex flex-wrap gap-2">{action}</div>}
     </div>

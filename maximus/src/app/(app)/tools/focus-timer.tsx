@@ -449,7 +449,7 @@ function AfterSession({ session, goal }: { session: FocusSession; goal?: TimerGo
               <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note (optional)" maxLength={200} className="min-w-40 flex-1" aria-label="Note" />
               <Button type="submit" size="sm" disabled={pending || value === ""}>Save progress</Button>
             </div>
-            <p className="text-xs text-fg-subtle">Time spent doesn&apos;t count as progress on its own. Record what you actually achieved.</p>
+            <p className="text-xs text-fg-subtle">Record what you achieved</p>
           </form>
         )}
         {msg && <p className="text-sm text-fg-muted" role="status">{msg}</p>}

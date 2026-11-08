@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  CalendarCheck, ClipboardCheck, GraduationCap, MessageCircle, Network, PhoneCall, Send, ShoppingBag, Bot, UserPlus, Users,
+  CalendarCheck, ClipboardCheck, GraduationCap, MessageCircle, Network, PhoneCall, Send, ShoppingBag, UserPlus, Users,
   type LucideIcon,
 } from "lucide-react";
 import { categoryOf } from "@/lib/academy";
@@ -36,13 +36,13 @@ export function FocusList({ areas, who = "You", courses = [], compact = false }:
   areas: FocusArea[]; who?: string; courses?: CourseLink[]; compact?: boolean;
 }) {
   return (
-    <ol className="grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3">
+    <ol className="grid gap-2.5 md:grid-cols-3">
       {areas.map((a, i) => {
         const info = FOCUS[a.key];
         const cat = categoryOf(info.academy);
-        const related = courses.filter((c) => c.category === info.academy).slice(0, 2);
+        const related = courses.filter((c) => c.category === info.academy).slice(0, 1);
         return (
-          <li key={a.key} className="flex flex-col bg-surface p-5">
+          <li key={a.key} className="flex flex-col rounded-[22px] bg-bg p-5 ring-1 ring-border">
             <div className="min-w-0">
               <p className="text-sm text-fg-subtle tabular-nums">{i + 1}</p>
               <h3 className="mt-1 font-medium leading-snug">{info.title}</h3>
@@ -64,11 +64,6 @@ export function FocusList({ areas, who = "You", courses = [], compact = false }:
               {related.length === 0 && (
                 <Link href={`/academy#cat-${cat.key}`} className="inline-flex min-h-8 items-center gap-1.5 font-medium text-primary hover:underline">
                   <GraduationCap className="size-4" aria-hidden />{cat.label}
-                </Link>
-              )}
-              {who === "You" && (
-                <Link href={`/ai?q=${encodeURIComponent(info.ask)}`} className="inline-flex min-h-8 items-center gap-1.5 font-medium text-primary hover:underline">
-                  <Bot className="size-4" aria-hidden />Ask Maximus AI
                 </Link>
               )}
             </div>
@@ -95,11 +90,11 @@ export function DuplicationSummary({ focus, who = "You" }: { focus: GrowthFocus;
           {focus.directs > 12 && <span className="text-xs font-semibold text-fg-muted">+{focus.directs - 12}</span>}
         </div>
       </div>
-      <p className="text-sm text-fg-muted">
-        <b className="font-medium text-fg">{focus.directs}</b> brought in directly ({focus.directs >= target ? `first ${target} reached, keep going: there's no limit` : `aim for at least ${target}, no limit`}).{" "}
-        <b className="font-medium text-fg">{focus.duplicated}</b> of them have brought in {target} or more, and{" "}
-        <b className="font-medium text-fg">{focus.team_size}</b> people are in the whole team.
-      </p>
+      <dl className="flex gap-6 text-sm text-fg-muted">
+        <div><dt>Brought in</dt><dd className="text-lg font-medium text-fg tabular-nums">{focus.directs}</dd></div>
+        <div><dt>Duplicating</dt><dd className="text-lg font-medium text-fg tabular-nums">{focus.duplicated}</dd></div>
+        <div><dt>Whole team</dt><dd className="text-lg font-medium text-fg tabular-nums">{focus.team_size}</dd></div>
+      </dl>
     </div>
   );
 }
