@@ -1,0 +1,241 @@
+<style>
+.vxo{--o-panel:#13265A;--o-panel2:#182F6B;--o-deep:#091430;--o-line:rgba(255,255,255,.10);--o-line2:rgba(255,255,255,.18);--o-fg:#F4F6FB;--o-muted:#A9B6D6;--o-soft:#7F8DB3;--o-acc:#EF7A3A;--o-acc2:#FF9A3C;--o-ink:#0A0F1F;--o-good:#5FD3A1;color:var(--o-fg)}
+.vxo .o-stack{display:grid;gap:20px}
+.vxo .o-h1{font-size:clamp(38px,6vw,68px);line-height:1.02;font-weight:800;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.vxo .o-h2{font-size:clamp(26px,3.4vw,38px);line-height:1.08;font-weight:800;margin:0;text-wrap:balance}
+.vxo .o-h3{font-size:21px;font-weight:800;margin:0}
+.vxo .o-hl{color:var(--o-acc)}
+.vxo .o-lead{color:var(--o-muted);font-size:clamp(17px,1.6vw,19px);max-width:62ch;margin:0}
+.vxo svg.o-i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.vxo .o-cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px;margin-top:40px}
+@media (min-width:1080px){.vxo .o-cats{grid-template-columns:repeat(3,1fr)}.vxo .o-cat.o-custom{grid-column:span 2}}
+.vxo .o-cat{display:grid;gap:14px;align-content:start;text-decoration:none;color:inherit;background:linear-gradient(160deg,var(--o-panel2),var(--o-panel));border:1px solid var(--o-line);border-radius:22px;padding:28px;transition:transform .18s,border-color .18s;min-width:0}
+.vxo .o-cat:hover{transform:translateY(-4px);border-color:var(--o-acc)}
+.vxo .o-cat.o-custom{background:transparent;border-style:dashed;border-color:var(--o-line2)}
+.vxo .o-ic{width:52px;height:52px;border-radius:14px;background:rgba(239,122,58,.14);color:var(--o-acc2);display:grid;place-items:center}
+.vxo .o-ic svg{width:26px;height:26px}
+.vxo .o-cat p{margin:0;color:var(--o-muted)}
+.vxo .o-tags{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.vxo .o-tags li{font-size:13px;font-weight:600;background:rgba(255,255,255,.06);border:1px solid var(--o-line);padding:5px 11px;border-radius:999px}
+.vxo .o-go{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:14px;border-top:1px solid var(--o-line);font-weight:700}
+.vxo .o-go span:last-child{color:var(--o-acc2);white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.vxo .o-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px;margin-top:32px}
+.vxo .o-step{display:grid;gap:8px;padding:22px;border-top:2px solid var(--o-acc)}
+.vxo .o-step small{font-weight:800;color:var(--o-acc2);letter-spacing:.12em}
+.vxo .o-step p{margin:0;color:var(--o-muted)}
+.vxo .o-back{display:inline-flex;gap:8px;align-items:center;color:var(--o-muted);text-decoration:none;font-weight:600;font-size:14px}
+.vxo .o-back:hover{color:var(--o-fg)}
+.vxo .o-pains{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
+.vxo .o-pains li{display:flex;align-items:center;gap:8px;color:var(--o-muted);font-size:15px;background:rgba(255,255,255,.04);border:1px solid var(--o-line);padding:8px 14px;border-radius:12px}
+.vxo .o-pains li svg{color:#FF8A8A}
+.vxo .o-offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px;margin-top:36px;align-items:start}
+.vxo .o-offer{background:var(--o-panel);border:1px solid var(--o-line);border-radius:26px;padding:clamp(24px,3vw,36px);display:grid;gap:22px;min-width:0}
+.vxo .o-offer.o-premium{background:linear-gradient(170deg,#1E3A82,var(--o-panel) 60%);border:1.5px solid var(--o-acc);box-shadow:0 30px 80px -40px rgba(239,122,58,.55)}
+.vxo .o-tier{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.vxo .o-tag{font-weight:800;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--o-muted)}
+.vxo .o-badge{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--o-acc);color:var(--o-ink);padding:6px 12px;border-radius:999px}
+.vxo .o-promise{color:var(--o-muted);margin:6px 0 0}
+.vxo .o-price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.vxo .o-price strong{font-size:clamp(40px,5vw,54px);font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.vxo .o-price span{color:var(--o-muted);font-weight:600}
+.vxo .o-meta span{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;background:rgba(255,255,255,.06);padding:7px 12px;border-radius:10px}
+.vxo .o-blk h4{margin:0 0 10px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--o-soft)}
+.vxo .o-blk p{margin:0}
+.vxo .o-ticks{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.vxo .o-ticks li{display:flex;gap:12px;align-items:flex-start}
+.vxo .o-ticks li svg{color:var(--o-good);margin-top:3px}
+.vxo .o-bonus li svg{color:var(--o-acc2)}
+.vxo .o-guar{display:flex;gap:14px;align-items:flex-start;background:rgba(95,211,161,.08);border:1px solid rgba(95,211,161,.3);border-radius:16px;padding:16px}
+.vxo .o-guar svg{color:var(--o-good);width:26px;height:26px}
+.vxo .o-guar p{margin:0;font-size:15px}
+.vxo .o-scarce{font-size:14px;color:var(--o-acc2);font-weight:600;margin:0}
+.vxo .o-full{width:100%;justify-content:space-between}
+.vxo .o-compare{margin-top:56px;overflow-x:auto;border:1px solid var(--o-line);border-radius:20px}
+.vxo .o-compare table{width:100%;border-collapse:collapse;min-width:560px}
+.vxo .o-compare th,.vxo .o-compare td{text-align:left;padding:14px 18px;border-bottom:1px solid var(--o-line);font-size:15px;vertical-align:top}
+.vxo .o-compare th{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--o-soft);background:var(--o-deep)}
+.vxo .o-compare td:first-child{color:var(--o-muted)}
+.vxo .o-compare tr:last-child td{border-bottom:0}
+.vxo .o-faq{display:grid;gap:12px;margin-top:20px;max-width:820px}
+.vxo .o-faq details{background:var(--o-panel);border:1px solid var(--o-line);border-radius:16px;padding:16px 20px}
+.vxo .o-faq summary{cursor:pointer;font-weight:700}
+.vxo .o-faq p{color:var(--o-muted);margin:10px 0 0}
+.vxo .o-unsure{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center;margin-top:56px;padding:28px;border:1px dashed var(--o-line2);border-radius:22px}
+.vxo .o-unsure p{margin:6px 0 0;color:var(--o-muted)}
+.vxo .o-summary{background:var(--o-panel);border:1px solid var(--o-acc);border-radius:22px;padding:28px;display:grid;gap:10px;max-width:640px}
+.vxo .o-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.vxo .o-mail{font-size:18px;font-weight:700;background:var(--o-deep);padding:10px 14px;border-radius:10px;user-select:all}
+.vxo .o-small{border:1px solid var(--o-line2);background:transparent;color:var(--o-fg);font:inherit;font-weight:700;padding:10px 16px;border-radius:10px;cursor:pointer}
+.vxo .o-ok{color:var(--o-good);font-weight:700}
+.vxo .o-other{color:var(--o-soft);margin-top:28px}
+.vxo .o-other a{color:var(--o-fg)}
+@media (prefers-reduced-motion:reduce){.vxo *{transition:none!important}}
+</style>
+<section class="section tone-dark vxo" aria-label="Offers"><div class="container" id="vxo-app"></div></section>
+<script>
+(function(){
+const I={
+ arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',back:'<path d="M19 12H5M11 6l-6 6 6 6"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7"/>',gift:'<path d="M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7c-2-4-6-3-5 0M12 7c2-4 6-3 5 0"/>',
+ shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',x:'<path d="M7 7l10 10M17 7L7 17"/>',
+ bolt:'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>',book:'<path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1zM12 6v14"/>',
+ screen:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',mega:'<path d="M4 10v4h3l9 5V5l-9 5zM20 9a4 4 0 010 6"/>',
+ puzzle:'<path d="M10 3h4v3a2 2 0 104 0V3h3v7h-3a2 2 0 100 4h3v7h-7v-3a2 2 0 10-4 0v3H3v-7h3a2 2 0 100-4H3V3z"/>',
+ users:'<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6.5 7-6.5s7 2.5 7 6.5M17 4a4 4 0 010 8M22 21c0-3-1.5-5.3-4-6.2"/>'};
+
+const ic=(n,c='o-i')=>`<svg class="${c}" viewBox="0 0 24 24">${I[n]}</svg>`;
+const BI='<span class="btn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+const btn=(href,text,kind='primary',extra='',attrs='')=>`<a class="btn btn--${kind} ${extra}" href="${href}" ${attrs}><span>${text}</span>${BI}</a>`;
+/* ===== EDIT YOUR OFFERS HERE. Prices, guarantees and capacity limits are suggestions — confirm before publishing. ===== */
+const CATS=[
+{id:'automation',icon:'bolt',name:'Automation',
+ short:'Stop answering the same messages by hand. Let AI reply, qualify and follow up for you.',
+ tags:['Message automation','AI chat agents','CRM & follow-ups','Workflows'],
+ eyebrow:'Automation builds',headline:'Every lead answered in seconds. <span class="hl">Even while you sleep.</span>',
+ lead:'We connect your inbox, DMs, forms and CRM so messages get answered, leads get qualified and follow-ups go out on time, without you copy-pasting all day.',
+ pains:['Leads wait hours for a reply','Same questions answered 20× a day','Follow-ups forgotten','Data stuck in 5 different apps'],
+ std:{name:'Inbox Autopilot',promise:'One channel answered and followed up automatically, so no lead slips through.',price:'$1,200',unit:'one-time',time:'Live in 14 days',
+   best:'Solo founders and small teams drowning in DMs or WhatsApp messages.',
+   inc:['AI reply agent on 1 channel (WhatsApp, Instagram DM, website chat or email)','Trained on your FAQs, prices and tone of voice','Lead capture into your CRM or Google Sheet','3-step automatic follow-up sequence','Hand-off to a human when the AI isn\'t sure','Loom walkthrough + 14 days of fixes'],
+   bonus:['Message script library for your top 10 questions'],
+   guar:'If it isn\'t live and working in 14 days, I keep working on it for free until it is.'},
+ pre:{name:'AI Operations System',promise:'Your whole lead-to-client process runs itself, from first message to invoice.',price:'$3,900',unit:'one-time',time:'Live in 4–5 weeks',
+   best:'Growing businesses with a team, several channels and repeat processes.',
+   inc:['Everything in Inbox Autopilot','AI agent on up to 3 channels','Process audit + automation map of your business','Up to 5 automated workflows (booking, onboarding, invoicing, reporting, reminders)','AI agent trained on your documents and SOPs','Live dashboard of leads, replies and conversions','30 days of support and tuning','Team training session (recorded)'],
+   bonus:['Monthly performance report for the first 2 months','Priority WhatsApp support line'],
+   guar:'Fixed price, fixed timeline. If a workflow we agreed on doesn\'t work as specified, I fix it at no cost.',scarce:'Limited to 3 Premium builds per month.'}},
+{id:'curriculum',icon:'book',name:'Curriculum & E-Learning',
+ short:'Turn what you know into a structured course people finish and pay for.',
+ tags:['Curriculum design','Online courses','LMS setup','Training programmes'],
+ eyebrow:'Curriculum & e-learning development',headline:'Turn your expertise into a course <span class="hl">people actually finish.</span>',
+ lead:'Certified course design, from learning outcomes to lessons, assessments and a ready-to-sell course on your platform.',
+ pains:['Knowledge stuck in your head','Courses people abandon halfway','No structure or assessments','Messy, confusing LMS setup'],
+ std:{name:'Course Blueprint',promise:'A complete, ready-to-record curriculum built on proven instructional design.',price:'$1,500',unit:'one-time',time:'Delivered in 3 weeks',
+   best:'Coaches, trainers and experts with knowledge but no course structure yet.',
+   inc:['Learner profile + clear learning outcomes','Full course outline up to 6 modules','Lesson plans with activities for every module','Quizzes and assessments','Slide templates in your brand','Recording guide for each lesson'],
+   bonus:['Course sales page outline'],
+   guar:'Two full rounds of revisions on every module.'},
+ pre:{name:'Academy Launch',promise:'A finished, branded online academy, built, loaded and ready to sell.',price:'$4,800',unit:'one-time',time:'Launch-ready in 6 weeks',
+   best:'Organisations and educators launching a paid course or staff training programme.',
+   inc:['Everything in Course Blueprint (up to 10 modules)','Video scripts for every lesson','Interactive e-learning content (quizzes, scenarios, downloads)','LMS setup on Teachable, Thinkific, LearnDash or OpenLearning','Completion certificates','Automated learner onboarding + reminder emails','Launch checklist and 30 days of support'],
+   bonus:['Lead-magnet mini-course to grow your list','Learner feedback survey + report'],
+   guar:'Your academy is launch-ready on the agreed date, or I keep working for free until it is.',scarce:'Limited to 2 Academy Launches per month.'}},
+{id:'websites',icon:'screen',name:'Website Design',
+ short:'A fast, modern website that explains what you do and turns visitors into enquiries.',
+ tags:['Business websites','Landing pages','Booking & payments','SEO basics'],
+ eyebrow:'Website design',headline:'A website that <span class="hl">brings you clients,</span> not just compliments.',
+ lead:'Conversion-focused websites with clear messaging, fast load times and booking or payment built in.',
+ pains:['Outdated or no website','Visitors leave without contacting you','Hard to update yourself','Not showing up on Google'],
+ std:{name:'Launch Site',promise:'A professional 5-page website that makes people want to contact you.',price:'$1,100',unit:'one-time',time:'Live in 14 days',
+   best:'New businesses and personal brands that need to look credible fast.',
+   inc:['Up to 5 pages, designed for mobile first','Copy polish on your existing text','Contact form + WhatsApp button','Basic SEO setup and Google indexing','Speed-optimised and secure','Training video so you can edit it yourself'],
+   bonus:['Free brand-matched favicon and social share image'],
+   guar:'Unlimited design revisions until you approve the homepage.'},
+ pre:{name:'Growth Website',promise:'A full website and lead machine, written, built and connected to your tools.',price:'$3,200',unit:'one-time',time:'Live in 4 weeks',
+   best:'Established businesses ready to grow through their website.',
+   inc:['Up to 12 pages including blog or portfolio','Full conversion copywriting','Booking, payments or product catalogue','Leads sent straight to your CRM with auto-reply','Analytics + conversion tracking set up','On-page SEO for your key services','30 days of support after launch'],
+   bonus:['One high-converting landing page for ads','Email newsletter signup with welcome email'],
+   guar:'Live by the agreed date, or your first month of support is free.',scarce:'Limited to 3 Growth Websites per month.'}},
+{id:'marketing',icon:'mega',name:'Marketing',
+ short:'Consistent content and campaigns that build your audience and bring in leads.',
+ tags:['Content strategy','Social media','Email marketing','Funnels'],
+ eyebrow:'Marketing',headline:'Show up every week <span class="hl">without doing it all yourself.</span>',
+ lead:'Content, campaigns and funnels in one consistent brand, planned around getting you real enquiries.',
+ pains:['Posting randomly, then disappearing','No idea what content works','No email list or follow-up','Ads that burn money'],
+ std:{name:'Content Engine',promise:'A month of on-brand content, planned, designed and scheduled for you.',price:'$900',unit:'per month',time:'Starts within 7 days',
+   best:'Personal brands and small businesses who need consistency.',
+   inc:['Monthly content strategy + calendar','12 designed posts or carousels per month','Captions and hashtags written for you','Scheduling on 2 platforms','Monthly performance summary'],
+   bonus:['Branded template pack so you can post extra content yourself'],
+   guar:'Month to month. Cancel any time after the first month.'},
+ pre:{name:'Full-Funnel Growth',promise:'Content, lead magnet, emails and ads working together as one system.',price:'$2,400',unit:'per month',time:'First campaign live in 3 weeks',
+   best:'Businesses ready to turn attention into a steady flow of leads.',
+   inc:['Everything in Content Engine (20 posts per month, 3 platforms)','Lead magnet + landing page','5–7 email nurture sequence','Paid ads setup and management (ad spend separate)','Monthly strategy call + reporting dashboard'],
+   bonus:['Short-form video editing: 4 reels per month','Quarterly campaign plan'],
+   guar:'If agreed deliverables are late in any month, that month\'s fee is reduced by 25%.',scarce:'Limited to 4 Full-Funnel clients at a time.'}},
+{id:'custom',icon:'puzzle',name:'Custom Project',custom:true,
+ short:'Have an idea that doesn\'t fit a box? Bring it to me and my team and we\'ll scope it.',
+ tags:['AI apps','Internal tools','Integrations','Mixed builds'],
+ eyebrow:'Custom projects',headline:'Got a project in mind? <span class="hl">Let\'s build it with you.</span>',
+ lead:'For anything that doesn\'t fit a package: AI tools, integrations, platforms or a mix of everything above. You work with me and my team.',
+ pains:['Off-the-shelf tools don\'t fit','Freelancers who disappear','Unclear quotes and scope creep','No one owns the whole build'],
+ std:{name:'Scoped Build',promise:'A clear scope, a fixed price and a finished build.',price:'From $2,500',unit:'fixed quote',time:'Quote within 48 hours of discovery call',
+   best:'One defined project with a clear goal.',
+   inc:['Discovery call + written scope document','Fixed price before any work starts','Milestone-based delivery with weekly updates','Shared project board you can follow','Handover documentation + recorded walkthrough','14 days of support after delivery'],
+   bonus:['Free technical recommendation report, yours to keep even if we don\'t work together'],
+   guar:'Fixed price. No surprise invoices.'},
+ pre:{name:'Dedicated Team Sprint',promise:'Me and my team working on your roadmap every month.',price:'$6,000',unit:'per month',time:'Kick-off within 7 days',
+   best:'Businesses with ongoing builds, several projects or a product to grow.',
+   inc:['Dedicated team capacity every month','Senior lead (me) on strategy and architecture','Weekly planning + demo call','Priority response within 1 business day','Automation, web, AI and content skills in one team','Monthly progress report'],
+   bonus:['Quarterly strategy workshop for your team'],
+   guar:'Month to month after the first month. If you\'re not happy after month one, the second month is half price.',scarce:'Limited to 2 Team Sprint clients at a time.'}}
+];
+/* ======================================================================================================================== */
+const app=document.getElementById('vxo-app');
+const EMAIL='valentine@thevalentinexavier.com';
+let chosen=null;
+function hub(){return `
+<div class="o-stack"><p class="eyebrow eyebrow--dot">Offers</p>
+ <h1 class="o-h1">Pick what you need built.<br><span class="o-hl">See exactly what you get.</span></h1>
+ <p class="o-lead">Every service has two packages: <b>Standard</b> to get it done fast, and <b>Premium</b> when you want the full system done for you. Fixed prices, clear timelines, real guarantees.</p></div>
+<div class="o-cats">${CATS.map(c=>`
+ <a class="o-cat${c.custom?' o-custom':''}" href="#${c.id}">
+  <span class="o-ic">${ic(c.icon)}</span><h3 class="o-h3">${c.name}</h3><p>${c.short}</p>
+  <ul class="o-tags">${c.tags.map(t=>`<li>${t}</li>`).join('')}</ul>
+  <span class="o-go"><span>${c.custom?'Standard & Premium options':`${c.std.name} · ${c.pre.name}`}</span><span>View ${ic('arrow')}</span></span>
+ </a>`).join('')}</div>
+<div class="o-steps">
+ <div class="o-step"><small>STEP 1</small><h3 class="o-h3">Choose a package</h3><p>Pick the service, then Standard or Premium.</p></div>
+ <div class="o-step"><small>STEP 2</small><h3 class="o-h3">Quick call</h3><p>15 minutes to confirm details and your start date.</p></div>
+ <div class="o-step"><small>STEP 3</small><h3 class="o-h3">We build</h3><p>Weekly updates until it's live and handed over.</p></div>
+</div>`}
+function card(c,o,tier){const p=tier==='Premium';return `
+<article class="o-offer${p?' o-premium':''}">
+ <div class="o-tier"><span class="o-tag">${tier}</span>${p?'<span class="o-badge">Done for you</span>':''}</div>
+ <div><h2 class="o-h2">${o.name}</h2><p class="o-promise">${o.promise}</p></div>
+ <div class="o-price"><strong>${o.price}</strong><span>${o.unit}</span></div>
+ <div class="o-meta"><span>${ic('clock')}${o.time}</span></div>
+ <div class="o-blk"><h4>Best for</h4><p>${o.best}</p></div>
+ <div class="o-blk"><h4>What you get</h4><ul class="o-ticks">${o.inc.map(x=>`<li>${ic('check')}<span>${x}</span></li>`).join('')}</ul></div>
+ <div class="o-blk"><h4>Bonus</h4><ul class="o-ticks o-bonus">${o.bonus.map(x=>`<li>${ic('gift')}<span>${x}</span></li>`).join('')}</ul></div>
+ <div class="o-guar">${ic('shield')}<p><b>Guarantee.</b> ${o.guar}</p></div>
+ ${o.scarce?`<p class="o-scarce">${o.scarce}</p>`:''}
+ ${btn('#start','Start '+o.name,p?'primary':'ghost','o-full',`data-pick="${c.id}|${tier}"`)}
+</article>`}
+function cat(c){const others=CATS.filter(x=>x.id!==c.id&&!x.custom);return `
+<a class="o-back" href="#offers">${ic('back')} All offers</a>
+<div class="o-stack" style="margin-top:24px"><p class="eyebrow eyebrow--dot">${c.eyebrow}</p><h1 class="o-h1">${c.headline.replace(/class="hl"/g,'class="o-hl"')}</h1><p class="o-lead">${c.lead}</p>
+ <ul class="o-pains" aria-label="Problems this solves">${c.pains.map(p=>`<li>${ic('x')}${p}</li>`).join('')}</ul></div>
+<div class="o-offers">${card(c,c.std,'Standard')}${card(c,c.pre,'Premium')}</div>
+<div class="o-compare"><table><thead><tr><th></th><th>${c.std.name}</th><th>${c.pre.name}</th></tr></thead><tbody>
+ <tr><td>Price</td><td>${c.std.price} ${c.std.unit}</td><td>${c.pre.price} ${c.pre.unit}</td></tr>
+ <tr><td>Timeline</td><td>${c.std.time}</td><td>${c.pre.time}</td></tr>
+ <tr><td>Best for</td><td>${c.std.best}</td><td>${c.pre.best}</td></tr>
+ <tr><td>Guarantee</td><td>${c.std.guar}</td><td>${c.pre.guar}</td></tr>
+</tbody></table></div>
+<h2 class="o-h2" style="margin-top:56px">Questions</h2>
+<div class="o-faq">
+ <details><summary>Can I upgrade from Standard to Premium later?</summary><p>Yes. What you paid for Standard is credited in full if you upgrade within 60 days.</p></details>
+ <details><summary>How do payments work?</summary><p>50% to start and 50% on delivery for one-time builds. Monthly packages are billed at the start of each month.</p></details>
+ <details><summary>Who does the work?</summary><p>I lead every project personally and work with my team on design, content and development.</p></details>
+</div>
+<div class="o-unsure"><div><h3 class="o-h3">Not sure which one fits?</h3><p>Tell me about the project and I'll recommend a package, or scope a custom build.</p></div>${btn('#custom','Custom project')}</div>
+${c.custom?'':`<p class="o-other">Other services: ${others.map(o=>`<a href="#${o.id}">${o.name}</a>`).join(' · ')}</p>`}`}
+function start(){const sel=chosen?(()=>{const [id,t]=chosen.split('|');const c=CATS.find(x=>x.id===id);return {c,o:t==='Premium'?c.pre:c.std,t}})():null;return `
+<div class="o-stack" style="max-width:720px">
+ <a class="o-back" href="${sel?'#'+sel.c.id:'#offers'}">${ic('back')} Back</a>
+ <p class="eyebrow eyebrow--dot">Start a project</p><h1 class="o-h1">Let's get it <span class="o-hl">built.</span></h1>
+ ${sel?`<div class="o-summary"><span class="o-tag">Your package</span><h2 class="o-h2">${sel.o.name}</h2><p style="margin:0;color:var(--o-muted)">${sel.c.name} · ${sel.t} · ${sel.o.price} ${sel.o.unit} · ${sel.o.time}</p></div>`:''}
+ <p class="o-lead">Send me the package name and a short note about your business through the contact form, or email me directly. I reply within one business day.</p>
+ <div class="o-row">${btn('/contact/','Open the contact form')}<span class="o-mail" id="vxo-em">${EMAIL}</span><button class="o-small" id="vxo-copy" type="button">Copy email</button><span id="vxo-copied" class="o-ok" hidden>Copied</span></div>
+</div>`}
+function render(){const h=(location.hash||'#offers').slice(1);const c=CATS.find(x=>x.id===h);
+ app.innerHTML=h==='start'?start():c?cat(c):hub();
+ if(location.hash)window.scrollTo(0,0);
+ app.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{chosen=b.dataset.pick}));
+ const cp=document.getElementById('vxo-copy');if(cp)cp.onclick=()=>{const sel=()=>getSelection().selectAllChildren(document.getElementById('vxo-em'));
+  try{navigator.clipboard.writeText(EMAIL).then(()=>{document.getElementById('vxo-copied').hidden=false},sel)}catch(e){sel()}};
+}
+addEventListener('hashchange',render);render();
+})();
+</script>
