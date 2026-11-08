@@ -1,0 +1,58 @@
+{
+  "buildCommand": "node build.mjs && node offers-patch.mjs",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "trailingSlash": true,
+  "headers": [
+    {
+      "source": "/(.*)\\.(png|jpg|webp|svg|woff2)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "installCommand": "npm install",
+  "functions": {
+    "api/analyze.js": {
+      "maxDuration": 120
+    }
+  },
+  "redirects": [
+    {
+      "source": "/analyzer",
+      "destination": "/business-analyzer/",
+      "permanent": true
+    },
+    {
+      "source": "/analyzer/",
+      "destination": "/business-analyzer/",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/offers/",
+      "destination": "https://valentine-xavier-offers.vercel.app/"
+    },
+    {
+      "source": "/offers",
+      "destination": "https://valentine-xavier-offers.vercel.app/"
+    }
+  ]
+}
