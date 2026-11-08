@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, MessageSquare, Pencil, Send } from "lucide-react";
+import { ArrowLeft, Pencil, Send } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, PageHeader } from "@/components/ui/misc";
 import { SendToLeaders } from "@/components/send-to-leaders";
@@ -91,7 +91,7 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
         <div className="space-y-6">
         {isOwner && (
           <Card>
-            <CardHeader title="Send to sponsor / team leader" icon={<Send className="size-4" />} />
+            <CardHeader title="Send to sponsor / team leader" />
             <CardBody>
               <SendToLeaders leaders={leaders} kind="evaluation" itemId={ev.id}
                 title={`My ${formatDate(ev.period_date, { day: "numeric", month: "long" })} evaluation`}
@@ -100,7 +100,7 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
           </Card>
         )}
         <Card className="h-fit">
-          <CardHeader title="Sponsor feedback" icon={<MessageSquare className="size-4" />} />
+          <CardHeader title="Sponsor feedback" />
           <CardBody className="space-y-4 pt-3">
             {feedback && feedback.length > 0 ? feedback.map((f) => (
               <div key={f.id} className="flex gap-3">

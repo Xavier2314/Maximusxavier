@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CreditCard, HandCoins, Landmark, PiggyBank, Plus, Receipt, Share2, TriangleAlert } from "lucide-react";
+import { ArrowLeft, HandCoins, PiggyBank } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { LedgerTable } from "@/components/ledger-table";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -87,16 +87,16 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card>
-            <CardHeader title="Monthly activity" description="Net confirmed amounts per month" icon={<Landmark className="size-4" />} />
+            <CardHeader title="Monthly activity" description="Net confirmed amounts per month" />
             <CardBody>
               <TrendBars data={monthly} xKey="month" valueFormat="money" caption="Net confirmed savings and contributions per month"
                 series={[{ key: "savings", label: "Savings", color: "1" }, { key: "contributions", label: "Contributions", color: "2" }]} />
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="Payment history" icon={<Receipt className="size-4" />} description="Every entry is permanent. Corrections appear as adjustments or reversals." />
+            <CardHeader title="Payment history" description="Every entry is permanent. Corrections appear as adjustments or reversals." />
             {rows.length > 0 ? <LedgerTable rows={rows} /> : (
-              <EmptyState icon={<Receipt className="size-6" />} title="No entries yet" description="Submit your first deposit or contribution to start your record." />
+              <EmptyState title="No entries yet" description="Submit your first deposit or contribution to start your record." />
             )}
           </Card>
         </div>
@@ -104,18 +104,18 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
         <div className="space-y-6">
           {isSelf && isFlutterwaveConfigured() && (
             <Card className="border-2 border-primary/40">
-              <CardHeader title="Pay online" icon={<CreditCard className="size-4" />} description="Confirmed instantly. No approval needed." />
+              <CardHeader title="Pay online" description="Confirmed instantly. No approval needed." />
               <CardBody><PayOnline purpose="savings" /></CardBody>
             </Card>
           )}
           {isSelf && (
             <Card>
-              <CardHeader title={isFlutterwaveConfigured() ? "Or record a bank transfer" : "Submit a payment"} icon={<Plus className="size-4" />} description="An administrator confirms it before it counts." />
+              <CardHeader title={isFlutterwaveConfigured() ? "Or record a bank transfer" : "Submit a payment"} description="An administrator confirms it before it counts." />
               <CardBody><TransactionForm today={today} /></CardBody>
             </Card>
           )}
           <Card>
-            <CardHeader title="Outstanding obligations" icon={<TriangleAlert className="size-4" />} />
+            <CardHeader title="Outstanding obligations" />
             <CardBody className="pt-2">
               {outstanding.length > 0 ? (
                 <ul className="divide-y divide-border">
@@ -134,7 +134,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
           </Card>
           {isSelf && (
             <Card>
-              <CardHeader title="Share with leaders" icon={<Share2 className="size-4" />}
+              <CardHeader title="Share with leaders"
                 description="Leaders only see your finances if you choose to share. You can stop at any time." />
               <CardBody className="pt-2">
                 {(uplines ?? []).length > 0 ? (

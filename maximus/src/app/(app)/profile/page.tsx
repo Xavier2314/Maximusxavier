@@ -1,4 +1,4 @@
-import { BadgeCheck, Building2, CalendarDays, Mail, Medal, UserRound } from "lucide-react";
+import { Building2, CalendarDays, Mail } from "lucide-react";
 import { rankLabel } from "@/lib/ranks";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { requireViewer, ROLE_LABELS } from "@/lib/auth";
@@ -35,16 +35,16 @@ export default async function ProfilePage() {
       </section>
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="Personal details" icon={<UserRound className="size-4" />} />
+          <CardHeader title="Personal details" />
           <CardBody><ProfileForm profile={p} /></CardBody>
         </Card>
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Business status" icon={<Medal className="size-4" />} description="Your rank in the business" />
+            <CardHeader title="Business status" description="Your rank in the business" />
             <CardBody><BusinessForm rank={p.business_rank ?? null} newlifeId={(priv?.newlife_id as string | undefined) ?? null} /></CardBody>
           </Card>
           <Card>
-            <CardHeader title="Membership" icon={<BadgeCheck className="size-4" />} />
+            <CardHeader title="Membership" />
             <CardBody>
               <dl className="space-y-3 text-sm">
                 <div className="flex items-center gap-3"><Mail className="size-4 text-fg-subtle" aria-hidden /><dt className="sr-only">Email</dt><dd className="truncate">{p.email}</dd></div>

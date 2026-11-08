@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, HeartHandshake, PartyPopper } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -43,7 +43,7 @@ export default async function AlertsPage({ searchParams }: { searchParams: Promi
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           {concerns.length === 0 ? (
-            <Card><EmptyState icon={<HeartHandshake className="size-6" />} title="Nothing needs attention right now"
+            <Card><EmptyState title="Nothing needs attention right now"
               description="Everyone is on track by the rules below. Keep encouraging them." /></Card>
           ) : concerns.map((g) => (
             <Card key={g.member}>
@@ -69,7 +69,7 @@ export default async function AlertsPage({ searchParams }: { searchParams: Promi
 
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Worth celebrating" icon={<PartyPopper className="size-4" />} description="Recognise progress out loud" />
+            <CardHeader title="Worth celebrating" description="Recognise progress out loud" />
             <CardBody className="pt-3">
               {wins.length > 0 ? (
                 <ul className="space-y-2">

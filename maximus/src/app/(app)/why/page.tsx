@@ -25,7 +25,7 @@ export default async function MyWhyPage() {
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <Card className="lg:sticky lg:top-24">
-            <CardHeader title={items.length ? "Add another reason" : "Write your first reason"} icon={<Heart className="size-4" />}
+            <CardHeader title={items.length ? "Add another reason" : "Write your first reason"}
               description="Private by default. You choose what your sponsor sees." />
             <CardBody><WhyForm /></CardBody>
           </Card>

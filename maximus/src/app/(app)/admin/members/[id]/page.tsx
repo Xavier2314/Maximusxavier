@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Network, ShieldCheck, UserCog } from "lucide-react";
+import { ArrowLeft, Network } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge } from "@/components/ui/misc";
 import { ROLE_LABELS, requireViewer } from "@/lib/auth";
@@ -43,7 +43,7 @@ export default async function ManageMemberPage({ params }: { params: Promise<{ i
       </div>
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="Roles & access" icon={<ShieldCheck className="size-4" />} description="Sponsor, Upline and Downline are assigned automatically from the team tree." />
+          <CardHeader title="Roles & access" description="Sponsor, Upline and Downline are assigned automatically from the team tree." />
           <CardBody>
             {viewer.can("manage_roles") && (
               <div className="mb-8 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
@@ -59,7 +59,7 @@ export default async function ManageMemberPage({ params }: { params: Promise<{ i
         </Card>
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Quick links" icon={<UserCog className="size-4" />} />
+            <CardHeader title="Quick links" />
             <CardBody className="space-y-2 text-sm">
               <Link href={`/team/${id}`} className="flex items-center gap-2 text-primary hover:underline"><Network className="size-4" aria-hidden /> Activity profile</Link>
               <Link href={`/finance?member=${id}`} className="flex items-center gap-2 text-primary hover:underline">Financial records</Link>

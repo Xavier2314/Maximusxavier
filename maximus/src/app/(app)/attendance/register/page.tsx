@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ClipboardList } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/form";
 import { Avatar, Badge, EmptyState, PageHeader, StatCard } from "@/components/ui/misc";
@@ -42,7 +41,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
     <>
       <PageHeader title="Office register" description="Green is on time, yellow is late, red is absent." />
       {!office ? (
-        <Card><EmptyState icon={<ClipboardList className="size-6" />} title="No office assigned" description="You need to belong to an office to see its register." /></Card>
+        <Card><EmptyState title="No office assigned" description="You need to belong to an office to see its register." /></Card>
       ) : (
         <>
           <form className="mb-6 flex flex-wrap items-end gap-2">
@@ -63,7 +62,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
             <StatCard label="Needs review" value={count(["pending", "not_verified"])} />
           </section>
           <Card>
-            <CardHeader title={`${office.name} · ${date}`} icon={<ClipboardList className="size-4" />} />
+            <CardHeader title={`${office.name} · ${date}`} />
             <CardBody className="pt-2">
               <ul className="divide-y divide-border">
                 {rows.map((r) => {

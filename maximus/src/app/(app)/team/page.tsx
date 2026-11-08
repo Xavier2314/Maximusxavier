@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Camera, Compass, Download, Medal, Network, UserPlus, Users } from "lucide-react";
+import { Camera, Download, Medal } from "lucide-react";
 import { FocusList } from "@/components/growth-focus";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
@@ -82,7 +82,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card>
-          <CardHeader title="Your sponsor" icon={<Users className="size-4" />} />
+          <CardHeader title="Your sponsor" />
           <CardBody>
             {sponsor ? (
               <div className="flex items-center gap-3">
@@ -100,7 +100,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
           </CardBody>
         </Card>
         <Card className="lg:col-span-2">
-          <CardHeader title="Invite people to your team" icon={<UserPlus className="size-4" />}
+          <CardHeader title="Invite people to your team"
             description="New members who register with your code are placed directly under you." />
           <CardBody>
             <CopyReferral code={viewer.profile.referral_code} memberId={viewer.profile.member_id} />
@@ -125,13 +125,13 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
               </div>
               {myTop.length > 0 && (
                 <Card className="h-fit xl:col-span-2">
-                  <CardHeader title="Your focus right now" icon={<Compass className="size-4" />} description="What will grow you and your team the most"
+                  <CardHeader title="Your focus right now" description="What will grow you and your team the most"
                     action={<Link href="/growth" className="text-sm font-medium text-primary hover:underline">Tips & lessons</Link>} />
                   <CardBody><FocusList areas={myTop} compact /></CardBody>
                 </Card>
               )}
               <Card className="h-fit">
-                <CardHeader title="New registrations" description="Last 6 months" icon={<UserPlus className="size-4" />} />
+                <CardHeader title="New registrations" description="Last 6 months" />
                 <CardBody>
                   <TrendBars data={growth.map((g) => ({ month: formatDate(g.month, { month: "short" }), joined: g.new_members }))}
                     xKey="month" series={[{ key: "joined", label: "New members" }]} caption="New team members per month" height={200} />
@@ -160,7 +160,7 @@ function StartChart({ viewerId, name, code, avatar, target, focus }: {
   return (
     <Card className="mt-6">
       <OrgChart rootId={viewerId} rootName={name} rootCode={code} rootAvatar={avatar} members={[]} focus={focus} target={target} />
-      <EmptyState icon={<Network className="size-6" />} title="Your team starts here"
+      <EmptyState title="Your team starts here"
         description={`Share your invite link. Everyone who registers with it appears under you in this chart the moment they join. Aim for at least ${target} to start; there's no limit.`} />
     </Card>
   );

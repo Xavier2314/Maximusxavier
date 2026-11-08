@@ -1,4 +1,4 @@
-import { CircleCheck, CircleDashed, Flame, Plug, ToggleRight } from "lucide-react";
+import { CircleCheck, CircleDashed } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/misc";
 import { requirePermission } from "@/lib/auth";
@@ -29,13 +29,13 @@ export default async function SettingsAdminPage() {
       <PageHeader title="System settings" />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader title="Active member definition" icon={<Flame className="size-4" />}
+          <CardHeader title="Active member definition"
             description="Used for active/inactive counts and leader alerts. Set a threshold to 0 to ignore it." />
           <CardBody><ActiveDefinitionForm value={settings.active_member_definition ?? {}} /></CardBody>
         </Card>
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Integrations" icon={<Plug className="size-4" />} description="Configured through environment variables in Vercel." />
+            <CardHeader title="Integrations" description="Configured through environment variables in Vercel." />
             <CardBody className="space-y-3">
               {integrations.map((i) => (
                 <div key={i.name} className="flex items-start gap-3">
@@ -47,7 +47,7 @@ export default async function SettingsAdminPage() {
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="Feature flags" icon={<ToggleRight className="size-4" />} />
+            <CardHeader title="Feature flags" />
             <CardBody className="space-y-3 text-sm">
               <p><b>NIN verification:</b> {features.nin_verification ? "on" : "off"} — disabled by design. It requires an established lawful need, an approved verification provider and a privacy review before it can be built. No NIN data is collected.</p>
               <p><b>AI assistant:</b> {features.ai_assistant === false ? "off" : "on"}</p>

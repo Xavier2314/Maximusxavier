@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Target, TrendingUp, TriangleAlert, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { TrendArea } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -56,17 +56,17 @@ async function LeaderSection({ viewerId, canSeeExtended, period }: { viewerId: s
       </div>
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="Team growth" description="Total members over the last 6 months" icon={<TrendingUp className="size-4" />} />
+          <CardHeader title="Team growth" description="Total members over the last 6 months" />
           <CardBody>
             {growthData.some((g) => g.total > 0)
               ? <TrendArea data={growthData} xKey="month" series={[{ key: "total", label: "Team members" }]} caption="Team size by month" />
-              : <EmptyState icon={<Users className="size-6" />} title="Your team chart starts with your first recruit"
+              : <EmptyState title="Your team chart starts with your first recruit"
                   description="Share your referral link from your profile to invite people." />}
           </CardBody>
         </Card>
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Goals to review" icon={<Target className="size-4" />} />
+            <CardHeader title="Goals to review" />
             <CardBody className="pt-3">
               {pendingGoals && pendingGoals.length > 0 ? (
                 <ul className="space-y-2">
@@ -84,7 +84,7 @@ async function LeaderSection({ viewerId, canSeeExtended, period }: { viewerId: s
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="Needs attention" icon={<TriangleAlert className="size-4" />} description="Inactive by your organisation's definition" />
+            <CardHeader title="Needs attention" description="Inactive by your organisation's definition" />
             <CardBody className="pt-3">
               {inactive.length > 0 ? (
                 <ul className="space-y-2">

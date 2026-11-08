@@ -70,12 +70,12 @@ function isActive(pathname: string, href: string) {
   return ["/dashboard", "/office", "/admin"].includes(href) ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function NavLinks({ sections, pathname, onNavigate }: { sections: NavSection[]; pathname: string; onNavigate?: () => void }) {
+function NavLinks({ sections, pathname, onNavigate, dark = false }: { sections: NavSection[]; pathname: string; onNavigate?: () => void; dark?: boolean }) {
   return (
-    <nav aria-label="Main" className="space-y-6">
+    <nav aria-label="Main" className="space-y-5">
       {sections.map((section, i) => (
         <div key={section.title ?? i}>
-          {section.title && <p className="mb-2 px-3 text-sm font-medium text-white/60">{section.title}</p>}
+          {section.title && <p className={cn("mb-1 px-3 text-xs font-medium", dark ? "text-white/60" : "text-fg-subtle")}>{section.title}</p>}
           <ul className="space-y-0.5">
             {section.items.map((item) => {
               const Icon = NAV_ICONS[item.icon];
@@ -84,11 +84,12 @@ function NavLinks({ sections, pathname, onNavigate }: { sections: NavSection[]; 
                 <li key={item.href}>
                   <Link href={item.href} onClick={onNavigate} aria-current={active ? "page" : undefined}
                     className={cn(
-                      "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] transition-colors",
-                      active ? "bg-white/10 font-medium text-white" : "text-white/65 hover:bg-white/5 hover:text-white",
+                      "group flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] transition-colors lg:min-h-9 lg:text-sm",
+                      dark
+                        ? active ? "bg-white/10 font-medium text-white" : "text-white/70 hover:bg-white/5 hover:text-white"
+                        : active ? "bg-surface-muted font-medium text-fg" : "text-fg-muted hover:bg-surface-muted/70 hover:text-fg",
                     )}>
-                    {active && <span className="absolute inset-y-2 left-0 w-1 rounded-r-full bg-brand-lime" aria-hidden />}
-                    <Icon className={cn("size-[18px]", active ? "text-brand-lime" : "text-white/50 group-hover:text-white/80")} aria-hidden />
+                    <Icon className={cn("size-4 shrink-0", dark ? (active ? "text-brand-lime" : "text-white/60") : (active ? "text-fg" : "text-fg-subtle group-hover:text-fg-muted"))} aria-hidden />
                     {item.label}
                   </Link>
                 </li>
@@ -101,20 +102,21 @@ function NavLinks({ sections, pathname, onNavigate }: { sections: NavSection[]; 
   );
 }
 
-function UserCard({ user, signOut }: { user: ShellUser; signOut: () => void }) {
+function UserCard({ user, signOut, dark = false }: { user: ShellUser; signOut: () => void; dark?: boolean }) {
   return (
-    <div className="rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
-      <Link href="/profile" className="flex items-center gap-3">
-        <Avatar name={user.name} src={user.avatar} size={38} className="ring-white/10" />
+    <div className={cn("flex items-center gap-2 rounded-lg p-2", dark ? "bg-white/5" : "")}>
+      <Link href="/profile" className="flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1 hover:opacity-80">
+        <Avatar name={user.name} src={user.avatar} size={32} className={dark ? "ring-white/10" : "ring-0"} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-white">{user.name}</span>
-          <span className="block truncate text-xs text-white/50">{user.role} · {user.memberId}</span>
+          <span className={cn("block truncate text-sm font-medium", dark ? "text-white" : "text-fg")}>{user.name}</span>
+          <span className={cn("block truncate text-xs", dark ? "text-white/60" : "text-fg-subtle")}>{user.role}, {user.memberId}</span>
         </span>
       </Link>
-      <form action={signOut} className="mt-3">
+      <form action={signOut}>
         <button type="submit"
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-white/10 text-sm font-medium text-white/80 hover:bg-white/15 hover:text-white">
-          <LogOut className="size-4" aria-hidden />Log out
+          aria-label="Log out" title="Log out"
+          className={cn("grid size-11 place-items-center rounded-lg lg:size-9", dark ? "text-white/70 hover:bg-white/10 hover:text-white" : "text-fg-subtle hover:bg-surface-muted hover:text-fg")}>
+          <LogOut className="size-4" aria-hidden />
         </button>
       </form>
     </div>
@@ -138,6 +140,8 @@ export function AppShell({ sections: memberSections, team = null, office = null,
     : "me";
   // Office view wears the office's brand; My view and Team view wear the member's own brand (platform, or their office's).
   const brand = mode === "office" ? brands.office : brands.me;
+  // Offices that chose their own brand keep their coloured sidebar; the Maximus default is light.
+  const darkNav = !brand.isDefault;
   const sections = mode === "team" && team ? team.sections : mode === "office" && office ? office.sections : memberSections;
   const bottom = mode === "team" && team ? team.bottom : mode === "office" && office ? office.bottom : BOTTOM_NAV;
   const allSections = [...memberSections, ...(team?.sections ?? []), ...(office?.sections ?? [])];
@@ -151,25 +155,25 @@ export function AppShell({ sections: memberSections, team = null, office = null,
   }, [menuOpen]);
 
   return (
-    <div className="branded min-h-dvh lg:pl-72" style={brandVars(brand) as React.CSSProperties}>
+    <div className="branded min-h-dvh lg:pl-64" style={brandVars(brand) as React.CSSProperties}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-fg">
         Skip to content
       </a>
 
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col bg-brand-navy px-4 pb-4 pt-6 lg:flex">
-        <Link href="/dashboard" className="px-3"><BrandMark brand={brand} /></Link>
-        {brand.tagline && <p className="mt-2 truncate px-3 text-xs text-white/50">{brand.tagline}</p>}
-        {(team || office) && <ViewSwitch team={team} office={office} mode={mode} dark className="mt-6" />}
+      <aside className={cn("fixed inset-y-0 left-0 z-40 hidden w-64 flex-col px-3 pb-3 pt-5 lg:flex", darkNav ? "bg-brand-navy" : "border-r border-border bg-bg")}>
+        <Link href="/dashboard" className="px-3"><BrandMark brand={brand} onDark={darkNav} /></Link>
+        {brand.tagline && <p className={cn("mt-2 truncate px-3 text-xs", darkNav ? "text-white/60" : "text-fg-subtle")}>{brand.tagline}</p>}
+        {(team || office) && <ViewSwitch team={team} office={office} mode={mode} dark={darkNav} className="mt-5" />}
         {mode === "office" && office?.officeName && (
-          <p className="mt-3 truncate px-3 text-xs text-white/50">Managing <span className="font-medium text-white/80">{office.officeName}</span></p>
+          <p className={cn("mt-3 truncate px-3 text-xs", darkNav ? "text-white/60" : "text-fg-subtle")}>Managing <span className={cn("font-medium", darkNav ? "text-white/80" : "text-fg")}>{office.officeName}</span></p>
         )}
-        <div className={cn("scrollbar-none flex-1 overflow-y-auto", (team || office) ? "mt-6" : "mt-8")}>
-          <NavLinks sections={sections} pathname={pathname} />
+        <div className={cn("scrollbar-none -mx-1 flex-1 overflow-y-auto px-1", (team || office) ? "mt-5" : "mt-6")}>
+          <NavLinks sections={sections} pathname={pathname} dark={darkNav} />
         </div>
-        <UserCard user={user} signOut={signOut} />
+        <UserCard user={user} signOut={signOut} dark={darkNav} />
         {!brand.isDefault && !brand.whiteLabel && brand.name !== platformName && (
-          <p className="mt-3 text-center text-xs text-white/60">Powered by {platformName}</p>
+          <p className={cn("mt-3 text-center text-xs", darkNav ? "text-white/60" : "text-fg-subtle")}>Powered by {platformName}</p>
         )}
       </aside>
 
@@ -181,15 +185,15 @@ export function AppShell({ sections: memberSections, team = null, office = null,
             <ViewSwitch team={team} office={office} mode={mode} className="mx-auto max-w-md" />
           </div>
         )}
-        <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-7xl items-center gap-1 px-4 sm:gap-2 sm:px-6">
           <Link href="/dashboard" className="lg:hidden"><BrandMark brand={brand} compact onDark={false} /></Link>
-          <p className="hidden min-w-0 truncate text-sm font-semibold text-fg-muted md:block">{current?.label}</p>
+          <p className="hidden min-w-0 truncate text-sm font-medium md:block">{current?.label}</p>
           <button type="button" onClick={() => window.dispatchEvent(new Event("maximus:search"))}
-            className="ml-auto flex h-11 min-w-0 items-center gap-2 rounded-xl border border-border bg-surface px-3 text-sm text-fg-subtle hover:border-primary/40 sm:w-64 md:ml-6"
+            className="ml-auto flex h-11 min-w-0 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm text-fg-subtle transition-colors hover:border-fg-subtle/40 sm:w-64 md:ml-6 lg:h-9"
             aria-label="Search pages and actions">
             <Search className="size-4 shrink-0" aria-hidden />
             <span className="hidden flex-1 truncate text-left sm:inline">Search or jump to…</span>
-            <kbd className="hidden rounded-md border border-border px-1.5 text-xs lg:inline">Ctrl K</kbd>
+            <kbd className="hidden rounded border border-border bg-surface-muted px-1.5 font-sans text-xs lg:inline">Ctrl K</kbd>
           </button>
           <div className="flex-1" />
           <QuickAdd />
@@ -198,13 +202,13 @@ export function AppShell({ sections: memberSections, team = null, office = null,
           <Link href="/profile" className="hidden size-11 place-items-center sm:grid lg:hidden" aria-label="Your profile">
             <Avatar name={user.name} src={user.avatar} size={36} />
           </Link>
-          <Link href="/settings" className="hidden size-11 place-items-center rounded-xl text-fg-muted hover:bg-surface-muted hover:text-fg lg:grid" aria-label="Settings">
+          <Link href="/settings" className="hidden size-9 place-items-center rounded-lg text-fg-muted hover:bg-surface-muted hover:text-fg lg:grid" aria-label="Settings">
             <Settings className="size-5" aria-hidden />
           </Link>
         </div>
       </header>
 
-      <main id="main" className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:pb-12">{children}</main>
+      <main id="main" className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:px-10 lg:pb-16 lg:pt-10">{children}</main>
       <CommandPalette sections={allSections} />
 
       {/* Mobile bottom navigation */}
@@ -244,17 +248,17 @@ export function AppShell({ sections: memberSections, team = null, office = null,
       {menuOpen && (
         <div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu" className="fixed inset-0 z-50 lg:hidden">
           <button type="button" className="absolute inset-0 bg-black/50 animate-fade" aria-label="Close menu" onClick={() => setMenuOpen(false)} />
-          <div className="safe-bottom absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto rounded-t-3xl bg-brand-navy px-4 pb-6 pt-4 animate-rise">
+          <div className="safe-bottom absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto rounded-t-2xl bg-bg px-3 pb-6 pt-3 animate-rise">
             <div className="mb-4 flex items-center justify-between px-2">
-              <BrandMark brand={brand} />
-              <button type="button" onClick={() => setMenuOpen(false)} className="grid size-11 place-items-center rounded-xl text-white/70 hover:bg-white/10" aria-label="Close menu">
+              <BrandMark brand={brand} onDark={false} />
+              <button type="button" onClick={() => setMenuOpen(false)} className="grid size-11 place-items-center rounded-lg text-fg-muted hover:bg-surface-muted" aria-label="Close menu">
                 <X className="size-5" aria-hidden />
               </button>
             </div>
             <NavLinks sections={sections} pathname={pathname} onNavigate={() => setMenuOpen(false)} />
             <div className="mt-6 space-y-3">
-              <Link href="/settings" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-white/70 hover:bg-white/5">
-                <Settings className="size-[18px]" aria-hidden /> Settings
+              <Link href="/settings" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-fg-muted hover:bg-surface-muted">
+                <Settings className="size-4 text-fg-subtle" aria-hidden />Settings
               </Link>
               <UserCard user={user} signOut={signOut} />
             </div>

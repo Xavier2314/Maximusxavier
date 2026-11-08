@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { FormMessage, Select } from "@/components/ui/form";
@@ -17,7 +16,7 @@ export function OfficePlacement({ memberId, firstName, current, offices }: {
   const currentName = offices.find((o) => o.id === current)?.name;
   return (
     <Card>
-      <CardHeader title="Office" icon={<Building2 className="size-4" />}
+      <CardHeader title="Office"
         description={currentName ? `${firstName} is in ${currentName}` : `${firstName} has no office yet`} />
       <CardBody className="space-y-3">
         <FormMessage state={state} />

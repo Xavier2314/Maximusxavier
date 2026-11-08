@@ -1,4 +1,3 @@
-import { LifeBuoy } from "lucide-react";
 import { ComplaintForm } from "@/components/complaint-form";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge, PageHeader } from "@/components/ui/misc";
@@ -21,7 +20,7 @@ export default async function SupportPage() {
       <PageHeader title="Help & complaints" description="Tell the admin team about a problem. You'll get a notification when they respond." />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="h-fit">
-          <CardHeader title="Make a complaint" icon={<LifeBuoy className="size-4" />} />
+          <CardHeader title="Make a complaint" />
           <CardBody><ComplaintForm page="/support" /></CardBody>
         </Card>
         <Card className="h-fit">

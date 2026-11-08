@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight, ClipboardCheck, Plus, TrendingUp, Users } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import { TrendBars, TrendLines } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -64,7 +64,7 @@ export default async function EvaluationsPage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader title="Activity trend" description="Prospects and presentations" icon={<TrendingUp className="size-4" />} />
+          <CardHeader title="Activity trend" description="Prospects and presentations" />
           <CardBody>
             {trend.length > 1 ? <TrendLines data={trend} xKey="period" caption="Prospects and presentations per evaluation"
               series={[{ key: "prospects", label: "Prospects", color: "1" }, { key: "presentations", label: "Presentations", color: "2", dashed: true }]} />
@@ -72,7 +72,7 @@ export default async function EvaluationsPage() {
           </CardBody>
         </Card>
         <Card>
-          <CardHeader title="Earnings by period" description="Self-reported" icon={<TrendingUp className="size-4" />} />
+          <CardHeader title="Earnings by period" description="Self-reported" />
           <CardBody>
             {trend.length > 0 ? <TrendBars data={trend} xKey="period" valueFormat="money" caption="Earnings per evaluation period" series={[{ key: "earnings", label: "Earnings" }]} />
               : <p className="py-10 text-center text-sm text-fg-muted">No evaluations yet.</p>}
@@ -82,7 +82,7 @@ export default async function EvaluationsPage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card className={isReviewer ? "lg:col-span-2" : "lg:col-span-3"}>
-          <CardHeader title="Your history" icon={<ClipboardCheck className="size-4" />} />
+          <CardHeader title="Your history" />
           <CardBody className="pt-2">
             {evals.length > 0 ? (
               <ul className="divide-y divide-border">
@@ -97,13 +97,13 @@ export default async function EvaluationsPage() {
                 ))}
               </ul>
             ) : (
-              <EmptyState icon={<ClipboardCheck className="size-6" />} title="No evaluations yet" action={<LinkButton href="/evaluations/new">Start your first</LinkButton>} />
+              <EmptyState title="No evaluations yet" action={<LinkButton href="/evaluations/new">Start your first</LinkButton>} />
             )}
           </CardBody>
         </Card>
         {isReviewer && (
           <Card className="h-fit">
-            <CardHeader title="Team this period" icon={<Users className="size-4" />}
+            <CardHeader title="Team this period"
               description={`${team.filter((m) => doneIds.has(m.member)).length} of ${team.length} submitted`} />
             <CardBody className="pt-2">
               {team.length > 0 ? (

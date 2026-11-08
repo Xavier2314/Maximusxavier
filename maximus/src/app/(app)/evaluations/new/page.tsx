@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, CircleCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
@@ -27,7 +27,7 @@ export default async function NewEvaluationPage() {
       <PageHeader title="Five-day evaluation" description="Ten quick questions. Be honest — this is how your sponsor knows how to help." />
       <Card className="max-w-3xl">
         {open.length === 0 ? (
-          <EmptyState icon={<CircleCheck className="size-6" />} title="You're up to date"
+          <EmptyState title="You're up to date"
             description="All recent evaluations are submitted. The next one opens on the next evaluation date."
             action={<LinkButton href="/evaluations" variant="outline">View history</LinkButton>} />
         ) : (

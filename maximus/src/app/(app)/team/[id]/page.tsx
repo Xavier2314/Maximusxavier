@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, CalendarCheck, Compass, ClipboardCheck, Heart, History, ListChecks, Mail, Phone, ShieldCheck, Target } from "lucide-react";
+import { ArrowLeft, Mail, Phone } from "lucide-react";
 import { TrendLines } from "@/components/charts";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -118,7 +118,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           {viewer.can("manage_roles") && (
             <Card>
-              <CardHeader title="Role" icon={<ShieldCheck className="size-4" />} description={`Switch ${firstName}'s position`} />
+              <CardHeader title="Role" description={`Switch ${firstName}'s position`} />
               <CardBody>
                 <PositionSwitcher userId={member.id} name={member.full_name} current={currentPosition(roleKeys)}
                   earningsManager={roleKeys.includes("earnings_manager")} />
@@ -135,7 +135,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           {canAssign && (
             <Card>
-              <CardHeader title={`Give ${firstName} a task`} icon={<ListChecks className="size-4" />} description="It appears in their planner and they get a notification." />
+              <CardHeader title={`Give ${firstName} a task`} description="It appears in their planner and they get a notification." />
               <CardBody className="space-y-4">
                 <TaskQuickAdd today={todayIn(viewer.profile.timezone)} memberId={member.id} compact />
                 {(assigned ?? []).length > 0 && (
@@ -153,7 +153,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
           )}
           {(sharedWhys ?? []).length > 0 && (
             <Card>
-              <CardHeader title={`${firstName}'s why`} icon={<Heart className="size-4" />} description="Shared with you. Use it to encourage, never to pressure." />
+              <CardHeader title={`${firstName}'s why`} description="Shared with you. Use it to encourage, never to pressure." />
               <CardBody className="space-y-4">
                 {(sharedWhys ?? []).map((w) => (
                   <div key={w.id} className="rounded-2xl bg-surface-muted/70 p-4">
@@ -169,7 +169,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
       )}
 
       {!canSeeActivity ? (
-        <Card className="mt-6"><EmptyState icon={<Target className="size-6" />} title="Activity is private" description="Only this member's authorised leaders can see their attendance, goals and evaluations." /></Card>
+        <Card className="mt-6"><EmptyState title="Activity is private" description="Only this member's authorised leaders can see their attendance, goals and evaluations." /></Card>
       ) : (
         <>
           <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -181,7 +181,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
 
           {growth && (
             <Card className="mt-6">
-              <CardHeader title={`What ${firstName} should work on`} icon={<Compass className="size-4" />}
+              <CardHeader title={`What ${firstName} should work on`}
                 description="Coach them on these areas first. Share the lessons with them."
                 action={<Link href={`/prospects?member=${member.id}`} className="text-sm font-medium text-primary hover:underline">Their prospects</Link>} />
               <CardBody className="space-y-5">
@@ -195,7 +195,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
 
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
             <Card>
-              <CardHeader title="Activity trend" description="Prospects and follow-ups per evaluation" icon={<ClipboardCheck className="size-4" />}
+              <CardHeader title="Activity trend" description="Prospects and follow-ups per evaluation"
                 action={evaluations?.[0] && <Link href={`/evaluations/${evaluations[0].id}`} className="text-sm font-medium text-primary hover:underline">Latest</Link>} />
               <CardBody>
                 {trend.length > 1
@@ -204,7 +204,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
               </CardBody>
             </Card>
             <Card>
-              <CardHeader title={`Goals · ${formatDate(month, { month: "long" })}`} icon={<Target className="size-4" />}
+              <CardHeader title={`Goals · ${formatDate(month, { month: "long" })}`}
                 action={goal && <Link href={`/goals/${goal.id}`} className="text-sm font-medium text-primary hover:underline">Review</Link>} />
               <CardBody className="space-y-4">
                 {goal && progress ? (
@@ -228,7 +228,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
           </div>
 
           <Card className="mt-6">
-            <CardHeader title="Recent attendance" icon={<CalendarCheck className="size-4" />} />
+            <CardHeader title="Recent attendance" />
             <CardBody className="pt-3">
               {attendance && attendance.length > 0 ? (
                 <ul className="divide-y divide-border">
@@ -244,7 +244,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
             </CardBody>
           </Card>
           <Card className="mt-6">
-            <CardHeader title="Activity timeline" icon={<History className="size-4" />} />
+            <CardHeader title="Activity timeline" />
             <CardBody className="pt-3">
               {timeline.length > 0 ? (
                 <ol className="relative ml-2 space-y-4 border-l-2 border-border pl-5">

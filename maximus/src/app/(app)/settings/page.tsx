@@ -1,4 +1,4 @@
-import { Bell, KeyRound, Link2, LogOut, Mail, MessageCircle, Music2, Shield, UserRound } from "lucide-react";
+import { LogOut, Mail, MessageCircle, Music2, UserRound } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge, PageHeader } from "@/components/ui/misc";
@@ -36,7 +36,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <PageHeader title="Settings" action={<LinkButton href="/profile" variant="outline" size="sm"><UserRound className="size-4" aria-hidden /> Edit profile</LinkButton>} />
       <div className="space-y-6">
         <Card id="notifications">
-          <CardHeader title="Notifications" icon={<Bell className="size-4" />} description="Choose what you hear about and when." />
+          <CardHeader title="Notifications" description="Choose what you hear about and when." />
           <CardBody className="space-y-6">
             <PushToggle vapidKey={env.vapidPublicKey} />
             <PreferencesForm prefs={prefs} />
@@ -44,7 +44,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </CardBody>
         </Card>
         <Card id="connections">
-          <CardHeader title="Connected accounts" icon={<Link2 className="size-4" />} description="Let Maximus AI follow up with your prospects for you." />
+          <CardHeader title="Connected accounts" description="Let Maximus AI follow up with your prospects for you." />
           <CardBody className="space-y-4">
             {notice && <p role="status" className={`rounded-xl px-4 py-3 text-sm ${notice.ok ? "bg-success-soft text-success" : "bg-danger-soft text-danger"}`}>{notice.text}</p>}
             <div className="flex flex-wrap items-center gap-3">
@@ -83,11 +83,11 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </CardBody>
         </Card>
         <Card>
-          <CardHeader title="Privacy" icon={<Shield className="size-4" />} />
+          <CardHeader title="Privacy" />
           <CardBody><PrivacyForm birthday={viewer.profile.birthday_visibility} aiMemory={viewer.profile.ai_memory_enabled} /></CardBody>
         </Card>
         <Card>
-          <CardHeader title="Security" icon={<KeyRound className="size-4" />} description={`Signed in as ${viewer.email}`} />
+          <CardHeader title="Security" description={`Signed in as ${viewer.email}`} />
           <CardBody className="space-y-6">
             <PasswordForm />
             <form action={signOutEverywhereAction} className="border-t border-border pt-6">

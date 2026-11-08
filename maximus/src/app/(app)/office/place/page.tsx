@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Building2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -44,7 +43,7 @@ export default async function PlaceInOfficePage({ searchParams }: { searchParams
           className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm" />
       </form>
       {people.length === 0 ? (
-        <Card><EmptyState icon={<Building2 className="size-6" />} title={needle ? "No one found" : "Everyone has an office"}
+        <Card><EmptyState title={needle ? "No one found" : "Everyone has an office"}
           description={needle ? "Try another name or member ID." : "New members who skip choosing an office will appear here."} /></Card>
       ) : (
         <Card className="divide-y divide-border">

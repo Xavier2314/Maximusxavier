@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { BadgeCheck, CircleAlert, CircleHelp, Receipt } from "lucide-react";
+import { BadgeCheck, CircleAlert, CircleHelp } from "lucide-react";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge, EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -40,7 +40,7 @@ export default async function WhiteLabelPaymentsPage() {
         Before approving, confirm the money arrived in your bank app or SMS alert.
       </p>
       {rows.length === 0 ? (
-        <Card><EmptyState icon={<Receipt className="size-6" />} title="No payments yet" description="When an office sends a receipt it appears here, and you get a notification." /></Card>
+        <Card><EmptyState title="No payments yet" description="When an office sends a receipt it appears here, and you get a notification." /></Card>
       ) : (
         <div className="space-y-4">
           {rows.map((r) => {

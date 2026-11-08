@@ -1,4 +1,4 @@
-import { ArrowDownLeft, ArrowUpRight, BadgeCheck, CreditCard, Landmark, PiggyBank, Receipt, Send, ShieldCheck, Users } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, CreditCard, Landmark, PiggyBank, Receipt, Send, ShieldCheck, Users } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge, PageHeader } from "@/components/ui/misc";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -56,7 +56,7 @@ export default async function BankPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="What you'll be able to do" icon={<Landmark className="size-4" />} />
+          <CardHeader title="What you'll be able to do" />
           <CardBody>
             <ul className="grid gap-4 sm:grid-cols-2">
               {FEATURES.map((f) => (
@@ -70,7 +70,7 @@ export default async function BankPage() {
         </Card>
 
         <Card className="h-fit">
-          <CardHeader title={joined ? "You're on the list" : "Join the waitlist"} icon={<BadgeCheck className="size-4" />}
+          <CardHeader title={joined ? "You're on the list" : "Join the waitlist"}
             description={joined ? "We'll notify you when Maximus Bank opens." : "Get your account as soon as it opens."} />
           <CardBody>
             {joined ? (

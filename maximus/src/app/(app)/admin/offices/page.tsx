@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Building2, ClipboardList, MapPin, Plus, QrCode, ShieldCheck } from "lucide-react";
+import { ClipboardList, MapPin, QrCode, ShieldCheck } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
 import { requirePermission } from "@/lib/auth";
@@ -27,13 +27,13 @@ export default async function OfficesPage() {
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
           {(offices ?? []).length === 0 && (
-            <Card><EmptyState icon={<Building2 className="size-6" />} title="No offices yet" description="Create your first office so members can register and check in." /></Card>
+            <Card><EmptyState title="No offices yet" description="Create your first office so members can register and check in." /></Card>
           )}
           {(offices ?? []).map((o) => {
             const members = (memberships ?? []).filter((m) => m.office_id === o.id);
             return (
               <Card key={o.id}>
-                <CardHeader title={o.name} icon={<Building2 className="size-4" />}
+                <CardHeader title={o.name}
                   description={<span className="inline-flex items-center gap-1"><MapPin className="size-3.5" aria-hidden />{o.address ?? "No address"} · {o.radius_m} m radius</span>}
                   action={o.is_active ? <Badge tone="green">Active</Badge> : <Badge>Inactive</Badge>} />
                 <CardBody className="space-y-6">
@@ -72,7 +72,7 @@ export default async function OfficesPage() {
         </div>
         {canCreate && (
           <Card className="h-fit xl:sticky xl:top-24">
-            <CardHeader title="New office" icon={<Plus className="size-4" />} />
+            <CardHeader title="New office" />
             <CardBody><OfficeForm /></CardBody>
           </Card>
         )}

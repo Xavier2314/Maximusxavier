@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Building2, TrendingUp } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { TrendArea, TrendBars } from "@/components/charts";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { PageHeader, StatCard } from "@/components/ui/misc";
@@ -60,7 +60,7 @@ export default async function AdminOverviewPage({ searchParams }: { searchParams
 
       {officeRows.length > 0 && (
         <Card className="mb-6">
-          <CardHeader title="All offices at a glance" icon={<Building2 className="size-4" />}
+          <CardHeader title="All offices at a glance"
             description={`Lowest attendance first, so you can see who needs you. ${(bankWaitlist as number | null) ?? 0} members on the Maximus Bank waitlist.`} />
           <CardBody className="overflow-x-auto pt-2">
             <table className="w-full min-w-[640px] text-sm">
@@ -102,17 +102,17 @@ export default async function AdminOverviewPage({ searchParams }: { searchParams
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader title="Membership growth" description={`Total members, last ${months} months`} icon={<TrendingUp className="size-4" />} />
+          <CardHeader title="Membership growth" description={`Total members, last ${months} months`} />
           <CardBody><TrendArea data={growth} xKey="month" series={[{ key: "total", label: "Members" }]} caption="Total members by month" /></CardBody>
         </Card>
         <Card>
-          <CardHeader title="Sales" description={`Recorded orders, last ${months} months`} icon={<TrendingUp className="size-4" />} />
+          <CardHeader title="Sales" description={`Recorded orders, last ${months} months`} />
           <CardBody><TrendBars data={sales} xKey="month" valueFormat="money" series={[{ key: "sales", label: "Sales" }]} caption="Sales by month" /></CardBody>
         </Card>
       </div>
 
       <Card className="mt-6">
-        <CardHeader title="Office attendance today" icon={<Building2 className="size-4" />}
+        <CardHeader title="Office attendance today"
           action={<Link href="/attendance/live" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">Live board <ArrowRight className="size-4" aria-hidden /></Link>} />
         <CardBody>
           <div className="overflow-x-auto">

@@ -237,7 +237,7 @@ export default async function DashboardPage() {
               </div>
             </div>
           ) : (
-            <EmptyState icon={<Target className="size-6" />} title="No goals for this month yet"
+            <EmptyState title="No goals for this month yet"
               description="Members who write their goals down achieve more. It takes two minutes."
               action={<LinkButton href="/goals/new">Set my goals</LinkButton>} />
           )}

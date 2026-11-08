@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarCheck, Download, TriangleAlert } from "lucide-react";
+import { Download } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -98,7 +98,7 @@ export default async function AttendanceReportsPage({ searchParams }: {
       </div>
 
       {error ? (
-        <Card><EmptyState icon={<TriangleAlert className="size-6" />} title="Couldn't build this report" description={error.message} /></Card>
+        <Card><EmptyState title="Couldn't build this report" description={error.message} /></Card>
       ) : (
         <>
           <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Summary">
@@ -109,11 +109,11 @@ export default async function AttendanceReportsPage({ searchParams }: {
           </section>
 
           <Card className="mb-6">
-            <CardHeader title="Check-ins per open day" icon={<CalendarCheck className="size-4" />} description="On time and late" />
+            <CardHeader title="Check-ins per open day" description="On time and late" />
             <CardBody>
               {chart.some((d) => d.onTime + d.late > 0)
                 ? <TrendBars data={chart} xKey="day" series={[{ key: "onTime", label: "On time" }, { key: "late", label: "Late", color: "2" }]} caption="Check-ins per open day" />
-                : <EmptyState icon={<CalendarCheck className="size-6" />} title="No check-ins in this period" />}
+                : <EmptyState title="No check-ins in this period" />}
             </CardBody>
           </Card>
 

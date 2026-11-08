@@ -1,4 +1,4 @@
-import { CalendarCheck, CalendarDays, ClipboardList, History, MonitorDot, QrCode, Send } from "lucide-react";
+import { ClipboardList, History, MonitorDot, QrCode } from "lucide-react";
 import { AttendanceBadge } from "@/components/attendance-badge";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -63,7 +63,7 @@ export default async function AttendancePage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card>
-          <CardHeader title={formatDate(month, { month: "long", year: "numeric" })} icon={<CalendarDays className="size-4" />} />
+          <CardHeader title={formatDate(month, { month: "long", year: "numeric" })} />
           <CardBody>
             <div className="grid grid-cols-7 gap-1.5 text-center text-xs">
               {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => <span key={i} className="pb-1 font-medium text-fg-subtle" aria-hidden>{d}</span>)}
@@ -87,7 +87,7 @@ export default async function AttendancePage() {
         </Card>
 
         <Card className="lg:col-span-2">
-          <CardHeader title="History" icon={<History className="size-4" />} />
+          <CardHeader title="History" />
           <CardBody className="pt-2">
             {history && history.length > 0 ? (
               <ul className="divide-y divide-border">
@@ -107,7 +107,7 @@ export default async function AttendancePage() {
                 ))}
               </ul>
             ) : (
-              <EmptyState icon={<CalendarCheck className="size-6" />} title="No check-ins yet" description="Your attendance history will appear here." />
+              <EmptyState title="No check-ins yet" description="Your attendance history will appear here." />
             )}
           </CardBody>
         </Card>
@@ -115,14 +115,14 @@ export default async function AttendancePage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader title="Request a correction" icon={<Send className="size-4" />}
+          <CardHeader title="Request a correction"
             description="Forgot to check in, or your location didn't work? Your office manager will review it." />
           <CardBody>
             {offices.length > 0 ? <CorrectionForm offices={offices} today={today} /> : <p className="text-sm text-fg-muted">You need an office assignment first.</p>}
           </CardBody>
         </Card>
         <Card>
-          <CardHeader title="Your requests" icon={<History className="size-4" />} />
+          <CardHeader title="Your requests" />
           <CardBody className="pt-2">
             {corrections && corrections.length > 0 ? (
               <ul className="divide-y divide-border">

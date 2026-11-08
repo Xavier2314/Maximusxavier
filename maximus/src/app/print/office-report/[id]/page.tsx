@@ -34,7 +34,7 @@ export default async function PrintOfficeReport({ params }: { params: Promise<{ 
   const period = `${formatDate(report.week_start, { day: "numeric", month: "long" })} – ${formatDate(addDays(report.week_start, 6), { day: "numeric", month: "long", year: "numeric" })}`;
 
   return (
-    <div className="print-report" style={{ background: "#fff", color: "#1f2937", minHeight: "100vh", fontFamily: "var(--font-jost), system-ui, sans-serif" }}>
+    <div className="print-report" style={{ background: "#fff", color: "#1f2937", minHeight: "100vh", fontFamily: "var(--font-geist), system-ui, sans-serif" }}>
       <style>{`@page { size: A4; margin: 14mm; } @media print { .print-bar { display: none !important; } body { background: #fff !important; } } .print-report table { break-inside: auto; } .print-report tr { break-inside: avoid; }`}</style>
       <PrintBar />
       <main style={{ maxWidth: 800, margin: "0 auto", padding: "32px 24px" }}>

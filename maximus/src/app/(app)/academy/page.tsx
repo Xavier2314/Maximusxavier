@@ -1,4 +1,3 @@
-import { GraduationCap } from "lucide-react";
 import { CourseCard, type CourseCardData } from "@/components/course-card";
 import { EmptyState, PageHeader, ProgressRing } from "@/components/ui/misc";
 import { CATEGORIES } from "@/lib/academy";
@@ -40,7 +39,7 @@ export default async function AcademyPage() {
           <ProgressRing value={overall} size={110}><div><p className="text-2xl font-semibold">{overall}%</p><p className="text-xs text-white/60">{completed}/{total} lessons</p></div></ProgressRing>
         </div>
       </section>
-      {cards.length === 0 ? <EmptyState icon={<GraduationCap className="size-6" />} title="No courses yet" /> : CATEGORIES.map((cat) => {
+      {cards.length === 0 ? <EmptyState title="No courses yet" /> : CATEGORIES.map((cat) => {
         const list = cards.filter((c) => c.category === cat.key);
         if (list.length === 0) return null;
         return (

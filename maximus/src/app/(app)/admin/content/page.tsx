@@ -1,4 +1,4 @@
-import { BookOpen, Brain, Plus } from "lucide-react";
+import { BookOpen, Brain } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge, PageHeader } from "@/components/ui/misc";
 import { categoryOf } from "@/lib/academy";
@@ -57,7 +57,7 @@ export default async function ContentPage() {
             );
           })}
           <Card>
-            <CardHeader title="New course" icon={<Plus className="size-4" />} />
+            <CardHeader title="New course" />
             <CardBody><CourseForm /></CardBody>
           </Card>
         </div>
@@ -74,7 +74,7 @@ export default async function ContentPage() {
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="Add approved knowledge" icon={<Plus className="size-4" />} />
+            <CardHeader title="Add approved knowledge" />
             <CardBody><KnowledgeForm /></CardBody>
           </Card>
         </div>

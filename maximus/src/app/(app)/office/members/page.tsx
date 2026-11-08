@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { MessageCircle, Search, Users } from "lucide-react";
+import { MessageCircle, Search } from "lucide-react";
 import { GoalStatus } from "@/components/goal-status";
 import { Card } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
@@ -82,7 +82,7 @@ export default async function OfficeMembersPage({ searchParams }: { searchParams
       </div>
 
       {rows.length === 0 ? (
-        <Card><EmptyState icon={<Users className="size-6" />} title="No members match" description="Try another filter or search." /></Card>
+        <Card><EmptyState title="No members match" description="Try another filter or search." /></Card>
       ) : (
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">

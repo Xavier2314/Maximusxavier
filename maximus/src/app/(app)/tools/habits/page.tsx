@@ -1,4 +1,3 @@
-import { Repeat } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -42,7 +41,7 @@ export default async function HabitsPage() {
           <CardHeader title="This week" description="Tap a day to tick it. Greyed days aren't scheduled for that habit." />
           <CardBody>
             {list.length === 0 ? (
-              <EmptyState icon={<Repeat className="size-6" aria-hidden />} title="No habits yet" description="Start with one or two: e.g. Invite 3 people, Read 10 pages, Pray, Exercise." />
+              <EmptyState title="No habits yet" description="Start with one or two: e.g. Invite 3 people, Read 10 pages, Pray, Exercise." />
             ) : (
               <div className="space-y-3">
                 {list.map((x) => <HabitRow key={x.habit.id} habit={x.habit} week={week} today={today} checked={x.checks} streak={x.streak} rate={x.rate} />)}

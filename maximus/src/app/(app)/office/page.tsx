@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, CalendarCheck, ClipboardCheck, Clock, DoorOpen, Filter, HandCoins, LogOut, Megaphone, PiggyBank, QrCode, Target, TrendingUp, TriangleAlert, UserCheck, UserMinus } from "lucide-react";
+import { ArrowRight, Clock, DoorOpen, HandCoins, LogOut, Megaphone, QrCode, Target, UserCheck, UserMinus } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -42,7 +42,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("office_dashboard", { p_office: officeId });
   if (error || !data) {
-    return <EmptyState icon={<TriangleAlert className="size-6" />} title="Couldn't load this office" description="Please refresh the page." />;
+    return <EmptyState title="Couldn't load this office" description="Please refresh the page." />;
   }
   const d = data as OfficeDashboard;
   const m = d.members_total;
@@ -102,17 +102,17 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
 
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="Daily attendance" description="Members checked in on each open day (last 2 weeks)" icon={<CalendarCheck className="size-4" />}
+          <CardHeader title="Daily attendance" description="Members checked in on each open day (last 2 weeks)"
             action={<Link href="/attendance/register" className="text-sm font-medium text-primary hover:underline">Register</Link>} />
           <CardBody>
             {trend.some((t) => t.present > 0)
               ? <TrendBars data={trend} xKey="day" series={[{ key: "present", label: "Checked in" }]} caption="Members checked in per open day" />
-              : <EmptyState icon={<CalendarCheck className="size-6" />} title="No check-ins yet"
+              : <EmptyState title="No check-ins yet"
                   description="Print the QR poster and put it at the entrance. Members scan it when they arrive." />}
           </CardBody>
         </Card>
         <Card>
-          <CardHeader title="Waiting for you" icon={<ClipboardCheck className="size-4" />} />
+          <CardHeader title="Waiting for you" />
           <CardBody className="space-y-2 pt-3">
             {waiting.map((w) => (
               <Link key={w.label} href={w.href} className="flex items-center gap-3 rounded-xl border border-border p-3 hover:border-primary/40 hover:bg-surface-muted/60">
@@ -127,7 +127,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
 
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
         <Card>
-          <CardHeader title="Goals & evaluations" icon={<Target className="size-4" />} description={formatDate(d.today, { month: "long" })} />
+          <CardHeader title="Goals & evaluations" description={formatDate(d.today, { month: "long" })} />
           <CardBody className="space-y-5">
             <div>
               <div className="mb-1.5 flex justify-between text-sm"><span className="text-fg-muted">Monthly goals submitted</span><b className="tabular-nums">{d.goals_submitted} / {m}</b></div>
@@ -146,7 +146,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
         </Card>
 
         <Card>
-          <CardHeader title="Recruitment" icon={<Filter className="size-4" />} description="This month, across the office" />
+          <CardHeader title="Recruitment" description="This month, across the office" />
           <CardBody>
             <dl className="grid grid-cols-2 gap-3">
               {[
@@ -165,7 +165,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
         </Card>
 
         <Card>
-          <CardHeader title="Money this month" icon={<PiggyBank className="size-4" />} />
+          <CardHeader title="Money this month" />
           <CardBody className="space-y-3">
             {[
               { label: "Earnings members reported", value: d.reported_earnings_month, note: "From evaluations, not verified" },
@@ -183,7 +183,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader title="Top earners this month" icon={<TrendingUp className="size-4" />} description="As reported in evaluations"
+          <CardHeader title="Top earners this month" description="As reported in evaluations"
             action={<Link href="/leaderboard" className="text-sm font-medium text-primary hover:underline">Leaderboard</Link>} />
           <CardBody className="pt-3">
             {d.top_earners.length > 0 ? (
@@ -204,7 +204,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
         </Card>
 
         <Card>
-          <CardHeader title="Reach out to" icon={<UserMinus className="size-4" />}
+          <CardHeader title="Reach out to"
             description="No check-in, evaluation, order or prospect update for 7+ days"
             action={<Link href="/office/members?filter=quiet" className="text-sm font-medium text-primary hover:underline">All</Link>} />
           <CardBody className="pt-3">

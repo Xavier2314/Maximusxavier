@@ -1,4 +1,4 @@
-import { ListChecks, Quote } from "lucide-react";
+import { Quote } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Field, Input, Textarea } from "@/components/ui/form";
 import { Badge, PageHeader } from "@/components/ui/misc";
@@ -23,7 +23,7 @@ export default async function DailyAdminPage() {
       <PageHeader title="Daily checklist & thoughts" description="What every member sees on their dashboard each day." />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader title="Daily checklist" icon={<ListChecks className="size-4" />} />
+          <CardHeader title="Daily checklist" />
           <CardBody className="space-y-4">
             <ul className="divide-y divide-border">
               {(items ?? []).map((it) => (
@@ -44,7 +44,7 @@ export default async function DailyAdminPage() {
           </CardBody>
         </Card>
         <Card>
-          <CardHeader title="Thought of the day" icon={<Quote className="size-4" />} description="Schedule quotes ahead. One per day." />
+          <CardHeader title="Thought of the day" description="Schedule quotes ahead. One per day." />
           <CardBody className="space-y-4">
             <form action={addThoughtAction} className="space-y-3">
               <Field label="Quote" htmlFor="body"><Textarea id="body" name="body" required minLength={5} maxLength={500} rows={2} /></Field>

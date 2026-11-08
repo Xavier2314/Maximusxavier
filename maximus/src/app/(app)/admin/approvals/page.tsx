@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { CalendarCheck, Paperclip, Scale, Wallet } from "lucide-react";
+import { Paperclip } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -36,9 +36,9 @@ export default async function ApprovalsPage() {
         <div className="space-y-6 xl:col-span-2">
           {canPay && (
             <Card>
-              <CardHeader title="Payments awaiting confirmation" icon={<Wallet className="size-4" />} description={`${payments?.length ?? 0} pending`} />
+              <CardHeader title="Payments awaiting confirmation" description={`${payments?.length ?? 0} pending`} />
               <CardBody className="pt-2">
-                {(payments ?? []).length === 0 ? <EmptyState className="py-8" icon={<Wallet className="size-6" />} title="All caught up" /> : (
+                {(payments ?? []).length === 0 ? <EmptyState className="py-8" title="All caught up" /> : (
                   <ul className="divide-y divide-border">
                     {(payments ?? []).map((p) => (
                       <li key={p.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center">
@@ -64,9 +64,9 @@ export default async function ApprovalsPage() {
           )}
           {canAtt && (
             <Card>
-              <CardHeader title="Attendance corrections" icon={<CalendarCheck className="size-4" />} description={`${corrections?.length ?? 0} pending`} />
+              <CardHeader title="Attendance corrections" description={`${corrections?.length ?? 0} pending`} />
               <CardBody className="pt-2">
-                {(corrections ?? []).length === 0 ? <EmptyState className="py-8" icon={<CalendarCheck className="size-6" />} title="No pending corrections" /> : (
+                {(corrections ?? []).length === 0 ? <EmptyState className="py-8" title="No pending corrections" /> : (
                   <ul className="divide-y divide-border">
                     {(corrections ?? []).map((c) => (
                       <li key={c.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center">
@@ -90,7 +90,7 @@ export default async function ApprovalsPage() {
         </div>
         {canPay && (
           <Card className="h-fit">
-            <CardHeader title="Record a ledger adjustment" icon={<Scale className="size-4" />} description="Corrections are new entries; nothing is ever edited or deleted." />
+            <CardHeader title="Record a ledger adjustment" description="Corrections are new entries; nothing is ever edited or deleted." />
             <CardBody><AdjustmentForm /></CardBody>
           </Card>
         )}

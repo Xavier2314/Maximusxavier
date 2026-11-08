@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarRange, ChevronRight, Plus, Target, Users } from "lucide-react";
+import { CalendarRange, ChevronRight, Plus } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, EmptyState, PageHeader } from "@/components/ui/misc";
@@ -52,7 +52,7 @@ export default async function GoalsPage() {
         <div className="space-y-6 lg:col-span-2">
           {[{ label: "This month", month: thisMonth, goal: current }, { label: "Next month", month: nextMonth, goal: upcoming }].map(({ label, month, goal }) => (
             <Card key={month}>
-              <CardHeader title={`${label} · ${formatDate(month, { month: "long", year: "numeric" })}`} icon={<Target className="size-4" />}
+              <CardHeader title={`${label} · ${formatDate(month, { month: "long", year: "numeric" })}`}
                 action={goal && <GoalStatus status={goal.status} />} />
               <CardBody>
                 {goal ? (
@@ -65,7 +65,7 @@ export default async function GoalsPage() {
                     <ChevronRight className="size-4 text-fg-subtle" aria-hidden />
                   </Link>
                 ) : (
-                  <EmptyState className="py-6" icon={<Target className="size-6" />} title="No goals yet"
+                  <EmptyState className="py-6" title="No goals yet"
                     action={<LinkButton href={`/goals/new?month=${month}`} size="sm">Set {formatDate(month, { month: "long" })} goals</LinkButton>} />
                 )}
               </CardBody>
@@ -73,7 +73,7 @@ export default async function GoalsPage() {
           ))}
           {mine && mine.filter((g) => g.month < thisMonth).length > 0 && (
             <Card>
-              <CardHeader title="History" icon={<CalendarRange className="size-4" />} />
+              <CardHeader title="History" />
               <CardBody className="pt-2">
                 <ul className="divide-y divide-border">
                   {mine.filter((g) => g.month < thisMonth).map((g) => (
@@ -92,7 +92,7 @@ export default async function GoalsPage() {
 
         {viewer.can("review_member_goals") && (
           <Card className="h-fit">
-            <CardHeader title="Team goals" icon={<Users className="size-4" />} description={`${toReview.length} waiting for review`} />
+            <CardHeader title="Team goals" description={`${toReview.length} waiting for review`} />
             <CardBody className="pt-2">
               {(team ?? []).length > 0 ? (
                 <ul className="space-y-1">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Building2, CircleCheck, MapPinOff, Users } from "lucide-react";
+import { ArrowLeft, CircleCheck, MapPinOff, Users } from "lucide-react";
 import { AttendanceBadge } from "@/components/attendance-badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
@@ -51,7 +51,7 @@ export default async function LiveBoardPage() {
         action={<LiveRefresh />} />
 
       {(offices ?? []).length === 0 ? (
-        <Card><EmptyState icon={<Building2 className="size-6" />} title="No offices to show" description="You don't manage any active offices yet." /></Card>
+        <Card><EmptyState title="No offices to show" description="You don't manage any active offices yet." /></Card>
       ) : (
         <div className="grid gap-6 lg:grid-cols-2">
           {(offices ?? []).map((o) => {
@@ -60,7 +60,7 @@ export default async function LiveBoardPage() {
             const flagged = list.filter((r) => ["outside_radius", "location_unavailable", "pending_review"].includes(r.status));
             return (
               <Card key={o.id as string}>
-                <CardHeader title={o.name as string} icon={<Building2 className="size-4" />}
+                <CardHeader title={o.name as string}
                   description={`${list.length} check-ins today · radius ${o.radius_m} m`}
                   action={<Badge tone="green"><CircleCheck className="size-3" aria-hidden /> {present.length} present</Badge>} />
                 <CardBody className="pt-3">

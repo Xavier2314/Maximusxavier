@@ -28,7 +28,7 @@ export function MemberManage({ member, team }: { member: { id: string; name: str
 
   return (
     <Card>
-      <CardHeader title="Manage" icon={<UserMinus className="size-4" />} description={`You're ${first}'s upline`} />
+      <CardHeader title="Manage" description={`You're ${first}'s upline`} />
       <CardBody className="space-y-6">
         <PhotoPicker action={uploadMemberPhotoAction} fileField="photo" fields={{ member_id: member.id }} label={`Add a photo of ${member.name}`}
           className="items-start">

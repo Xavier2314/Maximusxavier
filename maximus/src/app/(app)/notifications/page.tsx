@@ -1,4 +1,4 @@
-import { Bell, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
@@ -26,7 +26,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
         {data && data.length > 0 ? (
           <NotificationList items={data} filter={filter === "unread" ? "unread" : "all"} />
         ) : (
-          <EmptyState icon={<Bell className="size-6" />} title={filter === "unread" ? "No unread notifications" : "No notifications yet"}
+          <EmptyState title={filter === "unread" ? "No unread notifications" : "No notifications yet"}
             description="Goal reviews, reminders, team updates and announcements will appear here." />
         )}
       </Card>

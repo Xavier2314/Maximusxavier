@@ -28,10 +28,10 @@ export function AnnouncementBar({ items }: { items: BarAnnouncement[] }) {
     setHidden(next); setI(0);
   };
   return (
-    <div className="bg-brand-navy text-white" role="region" aria-label="Announcements">
+    <div className="border-b border-border bg-surface text-fg" role="region" aria-label="Announcements">
       <div className="mx-auto flex h-10 max-w-7xl items-center gap-2 px-4 text-sm sm:px-6">
-        <Megaphone className="size-4 shrink-0 text-brand-lime" aria-hidden />
-        <span className="hidden shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-xs font-semibold sm:inline">
+        <Megaphone className="size-4 shrink-0 text-primary" aria-hidden />
+        <span className="hidden shrink-0 text-fg-subtle sm:inline">
           {a.kind === "recognition" ? "Recognition" : a.kind === "training" ? "Training" : "Announcement"}
         </span>
         <Link href={`/announcements#a-${a.id}`} className="min-w-0 flex-1 truncate font-medium hover:underline" key={a.id}>
@@ -39,12 +39,12 @@ export function AnnouncementBar({ items }: { items: BarAnnouncement[] }) {
         </Link>
         {visible.length > 1 && (
           <span className="flex items-center">
-            <button type="button" onClick={() => setI((n) => (n - 1 + visible.length) % visible.length)} aria-label="Previous announcement" className="grid size-11 place-items-center rounded-lg hover:bg-white/10"><ChevronLeft className="size-4" /></button>
-            <span className="w-8 text-center text-xs text-white/60 tabular-nums">{(i % visible.length) + 1}/{visible.length}</span>
-            <button type="button" onClick={() => setI((n) => (n + 1) % visible.length)} aria-label="Next announcement" className="grid size-11 place-items-center rounded-lg hover:bg-white/10"><ChevronRight className="size-4" /></button>
+            <button type="button" onClick={() => setI((n) => (n - 1 + visible.length) % visible.length)} aria-label="Previous announcement" className="grid size-11 place-items-center rounded-lg text-fg-subtle hover:bg-surface-muted"><ChevronLeft className="size-4" /></button>
+            <span className="w-8 text-center text-xs text-fg-subtle tabular-nums">{(i % visible.length) + 1}/{visible.length}</span>
+            <button type="button" onClick={() => setI((n) => (n + 1) % visible.length)} aria-label="Next announcement" className="grid size-11 place-items-center rounded-lg text-fg-subtle hover:bg-surface-muted"><ChevronRight className="size-4" /></button>
           </span>
         )}
-        <button type="button" onClick={dismiss} aria-label="Dismiss announcement" className="grid size-11 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white"><X className="size-4" /></button>
+        <button type="button" onClick={dismiss} aria-label="Dismiss announcement" className="grid size-11 place-items-center rounded-lg text-fg-subtle hover:bg-surface-muted hover:text-fg"><X className="size-4" /></button>
       </div>
     </div>
   );

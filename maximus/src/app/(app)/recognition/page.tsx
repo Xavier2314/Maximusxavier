@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Award, Cake, PartyPopper, Plus, Trophy } from "lucide-react";
+import { Award, Cake } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
@@ -62,7 +62,7 @@ export default async function RecognitionPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card>
-            <CardHeader title="Recognition wall" icon={<Trophy className="size-4" />} />
+            <CardHeader title="Recognition wall" />
             <CardBody className="pt-3">
               {(posts ?? []).length > 0 ? (
                 <ul className="space-y-4">
@@ -79,19 +79,19 @@ export default async function RecognitionPage() {
                     </li>
                   ))}
                 </ul>
-              ) : <EmptyState icon={<Trophy className="size-6" />} title="No recognition posts yet" description="Leaders can celebrate team wins here." />}
+              ) : <EmptyState title="No recognition posts yet" description="Leaders can celebrate team wins here." />}
             </CardBody>
           </Card>
           {canRecognise && team.length > 0 && (
             <Card>
-              <CardHeader title="Recognise a team member" icon={<Plus className="size-4" />} />
+              <CardHeader title="Recognise a team member" />
               <CardBody><PostForm mode="recognition" offices={[]} members={team} canOrgWide={false} /></CardBody>
             </Card>
           )}
         </div>
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Upcoming birthdays" icon={<Cake className="size-4" />} description="Members who chose to share" />
+            <CardHeader title="Upcoming birthdays" description="Members who chose to share" />
             <CardBody className="pt-3">
               {upcoming.length > 0 ? (
                 <ul className="space-y-3">
@@ -107,7 +107,7 @@ export default async function RecognitionPage() {
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="Anniversaries" icon={<PartyPopper className="size-4" />} />
+            <CardHeader title="Anniversaries" />
             <CardBody className="pt-3">
               {anniversaries.length > 0 ? (
                 <ul className="space-y-3">

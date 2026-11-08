@@ -66,26 +66,25 @@ export function Skeleton({ className }: { className?: string }) {
   return <div className={cn("skeleton", className)} aria-hidden />;
 }
 
-export function EmptyState({ icon, title, description, action, className }: {
-  icon: ReactNode; title: string; description?: ReactNode; action?: ReactNode; className?: string;
+export function EmptyState({ title, description, action, className }: {
+  title: string; description?: ReactNode; action?: ReactNode; className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col items-center px-6 py-12 text-center", className)}>
-      <span className="mb-4 grid size-12 place-items-center rounded-xl bg-primary-soft text-primary">{icon}</span>
-      <h3 className="text-base font-semibold">{title}</h3>
-      {description && <p className="mt-1 max-w-sm text-sm text-fg-muted">{description}</p>}
-      {action && <div className="mt-5">{action}</div>}
+    <div className={cn("px-5 py-10 text-center", className)}>
+      <h3 className="font-medium">{title}</h3>
+      {description && <p className="mx-auto mt-1 max-w-sm text-sm text-fg-muted">{description}</p>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }
 
 export function PageHeader({ title, description, action, eyebrow }: { title: string; description?: ReactNode; action?: ReactNode; eyebrow?: string }) {
   return (
-    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        {eyebrow && <p className="mb-1 text-sm font-medium text-fg-muted">{eyebrow}</p>}
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
-        {description && <p className="mt-1 text-fg-muted">{description}</p>}
+    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="min-w-0">
+        {eyebrow && <p className="mb-1 text-sm text-fg-subtle">{eyebrow}</p>}
+        <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.02em]">{title}</h1>
+        {description && <p className="mt-1.5 max-w-2xl text-fg-muted">{description}</p>}
       </div>
       {action && <div className="flex flex-wrap gap-2">{action}</div>}
     </div>

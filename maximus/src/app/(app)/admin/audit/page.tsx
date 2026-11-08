@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ScrollText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/form";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
@@ -36,7 +35,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
           </Select>
           <button className="rounded-xl bg-primary px-4 text-sm font-medium text-primary-fg">Filter</button>
         </form>
-        {(data ?? []).length === 0 ? <EmptyState icon={<ScrollText className="size-6" />} title="No audit entries" /> : (
+        {(data ?? []).length === 0 ? <EmptyState title="No audit entries" /> : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-sm">
               <thead className="text-left text-sm text-fg-subtle">

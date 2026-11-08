@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Download, Package, Plus, ShoppingBag, TrendingUp } from "lucide-react";
+import { Download } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -90,7 +90,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card>
-            <CardHeader title={scope === "mine" ? "My orders" : "Team orders"} icon={<ShoppingBag className="size-4" />} />
+            <CardHeader title={scope === "mine" ? "My orders" : "Team orders"} />
             {rows.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[600px] text-sm">
@@ -122,15 +122,15 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                   </tbody>
                 </table>
               </div>
-            ) : <EmptyState icon={<ShoppingBag className="size-6" />} title="No orders this month" description="Record your first order to start tracking sales." />}
+            ) : <EmptyState title="No orders this month" description="Record your first order to start tracking sales." />}
           </Card>
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
-              <CardHeader title="My sales trend" description="Last 6 months" icon={<TrendingUp className="size-4" />} />
+              <CardHeader title="My sales trend" description="Last 6 months" />
               <CardBody><TrendBars data={trend} xKey="month" valueFormat="money" series={[{ key: "sales", label: "Sales" }]} caption="Monthly sales" height={200} /></CardBody>
             </Card>
             <Card>
-              <CardHeader title="By category" description={formatDate(month, { month: "long" })} icon={<Package className="size-4" />} />
+              <CardHeader title="By category" description={formatDate(month, { month: "long" })} />
               <CardBody className="space-y-3">
                 {byCategory.length > 0 ? byCategory.map(([cat, amt]) => (
                   <div key={cat}>
@@ -143,7 +143,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
           </div>
         </div>
         <Card className="h-fit">
-          <CardHeader title="Record an order" icon={<Plus className="size-4" />} />
+          <CardHeader title="Record an order" />
           <CardBody><OrderForm members={teamMembers} selfId={viewer.id} today={today} hasLeaders={leaders.length > 0} /></CardBody>
         </Card>
       </div>

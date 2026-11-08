@@ -6,18 +6,13 @@ export function Card({ className, ...props }: ComponentProps<"div">) {
 }
 
 export function CardHeader({
-  title, description, action, icon, className,
-}: { title: ReactNode; description?: ReactNode; action?: ReactNode; icon?: ReactNode; className?: string }) {
+  title, description, action, className,
+}: { title: ReactNode; description?: ReactNode; action?: ReactNode; className?: string }) {
   return (
     <div className={cn("flex items-start justify-between gap-3 px-5 pt-5", className)}>
-      <div className="flex min-w-0 items-start gap-3">
-        {icon && (
-          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary">{icon}</span>
-        )}
-        <div className="min-w-0">
-          <h2 className="truncate text-base font-semibold tracking-tight">{title}</h2>
-          {description && <p className="mt-0.5 text-sm text-fg-muted">{description}</p>}
-        </div>
+      <div className="min-w-0">
+        <h2 className="text-[15px] font-semibold leading-6">{title}</h2>
+        {description && <p className="mt-0.5 text-sm text-fg-muted">{description}</p>}
       </div>
       {action}
     </div>

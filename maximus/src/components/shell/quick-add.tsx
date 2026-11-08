@@ -21,7 +21,7 @@ export function QuickAdd() {
   return (
     <div className="relative" ref={ref}>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu" aria-label="New"
-        className="inline-flex h-11 items-center gap-1.5 rounded-xl bg-primary px-3 text-sm font-semibold text-primary-fg hover:bg-primary-hover">
+        className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-sm font-medium text-fg transition-colors hover:bg-surface-muted lg:h-9">
         <Plus className="size-4" aria-hidden /><span className="hidden sm:inline">New</span>
       </button>
       {open && (

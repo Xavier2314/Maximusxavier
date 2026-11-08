@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BookOpen, CircleCheck, ListChecks, MessageSquare, NotebookPen, Pencil, RotateCcw, Send, Target } from "lucide-react";
+import { ArrowLeft, BookOpen, CircleCheck, ListChecks, NotebookPen, Pencil, RotateCcw, Send } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, PageHeader, Progress } from "@/components/ui/misc";
 import { GoalStatus } from "@/components/goal-status";
@@ -94,7 +94,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card>
-            <CardHeader title="Progress" icon={<Target className="size-4" />} description="Calculated automatically — never typed in by hand" />
+            <CardHeader title="Progress" description="Calculated automatically — never typed in by hand" />
             <CardBody className="space-y-5">
               {rows.length === 0 && extra.length === 0 && <p className="text-sm text-fg-muted">No numeric targets set.</p>}
               {rows.map((r) => {
@@ -170,7 +170,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
           </Card>
 
           <Card>
-            <CardHeader title="Feedback" icon={<MessageSquare className="size-4" />} />
+            <CardHeader title="Feedback" />
             <CardBody className="pt-3">
               {feedback && feedback.length > 0 ? (
                 <ol className="space-y-4">
@@ -202,7 +202,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
 
         {isOwner && (
           <Card className="h-fit">
-            <CardHeader title="Send to sponsor / team leader" icon={<Send className="size-4" />} description="They get a notification and can read your plan." />
+            <CardHeader title="Send to sponsor / team leader" description="They get a notification and can read your plan." />
             <CardBody>
               <SendToLeaders leaders={leaders} kind="goal" itemId={goal.id}
                 title={`My goals for ${formatDate(goal.month, { month: "long", year: "numeric" })}`}
@@ -220,7 +220,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
         )}
         {canReview && (
           <Card className="h-fit lg:sticky lg:top-24">
-            <CardHeader title="Review" icon={<CircleCheck className="size-4" />} description="Your feedback notifies the member instantly." />
+            <CardHeader title="Review" description="Your feedback notifies the member instantly." />
             <CardBody><ReviewPanel goalId={id} canDecide={goal.status === "submitted"} /></CardBody>
           </Card>
         )}

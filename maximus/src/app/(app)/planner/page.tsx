@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, CircleCheckBig, Lightbulb, ListChecks, TriangleAlert } from "lucide-react";
+import { TriangleAlert } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -109,7 +109,7 @@ export default async function PlannerPage({ searchParams }: { searchParams: Prom
                   {list.map((t) => <TaskRow key={t.id} task={t} today={today} assignerName={nameOf(t.assigned_by)} />)}
                 </ul>
               ) : (
-                <EmptyState icon={view === "done" ? <CircleCheckBig className="size-6" /> : <ListChecks className="size-6" />}
+                <EmptyState
                   title={view === "today" ? "Nothing planned for today" : view === "overdue" ? "You're all caught up" : view === "upcoming" ? "Nothing coming up" : "No completed tasks yet"}
                   description={view === "today" ? "Add a task above, or pick one of the suggestions." : undefined} />
               )}
@@ -119,7 +119,7 @@ export default async function PlannerPage({ searchParams }: { searchParams: Prom
 
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Suggested for today" icon={<Lightbulb className="size-4" />} description="Based on your follow-ups, goals and evaluations" />
+            <CardHeader title="Suggested for today" description="Based on your follow-ups, goals and evaluations" />
             <CardBody className="space-y-3 pt-3">
               {fresh.length > 0 ? fresh.map((s) => (
                 <div key={s.title} className="flex items-start gap-3 rounded-xl border border-border p-3">
@@ -133,7 +133,7 @@ export default async function PlannerPage({ searchParams }: { searchParams: Prom
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="This week" icon={<CalendarDays className="size-4" />} />
+            <CardHeader title="This week" />
             <CardBody className="pt-3">
               <ul className="space-y-1.5">
                 {Array.from({ length: 7 }, (_, i) => addDays(today, i)).map((d) => {

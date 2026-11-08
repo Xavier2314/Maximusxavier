@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Target } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -43,7 +42,7 @@ export default async function GoalsToolPage({ searchParams }: { searchParams: Pr
             ))}
           </nav>
           {active.length === 0 ? (
-            <Card><EmptyState icon={<Target className="size-6" aria-hidden />} title="No active goals here"
+            <Card><EmptyState title="No active goals here"
               description="Add a goal on the right. Break big goals into daily and weekly ones you can act on." /></Card>
           ) : active.map((g) => <GoalCard key={g.id} goal={g} today={today} notes={notesFor(g.id)} viewerId={viewer.id} partnerName={partnerName} />)}
           {done.length > 0 && (

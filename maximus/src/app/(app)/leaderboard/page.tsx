@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Medal, Trophy } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -42,7 +41,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
       </div>
 
       {rows.length === 0 ? (
-        <Card><EmptyState icon={<Trophy className="size-6" />} title="No earnings logged yet" description="Earnings appear here as members complete their 5-day evaluations." /></Card>
+        <Card><EmptyState title="No earnings logged yet" description="Earnings appear here as members complete their 5-day evaluations." /></Card>
       ) : (
         <>
           <section className="hero-gradient mb-6 grid grid-cols-3 items-end gap-3 rounded-2xl p-5 text-white sm:p-8" aria-label="Top three">
@@ -59,7 +58,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
             ))}
           </section>
           <Card>
-            <CardHeader title={`Top earners this ${period}`} icon={<Medal className="size-4" />} />
+            <CardHeader title={`Top earners this ${period}`} />
             <CardBody className="pt-2">
               <ol className="divide-y divide-border">
                 {rows.map((r) => (

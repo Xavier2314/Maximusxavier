@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Lock, MessageCircle } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import { Card, CardBody } from "@/components/ui/card";
 import { Avatar, EmptyState } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -97,7 +97,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
         </aside>
         <section>
           {room ?? (
-            <Card><EmptyState icon={<MessageCircle className="size-6" aria-hidden />} title="Pick someone to chat with"
+            <Card><EmptyState title="Pick someone to chat with"
               description="Chat privately with your accountability partner, your sponsor or anyone in your team line."
               action={<Link href="/tools/accountability" className="text-primary">Find an accountability partner</Link>} /></Card>
           )}

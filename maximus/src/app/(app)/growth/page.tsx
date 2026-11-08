@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, Network, Trophy } from "lucide-react";
+import { Compass } from "lucide-react";
 import { DuplicationSummary, FOCUS_ICONS, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
@@ -39,7 +39,7 @@ export default async function GrowthPage() {
 
       {focus && (
         <Card className="mb-6">
-          <CardHeader title="Duplication" icon={<Network className="size-4" />}
+          <CardHeader title="Duplication"
             description={`Bring in at least ${target} (there's no limit), help each of them bring in ${target}+, and never stop inviting.`} />
           <CardBody><DuplicationSummary focus={focus} /></CardBody>
         </Card>
@@ -50,7 +50,7 @@ export default async function GrowthPage() {
           <Compass className="size-5 text-primary" aria-hidden /> Work on these first
         </h2>
         {top.length > 0 ? <FocusList areas={top} courses={courses} /> : (
-          <Card><EmptyState icon={<Trophy className="size-6" />} title="You're on target everywhere"
+          <Card><EmptyState title="You're on target everywhere"
             description="Great work. Keep supporting your team so they reach their targets too." /></Card>
         )}
         {rest.length > 0 && (
@@ -62,7 +62,7 @@ export default async function GrowthPage() {
 
       {(directs ?? []).length > 0 && (
         <Card>
-          <CardHeader title="Your direct downlines" icon={<Network className="size-4" />}
+          <CardHeader title="Your direct downlines"
             description={`Who has reached their first ${target}, and what each person should work on`} />
           <CardBody>
             <ul className="divide-y divide-border">

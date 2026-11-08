@@ -20,18 +20,18 @@
   --brand-navy: #0f172a;
   --brand-orange: #f97316;
 
-  --bg: #f4f6fb;
+  --bg: #f7f7f8;
   --bg-elevated: #ffffff;
   --surface: #ffffff;
-  --surface-muted: #eef1f8;
-  --border: #e2e7f1;
+  --surface-muted: #f1f2f4;
+  --border: #e5e6ea;
   --fg: #0f172a;
-  --fg-muted: #4b566d;
-  --fg-subtle: #5f6b82;
-  --primary: #305ee6;
-  --primary-hover: #244fd0;
+  --fg-muted: #4a5163;
+  --fg-subtle: #5d6474;
+  --primary: #2f5be0;
+  --primary-hover: #2650cc;
   --primary-fg: #ffffff;
-  --primary-soft: #e8eefd;
+  --primary-soft: #edf1fd;
   --success: #3f7d0c;          /* darker green for text contrast on light */
   --success-soft: #ecf9dc;
   --warning: #b45309;
@@ -39,7 +39,7 @@
   --danger: #b91c1c;
   --danger-soft: #fee2e2;
   --ring: #305ee6;
-  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.05);
+  --shadow-card: none;
   /* Chart series (validated for CVD separation and contrast on each surface) */
   --chart-1: #305ee6;
   --chart-2: #4f9a10;
@@ -48,18 +48,18 @@
 }
 
 .dark {
-  --bg: #0a0f1d;
-  --bg-elevated: #0f172a;
-  --surface: #111a2e;
-  --surface-muted: #17223a;
-  --border: #22304d;
-  --fg: #eef2fb;
-  --fg-muted: #a3afc7;
-  --fg-subtle: #8794b2;
-  --primary: #6489f3;
-  --primary-hover: #7d9bf5;
-  --primary-fg: #0a0f1d;     /* navy on the lighter dark-mode blue: 5.8:1 (white would be 3.4:1) */
-  --primary-soft: #162447;
+  --bg: #0b0d12;
+  --bg-elevated: #12151c;
+  --surface: #12151c;
+  --surface-muted: #1a1e27;
+  --border: #252a35;
+  --fg: #eceef2;
+  --fg-muted: #a9afbd;
+  --fg-subtle: #8b92a2;
+  --primary: #7c9cf6;
+  --primary-hover: #93aef8;
+  --primary-fg: #0b0d12;     /* dark text on the light dark-mode blue */
+  --primary-soft: #1a2340;
   --success: #8fe03a;
   --success-soft: #1c3312;
   --warning: #fbbf24;
@@ -67,7 +67,7 @@
   --danger: #f87171;
   --danger-soft: #3b1414;
   --ring: #6489f3;
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-card: none;
   --chart-1: #6489f3;
   --chart-2: #5fa81a;
   --chart-grid: #1d2942;
@@ -75,7 +75,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-jost), "Futura", "Century Gothic", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
 
   --color-brand-blue: var(--brand-blue);
   --color-brand-green: var(--brand-green);
@@ -104,7 +104,7 @@
   --color-ring: var(--ring);
 
   --shadow-card: var(--shadow-card);
-  --radius-card: 1rem;
+  --radius-card: 0.75rem;
 
   --animate-rise: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   --animate-fade: fade 0.3s ease-out both;
@@ -132,7 +132,6 @@
   body {
     background: var(--bg);
     color: var(--fg);
-    font-feature-settings: "ss01";
     -webkit-font-smoothing: antialiased;
   }
   ::selection {

@@ -1,4 +1,3 @@
-import { LifeBuoy } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Select, Textarea } from "@/components/ui/form";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
@@ -32,7 +31,7 @@ export default async function AdminSupportPage({ searchParams }: { searchParams:
           <a key={k} href={`/admin/support?status=${k}`} className={cn("rounded-full px-4 py-2 text-sm font-medium", status === k ? "bg-primary text-primary-fg" : "bg-surface-muted text-fg-muted")}>{l}</a>
         ))}
       </div>
-      {(data ?? []).length === 0 ? <Card><EmptyState icon={<LifeBuoy className="size-6" />} title="Nothing here" description="No tickets in this list." /></Card> : (
+      {(data ?? []).length === 0 ? <Card><EmptyState title="Nothing here" description="No tickets in this list." /></Card> : (
         <div className="grid gap-4 lg:grid-cols-2">
           {(data ?? []).map((t) => (
             <Card key={t.id} className="p-5">

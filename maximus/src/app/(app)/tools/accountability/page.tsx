@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Flame, Handshake, MessageCircle } from "lucide-react";
+import { Flame, MessageCircle } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader, Progress } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -49,7 +49,7 @@ export default async function AccountabilityPage() {
               <CardBody><RequestForm /></CardBody>
             </Card>
             <Card>
-              <EmptyState icon={<Handshake className="size-6" aria-hidden />} title="How it works"
+              <EmptyState title="How it works"
                 description="1. Share your code or enter theirs. 2. They accept. 3. You each choose what to share: goals, habits, focus time, score. 4. Check in morning and evening, cheer each other on and suggest deadlines. Nobody else, including sponsors and admins, can see your partnership." />
             </Card>
           </div>

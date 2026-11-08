@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GraduationCap, Megaphone, Pin, Plus } from "lucide-react";
+import { GraduationCap, Pin } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -32,7 +32,7 @@ export default async function AnnouncementsPage() {
       <PageHeader title="Announcements" description="News, trainings and updates from Maximus leadership." />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          {(posts ?? []).length === 0 && <Card><EmptyState icon={<Megaphone className="size-6" />} title="No announcements yet" /></Card>}
+          {(posts ?? []).length === 0 && <Card><EmptyState title="No announcements yet" /></Card>}
           {(posts ?? []).map((p) => (
             <Card key={p.id} id={`a-${p.id}`} className="scroll-mt-32">
               <CardBody>
@@ -55,7 +55,7 @@ export default async function AnnouncementsPage() {
         </div>
         {canPublish && (
           <Card className="h-fit lg:sticky lg:top-24">
-            <CardHeader title="New announcement" icon={<Plus className="size-4" />} />
+            <CardHeader title="New announcement" />
             <CardBody>
               <PostForm mode="announcement" offices={offices.map((o) => ({ id: o.id, name: o.name }))}
                 members={[]} canOrgWide={viewer.isAdmin} canTeam={canOrgPublish} />

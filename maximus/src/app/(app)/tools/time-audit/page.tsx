@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Timer } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, PageHeader, StatCard } from "@/components/ui/misc";
@@ -64,7 +63,7 @@ export default async function TimeAuditPage({ searchParams }: { searchParams: Pr
         <StatCard label="Interruptions" value={interruptions} hint={list.length ? `${(interruptions / list.length).toFixed(1)} per session` : undefined} />
       </div>
       {list.length === 0 ? (
-        <Card><EmptyState icon={<Timer className="size-6" aria-hidden />} title="No focus sessions yet"
+        <Card><EmptyState title="No focus sessions yet"
           description="Run a Pomodoro or deep work session and your time will show up here."
           action={<Link href="/tools/pomodoro" className="text-primary">Start a Pomodoro</Link>} /></Card>
       ) : (

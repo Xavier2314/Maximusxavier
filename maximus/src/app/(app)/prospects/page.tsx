@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bot, UserPlus } from "lucide-react";
+import { Bot } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader, StatCard } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -43,7 +43,7 @@ export default async function ProspectsPage({ searchParams }: { searchParams: Pr
 
       {prospects.length === 0 ? (
         <Card>
-          <EmptyState icon={<UserPlus className="size-6" />} title={readOnly ? "No prospects yet" : "Add your first prospect"}
+          <EmptyState title={readOnly ? "No prospects yet" : "Add your first prospect"}
             description={readOnly ? "This member hasn't added anyone yet." : "Add someone you met: their name, number and a note about them. Maximus AI can then write and send your follow-ups."}
             action={!readOnly && <AddProspect />} />
         </Card>
