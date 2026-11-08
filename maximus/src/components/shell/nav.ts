@@ -132,6 +132,7 @@ export const OFFICE_NAV: NavSection[] = [
     title: "Organisation settings",
     items: [
       { href: "/admin/content", label: "Content", icon: "book", permission: "manage_content" },
+      { href: "/admin/checklists", label: "Push a checklist", icon: "list-checks", roles: ["super_admin"] },
       { href: "/admin/daily", label: "Checklist & thoughts", icon: "clipboard", permission: "manage_content" },
       { href: "/admin/settings", label: "Settings", icon: "sliders", permission: "manage_roles" },
       { href: "/admin/branding", label: "Platform branding", icon: "palette", roles: ["super_admin"] },

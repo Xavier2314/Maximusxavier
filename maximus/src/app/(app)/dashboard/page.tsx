@@ -3,6 +3,8 @@ import { ArrowRight, Building2 } from "lucide-react";
 import { FocusPopup } from "@/components/focus-popup";
 import { MonthTrack } from "./month-track";
 import { GoalBoxes } from "./goal-boxes";
+import { PushedChecklist, type HomeChecklist } from "./pushed-checklist";
+import type { ChecklistItem, ItemProgress } from "@/lib/checklists";
 import { CallerIllustration, WaverIllustration } from "@/components/brand/illustrations";
 import { Avatar } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -52,6 +54,31 @@ export default async function DashboardPage() {
     supabase.from("tool_goals").select("id, title, target, unit, status, horizon").eq("user_id", viewer.id).in("horizon", ["weekly", "daily"])
       .neq("status", "abandoned").lte("start_date", today).gte("deadline", today).order("created_at").limit(40),
   ]);
+  // Checklists an admin pushed to this member; each stays on Home until every item is done.
+  type Pushed = { checklist_id: string; pushed_checklists: { id: string; title: string; due_at: string | null;
+    sender_name: string | null; sender_avatar: string | null } | null };
+  const { data: pushedRows } = await supabase.from("pushed_checklist_recipients")
+    .select("checklist_id, pushed_checklists(id, title, due_at, sender_name, sender_avatar)")
+    .eq("user_id", viewer.id).returns<Pushed[]>();
+  const pushedIds = (pushedRows ?? []).map((r) => r.checklist_id);
+  const [{ data: pushedItems }, { data: pushedProgress }] = pushedIds.length
+    ? await Promise.all([
+        supabase.from("pushed_checklist_items").select("*").in("checklist_id", pushedIds).order("position").returns<ChecklistItem[]>(),
+        supabase.from("pushed_checklist_progress").select("*").eq("user_id", viewer.id).returns<ItemProgress[]>(),
+      ])
+    : [{ data: [] as ChecklistItem[] }, { data: [] as ItemProgress[] }];
+  const renderedAt = Date.now();
+  const checklists: HomeChecklist[] = (pushedRows ?? []).flatMap((r) => {
+    const c = r.pushed_checklists;
+    if (!c) return [];
+    const items = (pushedItems ?? []).filter((i) => i.checklist_id === c.id);
+    const progress = (pushedProgress ?? []).filter((p) => items.some((i) => i.id === p.item_id));
+    if (!items.length || items.every((i) => progress.some((p) => p.item_id === i.id && p.completed_at))) return [];
+    const dueLabel = c.due_at
+      ? (c.due_at.slice(0, 10) === today ? formatTime(c.due_at, tz) : `${formatDate(c.due_at, { weekday: "short" }, tz)} ${formatTime(c.due_at, tz)}`)
+      : null;
+    return [{ id: c.id, title: c.title, due_at: c.due_at, dueLabel, from: { name: c.sender_name ?? "Admin", avatar: c.sender_avatar }, items, progress }];
+  });
   const focusTop = topFocus(focusData as GrowthFocus | null);
   const focusWeek = isoWeek(today);
 
@@ -109,6 +136,8 @@ export default async function DashboardPage() {
           {streakDays ? `Day ${streakDays} in a row at the office` : "Check in to start your streak"}
         </p>
       </div>
+
+      {checklists.map((c) => <PushedChecklist key={c.id} list={c} renderedAt={renderedAt} />)}
 
       <MonthTrack monthName={monthName} daysInMonth={daysInMonth} today={dayNum} checkIns={checkInDays} goalPct={goalPct} hasGoals={goalRows.length > 0} />
 
