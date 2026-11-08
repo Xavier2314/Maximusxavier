@@ -12,38 +12,58 @@ export type NavItem = {
 
 export type NavSection = { title?: string; items: NavItem[] };
 
-/** My view: the member's own work. Everyone has this. */
+/** My view: the member's own work. Everyone has this. Untitled sections are always open. */
 export const NAV: NavSection[] = [
   {
     items: [
       { href: "/dashboard", label: "Home", icon: "home" },
+      { href: "/inbox", label: "Inbox", icon: "inbox" },
+    ],
+  },
+  {
+    title: "Today",
+    items: [
       { href: "/planner", label: "Daily planner", icon: "list-checks" },
-      { href: "/tools", label: "Tools", icon: "timer" },
       { href: "/attendance", label: "Check in", icon: "map-pin" },
+      { href: "/tools", label: "Tools", icon: "timer" },
+    ],
+  },
+  {
+    title: "Performance",
+    items: [
       { href: "/goals", label: "Goals", icon: "target" },
       { href: "/evaluations", label: "Evaluations", icon: "clipboard" },
+      { href: "/leaderboard", label: "Leaderboard", icon: "medal" },
+      { href: "/recognition", label: "Recognition", icon: "trophy" },
+    ],
+  },
+  {
+    title: "Business",
+    items: [
       { href: "/prospects", label: "Prospects", icon: "funnel" },
+      { href: "/orders", label: "Orders", icon: "bag" },
       { href: "/team", label: "My Team", icon: "network" },
-      { href: "/inbox", label: "Inbox", icon: "inbox" },
     ],
   },
   {
     title: "Money",
     items: [
       { href: "/finance", label: "Savings & payments", icon: "wallet" },
-      { href: "/orders", label: "Orders", icon: "bag" },
       { href: "/bank", label: "Maximus Bank", icon: "landmark" },
     ],
   },
   {
-    title: "Grow",
+    title: "Growth",
     items: [
       { href: "/why", label: "My Why", icon: "heart" },
       { href: "/growth", label: "Growth focus", icon: "compass" },
-      { href: "/leaderboard", label: "Leaderboard", icon: "medal" },
       { href: "/academy", label: "Academy", icon: "graduation" },
       { href: "/ai", label: "Maximus AI", icon: "sparkles" },
-      { href: "/recognition", label: "Recognition", icon: "trophy" },
+    ],
+  },
+  {
+    title: "Help",
+    items: [
       { href: "/support", label: "Help & complaints", icon: "lifebuoy" },
     ],
   },
@@ -61,21 +81,42 @@ export const TEAM_NAV: NavSection[] = [
   },
 ];
 
+const OFFICE_VIEWERS: Permission[] = ["manage_office", "view_org_analytics", "view_team_dashboard", "view_direct_downlines"];
+
 /** Office view: the office itself — its dashboard, roster, and (for managers) its settings. */
 export const OFFICE_NAV: NavSection[] = [
   {
-    title: "Office",
     items: [
-      { href: "/office", label: "Office overview", icon: "chart", anyPermission: ["manage_office", "view_org_analytics", "view_team_dashboard", "view_direct_downlines"] },
-      { href: "/office/members", label: "Office members", icon: "users", anyPermission: ["manage_office", "view_org_analytics", "view_team_dashboard", "view_direct_downlines"] },
+      { href: "/office", label: "Office overview", icon: "chart", anyPermission: OFFICE_VIEWERS },
+      { href: "/office/members", label: "Office members", icon: "users", anyPermission: OFFICE_VIEWERS },
+    ],
+  },
+  {
+    title: "Attendance",
+    items: [
       { href: "/attendance/live", label: "Live attendance", icon: "map-pin", anyPermission: ["manage_office", "approve_attendance_exceptions", "view_org_analytics"] },
-      { href: "/attendance/register", label: "Attendance register", icon: "clipboard", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics"] },
-      { href: "/office/weekly", label: "Weekly office report", icon: "clipboard", anyPermission: ["manage_office", "view_org_analytics"] },
+      { href: "/attendance/register", label: "Attendance register", icon: "clipboard", anyPermission: OFFICE_VIEWERS },
       { href: "/office/reports", label: "Attendance reports", icon: "chart", anyPermission: ["manage_office", "view_org_analytics"] },
+    ],
+  },
+  {
+    title: "Reports & approvals",
+    items: [
+      { href: "/office/weekly", label: "Weekly office report", icon: "clipboard", anyPermission: ["manage_office", "view_org_analytics"] },
       { href: "/admin/approvals", label: "Approvals", icon: "check", anyPermission: ["approve_financial_transactions", "approve_attendance_exceptions", "manage_office"] },
+    ],
+  },
+  {
+    title: "Communication",
+    items: [
+      { href: "/announcements", label: "Announcements", icon: "megaphone", anyPermission: [...OFFICE_VIEWERS, "publish_announcements"] },
+    ],
+  },
+  {
+    title: "Office settings",
+    items: [
       { href: "/admin/offices", label: "Office setup & QR", icon: "building", permission: "manage_office" },
       { href: "/office/brand", label: "Branding", icon: "palette", anyPermission: ["manage_office", "view_org_analytics"] },
-      { href: "/announcements", label: "Announcements", icon: "megaphone", anyPermission: ["manage_office", "view_team_dashboard", "view_direct_downlines", "view_org_analytics", "publish_announcements"] },
     ],
   },
   {
@@ -83,13 +124,18 @@ export const OFFICE_NAV: NavSection[] = [
     items: [
       { href: "/admin", label: "All offices", icon: "building", permission: "view_org_analytics" },
       { href: "/admin/members", label: "Members & roles", icon: "users", anyPermission: ["manage_roles", "view_org_analytics"] },
+      { href: "/admin/support", label: "Support tickets", icon: "lifebuoy", permission: "view_org_analytics" },
+      { href: "/admin/audit", label: "Audit log", icon: "scroll", permission: "view_org_analytics" },
+    ],
+  },
+  {
+    title: "Organisation settings",
+    items: [
       { href: "/admin/content", label: "Content", icon: "book", permission: "manage_content" },
       { href: "/admin/daily", label: "Checklist & thoughts", icon: "clipboard", permission: "manage_content" },
-      { href: "/admin/support", label: "Support tickets", icon: "lifebuoy", permission: "view_org_analytics" },
       { href: "/admin/settings", label: "Settings", icon: "sliders", permission: "manage_roles" },
       { href: "/admin/branding", label: "Platform branding", icon: "palette", roles: ["super_admin"] },
       { href: "/admin/white-label", label: "White-label payments", icon: "wallet", roles: ["super_admin"] },
-      { href: "/admin/audit", label: "Audit log", icon: "scroll", permission: "view_org_analytics" },
     ],
   },
 ];

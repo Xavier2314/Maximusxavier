@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
-import { Building2, LogOut, Menu, Network, Search, Settings, User, X } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Building2, Check, ChevronDown, ChevronsUpDown, LogOut, Menu, Network, Search, Settings, User, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { brandVars, type Brand } from "@/lib/branding";
 import { Avatar } from "@/components/ui/misc";
@@ -42,25 +42,57 @@ function BrandMark({ brand, compact = false, onDark = true }: { brand: Brand; co
 export type TeamView = { home: string; label: string; sections: NavSection[]; bottom: NavItem[] } | null;
 export type OfficeView = { home: string; label: string; officeName?: string; sections: NavSection[]; bottom: NavItem[] } | null;
 
-function ViewSwitch({ team, office, mode, dark = false, className }: { team: TeamView; office: OfficeView; mode: "me" | "team" | "office"; dark?: boolean; className?: string }) {
-  const base = "flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-3 py-1.5 text-sm font-medium transition-colors";
-  const on = dark ? "bg-white text-brand-navy shadow-sm" : "bg-surface text-fg shadow-sm";
-  const off = dark ? "text-white/60 hover:text-white" : "text-fg-muted hover:text-fg";
+type ViewMode = "me" | "team" | "office";
+
+/** Workspace-style switcher between My view, Team view and Office view. */
+function ViewMenu({ team, office, mode, dark = false, onNavigate, className }: {
+  team: TeamView; office: OfficeView; mode: ViewMode; dark?: boolean; onNavigate?: () => void; className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
+  }, [open]);
+
+  const views = [
+    { key: "me" as const, href: "/dashboard", label: "My view", hint: "Your own work", Icon: User },
+    ...(team ? [{ key: "team" as const, href: team.home, label: team.label, hint: "The people you lead", Icon: Network }] : []),
+    ...(office ? [{ key: "office" as const, href: office.home, label: office.label, hint: office.officeName ?? "Your office", Icon: Building2 }] : []),
+  ];
+  const current = views.find((v) => v.key === mode) ?? views[0];
+
   return (
-    <div role="tablist" aria-label="Switch view"
-      className={cn("flex gap-1 rounded-xl p-1", dark ? "bg-white/10 ring-1 ring-white/10" : "bg-surface-muted ring-1 ring-border", className)}>
-      <Link href="/dashboard" role="tab" aria-selected={mode === "me"} className={cn(base, mode === "me" ? on : off)}>
-        <User className="size-4" aria-hidden />My view
-      </Link>
-      {team && (
-        <Link href={team.home} role="tab" aria-selected={mode === "team"} className={cn(base, mode === "team" ? on : off)}>
-          <Network className="size-4" aria-hidden />{team.label}
-        </Link>
-      )}
-      {office && (
-        <Link href={office.home} role="tab" aria-selected={mode === "office"} className={cn(base, mode === "office" ? on : off)}>
-          <Building2 className="size-4" aria-hidden />{office.label}
-        </Link>
+    <div ref={ref} className={cn("relative", className)}>
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-haspopup="menu" aria-expanded={open}
+        className={cn("flex min-h-11 w-full items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors",
+          dark ? "border-white/15 text-white hover:bg-white/5" : "border-border bg-surface hover:bg-surface-muted/70")}>
+        <current.Icon className={cn("size-4 shrink-0", dark ? "text-white/70" : "text-fg-subtle")} aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-medium">{current.label}</span>
+          <span className={cn("block truncate text-xs", dark ? "text-white/60" : "text-fg-subtle")}>{current.hint}</span>
+        </span>
+        <ChevronsUpDown className={cn("size-4 shrink-0", dark ? "text-white/60" : "text-fg-subtle")} aria-hidden />
+      </button>
+      {open && (
+        <div role="menu" aria-label="Switch view" className="absolute inset-x-0 top-full z-50 mt-1 rounded-lg border border-border bg-surface p-1 text-fg shadow-lg animate-fade">
+          {views.map((v) => (
+            <Link key={v.key} href={v.href} role="menuitemradio" aria-checked={v.key === mode}
+              onClick={() => { setOpen(false); onNavigate?.(); }}
+              className="flex min-h-11 items-center gap-3 rounded-md px-2.5 py-2 hover:bg-surface-muted">
+              <v.Icon className="size-4 shrink-0 text-fg-subtle" aria-hidden />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">{v.label}</span>
+                <span className="block truncate text-xs text-fg-subtle">{v.hint}</span>
+              </span>
+              {v.key === mode && <Check className="size-4 shrink-0 text-primary" aria-hidden />}
+            </Link>
+          ))}
+        </div>
       )}
     </div>
   );
@@ -70,34 +102,62 @@ function isActive(pathname: string, href: string) {
   return ["/dashboard", "/office", "/admin"].includes(href) ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 }
 
+const COLLAPSED_KEY = "mx-nav-collapsed";
+
+/** Grouped navigation: titled categories fold away, and the one holding the current page always opens. */
 function NavLinks({ sections, pathname, onNavigate, dark = false }: { sections: NavSection[]; pathname: string; onNavigate?: () => void; dark?: boolean }) {
+  const [collapsed, setCollapsed] = useState<string[]>([]);
+  useEffect(() => {
+    try { setCollapsed(JSON.parse(localStorage.getItem(COLLAPSED_KEY) ?? "[]")); } catch { /* storage blocked: all open */ }
+  }, []);
+  const toggle = (title: string) => setCollapsed((c) => {
+    const next = c.includes(title) ? c.filter((t) => t !== title) : [...c, title];
+    try { localStorage.setItem(COLLAPSED_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+    return next;
+  });
+
   return (
-    <nav aria-label="Main" className="space-y-5">
-      {sections.map((section, i) => (
-        <div key={section.title ?? i}>
-          {section.title && <p className={cn("mb-1 px-3 text-xs font-medium", dark ? "text-white/60" : "text-fg-subtle")}>{section.title}</p>}
-          <ul className="space-y-0.5">
-            {section.items.map((item) => {
-              const Icon = NAV_ICONS[item.icon];
-              const active = isActive(pathname, item.href);
-              return (
-                <li key={item.href}>
-                  <Link href={item.href} onClick={onNavigate} aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "group flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] transition-colors lg:min-h-9 lg:text-sm",
-                      dark
-                        ? active ? "bg-white/10 font-medium text-white" : "text-white/70 hover:bg-white/5 hover:text-white"
-                        : active ? "bg-surface-muted font-medium text-fg" : "text-fg-muted hover:bg-surface-muted/70 hover:text-fg",
-                    )}>
-                    <Icon className={cn("size-4 shrink-0", dark ? (active ? "text-brand-lime" : "text-white/60") : (active ? "text-fg" : "text-fg-subtle group-hover:text-fg-muted"))} aria-hidden />
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
+    <nav aria-label="Main" className="space-y-4">
+      {sections.map((section, i) => {
+        const hasActive = section.items.some((item) => isActive(pathname, item.href));
+        const open = !section.title || hasActive || !collapsed.includes(section.title);
+        const listId = `nav-${(section.title ?? `top-${i}`).toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+        return (
+          <div key={section.title ?? i}>
+            {section.title && (
+              <button type="button" onClick={() => toggle(section.title!)} aria-expanded={open} aria-controls={listId}
+                disabled={hasActive}
+                className={cn("group mb-0.5 flex min-h-9 w-full items-center gap-1 rounded-md px-3 text-xs font-medium transition-colors lg:min-h-7",
+                  dark ? "text-white/60 hover:text-white" : "text-fg-subtle hover:text-fg-muted", "disabled:cursor-default")}>
+                {section.title}
+                <ChevronDown className={cn("size-3.5 transition-transform", !open && "-rotate-90", hasActive && "opacity-0")} aria-hidden />
+              </button>
+            )}
+            {open && (
+              <ul id={listId} className="space-y-0.5">
+                {section.items.map((item) => {
+                  const Icon = NAV_ICONS[item.icon];
+                  const active = isActive(pathname, item.href);
+                  return (
+                    <li key={item.href}>
+                      <Link href={item.href} onClick={onNavigate} aria-current={active ? "page" : undefined}
+                        className={cn(
+                          "group flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] transition-colors lg:min-h-9 lg:text-sm",
+                          dark
+                            ? active ? "bg-white/10 font-medium text-white" : "text-white/70 hover:bg-white/5 hover:text-white"
+                            : active ? "bg-surface-muted font-medium text-fg" : "text-fg-muted hover:bg-surface-muted/70 hover:text-fg",
+                        )}>
+                        <Icon className={cn("size-4 shrink-0", dark ? (active ? "text-brand-lime" : "text-white/60") : (active ? "text-fg" : "text-fg-subtle group-hover:text-fg-muted"))} aria-hidden />
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        );
+      })}
     </nav>
   );
 }
@@ -134,7 +194,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
   // instead of bouncing to My view.
   const viewParam = useSearchParams().get("view");
   const sharedRoute = pathname.startsWith("/team/") || pathname === "/messages";
-  const mode: "me" | "team" | "office" =
+  const mode: ViewMode =
     team && (isTeamPath(pathname) || (viewParam === "team" && sharedRoute)) ? "team"
     : office && (isOfficePath(pathname) || (viewParam === "office" && sharedRoute)) ? "office"
     : "me";
@@ -164,10 +224,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
       <aside className={cn("fixed inset-y-0 left-0 z-40 hidden w-64 flex-col px-3 pb-3 pt-5 lg:flex", darkNav ? "bg-brand-navy" : "border-r border-border bg-bg")}>
         <Link href="/dashboard" className="px-3"><BrandMark brand={brand} onDark={darkNav} /></Link>
         {brand.tagline && <p className={cn("mt-2 truncate px-3 text-xs", darkNav ? "text-white/60" : "text-fg-subtle")}>{brand.tagline}</p>}
-        {(team || office) && <ViewSwitch team={team} office={office} mode={mode} dark={darkNav} className="mt-5" />}
-        {mode === "office" && office?.officeName && (
-          <p className={cn("mt-3 truncate px-3 text-xs", darkNav ? "text-white/60" : "text-fg-subtle")}>Managing <span className={cn("font-medium", darkNav ? "text-white/80" : "text-fg")}>{office.officeName}</span></p>
-        )}
+        {(team || office) && <ViewMenu team={team} office={office} mode={mode} dark={darkNav} className="mt-5" />}
         <div className={cn("scrollbar-none -mx-1 flex-1 overflow-y-auto px-1", (team || office) ? "mt-5" : "mt-6")}>
           <NavLinks sections={sections} pathname={pathname} dark={darkNav} />
         </div>
@@ -180,11 +237,6 @@ export function AppShell({ sections: memberSections, team = null, office = null,
       {/* Top bar */}
       <header className="sticky top-0 z-30 border-b border-border bg-bg/95 pt-[env(safe-area-inset-top)] backdrop-blur">
         <AnnouncementBar items={announcements} />
-        {(team || office) && (
-          <div className="border-b border-border/60 px-4 py-2 lg:hidden">
-            <ViewSwitch team={team} office={office} mode={mode} className="mx-auto max-w-md" />
-          </div>
-        )}
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-1 px-4 sm:gap-2 sm:px-6">
           <Link href="/dashboard" className="lg:hidden"><BrandMark brand={brand} compact onDark={false} /></Link>
           <p className="hidden min-w-0 truncate text-sm font-medium md:block">{current?.label}</p>
@@ -255,6 +307,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
                 <X className="size-5" aria-hidden />
               </button>
             </div>
+            {(team || office) && <ViewMenu team={team} office={office} mode={mode} onNavigate={() => setMenuOpen(false)} className="mb-5" />}
             <NavLinks sections={sections} pathname={pathname} onNavigate={() => setMenuOpen(false)} />
             <div className="mt-6 space-y-3">
               <Link href="/settings" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-fg-muted hover:bg-surface-muted">
