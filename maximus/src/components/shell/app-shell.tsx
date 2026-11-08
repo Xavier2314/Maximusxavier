@@ -14,7 +14,7 @@ import { BOTTOM_NAV, isOfficePath, isTeamPath, type NavItem, type NavSection } f
 import { NAV_ICONS } from "./nav-icons";
 import { NotificationBell } from "./notification-bell";
 import { QuickAdd } from "./quick-add";
-import { ThemeToggle } from "./theme-toggle";
+import { ThemeMenuItem } from "./theme-toggle";
 
 type ShellUser = { id: string; name: string; avatar: string | null; role: string; memberId: string };
 
@@ -202,6 +202,7 @@ function AccountMenu({ user, signOut }: { user: ShellUser; signOut: () => void }
           <Link href="/settings" role="menuitem" onClick={() => setOpen(false)} className={item}>
             <Settings className="size-4 text-fg-subtle" aria-hidden />Settings
           </Link>
+          <ThemeMenuItem className={item} />
           <div className="my-1 border-t border-border" />
           <form action={signOut}>
             <button type="submit" role="menuitem" className={cn(item, "text-danger hover:bg-danger-soft")}>
@@ -279,8 +280,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
             <kbd className="hidden rounded border border-border bg-surface-muted px-1.5 font-sans text-xs lg:inline">Ctrl K</kbd>
           </button>
           <div className="flex-1" />
-          <QuickAdd />
-          <ThemeToggle />
+          <span className="hidden sm:contents"><QuickAdd /></span>
           <NotificationBell userId={user.id} initialUnread={unread} />
           <AccountMenu user={user} signOut={signOut} />
         </div>

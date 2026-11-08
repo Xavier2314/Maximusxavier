@@ -21,3 +21,21 @@ export function ThemeToggle() {
     </button>
   );
 }
+
+/** The same switch as a full-width row, for the account menu. */
+export function ThemeMenuItem({ className }: { className?: string }) {
+  const [dark, setDark] = useState<boolean | null>(null);
+  useEffect(() => setDark(document.documentElement.classList.contains("dark")), []);
+  function toggle() {
+    const next = !document.documentElement.classList.contains("dark");
+    document.documentElement.classList.toggle("dark", next);
+    try { localStorage.setItem("mx-theme-v3", next ? "dark" : "light"); } catch { /* private mode */ }
+    setDark(next);
+  }
+  return (
+    <button type="button" role="menuitem" onClick={toggle} className={className}>
+      {dark ? <Sun className="size-4 text-fg-subtle" aria-hidden /> : <Moon className="size-4 text-fg-subtle" aria-hidden />}
+      {dark ? "Light mode" : "Dark mode"}
+    </button>
+  );
+}

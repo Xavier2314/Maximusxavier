@@ -65,7 +65,7 @@ export function ChatWidget({ firstName }: { firstName: string }) {
     <>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={open ? "Close Maximus assistant" : "Ask Maximus"}
         title={open ? "Close" : "Ask Maximus"}
-        className="fixed bottom-24 right-4 z-40 grid size-12 place-items-center rounded-full border border-border bg-surface text-fg shadow-[0_4px_16px_rgb(15_23_42/0.08)] transition-colors hover:bg-surface-muted lg:bottom-6 lg:right-6">
+        className="fixed bottom-24 right-4 z-40 hidden size-12 lg:grid place-items-center rounded-full border border-border bg-surface text-fg shadow-[0_4px_16px_rgb(15_23_42/0.08)] transition-colors hover:bg-surface-muted lg:bottom-6 lg:right-6">
         {open ? <X className="size-5" aria-hidden /> : <MessageCircle className="size-5 text-primary" aria-hidden />}
       </button>
 
