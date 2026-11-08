@@ -52,10 +52,13 @@ export async function planFollowUp(opts: {
     : mode === "reply" ? "The prospect just replied. Write the member's reply." : "Write the next follow-up message to send now.";
   const res = await aiClient().messages.create({
     model: AI_MODEL,
-    max_tokens: 1500,
-    system: [{ type: "text", text: PROSPECT_SYSTEM, cache_control: { type: "ephemeral" } }],
+    max_tokens: 8000,
+    system: [
+      { type: "text", text: PROSPECT_SYSTEM, cache_control: { type: "ephemeral" } },
+      { type: "text", text: `Always answer by calling the ${PLAN_TOOL.name} tool exactly once; never reply in plain text.` },
+    ],
     tools: [PLAN_TOOL],
-    tool_choice: { type: "tool", name: PLAN_TOOL.name },
+    tool_choice: { type: "auto" }, // forced tool choice is rejected by current models; the instruction below asks for the tool
     messages: [{
       role: "user",
       content: `<member>${memberName}</member>

@@ -179,10 +179,10 @@ export async function planGoalsAction(text: string): Promise<{ ok: boolean; mess
   try {
     const res = await aiClient().messages.create({
       model: AI_MODEL,
-      max_tokens: 2000,
-      system: "You help members of Maximus, a Nigerian network-marketing and freelancing team, turn their monthly goals into clear targets and a practical to-do list. Use Naira. Only fill targets the member mentioned or clearly implied; use null otherwise. Savings, product sales (₦) and PV are required every month, so if they are missing add an action reminding the member to set them. Make actions specific, daily or weekly, and achievable. Never promise income.",
+      max_tokens: 8000,
+      system: "You help members of Maximus, a Nigerian network-marketing and freelancing team, turn their monthly goals into clear targets and a practical to-do list. Use Naira. Only fill targets the member mentioned or clearly implied; use null otherwise. Savings, product sales (₦) and PV are required every month, so if they are missing add an action reminding the member to set them. Make actions specific, daily or weekly, and achievable. Never promise income. Always answer by calling the monthly_goal_plan tool exactly once; never reply in plain text.",
       tools: [PLAN_TOOL],
-      tool_choice: { type: "tool", name: PLAN_TOOL.name },
+      tool_choice: { type: "auto" }, // forced tool choice is rejected by current models; the instruction below asks for the tool
       messages: [{ role: "user", content: `My goals for this month, in my own words:\n\n${input.data}` }],
     });
     const block = res.content.find((b) => b.type === "tool_use");
