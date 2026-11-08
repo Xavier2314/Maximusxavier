@@ -44,7 +44,7 @@ export default async function WeeklyReportsPage({ searchParams }: { searchParams
           {reports.map((r) => (
             <div key={r.id} className="flex items-center gap-3 p-4">
               <Link href={`/office/weekly/${r.week_start}?office=${officeId}`} className="flex min-w-0 flex-1 items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-xl bg-primary-soft text-primary"><FileText className="size-5" aria-hidden /></span>
+                <span className="grid size-10 place-items-center text-fg-subtle"><FileText className="size-5" aria-hidden /></span>
                 <span className="min-w-0">
                   <span className="block font-medium">Week of {formatDate(r.week_start, { day: "numeric", month: "short" })} – {formatDate(addDays(r.week_start, 6), { day: "numeric", month: "short", year: "numeric" })}</span>
                   <span className="text-xs text-fg-subtle">{r.submitted_at ? `Submitted ${formatRelative(r.submitted_at)}` : `Draft, edited ${formatRelative(r.updated_at)}`}</span>

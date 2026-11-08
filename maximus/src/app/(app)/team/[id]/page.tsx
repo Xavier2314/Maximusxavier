@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Mail, Phone } from "lucide-react";
 import { TrendLines } from "@/components/charts";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
+import { buttonClass } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, Progress, StatCard } from "@/components/ui/misc";
 import { ATTENDANCE_LABELS, AttendanceBadge } from "@/components/attendance-badge";
@@ -90,26 +91,26 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
       <Link href={backHref} className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg">
         <ArrowLeft className="size-4" aria-hidden /> {view === "office" ? "Office" : "Team"}
       </Link>
-      <section className="hero-gradient relative overflow-hidden rounded-2xl p-6 text-white sm:p-8">
+      <section className="border-b border-border pb-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-          <Avatar name={member.full_name} src={member.avatar_url} size={80} className="ring-4 ring-white/15" />
+          <Avatar name={member.full_name} src={member.avatar_url} size={80} className="ring-0" />
           <div className="flex-1">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{member.full_name}</h1>
-            <p className="mt-1 text-white/70">{member.member_id} · Joined {formatDate(member.joined_at, { month: "long", year: "numeric" })}</p>
+            <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.02em]">{member.full_name}</h1>
+            <p className="mt-1 text-fg-muted">Member {member.member_id}, joined {formatDate(member.joined_at, { month: "long", year: "numeric" })}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {rankLabel(member.business_rank) && <span className="rounded-full bg-brand-lime px-2.5 py-0.5 text-xs font-semibold text-brand-navy">{rankLabel(member.business_rank)}</span>}
-              {neolife && <span className="rounded-full bg-white/10 px-2.5 py-0.5 font-mono text-xs ring-1 ring-white/15">NeoLife ID {neolife}</span>}
+              {rankLabel(member.business_rank) && <Badge tone="lime">{rankLabel(member.business_rank)}</Badge>}
+              {neolife && <Badge>NeoLife ID {neolife}</Badge>}
               {roleKeys.filter((r) => r !== "member" && r !== "downline").map((r) => (
-                <span key={r} className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs ring-1 ring-white/15">{ROLE_LABELS[r]}</span>
+                <Badge key={r}>{ROLE_LABELS[r]}</Badge>
               ))}
-              {member.status !== "active" && <span className="rounded-full bg-danger px-2.5 py-0.5 text-xs">{member.status}</span>}
+              {member.status !== "active" && <Badge tone="red">{member.status}</Badge>}
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             {member.id !== viewer.id && member.status === "active" && canChat && <ChatButton memberId={member.id} view={view} />}
-            {member.phone && <a href={`tel:${member.phone}`} className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15" aria-label={`Call ${member.full_name}`}><Phone className="size-5" /></a>}
-            <a href={`mailto:${member.email}`} className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15" aria-label={`Email ${member.full_name}`}><Mail className="size-5" /></a>
-            {member.whatsapp && <a href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center rounded-xl bg-brand-green px-4 font-medium text-brand-navy">WhatsApp</a>}
+            {member.phone && <a href={`tel:${member.phone}`} className={buttonClass("outline", "icon")} aria-label={`Call ${member.full_name}`}><Phone className="size-5" /></a>}
+            <a href={`mailto:${member.email}`} className={buttonClass("outline", "icon")} aria-label={`Email ${member.full_name}`}><Mail className="size-5" /></a>
+            {member.whatsapp && <a href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noreferrer" className={buttonClass("outline", "md")}>WhatsApp</a>}
           </div>
         </div>
       </section>

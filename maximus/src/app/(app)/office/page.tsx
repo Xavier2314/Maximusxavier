@@ -68,7 +68,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
       <section aria-label="Attendance right now" className="card mb-6 overflow-hidden">
         <div className="grid divide-y divide-border sm:grid-cols-[1.3fr_repeat(4,1fr)] sm:divide-x sm:divide-y-0">
           <Link href="/attendance/live" className="group flex items-center gap-4 p-5 hover:bg-surface-muted/60">
-            <span className="relative grid size-12 place-items-center rounded-2xl bg-success-soft text-success">
+            <span className="relative grid size-12 place-items-center text-fg-subtle">
               <DoorOpen className="size-6" aria-hidden />
               {d.present_now > 0 && <span className="absolute -right-0.5 -top-0.5 size-3 rounded-full bg-brand-green ring-2 ring-surface" aria-hidden />}
             </span>

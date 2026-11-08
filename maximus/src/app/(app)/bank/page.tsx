@@ -61,7 +61,7 @@ export default async function BankPage() {
             <ul className="grid gap-4 sm:grid-cols-2">
               {FEATURES.map((f) => (
                 <li key={f.key} className="flex gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary"><f.icon className="size-5" aria-hidden /></span>
+                  <span className="grid size-10 shrink-0 place-items-center text-fg-subtle"><f.icon className="size-5" aria-hidden /></span>
                   <span><span className="block font-semibold">{f.title}</span><span className="text-sm text-fg-muted">{f.text}</span></span>
                 </li>
               ))}

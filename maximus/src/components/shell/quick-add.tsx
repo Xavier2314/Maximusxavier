@@ -31,7 +31,7 @@ export function QuickAdd() {
             return (
               <Link key={a.href} href={a.href} role="menuitem" onClick={() => setOpen(false)}
                 className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-surface-muted">
-                <span className="grid size-8 place-items-center rounded-lg bg-primary-soft text-primary"><Icon className="size-4" aria-hidden /></span>
+                <span className="grid size-8 place-items-center text-fg-subtle"><Icon className="size-4" aria-hidden /></span>
                 {a.label}
               </Link>
             );

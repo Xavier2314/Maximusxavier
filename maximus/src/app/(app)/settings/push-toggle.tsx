@@ -67,7 +67,7 @@ export function PushToggle({ vapidKey }: { vapidKey: string }) {
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-border p-4 sm:flex-row sm:items-center">
-      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary"><Smartphone className="size-5" aria-hidden /></span>
+      <span className="grid size-10 shrink-0 place-items-center text-fg-subtle"><Smartphone className="size-5" aria-hidden /></span>
       <div className="flex-1">
         <p className="text-sm font-medium">Push notifications on this device</p>
         <p className="text-xs text-fg-muted">{messages[state] ?? (state === "on" ? "On — you'll get alerts even when Maximus is closed." : "Off for this device.")}</p>

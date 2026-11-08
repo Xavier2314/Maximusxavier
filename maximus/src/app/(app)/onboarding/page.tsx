@@ -34,7 +34,7 @@ export default async function OnboardingPage() {
           <ul className="grid gap-4 sm:grid-cols-2">
             {steps.map(({ icon: Icon, title, text }) => (
               <li key={title} className="flex gap-3">
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary"><Icon className="size-5" aria-hidden /></span>
+                <span className="grid size-10 shrink-0 place-items-center text-fg-subtle"><Icon className="size-5" aria-hidden /></span>
                 <span><span className="block text-sm font-semibold">{title}</span><span className="text-sm text-fg-muted">{text}</span></span>
               </li>
             ))}

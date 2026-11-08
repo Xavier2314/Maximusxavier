@@ -48,7 +48,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <CardBody className="space-y-4">
             {notice && <p role="status" className={`rounded-xl px-4 py-3 text-sm ${notice.ok ? "bg-success-soft text-success" : "bg-danger-soft text-danger"}`}>{notice.text}</p>}
             <div className="flex flex-wrap items-center gap-3">
-              <span className="grid size-10 place-items-center rounded-xl bg-danger-soft text-danger"><Mail className="size-5" aria-hidden /></span>
+              <span className="grid size-10 place-items-center text-fg-subtle"><Mail className="size-5" aria-hidden /></span>
               <div className="min-w-0 flex-1">
                 <p className="font-medium">Gmail</p>
                 <p className="text-sm text-fg-muted">{google ? `Connected as ${google.account_email ?? "your Google account"}` : "Send prospect emails from your own address and let the AI read their replies."}</p>
@@ -61,7 +61,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                 : <Badge>Admin setup needed</Badge>}
             </div>
             <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
-              <span className="grid size-10 place-items-center rounded-xl bg-success-soft text-success"><MessageCircle className="size-5" aria-hidden /></span>
+              <span className="grid size-10 place-items-center text-fg-subtle"><MessageCircle className="size-5" aria-hidden /></span>
               <div className="min-w-0 flex-1">
                 <p className="font-medium">WhatsApp</p>
                 <p className="text-sm text-fg-muted">{isWhatsAppConfigured()

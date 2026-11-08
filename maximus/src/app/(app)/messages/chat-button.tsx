@@ -11,7 +11,7 @@ export function ChatButton({ memberId, view, label = "Chat", className }: { memb
   return (
     <>
       <button type="button" disabled={pending} onClick={() => start(async () => { const r = await openTeamChatAction(memberId, view); if (r) setMsg(r.message); })}
-        className={cn("inline-flex h-11 items-center gap-2 rounded-xl bg-white/10 px-4 font-medium ring-1 ring-white/15 hover:bg-white/15 disabled:opacity-60", className)}>
+        className={cn("inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-4 font-medium text-primary-fg transition-colors hover:bg-primary-hover disabled:opacity-60", className)}>
         <MessageCircle className="size-5" aria-hidden /> {pending ? "Opening…" : label}
       </button>
       {msg && <span className="text-sm" role="alert">{msg}</span>}

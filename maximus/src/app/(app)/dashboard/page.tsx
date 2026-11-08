@@ -172,7 +172,7 @@ export default async function DashboardPage() {
       {viewer.hasOfficeView && (
         <Link href={viewer.offices.length ? "/office" : viewer.isLeader ? "/office/team" : "/admin/approvals"}
           className={`${sheet} group flex items-center gap-4 p-4 transition-colors hover:border-primary/40`}>
-          <span className="grid size-10 place-items-center rounded-xl bg-brand-navy text-brand-lime"><Building2 className="size-5" aria-hidden /></span>
+          <span className="grid size-10 place-items-center text-fg-subtle"><Building2 className="size-5" aria-hidden /></span>
           <span className="min-w-0 flex-1">
             <span className="block font-medium">{viewer.offices.length ? "Office view" : viewer.isLeader ? "Team view" : "Approvals"}</span>
             <span className="block truncate text-sm text-fg-muted">
