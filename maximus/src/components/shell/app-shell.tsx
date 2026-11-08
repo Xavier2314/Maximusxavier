@@ -111,7 +111,7 @@ function NavLinks({ sections, pathname, onNavigate, dark = false }: { sections: 
   const [openTitle, setOpenTitle] = useState<string | null>(activeTitle);
   useEffect(() => { if (activeTitle) setOpenTitle(activeTitle); }, [activeTitle]);
 
-  const row = "flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-[15px] transition-colors lg:min-h-10";
+  const row = "flex min-h-11 w-full items-center gap-3 rounded-full px-3 text-[15px] transition-colors lg:min-h-10";
   const idle = dark ? "text-white/80 hover:bg-white/5 hover:text-white" : "text-fg-muted hover:bg-surface-muted/70 hover:text-fg";
 
   const links = (items: NavSection["items"], nested: boolean) => items.map((item) => {
@@ -121,8 +121,8 @@ function NavLinks({ sections, pathname, onNavigate, dark = false }: { sections: 
       <li key={item.href}>
         <Link href={item.href} onClick={onNavigate} aria-current={active ? "page" : undefined}
           className={cn("group", row, nested && "pl-10",
-            active ? (dark ? "bg-white/10 font-medium text-white" : "bg-surface-muted font-medium text-fg") : idle)}>
-          {!nested && <Icon className={cn("size-4 shrink-0", dark ? (active ? "text-brand-lime" : "text-white/60") : (active ? "text-fg" : "text-fg-subtle group-hover:text-fg-muted"))} aria-hidden />}
+            active ? (dark ? "bg-white font-medium text-black" : "rounded-full bg-fg font-medium text-bg") : idle)}>
+          {!nested && <Icon className={cn("size-4 shrink-0", dark ? (active ? "text-black" : "text-white/60") : (active ? "text-bg" : "text-fg-subtle group-hover:text-fg-muted"))} aria-hidden />}
           {item.label}
         </Link>
       </li>
@@ -290,7 +290,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
       <CommandPalette sections={allSections} />
 
       {/* Mobile bottom navigation */}
-      <nav aria-label="Quick" className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg-elevated lg:hidden">
+      <nav aria-label="Quick" className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg lg:hidden">
         <ul className="mx-auto grid max-w-md grid-cols-5">
           {bottom.map((item) => {
             const Icon = NAV_ICONS[item.icon];
@@ -299,24 +299,28 @@ export function AppShell({ sections: memberSections, team = null, office = null,
             return (
               <li key={item.href}>
                 <Link href={item.href} aria-current={active ? "page" : undefined}
-                  className={cn("flex min-h-14 flex-col items-center justify-end gap-1 pb-2 pt-2 text-xs font-medium", active ? "text-primary" : "text-fg-muted")}>
+                  aria-label={item.label}
+                  className="flex min-h-16 items-center justify-center text-sm font-semibold">
                   {isCheckIn ? (
-                    <span className="-mt-5 grid size-12 place-items-center rounded-xl bg-primary text-primary-fg ring-4 ring-bg-elevated">
+                    <span className="grid size-12 place-items-center rounded-full bg-tile-green text-black">
                       <Icon className="size-5" aria-hidden />
                     </span>
+                  ) : active ? (
+                    <span className="flex h-10 items-center gap-1.5 rounded-full bg-fg px-3.5 text-bg">
+                      <Icon className="size-[18px] shrink-0" aria-hidden />
+                      <span className="max-w-[4.5rem] truncate">{item.label}</span>
+                    </span>
                   ) : (
-                    <Icon className="size-[22px]" aria-hidden />
+                    <Icon className="size-[22px] text-fg-subtle" aria-hidden />
                   )}
-                  {item.label}
                 </Link>
               </li>
             );
           })}
           <li>
             <button type="button" onClick={() => setMenuOpen(true)} aria-expanded={menuOpen} aria-controls="mobile-menu"
-              className="flex min-h-14 w-full flex-col items-center justify-end gap-1 pb-2 pt-2 text-xs font-medium text-fg-muted">
+              aria-label="More" className="flex min-h-16 w-full items-center justify-center text-fg-subtle">
               <Menu className="size-[22px]" aria-hidden />
-              More
             </button>
           </li>
         </ul>

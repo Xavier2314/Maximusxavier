@@ -10,7 +10,7 @@ export function ThemeToggle() {
   function toggle() {
     const next = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", next);
-    try { localStorage.setItem("mx-theme", next ? "dark" : "light"); } catch { /* private mode */ }
+    try { localStorage.setItem("mx-theme-v2", next ? "dark" : "light"); } catch { /* private mode */ }
     setDark(next);
   }
 

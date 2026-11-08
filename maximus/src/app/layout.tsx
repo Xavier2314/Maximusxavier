@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Jost } from "next/font/google";
 import { ServiceWorkerRegister } from "@/components/shell/service-worker-register";
 import "./globals.css";
 
-// Geist for the interface. The Maximus logo keeps its own lettering.
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
+// Jost, the web stand-in for the brand's Futura.
+const jost = Jost({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "Maximus", template: "%s · Maximus" },
@@ -19,20 +19,19 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f7f8" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0d12" },
+    { color: "#000000" },
   ],
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
-// Applies the saved theme before first paint to avoid a light/dark flash.
-const themeScript = `(function(){try{var t=localStorage.getItem('mx-theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
+// Dark is the default; members can switch to light with the toggle. Applied before first paint.
+const themeScript = `(function(){try{var t=localStorage.getItem('mx-theme-v2');var d=t!=='light';document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={geist.variable} suppressHydrationWarning>
+    <html lang="en" className={`${jost.variable} dark`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

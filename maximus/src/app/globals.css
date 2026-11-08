@@ -19,6 +19,9 @@
   --brand-lime: #b5f44a;
   --brand-navy: #0f172a;
   --brand-orange: #f97316;
+  /* Bold tiles on Home and the bottom bar: Maximus green and a soft blue, always with black text. */
+  --tile-green: #7ed321;
+  --tile-sky: #a9bfff;
 
   --bg: #f7f7f8;
   --bg-elevated: #ffffff;
@@ -47,31 +50,33 @@
   --chart-axis: #8792a8;
 }
 
+/* Dark (the default look): black screens, outlined cards, bold blue and green tiles. */
 .dark {
-  --bg: #0b0d12;
-  --bg-elevated: #12151c;
-  --surface: #12151c;
-  --surface-muted: #1a1e27;
-  --border: #252a35;
-  --fg: #eceef2;
-  --fg-muted: #a9afbd;
-  --fg-subtle: #8b92a2;
-  --primary: #7c9cf6;
-  --primary-hover: #93aef8;
-  --primary-fg: #0b0d12;     /* dark text on the light dark-mode blue */
-  --primary-soft: #1a2340;
+  --bg: #000000;
+  --bg-elevated: #07090e;
+  --surface: #0a0c12;
+  --surface-muted: #151922;
+  --border: #2a2f3b;
+  --fg: #ffffff;
+  --fg-muted: #b4bccf;
+  --fg-subtle: #8b93a7;
+  --primary: #305ee6;
+  --primary-hover: #3f6cf0;
+  --primary-fg: #ffffff;
+  --primary-soft: #121c38;
   --success: #8fe03a;
-  --success-soft: #1c3312;
+  --success-soft: #1a2e0e;
   --warning: #fbbf24;
   --warning-soft: #3a2a0a;
   --danger: #f87171;
   --danger-soft: #3b1414;
-  --ring: #6489f3;
+  --ring: #7d9bf5;
   --shadow-card: none;
-  --chart-1: #6489f3;
-  --chart-2: #5fa81a;
-  --chart-grid: #1d2942;
-  --chart-axis: #6f7d99;
+  --chart-1: #5a80f2;
+  --chart-2: #7ed321;
+  --chart-grid: #1b2030;
+  --chart-axis: #8b93a7;
+  --primary-text: #8aa5f7;
 }
 
 @theme inline {
@@ -82,6 +87,8 @@
   --color-brand-lime: var(--brand-lime);
   --color-brand-navy: var(--brand-navy);
   --color-brand-orange: var(--brand-orange);
+  --color-tile-green: var(--tile-green);
+  --color-tile-sky: var(--tile-sky);
 
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);
@@ -104,7 +111,7 @@
   --color-ring: var(--ring);
 
   --shadow-card: var(--shadow-card);
-  --radius-card: 0.75rem;
+  --radius-card: 1.25rem;
 
   --animate-rise: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   --animate-fade: fade 0.3s ease-out both;
@@ -165,8 +172,8 @@
     --brand-green: var(--brand-accent);
   }
   .dark .branded {
-    --primary: color-mix(in srgb, var(--brand-primary) 82%, white);
-    --primary-hover: color-mix(in srgb, var(--brand-primary) 70%, white);
+    --primary: var(--brand-primary);
+    --primary-hover: color-mix(in srgb, var(--brand-primary) 88%, white);
     --primary-soft: color-mix(in srgb, var(--brand-primary) 26%, var(--surface));
     --ring: color-mix(in srgb, var(--brand-primary) 75%, white);
   }
@@ -207,6 +214,9 @@
   .org-tree li:first-child::after { border-radius: 12px 0 0 0; }
   .org-tree ul ul::before { content: ""; position: absolute; top: 0; left: 50%; height: 24px; border-left: 2px solid var(--border); }
 }
+
+/* On black, brand-blue text is too dark to read; text uses a lighter blue, fills keep #305EE6. */
+.dark :is(.text-primary, .hover\:text-primary:hover) { color: var(--primary-text); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
