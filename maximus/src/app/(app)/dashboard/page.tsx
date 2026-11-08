@@ -5,6 +5,7 @@ import { TASK_CATEGORIES, type Task } from "@/lib/planner";
 import { FocusPopup } from "@/components/focus-popup";
 import { TodayList, type TodayItem } from "./today-list";
 import { MonthTrack } from "./month-track";
+import { GoalBoxes } from "./goal-boxes";
 import { CallerIllustration, WaverIllustration } from "@/components/brand/illustrations";
 import { Avatar } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -37,7 +38,7 @@ export default async function DashboardPage() {
   const [
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { count: unread },
     { data: focusData }, { data: checklistItems }, { data: checklistDone }, { data: followUps }, { data: todayTasks },
-    { data: monthDays }, { data: team },
+    { data: monthDays }, { data: team }, { data: periodGoals },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -55,6 +56,8 @@ export default async function DashboardPage() {
       .order("due_date").order("priority").limit(6).returns<Task[]>(),
     supabase.from("attendance").select("attendance_date").eq("user_id", viewer.id).gte("attendance_date", month).lte("attendance_date", today),
     viewer.can("view_direct_downlines") ? supabase.rpc("team_member_stats", { p_root: viewer.id, p_max_depth: 1 }) : Promise.resolve({ data: [] }),
+    supabase.from("tool_goals").select("id, title, target, unit, status, horizon").eq("user_id", viewer.id).in("horizon", ["weekly", "daily"])
+      .neq("status", "abandoned").lte("start_date", today).gte("deadline", today).order("created_at").limit(40),
   ]);
   const focusTop = topFocus(focusData as GrowthFocus | null);
   const focusWeek = isoWeek(today);
@@ -81,6 +84,8 @@ export default async function DashboardPage() {
     .map((m) => ({ ...m, today: Boolean(m.last_activity) && dayIn(new Date(m.last_activity!)) === today }))
     .sort((a, b) => Number(b.today) - Number(a.today) || a.full_name.localeCompare(b.full_name));
   const activeToday = directs.filter((m) => m.today).length;
+  const boxGoals = (h: string) => (periodGoals ?? []).filter((g) => g.horizon === h)
+    .map((g) => ({ id: g.id as string, title: g.title as string, target: g.target == null ? null : Number(g.target), unit: g.unit as string | null, done: g.status === "completed" }));
   const checkInDays = [...new Set((monthDays ?? []).map((d) => Number(String(d.attendance_date).slice(8, 10))))];
 
   type FollowUp = { id: string; full_name: string; phone: string | null; next_follow_up_at: string };
@@ -167,6 +172,8 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </section>
+
+      <GoalBoxes weekly={boxGoals("weekly")} daily={boxGoals("daily")} />
 
       {directs.length > 0 && (
         <Link href="/team" className="flex items-center gap-4 rounded-[22px] bg-surface px-5 py-4 transition-colors hover:bg-surface-muted">
