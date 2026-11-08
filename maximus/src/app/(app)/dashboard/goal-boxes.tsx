@@ -1,28 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Mic } from "lucide-react";
+import { Check, ChevronDown, Mic } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { togglePeriodGoalAction } from "../goals/period-actions";
 
 export type BoxGoal = { id: string; title: string; target: number | null; unit: string | null; done: boolean };
 
-/** One box of goals on Home (this week or today): tick them off here, speak to add more on Goals. */
+/** One box of goals on Home (this week or today), closed until tapped: tick them off here, speak to add more on Goals. */
 function GoalBox({ title, period, goals }: { title: string; period: "weekly" | "daily"; goals: BoxGoal[] }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const done = goals.filter((g) => g.done).length;
   const toggle = (g: BoxGoal) => start(async () => { await togglePeriodGoalAction(g.id, !g.done); router.refresh(); });
+  const [open, setOpen] = useState(false);
+  const panel = useId();
   return (
-    <section aria-label={title} className="flex flex-col rounded-[22px] bg-surface p-5 dark:border dark:border-border">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-[22px] leading-none tracking-[-0.02em]">{title}</h2>
-        {goals.length > 0 && <span className="text-sm text-fg-muted tabular-nums">{done} of {goals.length} done</span>}
-      </div>
+    <section aria-label={title} className="self-start rounded-[22px] bg-surface dark:border dark:border-border">
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls={panel}
+        className="flex min-h-16 w-full items-center gap-3 rounded-[22px] px-5 py-4 text-left transition-colors hover:bg-surface-muted">
+        <h2 className="flex-1 text-[22px] leading-none tracking-[-0.02em]">{title}</h2>
+        <span className="text-sm text-fg-muted tabular-nums">{goals.length ? `${done} of ${goals.length} done` : "None yet"}</span>
+        <ChevronDown className={cn("size-5 shrink-0 transition-transform duration-200", open && "rotate-180")} aria-hidden />
+      </button>
+      {open && (
+      <div id={panel} className="flex flex-col px-5 pb-5 animate-fade">
       {goals.length ? (
-        <ul className="mt-3 space-y-1">
+        <ul className="space-y-1">
           {goals.map((g) => (
             <li key={g.id}>
               <button type="button" onClick={() => toggle(g)} disabled={pending} aria-pressed={g.done}
@@ -38,12 +44,14 @@ function GoalBox({ title, period, goals }: { title: string; period: "weekly" | "
           ))}
         </ul>
       ) : (
-        <p className="mt-3 text-fg-muted">No goals for {period === "weekly" ? "this week" : "today"} yet.</p>
+        <p className="text-fg-muted">No goals for {period === "weekly" ? "this week" : "today"} yet.</p>
       )}
       <Link href={`/goals?view=${period}`}
         className="mt-auto inline-flex min-h-11 items-center gap-2 self-start pt-3 text-sm font-semibold text-primary hover:underline">
         <Mic className="size-4" aria-hidden />{goals.length ? "Speak to add more" : `Speak your ${period === "weekly" ? "weekly" : "daily"} goals`}
       </Link>
+      </div>
+      )}
     </section>
   );
 }
