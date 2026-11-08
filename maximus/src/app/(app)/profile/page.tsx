@@ -1,6 +1,7 @@
 import { Building2, CalendarDays, Mail } from "lucide-react";
 import { rankLabel } from "@/lib/ranks";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/misc";
 import { requireViewer, ROLE_LABELS } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
@@ -20,15 +21,15 @@ export default async function ProfilePage() {
 
   return (
     <>
-      <section className="hero-gradient relative mb-6 overflow-hidden rounded-2xl p-6 text-white sm:p-8">
-        <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
+      <section className="mb-8 border-b border-border pb-8">
+        <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
           <AvatarUploader name={p.full_name} src={p.avatar_url} />
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{p.full_name}</h1>
-            <p className="mt-1 font-mono text-brand-lime">{p.member_id}</p>
-            <div className="mt-3 flex flex-wrap justify-center gap-1.5 sm:justify-start">
-              {rankLabel(p.business_rank) && <span className="rounded-full bg-brand-lime px-2.5 py-0.5 text-xs font-semibold text-brand-navy">{rankLabel(p.business_rank)}</span>}
-              {viewer.roles.map((r) => <span key={r} className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs ring-1 ring-white/15">{ROLE_LABELS[r]}</span>)}
+            <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.02em]">{p.full_name}</h1>
+            <p className="mt-1 text-fg-muted tabular-nums">Member {p.member_id}</p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {rankLabel(p.business_rank) && <Badge tone="lime">{rankLabel(p.business_rank)}</Badge>}
+              {viewer.roles.map((r) => <Badge key={r}>{ROLE_LABELS[r]}</Badge>)}
             </div>
           </div>
         </div>

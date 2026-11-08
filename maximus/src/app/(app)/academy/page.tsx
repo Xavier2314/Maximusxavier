@@ -1,5 +1,5 @@
 import { CourseCard, type CourseCardData } from "@/components/course-card";
-import { EmptyState, PageHeader, ProgressRing } from "@/components/ui/misc";
+import { EmptyState, PageHeader, Progress } from "@/components/ui/misc";
 import { CATEGORIES } from "@/lib/academy";
 import { requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -29,16 +29,13 @@ export default async function AcademyPage() {
 
   return (
     <>
-      <section className="hero-gradient relative mb-8 overflow-hidden rounded-2xl p-6 text-white sm:p-8">
-        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-medium text-brand-lime">Maximus Academy</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Learn. Lead. Maximise.</h1>
-            <p className="mt-2 max-w-md text-white/70">Practical courses on prospecting, sales, leadership and personal growth — at your own pace.</p>
+      <PageHeader title="Academy" description="Courses on prospecting, sales, leadership and personal growth, at your own pace."
+        action={total > 0 ? (
+          <div className="w-56">
+            <p className="flex justify-between text-sm"><span className="text-fg-muted">Your progress</span><span className="font-medium tabular-nums">{completed} of {total}</span></p>
+            <Progress value={overall} className="mt-2 h-1.5" label="Academy progress" />
           </div>
-          <ProgressRing value={overall} size={110}><div><p className="text-2xl font-semibold">{overall}%</p><p className="text-xs text-white/60">{completed}/{total} lessons</p></div></ProgressRing>
-        </div>
-      </section>
+        ) : undefined} />
       {cards.length === 0 ? <EmptyState title="No courses yet" /> : CATEGORIES.map((cat) => {
         const list = cards.filter((c) => c.category === cat.key);
         if (list.length === 0) return null;

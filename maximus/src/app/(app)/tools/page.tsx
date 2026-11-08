@@ -3,20 +3,21 @@ import {
   ArrowLeft, ChevronRight, BookOpen, Brain, CalendarClock, Clock, Flame, Gauge, Hourglass, LayoutGrid, ListChecks, Maximize2, Medal, MessageCircle, Music,
   NotebookPen, Repeat, Bot, Sprout, Target, Timer, Trophy, Users, Watch, Zap, type LucideIcon,
 } from "lucide-react";
+import { LinkButton } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { elapsedSeconds, fmtMinutes, type FocusSession } from "@/lib/tools";
-import { cn, todayIn } from "@/lib/utils";
+import { todayIn } from "@/lib/utils";
 
 export const metadata = { title: "Tools" };
 
 type Tool = { href?: string; label: string; desc: string; icon: LucideIcon };
-type Section = { slug: string; title: string; blurb: string; tone: string; icon: LucideIcon; tools: Tool[] };
+type Section = { slug: string; title: string; blurb: string;  icon: LucideIcon; tools: Tool[] };
 
 const SECTIONS: Section[] = [
   {
-    slug: "focus", icon: Timer, title: "Focus & time", blurb: "Timers that keep going even if you close the app.", tone: "bg-primary-soft text-primary",
+    slug: "focus", icon: Timer, title: "Focus & time", blurb: "Timers that keep going even if you close the app.",
     tools: [
       { href: "/tools/pomodoro", label: "Pomodoro", desc: "25-minute sprints with breaks", icon: Timer },
       { href: "/tools/focus", label: "Focus mode", desc: "Full-screen, distraction-free", icon: Maximize2 },
@@ -29,7 +30,7 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    slug: "goals", icon: Target, title: "Goals & productivity", blurb: "Plan, track and finish.", tone: "bg-success-soft text-success",
+    slug: "goals", icon: Target, title: "Goals & productivity", blurb: "Plan, track and finish.",
     tools: [
       { href: "/planner", label: "Daily planner", desc: "Your smart to-do list", icon: ListChecks },
       { href: "/tools/goals", label: "Goal tracker", desc: "Daily to quarterly goals", icon: Target },
@@ -41,25 +42,25 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    slug: "brain", icon: Brain, title: "Brain gym", blurb: "Fun games for focus, memory and problem-solving. Brain training, not a medical test.", tone: "bg-warning-soft text-warning",
+    slug: "brain", icon: Brain, title: "Brain gym", blurb: "Fun games for focus, memory and problem-solving. Brain training, not a medical test.",
     tools: [{ href: "/tools/brain", label: "20 brain games", desc: "Chess, Sudoku, 2048, memory, maze and more", icon: Brain }],
   },
   {
-    slug: "accountability", icon: Users, title: "Accountability", blurb: "Pair up with a partner who keeps you on track.", tone: "bg-primary-soft text-primary",
+    slug: "accountability", icon: Users, title: "Accountability", blurb: "Pair up with a partner who keeps you on track.",
     tools: [
       { href: "/tools/accountability", label: "Accountability partner", desc: "Shared goals, check-ins, encouragement", icon: Users },
       { href: "/messages", label: "Private chat", desc: "Real-time messages with your partner", icon: MessageCircle },
     ],
   },
   {
-    slug: "challenges", icon: Trophy, title: "Team challenges", blurb: "Compete and grow together.", tone: "bg-danger-soft text-danger",
+    slug: "challenges", icon: Trophy, title: "Team challenges", blurb: "Compete and grow together.",
     tools: [
       { label: "Challenges arena", desc: "Focus, habit and sales challenges", icon: Trophy },
       { href: "/leaderboard", label: "Leaderboard", desc: "Office and team rankings", icon: Medal },
     ],
   },
   {
-    slug: "growth", icon: Sprout, title: "Personal growth", blurb: "Learn, reflect and stay motivated.", tone: "bg-brand-lime/25 text-brand-navy dark:text-brand-lime",
+    slug: "growth", icon: Sprout, title: "Personal growth", blurb: "Learn, reflect and stay motivated.",
     tools: [
       { href: "/ai", label: "Maximus AI coach", desc: "Ask for a plan or advice", icon: Bot },
       { href: "/academy", label: "Academy", desc: "Courses and lessons", icon: BookOpen },
@@ -86,56 +87,64 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
 
   return (
     <>
-      <PageHeader title="Your productivity toolkit" description="Focus, plan, build habits and train your brain." />
+      <PageHeader title="Tools" description="Focus, plan, build habits and train your brain."
+        action={<LinkButton href="/tools/pomodoro"><Timer className="size-4" aria-hidden />Start a Pomodoro</LinkButton>} />
       {active && activePath && (
-        <Link href={activePath} className="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-primary px-5 py-4 text-primary-fg shadow-sm">
-          <span className="flex items-center gap-2 font-medium"><Timer className="size-5" aria-hidden />
+        <Link href={activePath} className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary-soft px-5 py-4 text-fg">
+          <span className="flex items-center gap-2 font-medium"><Timer className="size-5 text-primary" aria-hidden />
             {active.status === "paused" ? "Paused" : "Running"}: {active.label ?? active.kind.replace("_", " ")}</span>
-          <span className="text-sm underline">Open timer</span>
+          <span className="text-sm font-medium text-primary">Open timer</span>
         </Link>
       )}
-      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <Link href="/tools/time-audit" className="card p-4"><p className="text-sm text-fg-muted">Focused today</p><p className="mt-1 text-2xl font-semibold tabular-nums">{fmtMinutes(focusToday)}</p></Link>
-        <Link href="/tools/score" className="card p-4"><p className="text-sm text-fg-muted">Productivity score</p><p className="mt-1 text-2xl font-semibold tabular-nums">{sc ?? "—"}<span className="text-sm font-normal text-fg-subtle">/100</span></p></Link>
-        <Link href="/tools/pomodoro" className="card col-span-2 flex items-center justify-center gap-2 bg-primary p-4 font-semibold text-primary-fg sm:col-span-1"><Timer className="size-5" aria-hidden /> Start a Pomodoro</Link>
+      <div className="mb-10 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:max-w-md">
+        <Link href="/tools/time-audit" className="bg-surface p-4 transition-colors hover:bg-surface-muted/60"><p className="text-sm text-fg-muted">Focused today</p><p className="mt-1 text-2xl font-semibold tabular-nums">{fmtMinutes(focusToday)}</p></Link>
+        <Link href="/tools/score" className="bg-surface p-4 transition-colors hover:bg-surface-muted/60"><p className="text-sm text-fg-muted">Productivity score</p><p className="mt-1 text-2xl font-semibold tabular-nums">{sc ?? "—"}<span className="text-sm font-normal text-fg-subtle"> of 100</span></p></Link>
       </div>
       {open ? (
         <section aria-labelledby="sec-open">
-          <Link href="/tools" className="mb-3 inline-flex items-center gap-1 text-sm text-primary"><ArrowLeft className="size-4" aria-hidden /> All tools</Link>
-          <h2 id="sec-open" className="text-xl font-semibold">{open.title}</h2>
-          <p className="mb-4 text-sm text-fg-muted">{open.blurb}</p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <Link href="/tools" className="mb-3 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-primary"><ArrowLeft className="size-4" aria-hidden />All tools</Link>
+          <h2 id="sec-open" className="text-xl font-semibold tracking-tight">{open.title}</h2>
+          <p className="mb-4 text-fg-muted">{open.blurb}</p>
+          <ul className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
             {open.tools.map((t) => {
               const inner = (
                 <>
-                  <span className={cn("grid size-10 place-items-center rounded-xl", open.tone)}><t.icon className="size-5" aria-hidden /></span>
-                  <p className="mt-3 font-medium">{t.label}</p>
-                  <p className="text-xs text-fg-muted">{t.desc}</p>
-                  {!t.href && <span className="mt-2 inline-block rounded-full bg-surface-muted px-2 py-0.5 text-xs text-fg-muted">Coming in the next update</span>}
+                  <t.icon className="mt-0.5 size-5 shrink-0 text-fg-subtle" aria-hidden />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-medium">{t.label}</span>
+                    <span className="block text-sm text-fg-muted">{t.href ? t.desc : `${t.desc}. Coming in the next update.`}</span>
+                  </span>
+                  {t.href && <ChevronRight className="size-4 shrink-0 self-center text-fg-subtle" aria-hidden />}
                 </>
               );
-              return t.href ? (
-                <Link key={t.label} href={t.href} className="card p-4 transition-colors hover:border-primary/40">{inner}</Link>
-              ) : (
-                <div key={t.label} className="card p-4 opacity-75" aria-disabled>{inner}</div>
+              return (
+                <li key={t.label} className="bg-surface">
+                  {t.href ? (
+                    <Link href={t.href} className="flex gap-3 p-4 transition-colors hover:bg-surface-muted/60">{inner}</Link>
+                  ) : (
+                    <div className="flex gap-3 p-4 opacity-70" aria-disabled>{inner}</div>
+                  )}
+                </li>
               );
             })}
-          </div>
+          </ul>
         </section>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
           {SECTIONS.map((s) => (
-            <Link key={s.slug} href={s.slug === "brain" ? "/tools/brain" : `/tools?c=${s.slug}`} className="card flex items-center gap-4 p-5 transition-colors hover:border-primary/40">
-              <span className={cn("grid size-12 shrink-0 place-items-center rounded-2xl", s.tone)}><s.icon className="size-6" aria-hidden /></span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-semibold">{s.title}</span>
-                <span className="block text-sm text-fg-muted">{s.blurb}</span>
-                <span className="mt-1 block text-xs text-fg-subtle">{s.tools.some((t) => t.href) ? (s.slug === "brain" ? "20 games inside" : `${s.tools.filter((t) => t.href).length} tools inside`) : "Coming in the next update"}</span>
-              </span>
-              <ChevronRight className="size-5 shrink-0 text-fg-subtle" aria-hidden />
-            </Link>
+            <li key={s.slug} className="bg-surface">
+              <Link href={s.slug === "brain" ? "/tools/brain" : `/tools?c=${s.slug}`} className="flex gap-3 p-5 transition-colors hover:bg-surface-muted/60">
+                <s.icon className="mt-0.5 size-5 shrink-0 text-fg-subtle" aria-hidden />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-medium">{s.title}</span>
+                  <span className="block text-sm text-fg-muted">{s.blurb}</span>
+                  <span className="mt-1 block text-sm text-fg-subtle">{s.tools.some((t) => t.href) ? (s.slug === "brain" ? "20 games" : `${s.tools.filter((t) => t.href).length} tools`) : "Coming in the next update"}</span>
+                </span>
+                <ChevronRight className="size-4 shrink-0 self-center text-fg-subtle" aria-hidden />
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </>
   );

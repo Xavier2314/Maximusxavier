@@ -15,8 +15,8 @@ export function AvatarUploader({ name, src }: { name: string; src: string | null
     <PhotoPicker action={uploadAvatarAction} fileField="avatar" label="Change profile picture" messageClassName="text-white/80">
       {(busy) => (
         <span className="group relative block">
-          <Avatar name={name} src={src} size={104} className={busy ? "opacity-60 ring-4 ring-white/20" : "ring-4 ring-white/20"} />
-          <span className="absolute bottom-1 right-1 grid size-9 place-items-center rounded-full bg-brand-lime text-brand-navy ring-4 ring-brand-navy transition-transform">
+          <Avatar name={name} src={src} size={88} className={busy ? "opacity-60 ring-0" : "ring-0"} />
+          <span className="absolute bottom-1 right-1 grid size-9 place-items-center rounded-full border border-border bg-surface text-fg-muted shadow-sm transition-colors hover:text-fg">
             {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Camera className="size-4" aria-hidden />}
           </span>
         </span>

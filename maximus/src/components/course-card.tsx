@@ -17,12 +17,12 @@ export function CourseCard({ c }: { c: CourseCardData }) {
   const pct = c.lessons ? Math.round((c.completed / c.lessons) * 100) : 0;
   const body = (
     <>
-      <div className={cn("relative aspect-[16/9] overflow-hidden", cat.gradient)}>
+      <div className={cn("relative h-20 overflow-hidden", cat.gradient)}>
         {c.thumbnail_url ? (
           <Image src={c.thumbnail_url} alt="" fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover" />
         ) : (
           <>
-            <Logo variant="mark" mono className="absolute bottom-3 left-4 h-10 w-auto text-white/30" title="" />
+            <Logo variant="mark" mono className="absolute bottom-3 right-4 h-8 w-auto text-white/25" title="" />
           </>
         )}
         {soon && (
