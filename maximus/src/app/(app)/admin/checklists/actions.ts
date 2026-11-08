@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { AI_MODEL, aiClient, aiErrorMessage, isAiConfigured } from "@/lib/ai";
 import { requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -102,4 +103,58 @@ export async function checklistTimerAction(itemId: string, op: "start" | "pause"
   }
   revalidatePath("/dashboard");
   return { ok: true, message: "Saved." };
+}
+
+export type ArrangedChecklist = { title: string | null; items: { title: string; minutes: number | null }[] };
+
+const CHECKLIST_TOOL = {
+  name: "checklist",
+  description: "A checklist to push to members, with a time for each item.",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      title: { type: ["string", "null"], description: "Short title, if the admin gave or clearly implied one" },
+      items: {
+        type: "array", maxItems: 30,
+        items: {
+          type: "object",
+          properties: {
+            title: { type: "string", description: "The task, in the admin's words, lightly tidied" },
+            minutes: { type: ["integer", "null"], description: "Time for this item in minutes, only if the admin said it ('one hour' = 60)" },
+          },
+          required: ["title", "minutes"],
+        },
+      },
+    },
+    required: ["title", "items"],
+  },
+};
+
+/** Turns what the admin said or typed into a checklist title and timed items. Nothing is added they didn't say. */
+export async function arrangeChecklistAction(text: string): Promise<{ ok: boolean; message: string; checklist?: ArrangedChecklist }> {
+  const viewer = await requireViewer();
+  if (!viewer.roles.includes("super_admin")) return { ok: false, message: "Only super admins can push checklists." };
+  const input = z.string().trim().min(3, "Say a bit more about the checklist.").max(4000).safeParse(text);
+  if (!input.success) return { ok: false, message: input.error.issues[0].message };
+  if (!isAiConfigured()) return { ok: false, message: "Maximus AI is not configured yet." };
+  try {
+    const res = await aiClient().messages.create({
+      model: AI_MODEL,
+      max_tokens: 8000,
+      system: "You turn what an admin of Maximus, a Nigerian network-marketing and freelancing team, says (often spoken, informal) into a checklist to push to members. One item per task they mentioned, in their order. Use only the times they said ('one hour' = 60, 'thirty minutes' = 30, 'two and a half hours' = 150); use null when they gave no time. Never add tasks they did not mention. Always answer by calling the checklist tool exactly once; never reply in plain text.",
+      tools: [CHECKLIST_TOOL],
+      tool_choice: { type: "auto" }, // forced tool choice is rejected by current models; the instruction above asks for the tool
+      messages: [{ role: "user", content: input.data }],
+    });
+    const block = res.content.find((b) => b.type === "tool_use");
+    if (!block || block.type !== "tool_use") return { ok: false, message: "Maximus AI couldn't arrange that. Please try again." };
+    const raw = block.input as ArrangedChecklist;
+    const items = (raw.items ?? []).filter((i) => i.title?.trim()).slice(0, 30)
+      .map((i) => ({ title: i.title.trim().slice(0, 200), minutes: i.minutes && i.minutes > 0 ? Math.min(1440, Math.round(i.minutes)) : null }));
+    if (!items.length) return { ok: false, message: "Maximus AI didn't find any tasks in that. Try saying them one by one." };
+    return { ok: true, message: "Here's your checklist. Check the times, choose who gets it, then push.", checklist: { title: raw.title?.trim().slice(0, 160) || null, items } };
+  } catch (err) {
+    console.error("Checklist arranger failed", err);
+    return { ok: false, message: aiErrorMessage(err) };
+  }
 }

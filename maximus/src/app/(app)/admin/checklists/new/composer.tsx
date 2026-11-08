@@ -8,7 +8,8 @@ import { Field, FormMessage, Input, Select } from "@/components/ui/form";
 import { Avatar } from "@/components/ui/misc";
 import { formatMinutes, MINUTE_CHOICES } from "@/lib/checklists";
 import { cn } from "@/lib/utils";
-import { pushChecklistAction } from "../actions";
+import { TalkToAi } from "@/components/form-modes";
+import { arrangeChecklistAction, pushChecklistAction } from "../actions";
 
 type Member = { id: string; full_name: string; avatar_url: string | null; member_id: string | null };
 type Item = { title: string; minutes: number };
@@ -44,7 +45,23 @@ export function ChecklistComposer({ members }: { members: Member[] }) {
     if (r.ok && r.id) router.push(`/admin/checklists/${r.id}`);
   });
 
+  const [arranged, setArranged] = useState(0);
   return (
+    <div className="space-y-3">
+    <div className="rounded-[22px] bg-surface p-5">
+      <h2 className="mb-3 text-lg">Say it, and Maximus AI arranges it</h2>
+      <TalkToAi key={arranged}
+        placeholder="e.g. Meeting prep for tomorrow. Call 10 prospects, one hour. Post the flyer on WhatsApp, 30 minutes. Rehearse your story, one hour…"
+        arrange={async (t) => { const r = await arrangeChecklistAction(t); return { ok: r.ok, message: r.message, data: r.checklist as unknown as Record<string, unknown> }; }}
+        onArranged={(data) => {
+          const c = data as unknown as { title: string | null; items: { title: string; minutes: number | null }[] };
+          if (c.title) setTitle(c.title);
+          // Spoken items join any already on the list; an item with no time said gets 30 minutes to start with.
+          setItems((list) => [...list.filter((i) => i.title.trim()), ...c.items.map((i) => ({ title: i.title, minutes: i.minutes ?? 30 }))]);
+          setNotice({ ok: true, message: "Arranged. Check the items and times below, choose who gets it, then push." });
+          setArranged((n) => n + 1);
+        }} />
+    </div>
     <div className="grid gap-3 lg:grid-cols-[1.6fr_1fr] lg:items-start">
       <section className="space-y-4 rounded-[22px] bg-surface p-5">
         <Field label="Title" htmlFor="cl-title">
@@ -68,7 +85,7 @@ export function ChecklistComposer({ members }: { members: Member[] }) {
                 <Input aria-label={`Item ${i + 1}`} value={it.title} onChange={(e) => setItem(i, { title: e.target.value })} maxLength={200}
                   placeholder="e.g. Call 10 prospects and invite them" className="min-w-[12rem] flex-1" />
                 <Select aria-label={`Time for item ${i + 1}`} value={it.minutes} onChange={(e) => setItem(i, { minutes: Number(e.target.value) })} className="w-32">
-                  {MINUTE_CHOICES.map((m) => <option key={m} value={m}>{formatMinutes(m)}</option>)}
+                  {[...new Set([...MINUTE_CHOICES, it.minutes])].sort((x, y) => x - y).map((m) => <option key={m} value={m}>{formatMinutes(m)}</option>)}
                 </Select>
                 <span className="flex">
                   <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up" className="grid size-10 place-items-center rounded-full text-fg-subtle hover:bg-surface disabled:opacity-30"><ArrowUp className="size-4" aria-hidden /></button>
@@ -124,6 +141,7 @@ export function ChecklistComposer({ members }: { members: Member[] }) {
           <Send className="size-4" aria-hidden />{pending ? "Pushing…" : audience === "everyone" ? "Push to everyone" : `Push to ${count} ${count === 1 ? "person" : "people"}`}
         </Button>
       </section>
+    </div>
     </div>
   );
 }
