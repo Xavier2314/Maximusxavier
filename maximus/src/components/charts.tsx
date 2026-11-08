@@ -52,7 +52,8 @@ function Legend({ series }: { series: Series[] }) {
 /** Accessible data table behind every chart (visually hidden). */
 function DataTable({ data, xKey, series, format, caption }: { data: Datum[]; xKey: string; series: Series[]; format: (v: number) => string; caption: string }) {
   return (
-    <table className="sr-only">
+    <div className="sr-only">
+    <table>
       <caption>{caption}</caption>
       <thead><tr><th scope="col">{xKey}</th>{series.map((s) => <th key={s.key} scope="col">{s.label}</th>)}</tr></thead>
       <tbody>
@@ -61,6 +62,7 @@ function DataTable({ data, xKey, series, format, caption }: { data: Datum[]; xKe
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 

@@ -88,7 +88,7 @@ export function PageHeader({ title, description, action, eyebrow }: { title: str
     <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
         {eyebrow && <p className="mb-1 text-sm text-fg-subtle">{eyebrow}</p>}
-        <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.02em]">{title}</h1>
+        <h1 className="text-[34px] leading-none tracking-[-0.03em] sm:text-[40px]">{title}</h1>
         {description && <p className="mt-1.5 max-w-2xl text-fg-muted">{description}</p>}
       </div>
       {action && <div className="flex flex-wrap gap-2">{action}</div>}

@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const control =
-  "w-full rounded-lg border border-border bg-surface px-3 text-[15px] text-fg placeholder:text-fg-subtle " +
+  "w-full min-w-0 rounded-xl border border-border bg-bg px-3.5 text-[15px] text-fg placeholder:text-fg-subtle " +
   "transition-colors hover:border-fg-subtle/40 focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/15 " +
   "disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-danger";
 

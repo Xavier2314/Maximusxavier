@@ -20,19 +20,19 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { color: "#000000" },
+    { color: "#ffffff" },
   ],
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
-// Dark is the default; members can switch to light with the toggle. Applied before first paint.
-const themeScript = `(function(){try{var t=localStorage.getItem('mx-theme-v2');var d=t!=='light';document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
+// Light is the default; members can switch to dark with the toggle. Applied before first paint.
+const themeScript = `(function(){try{var t=localStorage.getItem('mx-theme-v3');var d=t==='dark';document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${manjari.variable} dark`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${manjari.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

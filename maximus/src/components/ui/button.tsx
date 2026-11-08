@@ -15,10 +15,10 @@ const variants = {
 
 // Every size gives at least a 44×44 px tap area; `sm` is drawn at 40 px and extends its hit area.
 const sizes = {
-  sm: "relative h-10 px-3 text-sm gap-1.5 rounded-lg after:absolute after:-inset-y-0.5 after:inset-x-0 after:content-['']",
-  md: "h-11 px-4 text-[15px] gap-2 rounded-lg",
-  lg: "h-12 px-5 text-base gap-2 rounded-lg",
-  icon: "h-11 w-11 rounded-lg",
+  sm: "relative h-10 px-4 text-sm gap-1.5 rounded-full after:absolute after:-inset-y-0.5 after:inset-x-0 after:content-['']",
+  md: "h-11 px-5 text-[15px] gap-2 rounded-full",
+  lg: "h-13 px-6 text-base gap-2 rounded-full",
+  icon: "h-11 w-11 rounded-full",
 } as const;
 
 export type ButtonVariant = keyof typeof variants;
@@ -26,7 +26,7 @@ export type ButtonSize = keyof typeof sizes;
 
 export function buttonClass(variant: ButtonVariant = "primary", size: ButtonSize = "md", className?: string) {
   return cn(
-    "inline-flex shrink-0 items-center justify-center font-medium transition-colors duration-150",
+    "inline-flex shrink-0 items-center justify-center font-semibold transition-colors duration-150",
     "active:translate-y-px disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     variants[variant],
     sizes[size],

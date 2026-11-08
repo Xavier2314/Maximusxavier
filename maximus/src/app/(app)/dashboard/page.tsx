@@ -3,7 +3,6 @@ import { ArrowRight, Building2, Plus } from "lucide-react";
 import { TaskQuickAdd } from "../planner/task-ui";
 import { TASK_CATEGORIES, type Motivation, type Task } from "@/lib/planner";
 import { FocusPopup } from "@/components/focus-popup";
-import { CallerIllustration, ClimberIllustration, WaverIllustration } from "@/components/brand/illustrations";
 import { TodayList, type TodayItem } from "./today-list";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { LinkButton } from "@/components/ui/button";
@@ -131,76 +130,67 @@ export default async function DashboardPage() {
   const unreadCount = (notifications ?? []).filter((n) => !n.read_at).length;
   const followUpCount = (followUps ?? []).length;
   const planItems = todayItems.filter((i) => i.kind !== "check").slice(0, 3);
-  const sheet = "rounded-[22px] border border-border bg-surface";
+  const next = planItems[0];
+  const hour = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: tz }).format(new Date()));
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const sheet = "rounded-[22px] bg-surface dark:border dark:border-border";
   const sheetLink = "text-sm font-medium text-primary hover:underline";
 
   return (
     <div className="space-y-6">
-      {/* Greeting, then the day as bold tiles: goals, today's plan, follow-ups, check-in. */}
-      <div className="flex items-center gap-3">
-        <Avatar name={viewer.profile.full_name} src={viewer.profile.avatar_url} size={44} className="ring-0" />
-        <div className="min-w-0">
-          <p className="text-sm text-fg-subtle">{formatDate(today, { weekday: "long", day: "numeric", month: "long" }, tz)}</p>
-          <h1 className="truncate text-2xl font-semibold tracking-tight sm:text-3xl">Hi, {firstName}</h1>
-        </div>
+      {/* Greeting, then the day: what's next, check in, and the month at a glance. */}
+      <div>
+        <h1 className="text-[44px] leading-[0.95] tracking-[-0.03em] sm:text-6xl">{greeting},<br />{firstName}</h1>
+        <p className="mt-3 text-fg-muted">
+          {formatDate(today, { weekday: "long", day: "numeric", month: "long" }, tz)}.{" "}
+          {streakDays ? `Day ${streakDays} in a row at the office` : "Check in to start your streak"}
+        </p>
       </div>
 
-      <section aria-label="Today" className="grid grid-flow-dense grid-cols-2 gap-3 lg:grid-cols-4">
-        <Link href="/goals" className="relative col-span-2 flex items-end gap-2 overflow-hidden rounded-[22px] bg-tile-green p-5 text-black transition-[filter] hover:brightness-95">
-          <div className="min-w-0 flex-1">
-            <h2 className="text-xl font-semibold leading-tight">{monthName} goals</h2>
-            <p className="mt-0.5 text-[15px]">{goalRows.length ? `${goalPct}% there, day ${dayNum} of ${daysInMonth}` : "Set your goals for this month"}</p>
-            <p className="mt-0.5 text-sm font-semibold tabular-nums">Day {streakDays} in a row at the office</p>
-            <Steps pct={goalRows.length ? goalPct : 0} />
-          </div>
-          <ClimberIllustration className="-mb-5 -mr-1 w-28 shrink-0 sm:w-36" />
+      <section aria-label="Today" className="grid gap-2.5 lg:grid-cols-2">
+        <Link href="/planner" className="flex min-h-[148px] flex-col rounded-[26px] bg-black p-5 text-white transition-opacity hover:opacity-90 dark:ring-1 dark:ring-border">
+          <span className="flex items-center justify-between gap-3">
+            <span className="text-sm text-white/70">Next up</span>
+            {next && <span className="rounded-full bg-tile-green px-2.5 py-0.5 text-xs font-semibold text-black">{next.kind === "followup" || next.kind === "task" ? (next.overdue ? "Overdue" : "Today") : "Today"}</span>}
+          </span>
+          <span className="mt-auto pt-3 font-display text-[26px] leading-tight tracking-[-0.02em]">
+            {next ? (next.kind === "followup" ? `Call ${next.name}` : next.title) : "Nothing planned yet"}
+          </span>
+          <span className="mt-1 text-sm text-white/70">
+            {next ? (next.kind === "followup" ? "Prospect follow-up" : next.detail) : "Add the first thing you'll do today"}
+          </span>
         </Link>
 
-        <Link href="/planner" className="row-span-2 flex min-h-[312px] flex-col rounded-[22px] bg-brand-blue p-5 text-white transition-[filter] hover:brightness-110">
-          <h2 className="text-xl font-semibold leading-tight">Today&apos;s plan</h2>
-          {planItems.length > 0 ? (
-            <ul className="mt-4 space-y-3 text-[15px]">
-              {planItems.map((item) => (
-                <li key={item.id} className="flex gap-2">
-                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-tile-green" aria-hidden />
-                  <span className="min-w-0">
-                    <span className="line-clamp-2 font-semibold leading-snug">{item.kind === "followup" ? `Follow up ${item.name.split(" ")[0]}` : item.title}</span>
-                    <span className="block truncate text-white/80">{item.kind === "followup" ? (item.overdue ? "Overdue" : "Prospect") : item.detail}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : <p className="mt-3 text-white/80">Nothing planned yet. Add the first thing you&apos;ll do.</p>}
-          <span className="mt-auto flex items-center justify-between pt-4 text-sm font-semibold">See all<ArrowRight className="size-4" aria-hidden /></span>
+        <Link href="/attendance" className="flex items-center justify-between gap-4 rounded-[26px] bg-tile-green p-5 text-black transition-[filter] hover:brightness-95">
+          <span className="min-w-0">
+            <span className="block font-display text-[26px] leading-tight tracking-[-0.02em]">{checkedIn ? "Checked in" : "Check in"}</span>
+            <span className="mt-1 block text-sm">{checkedIn ? `Since ${formatTime(openAttendance.check_in_at, tz)}` : "Tap when you arrive at the office"}</span>
+          </span>
+          <span className="grid size-12 shrink-0 place-items-center rounded-full bg-black text-white"><ArrowRight className="size-5" aria-hidden /></span>
         </Link>
 
-        <Link href="/prospects" className="relative flex min-h-[150px] flex-col overflow-hidden rounded-[22px] bg-tile-sky p-4 text-black transition-[filter] hover:brightness-95">
-          <h2 className="text-lg font-semibold leading-tight">Follow-ups</h2>
-          <p className="text-sm">{followUpCount ? "Due today" : "None due today"}</p>
-          <span className="relative z-10 mt-auto text-3xl font-semibold leading-none tabular-nums">{followUpCount}</span>
-          <CallerIllustration className="absolute -bottom-1 right-0 w-24" />
-        </Link>
-
-        <div className="col-span-2 flex flex-col gap-3">
-          <Link href="/notifications" className="flex h-12 items-center justify-between rounded-full bg-fg px-5 font-semibold text-bg transition-opacity hover:opacity-90">
-            <span>Notifications{unreadCount ? ` (${unreadCount})` : ""}</span><ArrowRight className="size-5" aria-hidden />
+        <div className="grid grid-cols-2 gap-2.5">
+          <Link href="/goals" className="rounded-[22px] bg-black p-4 text-white transition-opacity hover:opacity-90 dark:ring-1 dark:ring-border">
+            <span className="block font-display text-[34px] leading-none tracking-[-0.03em] text-tile-green tabular-nums">{goalRows.length ? `${goalPct}%` : "Set"}</span>
+            <span className="mt-2 block text-sm text-white/70">{goalRows.length ? `of ${monthName} goals` : `${monthName} goals`}</span>
           </Link>
-          {!evaluation ? (
-            <Link href="/evaluations/new" className="flex h-12 items-center justify-between rounded-full border border-border px-5 font-medium transition-colors hover:bg-surface-muted">
-              <span>Complete your evaluation</span><ArrowRight className="size-5" aria-hidden />
-            </Link>
-          ) : (
-            <Link href="/evaluations" className="flex h-12 items-center justify-between rounded-full border border-border px-5 font-medium transition-colors hover:bg-surface-muted">
-              <span>Next evaluation {formatDate(nextEvaluationDate(today), { weekday: "short", day: "numeric", month: "short" }, tz)}</span><ArrowRight className="size-5" aria-hidden />
-            </Link>
-          )}
+          <Link href="/prospects" className="rounded-[22px] bg-surface p-4 transition-colors hover:bg-surface-muted">
+            <span className="block font-display text-[34px] leading-none tracking-[-0.03em] tabular-nums">{followUpCount}</span>
+            <span className="mt-2 block text-sm text-fg-muted">{followUpCount === 1 ? "Follow-up due" : "Follow-ups due"}</span>
+          </Link>
         </div>
 
-        <Link href="/attendance" className="relative flex min-h-[150px] flex-col overflow-hidden rounded-[22px] bg-tile-green p-4 text-black transition-[filter] hover:brightness-95">
-          <h2 className="text-lg font-semibold leading-tight">{checkedIn ? "Checked in" : "Check in"}</h2>
-          <p className="text-sm">{checkedIn ? `Since ${formatTime(openAttendance.check_in_at, tz)}` : "At the office today"}</p>
-          <WaverIllustration className="absolute -bottom-1 right-1 w-24" />
-        </Link>
+        <div className="grid gap-2.5">
+          <Link href="/notifications" className="flex items-center justify-between gap-3 rounded-[22px] bg-surface px-5 py-3.5 transition-colors hover:bg-surface-muted">
+            <span><span className="block font-medium">Notifications</span><span className="text-sm text-fg-muted">{unreadCount ? `${unreadCount} unread` : "All caught up"}</span></span>
+            <ArrowRight className="size-5 shrink-0" aria-hidden />
+          </Link>
+          <Link href={evaluation ? "/evaluations" : "/evaluations/new"} className="flex items-center justify-between gap-3 rounded-[22px] bg-surface px-5 py-3.5 transition-colors hover:bg-surface-muted">
+            <span><span className="block font-medium">{evaluation ? "Evaluation done" : "Complete your evaluation"}</span>
+              <span className="text-sm text-fg-muted">{evaluation ? `Next on ${formatDate(nextEvaluationDate(today), { weekday: "short", day: "numeric", month: "short" }, tz)}` : "Takes about five minutes"}</span></span>
+            <ArrowRight className="size-5 shrink-0" aria-hidden />
+          </Link>
+        </div>
       </section>
 
       <FocusPopup week={focusWeek} areas={focusTop.map((a) => ({

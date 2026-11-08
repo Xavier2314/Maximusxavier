@@ -75,7 +75,7 @@ export default async function PlannerPage({ searchParams }: { searchParams: Prom
           : `${doneToday.length} done, ${dueToday.length} to go today.`} />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+        <div className="min-w-0 space-y-6 lg:col-span-2">
           <Card><CardBody><TaskQuickAdd today={today} /></CardBody></Card>
 
           {view === "today" && overdue.length > 0 && (

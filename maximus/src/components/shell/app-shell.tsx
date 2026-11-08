@@ -121,8 +121,8 @@ function NavLinks({ sections, pathname, onNavigate, dark = false }: { sections: 
       <li key={item.href}>
         <Link href={item.href} onClick={onNavigate} aria-current={active ? "page" : undefined}
           className={cn("group", row, nested && "pl-10",
-            active ? (dark ? "bg-white font-medium text-black" : "rounded-full bg-fg font-medium text-bg") : idle)}>
-          {!nested && <Icon className={cn("size-4 shrink-0", dark ? (active ? "text-black" : "text-white/60") : (active ? "text-bg" : "text-fg-subtle group-hover:text-fg-muted"))} aria-hidden />}
+            active ? (dark ? "bg-white font-medium text-black" : "bg-primary font-medium text-primary-fg") : idle)}>
+          {!nested && <Icon className={cn("size-4 shrink-0", dark ? (active ? "text-black" : "text-white/60") : (active ? "text-primary-fg" : "text-fg-subtle group-hover:text-fg-muted"))} aria-hidden />}
           {item.label}
         </Link>
       </li>
@@ -246,7 +246,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
   }, [menuOpen]);
 
   return (
-    <div className="branded min-h-dvh lg:pl-64" style={brandVars(brand) as React.CSSProperties}>
+    <div className={cn("min-h-dvh lg:pl-64", !brand.isDefault && "branded")} style={brandVars(brand) as React.CSSProperties}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-fg">
         Skip to content
       </a>
@@ -290,36 +290,24 @@ export function AppShell({ sections: memberSections, team = null, office = null,
       <CommandPalette sections={allSections} />
 
       {/* Mobile bottom navigation */}
-      <nav aria-label="Quick" className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg lg:hidden">
-        <ul className="mx-auto grid max-w-md grid-cols-5">
+      <nav aria-label="Quick" className="safe-bottom fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-bg from-60% to-transparent pt-6 lg:hidden">
+        <ul className="mx-auto flex max-w-md items-center justify-center gap-2.5 px-4 pb-3">
           {bottom.map((item) => {
             const Icon = NAV_ICONS[item.icon];
             const active = isActive(pathname, item.href);
-            const isCheckIn = item.href === "/attendance" || item.href === "/attendance/live";
             return (
               <li key={item.href}>
-                <Link href={item.href} aria-current={active ? "page" : undefined}
-                  aria-label={item.label}
-                  className="flex min-h-16 items-center justify-center text-sm font-semibold">
-                  {isCheckIn ? (
-                    <span className="grid size-12 place-items-center rounded-full bg-tile-green text-black">
-                      <Icon className="size-5" aria-hidden />
-                    </span>
-                  ) : active ? (
-                    <span className="flex h-10 items-center gap-1.5 rounded-full bg-fg px-3.5 text-bg">
-                      <Icon className="size-[18px] shrink-0" aria-hidden />
-                      <span className="max-w-[4.5rem] truncate">{item.label}</span>
-                    </span>
-                  ) : (
-                    <Icon className="size-[22px] text-fg-subtle" aria-hidden />
-                  )}
+                <Link href={item.href} aria-current={active ? "page" : undefined} aria-label={item.label}
+                  className={cn("grid size-14 place-items-center rounded-full transition-colors",
+                    active ? "bg-primary text-primary-fg" : "bg-surface text-fg hover:bg-surface-muted")}>
+                  <Icon className="size-[22px]" aria-hidden />
                 </Link>
               </li>
             );
           })}
           <li>
-            <button type="button" onClick={() => setMenuOpen(true)} aria-expanded={menuOpen} aria-controls="mobile-menu"
-              aria-label="More" className="flex min-h-16 w-full items-center justify-center text-fg-subtle">
+            <button type="button" onClick={() => setMenuOpen(true)} aria-expanded={menuOpen} aria-controls="mobile-menu" aria-label="More"
+              className="grid size-14 place-items-center rounded-full bg-surface text-fg transition-colors hover:bg-surface-muted">
               <Menu className="size-[22px]" aria-hidden />
             </button>
           </li>
