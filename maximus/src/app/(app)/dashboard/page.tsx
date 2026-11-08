@@ -4,6 +4,7 @@ import { TaskQuickAdd } from "../planner/task-ui";
 import { TASK_CATEGORIES, type Task } from "@/lib/planner";
 import { FocusPopup } from "@/components/focus-popup";
 import { TodayList, type TodayItem } from "./today-list";
+import { MonthTrack } from "./month-track";
 import { requireViewer } from "@/lib/auth";
 import { FOCUS, topFocus, type GrowthFocus } from "@/lib/growth";
 import { createClient } from "@/lib/supabase/server";
@@ -34,6 +35,7 @@ export default async function DashboardPage() {
   const [
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { count: unread },
     { data: focusData }, { data: checklistItems }, { data: checklistDone }, { data: followUps }, { data: todayTasks },
+    { data: monthDays },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
     supabase.from("attendance").select("*").eq("user_id", viewer.id).eq("attendance_date", today)
@@ -49,6 +51,7 @@ export default async function DashboardPage() {
       .not("stage", "in", "(joined,customer,not_now)").order("next_follow_up_at").limit(4),
     supabase.from("tasks").select("*").eq("user_id", viewer.id).is("completed_at", null).lte("due_date", today)
       .order("due_date").order("priority").limit(6).returns<Task[]>(),
+    supabase.from("attendance").select("attendance_date").eq("user_id", viewer.id).gte("attendance_date", month).lte("attendance_date", today),
   ]);
   const focusTop = topFocus(focusData as GrowthFocus | null);
   const focusWeek = isoWeek(today);
@@ -66,6 +69,9 @@ export default async function DashboardPage() {
     ? Math.round(goalRows.reduce((sum, g) => sum + percent(Number(g.value), Number(g.target)), 0) / goalRows.length)
     : 0;
   const checkedIn = openAttendance && !openAttendance.check_out_at;
+  const [year, monthNum, dayNum] = today.split("-").map(Number);
+  const daysInMonth = new Date(Date.UTC(year, monthNum, 0)).getUTCDate();
+  const checkInDays = [...new Set((monthDays ?? []).map((d) => Number(String(d.attendance_date).slice(8, 10))))];
 
   type FollowUp = { id: string; full_name: string; phone: string | null; next_follow_up_at: string };
   const todayItems: TodayItem[] = [
@@ -109,11 +115,13 @@ export default async function DashboardPage() {
         </p>
       </div>
 
+      <MonthTrack monthName={monthName} daysInMonth={daysInMonth} today={dayNum} checkIns={checkInDays} goalPct={goalPct} hasGoals={goalRows.length > 0} />
+
       <section aria-label="Today" className="grid gap-2.5 lg:grid-cols-2">
         <Link href="/planner" className="flex min-h-[148px] flex-col rounded-[26px] bg-black p-5 text-white transition-opacity hover:opacity-90 dark:ring-1 dark:ring-border">
           <span className="flex items-center justify-between gap-3">
             <span className="text-sm text-white/70">Next up</span>
-            {next && <span className="rounded-full bg-tile-green px-2.5 py-0.5 text-xs font-semibold text-black">{next.kind === "followup" || next.kind === "task" ? (next.overdue ? "Overdue" : "Today") : "Today"}</span>}
+            {next && <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-black">{next.kind === "followup" || next.kind === "task" ? (next.overdue ? "Overdue" : "Today") : "Today"}</span>}
           </span>
           <span className="mt-auto pt-3 font-display text-[26px] leading-tight tracking-[-0.02em]">
             {next ? (next.kind === "followup" ? `Call ${next.name}` : next.title) : "Nothing planned yet"}
@@ -131,18 +139,11 @@ export default async function DashboardPage() {
           <span className="grid size-12 shrink-0 place-items-center rounded-full bg-black text-white"><ArrowRight className="size-5" aria-hidden /></span>
         </Link>
 
-        <div className="grid grid-cols-2 gap-2.5">
-          <Link href="/goals" className="rounded-[22px] bg-black p-4 text-white transition-opacity hover:opacity-90 dark:ring-1 dark:ring-border">
-            <span className="block font-display text-[34px] leading-none tracking-[-0.03em] text-tile-green tabular-nums">{goalRows.length ? `${goalPct}%` : "Set"}</span>
-            <span className="mt-2 block text-sm text-white/70">{goalRows.length ? `of ${monthName} goals` : `${monthName} goals`}</span>
+        <div className="grid gap-2.5 lg:col-span-2 lg:grid-cols-3">
+          <Link href="/prospects" className="flex items-center justify-between gap-3 rounded-[22px] bg-surface px-5 py-3.5 transition-colors hover:bg-surface-muted">
+            <span><span className="block font-medium">Follow-ups</span><span className="text-sm text-fg-muted">{followUpCount ? `${followUpCount} due today` : "None due today"}</span></span>
+            <ArrowRight className="size-5 shrink-0" aria-hidden />
           </Link>
-          <Link href="/prospects" className="rounded-[22px] bg-surface p-4 transition-colors hover:bg-surface-muted">
-            <span className="block font-display text-[34px] leading-none tracking-[-0.03em] tabular-nums">{followUpCount}</span>
-            <span className="mt-2 block text-sm text-fg-muted">{followUpCount === 1 ? "Follow-up due" : "Follow-ups due"}</span>
-          </Link>
-        </div>
-
-        <div className="grid gap-2.5">
           <Link href="/notifications" className="flex items-center justify-between gap-3 rounded-[22px] bg-surface px-5 py-3.5 transition-colors hover:bg-surface-muted">
             <span><span className="block font-medium">Notifications</span><span className="text-sm text-fg-muted">{unreadCount ? `${unreadCount} unread` : "All caught up"}</span></span>
             <ArrowRight className="size-5 shrink-0" aria-hidden />
