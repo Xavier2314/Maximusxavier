@@ -25,7 +25,7 @@ export default async function BrainGymPage() {
         action={<BackToTools />} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {GAMES.map((g) => (
-          <Link key={g.slug} href={`/tools/brain/${g.slug}`} className="card p-4 transition-shadow hover:shadow-md">
+          <Link key={g.slug} href={`/tools/brain/${g.slug}`} className="card p-4 transition-colors hover:border-primary/40">
             <span className="text-3xl" aria-hidden>{g.emoji}</span>
             <p className="mt-2 font-semibold">{g.name}</p>
             <p className="text-xs text-fg-muted">{g.skill}</p>

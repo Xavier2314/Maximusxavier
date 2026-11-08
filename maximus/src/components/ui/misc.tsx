@@ -84,7 +84,7 @@ export function PageHeader({ title, description, action, eyebrow }: { title: str
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
         {eyebrow && <p className="mb-1 text-sm font-medium text-fg-muted">{eyebrow}</p>}
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
         {description && <p className="mt-1 text-fg-muted">{description}</p>}
       </div>
       {action && <div className="flex flex-wrap gap-2">{action}</div>}
@@ -92,22 +92,13 @@ export function PageHeader({ title, description, action, eyebrow }: { title: str
   );
 }
 
-export function StatCard({ label, value, hint, icon, tone = "blue", className }: {
-  label: string; value: ReactNode; hint?: ReactNode; icon: ReactNode; tone?: "blue" | "green" | "lime" | "navy"; className?: string;
+export function StatCard({ label, value, hint, className }: {
+  label: string; value: ReactNode; hint?: ReactNode; className?: string;
 }) {
-  const iconTone = {
-    blue: "bg-primary-soft text-primary",
-    green: "bg-success-soft text-success",
-    lime: "bg-brand-lime/25 text-brand-navy dark:text-brand-lime",
-    navy: "bg-brand-navy text-brand-lime dark:bg-surface-muted",
-  }[tone];
   return (
     <div className={cn("card p-4 sm:p-5", className)}>
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-sm text-fg-muted">{label}</p>
-        <span className={cn("grid size-9 place-items-center rounded-xl", iconTone)}>{icon}</span>
-      </div>
-      <p className="mt-2 text-2xl font-bold tracking-tight tabular-nums">{value}</p>
+      <p className="text-sm text-fg-muted">{label}</p>
+      <p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums">{value}</p>
       {hint && <p className="mt-1 text-sm text-fg-subtle">{hint}</p>}
     </div>
   );

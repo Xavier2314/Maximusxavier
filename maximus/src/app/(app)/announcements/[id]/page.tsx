@@ -32,7 +32,7 @@ export default async function AnnouncementPage({ params }: { params: Promise<{ i
               <p className="text-xs text-fg-subtle">{formatDate(p.published_at as string, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
             </div>
           </div>
-          <h1 className="mt-6 text-2xl font-bold tracking-tight">{p.title as string}</h1>
+          <h1 className="mt-6 text-2xl font-semibold tracking-tight">{p.title as string}</h1>
           <p className="mt-3 whitespace-pre-line leading-relaxed text-fg-muted">{p.body as string}</p>
           {(p.author_id === viewer.id || viewer.isAdmin) && <div className="mt-8 border-t border-border pt-4"><DeletePost id={id} back={back} /></div>}
         </CardBody>

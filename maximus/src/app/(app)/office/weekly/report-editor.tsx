@@ -93,7 +93,7 @@ export function ReportEditor({ initial, prev, reportId }: { initial: OfficeRepor
                     <SectionRows key={sec.title ?? "main"} title={sec.title}>
                       {sec.metrics.map((m) => (
                         <tr key={m.key}>
-                          <td className={cell}>{m.label}{m.hint && <span className="ml-1 text-xs italic text-fg-subtle">({m.hint})</span>}</td>
+                          <td className={cell}>{m.label}{m.hint && <span className="ml-1 text-sm text-fg-subtle">({m.hint})</span>}</td>
                           <td className={cn(cell, "p-0")}>
                             <input inputMode="decimal" aria-label={`${m.label} this week`} value={r.metrics[m.key] ?? ""}
                               onChange={(e) => setMetric(m.key, e.target.value)} className="h-9 w-full bg-transparent px-2 tabular-nums outline-none focus:bg-primary-soft" />

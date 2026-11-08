@@ -33,11 +33,11 @@ export default async function AcademyPage() {
       <section className="hero-gradient relative mb-8 overflow-hidden rounded-2xl p-6 text-white sm:p-8">
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-lime">Maximus Academy</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight">Learn. Lead. Maximise.</h1>
+            <p className="text-sm font-medium text-brand-lime">Maximus Academy</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Learn. Lead. Maximise.</h1>
             <p className="mt-2 max-w-md text-white/70">Practical courses on prospecting, sales, leadership and personal growth — at your own pace.</p>
           </div>
-          <ProgressRing value={overall} size={110}><div><p className="text-2xl font-bold">{overall}%</p><p className="text-xs text-white/60">{completed}/{total} lessons</p></div></ProgressRing>
+          <ProgressRing value={overall} size={110}><div><p className="text-2xl font-semibold">{overall}%</p><p className="text-xs text-white/60">{completed}/{total} lessons</p></div></ProgressRing>
         </div>
       </section>
       {cards.length === 0 ? <EmptyState icon={<GraduationCap className="size-6" />} title="No courses yet" /> : CATEGORIES.map((cat) => {
@@ -45,7 +45,7 @@ export default async function AcademyPage() {
         if (list.length === 0) return null;
         return (
           <section key={cat.key} className="mb-8" aria-labelledby={`cat-${cat.key}`}>
-            <h2 id={`cat-${cat.key}`} className="mb-3 text-lg font-bold tracking-tight">{cat.label}</h2>
+            <h2 id={`cat-${cat.key}`} className="mb-3 text-lg font-semibold tracking-tight">{cat.label}</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{list.map((c) => <CourseCard key={c.id} c={c} />)}</div>
           </section>
         );

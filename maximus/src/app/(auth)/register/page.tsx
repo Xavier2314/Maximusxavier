@@ -14,7 +14,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const joiningAbove = ((invite as { for_name: string; for_member_id: string }[] | null) ?? [])[0];
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tight">{joiningAbove ? "Welcome, sponsor" : "Join Maximus"}</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">{joiningAbove ? "Welcome, sponsor" : "Join Maximus"}</h1>
       <p className="mt-1 text-fg-muted">Create your member account in three quick steps.</p>
       {joiningAbove && (
         <p className="mt-4 rounded-2xl bg-success-soft px-4 py-3 text-sm text-success" role="status">

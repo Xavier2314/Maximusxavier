@@ -59,7 +59,7 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
   const top = node.focus[0];
   const body = (
     <>
-      {isNew && <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-brand-lime px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-brand-navy">New</span>}
+      {isNew && <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-brand-lime px-2 py-0.5 text-xs font-semibold text-brand-navy">New</span>}
       <RecruitRing count={count} target={target}>
         <span className="relative">
           <Avatar name={node.name} src={node.avatar} size={56} />
@@ -85,9 +85,9 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
       )}
     </>
   );
-  const cls = cn("group relative flex w-[150px] flex-col items-center rounded-2xl border px-2 pb-3 pt-3 text-center transition-all",
+  const cls = cn("group relative flex w-[150px] flex-col items-center rounded-2xl border px-2 pb-3 pt-3 text-center transition-colors",
     isRoot ? "border-transparent bg-brand-navy text-white"
-      : "border-border bg-surface hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-card)]",
+      : "border-border bg-surface hover:border-primary/40",
     isNew && "ring-2 ring-brand-lime");
   const card = isRoot ? <div className={cls}>{body}</div> : <Link href={`/team/${node.id}`} className={cls}>{body}</Link>;
   // Your own card always offers a photo change; downline cards only until they have a photo.
@@ -99,7 +99,7 @@ function NodeCard({ node, target, isRoot = false }: { node: ChartNode; target: n
         fields={isRoot ? {} : { member_id: node.id }} label={isRoot ? "Change your photo" : `Add a photo of ${node.name}`}
         className="absolute left-1/2 top-[58px] z-10 -ml-10" messageClassName="w-36 rounded-lg bg-surface p-1 text-center shadow">
         {(busy) => (
-          <span className={cn("grid size-7 place-items-center rounded-full ring-2 ring-surface transition-transform hover:scale-110",
+          <span className={cn("grid size-7 place-items-center rounded-full ring-2 ring-surface transition-transform",
             node.avatar ? "bg-surface text-fg-muted" : "bg-brand-lime text-brand-navy")} title={isRoot ? "Change your photo" : "Add a photo"}>
             {busy ? <LoaderCircle className="size-3.5 animate-spin" aria-hidden /> : <Camera className="size-3.5" aria-hidden />}
           </span>

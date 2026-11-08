@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import {
-  ArrowRight, CalendarCheck, ClipboardCheck, Clock, DoorOpen, Filter, HandCoins, LogOut, Megaphone, PiggyBank, QrCode,
-  Target, TrendingUp, TriangleAlert, UserCheck, UserMinus, UserPlus, Users,
-} from "lucide-react";
+import { ArrowRight, CalendarCheck, ClipboardCheck, Clock, DoorOpen, Filter, HandCoins, LogOut, Megaphone, PiggyBank, QrCode, Target, TrendingUp, TriangleAlert, UserCheck, UserMinus } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -77,7 +74,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
             </span>
             <span>
               <span className="block text-sm text-fg-muted">In the office now</span>
-              <span className="text-3xl font-bold tabular-nums">{d.present_now}</span>
+              <span className="text-3xl font-semibold tabular-nums">{d.present_now}</span>
               <span className="ml-1 text-sm text-fg-subtle">of {m}</span>
             </span>
             <ArrowRight className="ml-auto size-4 text-fg-subtle transition-transform group-hover:translate-x-0.5" aria-hidden />
@@ -90,17 +87,17 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
           ].map((s) => (
             <Link key={s.label} href="/attendance/register" className="flex items-center justify-between gap-3 p-5 hover:bg-surface-muted/60 sm:block">
               <span className="flex items-center gap-1.5 text-sm text-fg-muted"><s.icon className="size-4" aria-hidden />{s.label}</span>
-              <span className={cn("text-2xl font-bold tabular-nums sm:mt-1 sm:block", s.warn && "text-warning")}>{s.value}</span>
+              <span className={cn("text-2xl font-semibold tabular-nums sm:mt-1 sm:block", s.warn && "text-warning")}>{s.value}</span>
             </Link>
           ))}
         </div>
       </section>
 
       <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Office health">
-        <StatCard label="Active members" value={`${d.active_7d} / ${m}`} hint="Active in the last 7 days" icon={<Users className="size-4" />} tone="green" />
-        <StatCard label="Need a check-in call" value={d.inactive_7d} hint={`${d.inactive_14d} quiet for 14+ days`} icon={<TriangleAlert className="size-4" />} tone="lime" />
-        <StatCard label="Attendance this week" value={d.attendance_7d == null ? "—" : `${d.attendance_7d}%`} hint="Of members, on open days" icon={<CalendarCheck className="size-4" />} />
-        <StatCard label="Attendance, 30 days" value={d.attendance_30d == null ? "—" : `${d.attendance_30d}%`} hint={`${d.new_this_month} joined this month`} icon={<UserPlus className="size-4" />} tone="navy" />
+        <StatCard label="Active members" value={`${d.active_7d} / ${m}`} hint="Active in the last 7 days" />
+        <StatCard label="Need a check-in call" value={d.inactive_7d} hint={`${d.inactive_14d} quiet for 14+ days`} />
+        <StatCard label="Attendance this week" value={d.attendance_7d == null ? "—" : `${d.attendance_7d}%`} hint="Of members, on open days" />
+        <StatCard label="Attendance, 30 days" value={d.attendance_30d == null ? "—" : `${d.attendance_30d}%`} hint={`${d.new_this_month} joined this month`} />
       </section>
 
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
@@ -160,7 +157,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
               ].map((x) => (
                 <div key={x.label} className="rounded-xl bg-surface-muted/70 p-3">
                   <dt className="text-xs text-fg-muted">{x.label}</dt>
-                  <dd className={cn("mt-0.5 text-xl font-bold tabular-nums", x.warn && "text-warning")}>{x.value}</dd>
+                  <dd className={cn("mt-0.5 text-xl font-semibold tabular-nums", x.warn && "text-warning")}>{x.value}</dd>
                 </div>
               ))}
             </dl>
@@ -194,7 +191,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
                 {d.top_earners.map((p, i) => (
                   <li key={p.id}>
                     <Link href={`/team/${p.id}?view=office`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-surface-muted">
-                      <span className={cn("w-5 text-center text-sm font-bold", i === 0 ? "text-warning" : "text-fg-subtle")}>{i + 1}</span>
+                      <span className={cn("w-5 text-center text-sm font-semibold", i === 0 ? "text-warning" : "text-fg-subtle")}>{i + 1}</span>
                       <Avatar name={p.full_name} src={p.avatar_url} size={34} />
                       <span className="flex-1 truncate text-sm font-medium">{p.full_name}</span>
                       <span className="text-sm font-semibold tabular-nums">{formatMoney(p.total)}</span>

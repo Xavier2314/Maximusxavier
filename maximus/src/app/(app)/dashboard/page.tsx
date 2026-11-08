@@ -1,8 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowRight, Bell, Bot, Building2, Cake, Compass, ListChecks, MessageCircle, MessageSquare, Phone, Quote, CalendarClock, ClipboardCheck, Flame,
-  GraduationCap, Heart, ListTodo, MapPin, PiggyBank, Target, TrendingUp,
-} from "lucide-react";
+import { ArrowRight, Bell, Bot, Building2, Cake, Compass, ListChecks, MessageCircle, MessageSquare, Phone, Quote, CalendarClock, ClipboardCheck, Flame, Heart, ListTodo, MapPin, PiggyBank, Target } from "lucide-react";
 import { TaskQuickAdd, TaskRow } from "../planner/task-ui";
 import type { Motivation, Task } from "@/lib/planner";
 import { FocusPopup } from "@/components/focus-popup";
@@ -29,10 +26,6 @@ function isoWeek(day: string) {
   return `${d.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 
-function greeting(tz: string) {
-  const h = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: tz }).format(new Date()));
-  return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
-}
 
 export default async function DashboardPage() {
   const viewer = await requireViewer();
@@ -118,11 +111,10 @@ export default async function DashboardPage() {
         <div className="h-1.5 bg-brand-orange" aria-hidden />
         <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
           <div className="min-w-0">
-            <p className="text-sm text-white/70">{greeting(tz)},</p>
-            <h1 className="mt-1 break-words text-3xl font-bold tracking-tight sm:text-4xl">{firstName}</h1>
-            <p className="mt-2 text-white/70">
-              {formatDate(today, { weekday: "long", day: "numeric", month: "long" }, tz)} · Member {viewer.profile.member_id}
-            </p>
+            <h1 className="break-words text-3xl font-semibold tracking-tight sm:text-4xl">
+              {formatDate(today, { weekday: "long", day: "numeric", month: "long" }, tz)}
+            </h1>
+            <p className="mt-2 text-white/70">{firstName} · Member {viewer.profile.member_id}</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {checkedIn ? (
                 <span className="inline-flex h-11 items-center gap-2 rounded-xl bg-white/10 px-4 text-sm ring-1 ring-white/20">
@@ -141,7 +133,7 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-5">
             <ProgressRing value={goalPct} size={112} color="var(--brand-orange)">
               <div>
-                <p className="text-2xl font-bold tabular-nums">{goalPct}%</p>
+                <p className="text-2xl font-semibold tabular-nums">{goalPct}%</p>
                 <p className="text-xs text-white/70">month goals</p>
               </div>
             </ProgressRing>
@@ -269,7 +261,7 @@ export default async function DashboardPage() {
               {officePulse ? (
                 <div className="flex items-center gap-5">
                   <div>
-                    <p className="text-4xl font-bold tabular-nums">{officePulse.present_now}</p>
+                    <p className="text-4xl font-semibold tabular-nums">{officePulse.present_now}</p>
                     <p className="text-sm text-fg-muted">in the office now</p>
                   </div>
                   <div className="flex-1 space-y-2 text-sm">
@@ -314,13 +306,11 @@ export default async function DashboardPage() {
           <p className="text-sm text-fg-muted">Progress on your goals, numbers and updates</p>
         </div>
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          <StatCard label="Earnings entered" value={formatMoney(progress?.income ?? 0)} hint="From your evaluations this month" icon={<TrendingUp className="size-4" />} />
+          <StatCard label="Earnings entered" value={formatMoney(progress?.income ?? 0)} hint="From your evaluations this month" />
           <StatCard label="Savings (confirmed)" value={formatMoney(savings?.confirmed_balance ?? 0)}
-            hint={savings && savings.pending_in > 0 ? `${formatMoney(savings.pending_in)} awaiting approval` : "Approved ledger entries only"}
-            icon={<PiggyBank className="size-4" />} tone="green" />
-          <StatCard label="Evaluation" value={evaluation ? "Done" : "Due"} hint={`Period of ${formatDate(period, { day: "numeric", month: "short" })}`}
-            icon={<ClipboardCheck className="size-4" />} tone={evaluation ? "green" : "lime"} />
-          <StatCard label="Learning" value={`${learningPct}%`} hint={`${lessonsDone?.length ?? 0} lessons completed`} icon={<GraduationCap className="size-4" />} tone="navy" />
+            hint={savings && savings.pending_in > 0 ? `${formatMoney(savings.pending_in)} awaiting approval` : "Approved ledger entries only"} />
+          <StatCard label="Evaluation" value={evaluation ? "Done" : "Due"} hint={`Period of ${formatDate(period, { day: "numeric", month: "short" })}`} />
+          <StatCard label="Learning" value={`${learningPct}%`} hint={`${lessonsDone?.length ?? 0} lessons completed`} />
         </div>
         <div className="grid gap-4 lg:grid-cols-3">
           {/* Goals */}
@@ -404,7 +394,7 @@ export default async function DashboardPage() {
                 <div key={b!.account_id}>
                   <div className="flex items-baseline justify-between">
                     <span className="text-sm text-fg-muted">{b!.name}</span>
-                    <span className="text-lg font-bold tabular-nums">{formatMoney(b!.confirmed_balance)}</span>
+                    <span className="text-lg font-semibold tabular-nums">{formatMoney(b!.confirmed_balance)}</span>
                   </div>
                   {b!.target_amount ? (
                     <>

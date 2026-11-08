@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Building2, ClipboardCheck, HandCoins, PiggyBank, ShieldCheck, TrendingUp, UserPlus, Users } from "lucide-react";
+import { ArrowRight, Building2, TrendingUp } from "lucide-react";
 import { TrendArea, TrendBars } from "@/components/charts";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { PageHeader, StatCard } from "@/components/ui/misc";
@@ -64,7 +64,7 @@ export default async function AdminOverviewPage({ searchParams }: { searchParams
             description={`Lowest attendance first, so you can see who needs you. ${(bankWaitlist as number | null) ?? 0} members on the Maximus Bank waitlist.`} />
           <CardBody className="overflow-x-auto pt-2">
             <table className="w-full min-w-[640px] text-sm">
-              <thead className="text-left text-xs uppercase tracking-wide text-fg-subtle">
+              <thead className="text-left text-sm text-fg-subtle">
                 <tr className="border-b border-border">
                   {["Office", "Members", "Present today", "Late today", "Attendance (7 days)", "Earnings this month", "New this month"].map((h) => <th key={h} scope="col" className="px-3 py-2 font-medium">{h}</th>)}
                 </tr>
@@ -88,15 +88,15 @@ export default async function AdminOverviewPage({ searchParams }: { searchParams
       )}
 
       <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard label="Registered members" value={formatNumber(o.members_total)} hint={`${formatNumber(o.members_active)} active accounts`} icon={<Users className="size-4" />} />
-        <StatCard label="New this month" value={formatNumber(o.new_this_month)} icon={<UserPlus className="size-4" />} tone="lime" />
-        <StatCard label="Checked in today" value={formatNumber(o.checked_in_today)} hint={`${o.present_now ?? 0} in office now`} icon={<Building2 className="size-4" />} tone="green" />
-        <StatCard label="Evaluations this period" value={formatNumber(o.evaluations_current_period)} icon={<ClipboardCheck className="size-4" />} tone="navy" />
-        <StatCard label="Confirmed savings" value={formatMoney(o.confirmed_savings)} icon={<PiggyBank className="size-4" />} tone="green" />
-        <StatCard label="Confirmed contributions" value={formatMoney(o.confirmed_contributions)} icon={<HandCoins className="size-4" />} />
-        <StatCard label="Sales this month" value={formatMoney(o.sales_this_month)} icon={<TrendingUp className="size-4" />} tone="lime" />
+        <StatCard label="Registered members" value={formatNumber(o.members_total)} hint={`${formatNumber(o.members_active)} active accounts`} />
+        <StatCard label="New this month" value={formatNumber(o.new_this_month)} />
+        <StatCard label="Checked in today" value={formatNumber(o.checked_in_today)} hint={`${o.present_now ?? 0} in office now`} />
+        <StatCard label="Evaluations this period" value={formatNumber(o.evaluations_current_period)} />
+        <StatCard label="Confirmed savings" value={formatMoney(o.confirmed_savings)} />
+        <StatCard label="Confirmed contributions" value={formatMoney(o.confirmed_contributions)} />
+        <StatCard label="Sales this month" value={formatMoney(o.sales_this_month)} />
         <Link href="/admin/approvals" className="block">
-          <StatCard label="Awaiting approval" value={(o.pending_payments ?? 0) + (o.pending_corrections ?? 0)} hint={`${o.pending_payments ?? 0} payments · ${o.pending_corrections ?? 0} corrections`} icon={<ShieldCheck className="size-4" />} tone="navy" className="h-full hover:ring-2 hover:ring-primary/30" />
+          <StatCard label="Awaiting approval" value={(o.pending_payments ?? 0) + (o.pending_corrections ?? 0)} hint={`${o.pending_payments ?? 0} payments · ${o.pending_corrections ?? 0} corrections`} className="h-full hover:ring-2 hover:ring-primary/30" />
         </Link>
       </section>
 
@@ -117,7 +117,7 @@ export default async function AdminOverviewPage({ searchParams }: { searchParams
         <CardBody>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[480px] text-sm">
-              <thead className="text-left text-xs uppercase tracking-wide text-fg-subtle">
+              <thead className="text-left text-sm text-fg-subtle">
                 <tr className="border-b border-border"><th className="py-2 font-medium" scope="col">Office</th><th className="py-2 font-medium" scope="col">Check-ins</th><th className="py-2 font-medium" scope="col">Verified</th><th className="py-2 font-medium" scope="col">Present now</th><th className="py-2 font-medium" scope="col">Need review</th></tr>
               </thead>
               <tbody>

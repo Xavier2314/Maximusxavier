@@ -302,7 +302,7 @@ export function ChatRoom({ conversationId, viewerId, kind = "partner", other, ca
                       {quoted.deleted_at ? "Deleted message" : quoted.body ?? quoted.attachment_name ?? "Attachment"}
                     </p>
                   )}
-                  {m.deleted_at ? <p className="italic opacity-70">Message deleted</p> : (
+                  {m.deleted_at ? <p className="opacity-70">Message deleted</p> : (
                     <>
                       {m.kind === "image" && m.attachment_path && (urls[m.attachment_path]
                         // eslint-disable-next-line @next/next/no-img-element

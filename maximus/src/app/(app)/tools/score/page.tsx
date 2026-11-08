@@ -32,7 +32,7 @@ export default async function ScorePage() {
         <div className="rounded-2xl bg-brand-navy text-white shadow-lg">
           <div className="flex flex-col items-center px-5 py-10 text-center">
             <p className="text-sm text-white/80">This week</p>
-            <p className="text-7xl font-bold tabular-nums">{score ?? "—"}</p>
+            <p className="text-7xl font-semibold tabular-nums">{score ?? "—"}</p>
             <p className="text-sm text-white/80">out of 100</p>
             <p className="mt-4 max-w-xs text-sm">{message}</p>
           </div>

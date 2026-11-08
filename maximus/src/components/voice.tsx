@@ -125,7 +125,7 @@ export function MicButton({ onText, className }: { onText: (text: string) => voi
         ) : <><Mic className="size-4" aria-hidden />Speak</>}
       </button>
       {d.listening && (
-        <span className="min-w-0 text-xs italic text-fg-muted" aria-live="polite">{d.interim || "Go ahead, I'm listening…"}</span>
+        <span className="min-w-0 text-sm text-fg-muted" aria-live="polite">{d.interim || "Go ahead, I'm listening…"}</span>
       )}
       {d.error && <span className="text-xs text-danger" role="alert">{d.error}</span>}
     </span>

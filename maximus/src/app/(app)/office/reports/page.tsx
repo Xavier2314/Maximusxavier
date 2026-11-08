@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarCheck, Clock, Download, TriangleAlert, UserX, Users } from "lucide-react";
+import { CalendarCheck, Download, TriangleAlert } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -102,10 +102,10 @@ export default async function AttendanceReportsPage({ searchParams }: {
       ) : (
         <>
           <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Summary">
-            <StatCard label="Average attendance" value={avg === null ? "—" : `${avg}%`} hint="Present ÷ open days, per member" icon={<CalendarCheck className="size-4" />} />
-            <StatCard label="Check-ins" value={totalPresent} hint={`${totalLate} of them late`} icon={<Users className="size-4" />} tone="green" />
-            <StatCard label="Absent 5+ days in a row" value={rows.filter((r) => r.absent_streak >= 5).length} hint="Right now" icon={<UserX className="size-4" />} tone="lime" />
-            <StatCard label="Often late" value={rows.filter((r) => r.late_days >= 3).length} hint="3 or more late days" icon={<Clock className="size-4" />} tone="navy" />
+            <StatCard label="Average attendance" value={avg === null ? "—" : `${avg}%`} hint="Present ÷ open days, per member" />
+            <StatCard label="Check-ins" value={totalPresent} hint={`${totalLate} of them late`} />
+            <StatCard label="Absent 5+ days in a row" value={rows.filter((r) => r.absent_streak >= 5).length} hint="Right now" />
+            <StatCard label="Often late" value={rows.filter((r) => r.late_days >= 3).length} hint="3 or more late days" />
           </section>
 
           <Card className="mb-6">
@@ -129,7 +129,7 @@ export default async function AttendanceReportsPage({ searchParams }: {
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[820px] text-sm">
-                <thead className="border-b border-border bg-surface-muted/50 text-left text-xs uppercase tracking-wide text-fg-subtle">
+                <thead className="border-b border-border bg-surface-muted/50 text-left text-sm text-fg-subtle">
                   <tr>
                     <th scope="col" className="px-4 py-3 font-medium">Member</th>
                     <th scope="col" className="w-48 px-4 py-3 font-medium">Attendance</th>

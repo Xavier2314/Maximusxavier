@@ -22,7 +22,7 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
       <Card>
         <CardBody className="flex flex-col items-center py-10 text-center">
           {ok ? <CircleCheckBig className="size-14 text-success" aria-hidden /> : failed ? <XCircle className="size-14 text-danger" aria-hidden /> : <Clock className="size-14 text-warning" aria-hidden />}
-          <h1 className="mt-4 text-2xl font-bold">{ok ? "Payment received" : failed ? (cancelled ? "Payment cancelled" : "Payment not completed") : "Payment processing"}</h1>
+          <h1 className="mt-4 text-2xl font-semibold">{ok ? "Payment received" : failed ? (cancelled ? "Payment cancelled" : "Payment not completed") : "Payment processing"}</h1>
           <p className="mt-2 text-fg-muted">
             {!p ? "We couldn't find this payment." : ok
               ? p.purpose === "white_label" ? "White-label is unlocked. You can now remove “Powered by”." : `${formatMoney(p.amount)} has been added to your ${p.purpose}.`

@@ -16,7 +16,7 @@ export function AvatarUploader({ name, src }: { name: string; src: string | null
       {(busy) => (
         <span className="group relative block">
           <Avatar name={name} src={src} size={104} className={busy ? "opacity-60 ring-4 ring-white/20" : "ring-4 ring-white/20"} />
-          <span className="absolute bottom-1 right-1 grid size-9 place-items-center rounded-full bg-brand-lime text-brand-navy ring-4 ring-brand-navy transition-transform group-hover:scale-105">
+          <span className="absolute bottom-1 right-1 grid size-9 place-items-center rounded-full bg-brand-lime text-brand-navy ring-4 ring-brand-navy transition-transform">
             {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Camera className="size-4" aria-hidden />}
           </span>
         </span>

@@ -57,10 +57,10 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
             <button className="h-11 rounded-xl border border-border px-4 text-sm font-medium hover:bg-surface-muted">Show</button>
           </form>
           <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            <StatCard label="On time" value={count(["on_time", "present"])} icon={<span className="size-3 rounded-full bg-brand-green" />} tone="green" />
-            <StatCard label="Late" value={count(["late"])} icon={<span className="size-3 rounded-full bg-[#f59e0b]" />} tone="lime" />
-            <StatCard label="Absent" value={count(["absent"])} icon={<span className="size-3 rounded-full bg-danger" />} tone="navy" />
-            <StatCard label="Needs review" value={count(["pending", "not_verified"])} icon={<span className="size-3 rounded-full bg-brand-blue" />} />
+            <StatCard label="On time" value={count(["on_time", "present"])} />
+            <StatCard label="Late" value={count(["late"])} />
+            <StatCard label="Absent" value={count(["absent"])} />
+            <StatCard label="Needs review" value={count(["pending", "not_verified"])} />
           </section>
           <Card>
             <CardHeader title={`${office.name} · ${date}`} icon={<ClipboardList className="size-4" />} />

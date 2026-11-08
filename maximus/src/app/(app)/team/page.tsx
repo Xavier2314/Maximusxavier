@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Camera, Compass, Download, Flame, Medal, Network, UserPlus, Users } from "lucide-react";
+import { Camera, Compass, Download, Medal, Network, UserPlus, Users } from "lucide-react";
 import { FocusList } from "@/components/growth-focus";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
@@ -111,10 +111,10 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
       {canSeeTeam ? (
         <>
           <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Team summary">
-            <StatCard label={extended ? "Total network" : "Team members"} value={team.length} icon={<Network className="size-4" />} />
-            <StatCard label="Direct downlines" value={direct} icon={<Users className="size-4" />} tone="navy" />
-            <StatCard label="Active" value={active} hint={`${team.length - active} inactive`} icon={<Flame className="size-4" />} tone="green" />
-            <StatCard label="New this month" value={newThisMonth} icon={<UserPlus className="size-4" />} tone="lime" />
+            <StatCard label={extended ? "Total network" : "Team members"} value={team.length} />
+            <StatCard label="Direct downlines" value={direct} />
+            <StatCard label="Active" value={active} hint={`${team.length - active} inactive`} />
+            <StatCard label="New this month" value={newThisMonth} />
           </section>
 
           {team.length > 0 ? (

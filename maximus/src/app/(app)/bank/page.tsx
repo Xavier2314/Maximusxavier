@@ -33,8 +33,8 @@ export default async function BankPage() {
       <section className="hero-gradient relative mb-6 overflow-hidden rounded-2xl p-6 text-white sm:p-8">
         <div className="relative grid gap-6 lg:grid-cols-2 lg:items-center">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-lime px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-navy">Coming soon</span>
-            <h2 className="mt-3 text-2xl font-bold tracking-tight">Receive, save and send Naira</h2>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-lime px-3 py-1 text-xs font-semibold text-brand-navy">Coming soon</span>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight">Receive, save and send Naira</h2>
             <p className="mt-2 max-w-md text-white/75">From the same app you run your business in. Naira (₦) only.</p>
             <p className="mt-4 text-sm text-white/60">{(count as number | null) ?? 0} member{count === 1 ? "" : "s"} on the waitlist</p>
           </div>
@@ -43,7 +43,7 @@ export default async function BankPage() {
             <div className="flex items-center justify-between text-sm text-white/70">
               <span>Available balance</span><span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">NGN</span>
             </div>
-            <p className="mt-1 text-4xl font-bold tracking-tight">₦ ••••••</p>
+            <p className="mt-1 text-4xl font-semibold tracking-tight">₦ ••••••</p>
             <p className="mt-1 text-xs text-white/50">Account number available at launch</p>
             <div className="mt-5 grid grid-cols-3 gap-2 text-center text-xs">
               {[{ i: ArrowDownLeft, t: "Receive" }, { i: ArrowUpRight, t: "Send" }, { i: PiggyBank, t: "Save" }].map(({ i: I, t }) => (

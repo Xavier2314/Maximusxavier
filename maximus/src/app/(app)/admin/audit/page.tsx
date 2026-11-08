@@ -39,7 +39,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
         {(data ?? []).length === 0 ? <EmptyState icon={<ScrollText className="size-6" />} title="No audit entries" /> : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-sm">
-              <thead className="text-left text-xs uppercase tracking-wide text-fg-subtle">
+              <thead className="text-left text-sm text-fg-subtle">
                 <tr className="border-b border-border"><th scope="col" className="px-4 py-3 font-medium">When</th><th scope="col" className="px-4 py-3 font-medium">Who</th><th scope="col" className="px-4 py-3 font-medium">Action</th><th scope="col" className="px-4 py-3 font-medium">Details</th></tr>
               </thead>
               <tbody>

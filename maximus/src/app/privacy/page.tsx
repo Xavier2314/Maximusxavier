@@ -9,7 +9,7 @@ export default function PrivacyPage() {
   return (
     <main className="mx-auto max-w-2xl px-5 py-12">
       <Link href="/" aria-label="Maximus home"><Logo className="h-9 w-auto text-fg" /></Link>
-      <h1 className="mt-10 text-3xl font-bold tracking-tight">Privacy policy</h1>
+      <h1 className="mt-10 text-3xl font-semibold tracking-tight">Privacy policy</h1>
       <p className="mt-2 text-sm text-fg-subtle">Draft — pending review by the Maximus administration.</p>
       <div className="mt-8 space-y-6 leading-relaxed text-fg-muted [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-fg">
         <section>

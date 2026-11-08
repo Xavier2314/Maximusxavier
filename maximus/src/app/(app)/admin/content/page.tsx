@@ -24,7 +24,7 @@ export default async function ContentPage() {
       <PageHeader title="Content" description="Manage Academy courses and the approved knowledge Maximus AI answers from." />
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-4 xl:col-span-2">
-          <h2 className="flex items-center gap-2 text-lg font-bold"><BookOpen className="size-5 text-primary" aria-hidden /> Courses</h2>
+          <h2 className="flex items-center gap-2 text-lg font-semibold"><BookOpen className="size-5 text-primary" aria-hidden /> Courses</h2>
           {(courses ?? []).map((c) => {
             const ls = (lessons ?? []).filter((l) => l.course_id === c.id);
             return (
@@ -62,7 +62,7 @@ export default async function ContentPage() {
           </Card>
         </div>
         <div className="space-y-4">
-          <h2 className="flex items-center gap-2 text-lg font-bold"><Brain className="size-5 text-primary" aria-hidden /> AI knowledge base</h2>
+          <h2 className="flex items-center gap-2 text-lg font-semibold"><Brain className="size-5 text-primary" aria-hidden /> AI knowledge base</h2>
           <Card>
             <CardBody className="space-y-2">
               {(knowledge ?? []).map((k) => (

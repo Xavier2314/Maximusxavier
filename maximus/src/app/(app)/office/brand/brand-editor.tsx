@@ -183,15 +183,15 @@ export function BrandEditor({ mode, officeId, initial, fallbackName, save, reset
 function BrandPreview({ brand }: { brand: Brand }) {
   return (
     <aside aria-label="Live preview" className="xl:sticky xl:top-24 xl:self-start">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-fg-subtle">Live preview</p>
+      <p className="mb-2 text-sm font-medium text-fg-subtle">Live preview</p>
       <div className="branded overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-card)]" style={brandVars(brand) as React.CSSProperties}>
         <div className="flex min-h-[340px]">
           <div className="w-40 shrink-0 bg-brand-navy p-3">
             <div className="mb-4 flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {brand.logo ? <img src={brand.logo} alt="" className="h-7 max-w-[60px] object-contain" />
-                : <span className="grid size-7 place-items-center rounded-lg bg-brand-lime text-xs font-bold text-brand-navy">{brand.name.slice(0, 1).toUpperCase()}</span>}
-              <span className="truncate text-sm font-bold text-white">{brand.name}</span>
+                : <span className="grid size-7 place-items-center rounded-lg bg-brand-lime text-xs font-semibold text-brand-navy">{brand.name.slice(0, 1).toUpperCase()}</span>}
+              <span className="truncate text-sm font-semibold text-white">{brand.name}</span>
             </div>
             {["Office overview", "Members", "Live attendance"].map((l, i) => (
               <div key={l} className={cn("relative mb-1 rounded-lg px-2.5 py-2 text-xs", i === 0 ? "bg-white/10 font-medium text-white" : "text-white/60")}>
@@ -202,7 +202,7 @@ function BrandPreview({ brand }: { brand: Brand }) {
           <div className="flex-1 space-y-3 bg-bg p-3">
             <div className="hero-gradient rounded-2xl p-3 text-white">
               <p className="text-[10px] text-white/70">{brand.tagline ?? "Good morning,"}</p>
-              <p className="text-sm font-bold">Welcome to {brand.name}</p>
+              <p className="text-sm font-semibold">Welcome to {brand.name}</p>
               <span className="mt-2 inline-block rounded-lg bg-brand-lime px-2 py-1 text-[10px] font-semibold text-brand-navy">Check in</span>
             </div>
             <div className="card space-y-2 p-3">

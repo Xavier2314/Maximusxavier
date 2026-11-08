@@ -36,7 +36,7 @@ export default async function ManageMemberPage({ params }: { params: Promise<{ i
       <div className="mb-6 flex items-center gap-4">
         <Avatar name={m.full_name} src={m.avatar_url} size={64} />
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{m.full_name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{m.full_name}</h1>
           <p className="text-fg-muted">{m.member_id} · {m.email} · {m.phone ?? "no phone"}</p>
           <div className="mt-1 flex gap-2"><Badge tone={m.status === "active" ? "green" : "red"}>{m.status}</Badge><Badge>Joined {formatDate(m.joined_at)}</Badge></div>
         </div>

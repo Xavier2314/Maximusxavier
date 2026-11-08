@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, ClipboardCheck, Flame, Target, TrendingUp, TriangleAlert, Users } from "lucide-react";
+import { ArrowRight, Target, TrendingUp, TriangleAlert, Users } from "lucide-react";
 import { TrendArea } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -49,10 +49,10 @@ async function LeaderSection({ viewerId, canSeeExtended, period }: { viewerId: s
         <LinkButton href="/team" variant="outline" size="sm">Team tree <ArrowRight className="size-4" aria-hidden /></LinkButton>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard label="Team members" value={team.length} icon={<Users className="size-4" />} hint={canSeeExtended ? "Whole downline" : "Direct downlines"} />
-        <StatCard label="Active" value={active} icon={<Flame className="size-4" />} tone="green" hint={`${team.length - active} inactive`} />
-        <StatCard label="Evaluations this period" value={`${evalRate}%`} icon={<ClipboardCheck className="size-4" />} tone="lime" hint="Completion rate" />
-        <StatCard label="Team sales (30 days)" value={formatMoney(team.reduce((a, m) => a + Number(m.sales), 0))} icon={<TrendingUp className="size-4" />} tone="navy" />
+        <StatCard label="Team members" value={team.length} hint={canSeeExtended ? "Whole downline" : "Direct downlines"} />
+        <StatCard label="Active" value={active} hint={`${team.length - active} inactive`} />
+        <StatCard label="Evaluations this period" value={`${evalRate}%`} hint="Completion rate" />
+        <StatCard label="Team sales (30 days)" value={formatMoney(team.reduce((a, m) => a + Number(m.sales), 0))} />
       </div>
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">

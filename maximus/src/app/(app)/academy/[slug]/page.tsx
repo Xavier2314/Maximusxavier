@@ -48,7 +48,7 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
               )}
               <CardBody className="sm:p-8">
                 <p className="text-xs font-medium text-primary">{categoryOf(course.category as string).label} · Lesson {idx + 1} of {list.length}</p>
-                <h1 className="mt-1 text-2xl font-bold tracking-tight">{current.title}</h1>
+                <h1 className="mt-1 text-2xl font-semibold tracking-tight">{current.title}</h1>
                 {current.duration_minutes && <p className="mt-1 flex items-center gap-1 text-sm text-fg-subtle"><Clock className="size-3.5" aria-hidden /> {current.duration_minutes} min</p>}
                 <div className="mt-6 text-[15px] leading-relaxed">{current.content ? <RichText text={current.content} /> : <p className="text-fg-muted">This lesson has no written content.</p>}</div>
                 {current.resource_url && (

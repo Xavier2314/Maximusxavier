@@ -67,7 +67,7 @@ export function CommandPalette({ sections }: { sections: NavSection[] }) {
             const header = r.group !== lastGroup ? (lastGroup = r.group) : null;
             return (
               <li key={`${r.group}-${r.href}-${r.label}`} role="option" aria-selected={idx === active}>
-                {header && <p className="px-3 pb-1 pt-3 text-xs font-semibold uppercase tracking-[0.12em] text-fg-subtle">{header}</p>}
+                {header && <p className="px-3 pb-1 pt-3 text-sm font-medium text-fg-subtle">{header}</p>}
                 <button type="button" onMouseEnter={() => setActive(idx)} onClick={() => go(r.href)}
                   className={cn("flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm", idx === active ? "bg-primary text-primary-fg" : "hover:bg-surface-muted")}>
                   <Icon className="size-4 shrink-0" aria-hidden />

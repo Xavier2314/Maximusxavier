@@ -152,7 +152,7 @@ export function Chat({ conversationId, initialQuestion, conversations, initialMe
           {messages.length === 0 ? (
             <div className="mx-auto max-w-xl py-8 text-center">
               <Logo variant="mark" className="mx-auto h-14 w-auto" />
-              <h2 className="mt-4 text-xl font-bold">How can I help you grow today, {firstName}?</h2>
+              <h2 className="mt-4 text-xl font-semibold">How can I help you grow today, {firstName}?</h2>
               <p className="mt-1 text-sm text-fg-muted">I know your goals and recent evaluations, and I answer from approved Maximus materials.</p>
               <div className="mt-6 grid gap-2 sm:grid-cols-2">
                 {SUGGESTIONS.map((s) => (

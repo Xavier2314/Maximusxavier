@@ -33,7 +33,7 @@ export function QrCheckIn({ code }: { code: string }) {
       {state.phase === "done" && (
         <>
           <CheckCircle2 className="mx-auto size-14 text-brand-green" aria-hidden />
-          <h2 className="mt-4 text-xl font-bold">{state.review ? "Check-in sent for review" : "You're checked in!"}</h2>
+          <h2 className="mt-4 text-xl font-semibold">{state.review ? "Check-in sent for review" : "You're checked in"}</h2>
           <p className="mt-1 text-fg-muted">
             {state.review ? "Your location looked far from the office, so a manager will confirm it." : `Welcome. Checked in at ${formatTime(state.at)}.`}
           </p>
@@ -43,7 +43,7 @@ export function QrCheckIn({ code }: { code: string }) {
       {state.phase === "error" && (
         <>
           <XCircle className="mx-auto size-14 text-danger" aria-hidden />
-          <h2 className="mt-4 text-xl font-bold">Couldn&apos;t check you in</h2>
+          <h2 className="mt-4 text-xl font-semibold">Couldn&apos;t check you in</h2>
           <p className="mt-1 text-fg-muted">{state.message}</p>
           <LinkButton href="/attendance" variant="outline" className="mt-6">Check in another way</LinkButton>
         </>

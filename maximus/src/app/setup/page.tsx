@@ -19,7 +19,7 @@ export default function SetupPage() {
     <main className="auth-gradient grid min-h-dvh place-items-center px-5 py-12 text-white">
       <div className="w-full max-w-xl">
         <Logo variant="full" className="h-12 w-auto" />
-        <h1 className="mt-10 text-3xl font-bold tracking-tight">Finish setting up Maximus</h1>
+        <h1 className="mt-10 text-3xl font-semibold tracking-tight">Finish setting up Maximus</h1>
         <p className="mt-2 text-white/70">
           Add these environment variables in Vercel → Project → Settings → Environment Variables, then redeploy.
           Full instructions are in the project README.

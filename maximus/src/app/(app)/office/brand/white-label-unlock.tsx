@@ -54,7 +54,7 @@ export function WhiteLabelUnlock({ officeId, fee, latest }: { officeId: string; 
       </ol>
       <div className="flex items-center justify-between gap-3 rounded-xl bg-surface-muted p-3">
         <div>
-          <p className="font-mono text-lg font-bold tracking-wide">{fee.account_number}</p>
+          <p className="font-mono text-lg font-semibold tracking-wide">{fee.account_number}</p>
           <p className="text-xs text-fg-muted">{fee.account_name} · {fee.bank}</p>
         </div>
         <Button size="sm" variant="outline" onClick={() => { navigator.clipboard?.writeText(fee.account_number).then(() => setCopied(true)).catch(() => {}); }}>

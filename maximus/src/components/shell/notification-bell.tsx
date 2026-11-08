@@ -30,7 +30,7 @@ export function NotificationBell({ userId, initialUnread }: { userId: string; in
       aria-label={unread > 0 ? `Notifications, ${unread} unread` : "Notifications"}>
       <Bell className="size-5" aria-hidden />
       {unread > 0 && (
-        <span className="absolute right-1 top-1 grid min-w-[18px] place-items-center rounded-full bg-brand-green px-1 text-xs font-bold leading-[18px] text-brand-navy ring-2 ring-bg">
+        <span className="absolute right-1 top-1 grid min-w-[18px] place-items-center rounded-full bg-brand-green px-1 text-xs font-semibold leading-[18px] text-brand-navy ring-2 ring-bg">
           {unread > 99 ? "99+" : unread}
         </span>
       )}

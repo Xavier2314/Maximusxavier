@@ -95,8 +95,8 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
         </Link>
       )}
       <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <Link href="/tools/time-audit" className="card p-4"><p className="text-sm text-fg-muted">Focused today</p><p className="mt-1 text-2xl font-bold tabular-nums">{fmtMinutes(focusToday)}</p></Link>
-        <Link href="/tools/score" className="card p-4"><p className="text-sm text-fg-muted">Productivity score</p><p className="mt-1 text-2xl font-bold tabular-nums">{sc ?? "—"}<span className="text-sm font-normal text-fg-subtle">/100</span></p></Link>
+        <Link href="/tools/time-audit" className="card p-4"><p className="text-sm text-fg-muted">Focused today</p><p className="mt-1 text-2xl font-semibold tabular-nums">{fmtMinutes(focusToday)}</p></Link>
+        <Link href="/tools/score" className="card p-4"><p className="text-sm text-fg-muted">Productivity score</p><p className="mt-1 text-2xl font-semibold tabular-nums">{sc ?? "—"}<span className="text-sm font-normal text-fg-subtle">/100</span></p></Link>
         <Link href="/tools/pomodoro" className="card col-span-2 flex items-center justify-center gap-2 bg-primary p-4 font-semibold text-primary-fg sm:col-span-1"><Timer className="size-5" aria-hidden /> Start a Pomodoro</Link>
       </div>
       {open ? (
@@ -115,7 +115,7 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
                 </>
               );
               return t.href ? (
-                <Link key={t.label} href={t.href} className="card p-4 transition-shadow hover:shadow-md">{inner}</Link>
+                <Link key={t.label} href={t.href} className="card p-4 transition-colors hover:border-primary/40">{inner}</Link>
               ) : (
                 <div key={t.label} className="card p-4 opacity-75" aria-disabled>{inner}</div>
               );
@@ -125,7 +125,7 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {SECTIONS.map((s) => (
-            <Link key={s.slug} href={s.slug === "brain" ? "/tools/brain" : `/tools?c=${s.slug}`} className="card flex items-center gap-4 p-5 transition-shadow hover:shadow-md">
+            <Link key={s.slug} href={s.slug === "brain" ? "/tools/brain" : `/tools?c=${s.slug}`} className="card flex items-center gap-4 p-5 transition-colors hover:border-primary/40">
               <span className={cn("grid size-12 shrink-0 place-items-center rounded-2xl", s.tone)}><s.icon className="size-6" aria-hidden /></span>
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">{s.title}</span>

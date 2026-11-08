@@ -61,7 +61,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
         </form>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-sm">
-            <thead className="text-left text-xs uppercase tracking-wide text-fg-subtle">
+            <thead className="text-left text-sm text-fg-subtle">
               <tr className="border-b border-border">
                 <th scope="col" className="px-4 py-3 font-medium">Member</th><th scope="col" className="px-4 py-3 font-medium">Office</th>
                 <th scope="col" className="px-4 py-3 font-medium">Role</th><th scope="col" className="px-4 py-3 font-medium">Joined</th><th scope="col" className="px-4 py-3 font-medium">Status</th>

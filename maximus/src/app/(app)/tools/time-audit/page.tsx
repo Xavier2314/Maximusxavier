@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, Timer, Zap } from "lucide-react";
+import { Timer } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, PageHeader, StatCard } from "@/components/ui/misc";
@@ -58,10 +58,10 @@ export default async function TimeAuditPage({ searchParams }: { searchParams: Pr
         ))}
       </div>
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Focused time" value={fmtMinutes(totalMin)} icon={<Clock className="size-5" aria-hidden />} />
-        <StatCard label="Sessions" value={list.length} icon={<Timer className="size-5" aria-hidden />} tone="green" />
-        <StatCard label="Daily average" value={fmtMinutes(totalMin / days)} icon={<Clock className="size-5" aria-hidden />} tone="lime" />
-        <StatCard label="Interruptions" value={interruptions} hint={list.length ? `${(interruptions / list.length).toFixed(1)} per session` : undefined} icon={<Zap className="size-5" aria-hidden />} tone="navy" />
+        <StatCard label="Focused time" value={fmtMinutes(totalMin)} />
+        <StatCard label="Sessions" value={list.length} />
+        <StatCard label="Daily average" value={fmtMinutes(totalMin / days)} />
+        <StatCard label="Interruptions" value={interruptions} hint={list.length ? `${(interruptions / list.length).toFixed(1)} per session` : undefined} />
       </div>
       {list.length === 0 ? (
         <Card><EmptyState icon={<Timer className="size-6" aria-hidden />} title="No focus sessions yet"

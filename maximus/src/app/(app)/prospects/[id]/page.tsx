@@ -35,7 +35,7 @@ export default async function ProspectPage({ params }: { params: Promise<{ id: s
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <Avatar name={p.full_name} size={56} />
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-bold tracking-tight">{p.full_name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{p.full_name}</h1>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-fg-muted">
             <Badge tone="blue">{stageLabel(p.stage)}</Badge>
             <span>{CHANNEL_LABELS[p.channel]}</span>

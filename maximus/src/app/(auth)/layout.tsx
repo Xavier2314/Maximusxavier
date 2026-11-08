@@ -14,8 +14,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <aside className="auth-gradient relative hidden overflow-hidden p-12 text-white lg:flex lg:flex-col">
         <Logo variant="full" className="h-14 w-auto self-start" />
         <div className="relative z-10 my-auto max-w-lg">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-lime">Fulfilment in maximized potential</p>
-          <h2 className="mt-4 text-5xl font-bold leading-[1.05] tracking-tight">
+          <p className="text-sm font-medium text-brand-lime">Fulfilment in maximized potential</p>
+          <h2 className="mt-4 text-5xl font-semibold leading-[1.05] tracking-tight">
             Lead your team.<br />Measure your growth.<br /><span className="text-brand-lime">Win together.</span>
           </h2>
           <ul className="mt-10 grid gap-5">

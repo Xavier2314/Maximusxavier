@@ -10,7 +10,7 @@ export default function ResetPasswordPage() {
   const [state, action] = useActionState(resetPasswordAction, null);
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tight">Choose a new password</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">Choose a new password</h1>
       <p className="mt-1 text-fg-muted">Use at least 8 characters with a letter and a number.</p>
       <form action={action} className="mt-8 space-y-5" noValidate>
         <FormMessage state={state} />

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, Download, Package, Plus, ShoppingBag, TrendingUp } from "lucide-react";
+import { Download, Package, Plus, ShoppingBag, TrendingUp } from "lucide-react";
 import { TrendBars } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -81,10 +81,10 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
       </div>
 
       <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard label="Sales" value={formatMoney(total)} hint={formatDate(month, { month: "long", year: "numeric" })} icon={<TrendingUp className="size-4" />} />
-        <StatCard label="Orders" value={live.length} hint={`${rows.length - live.length} cancelled`} icon={<ShoppingBag className="size-4" />} tone="green" />
-        <StatCard label="Business volume" value={formatNumber(bv)} icon={<Package className="size-4" />} tone="lime" />
-        <StatCard label="Average order" value={formatMoney(live.length ? total / live.length : 0)} icon={<BarChart3 className="size-4" />} tone="navy" />
+        <StatCard label="Sales" value={formatMoney(total)} hint={formatDate(month, { month: "long", year: "numeric" })} />
+        <StatCard label="Orders" value={live.length} hint={`${rows.length - live.length} cancelled`} />
+        <StatCard label="Business volume" value={formatNumber(bv)} />
+        <StatCard label="Average order" value={formatMoney(live.length ? total / live.length : 0)} />
       </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
@@ -94,7 +94,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
             {rows.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[600px] text-sm">
-                  <thead className="text-left text-xs uppercase tracking-wide text-fg-subtle">
+                  <thead className="text-left text-sm text-fg-subtle">
                     <tr className="border-b border-border">
                       <th scope="col" className="px-4 py-3 font-medium">Date</th>
                       {scope === "team" && <th scope="col" className="px-4 py-3 font-medium">Member</th>}

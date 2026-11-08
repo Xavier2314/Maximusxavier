@@ -50,7 +50,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
               <div key={r.member} className="flex flex-col items-center text-center">
                 <span className="relative">
                   <Avatar name={r.full_name} src={r.avatar_url} size={i === 1 ? 84 : 64} className="ring-4 ring-white/20" />
-                  <span className={cn("absolute -bottom-2 left-1/2 grid size-7 -translate-x-1/2 place-items-center rounded-full text-sm font-bold",
+                  <span className={cn("absolute -bottom-2 left-1/2 grid size-7 -translate-x-1/2 place-items-center rounded-full text-sm font-semibold",
                     r.rank === 1 ? "bg-brand-lime text-brand-navy" : "bg-white text-brand-navy")}>{r.rank}</span>
                 </span>
                 <p className="mt-4 line-clamp-1 text-sm font-semibold">{r.full_name}</p>
@@ -64,7 +64,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
               <ol className="divide-y divide-border">
                 {rows.map((r) => (
                   <li key={r.member} className={cn("flex items-center gap-3 py-3", r.is_me && "-mx-2 rounded-xl bg-primary-soft/60 px-2")}>
-                    <span className="w-7 text-center text-sm font-bold tabular-nums text-fg-muted">{r.rank}</span>
+                    <span className="w-7 text-center text-sm font-semibold tabular-nums text-fg-muted">{r.rank}</span>
                     <Avatar name={r.full_name} src={r.avatar_url} size={36} />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{r.full_name}{r.is_me && " (you)"}</span>

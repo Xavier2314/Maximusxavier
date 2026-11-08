@@ -41,7 +41,7 @@ export default async function SharedItemPage({ params }: { params: Promise<{ id:
             </div>
             <Badge tone="blue">{s.kind}</Badge>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">{s.title}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{s.title}</h1>
           {s.message && <blockquote className="rounded-2xl bg-primary-soft/60 px-4 py-3 text-sm">“{s.message}”</blockquote>}
           <div className="whitespace-pre-wrap rounded-2xl border border-border p-4 text-sm leading-relaxed">{s.body}</div>
           <div className="flex flex-wrap gap-2">

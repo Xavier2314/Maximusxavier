@@ -128,26 +128,26 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
               )}
               {methods.length > 0 && (
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-fg-subtle">Prospecting methods</p>
+                  <p className="mb-2 text-sm font-medium text-fg-subtle">Prospecting methods</p>
                   <div className="flex flex-wrap gap-2">{methods.map((m) => <Badge key={m}>{m}</Badge>)}</div>
                 </div>
               )}
               {books.length > 0 && (
                 <div className="rounded-2xl bg-surface-muted p-4">
-                  <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-fg-subtle"><BookOpen className="size-3.5" aria-hidden />Books to read</p>
+                  <p className="flex items-center gap-1.5 text-sm font-medium text-fg-subtle"><BookOpen className="size-3.5" aria-hidden />Books to read</p>
                   <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm">{books.map((b) => <li key={b}>{b}</li>)}</ul>
                 </div>
               )}
               {goal.personal_development_target && (
                 <div className="rounded-2xl bg-surface-muted p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">Personal development</p>
+                  <p className="text-sm font-medium text-fg-subtle">Personal development</p>
                   <p className="mt-1 text-sm">{goal.personal_development_target}</p>
                 </div>
               )}
               {goal.plan_text && (
                 <div className="rounded-2xl bg-surface-muted p-4">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-fg-subtle"><NotebookPen className="size-3.5" aria-hidden />Plan in their own words</p>
+                    <p className="flex items-center gap-1.5 text-sm font-medium text-fg-subtle"><NotebookPen className="size-3.5" aria-hidden />Plan in their own words</p>
                     <ReadAloud text={goal.plan_text} label="Listen" />
                   </div>
                   <p className="mt-1 whitespace-pre-line text-sm">{goal.plan_text}</p>
@@ -155,7 +155,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
               )}
               {goal.custom_goals?.length > 0 && (
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-fg-subtle">To-do list</p>
+                  <p className="mb-2 text-sm font-medium text-fg-subtle">To-do list</p>
                   <ul className="space-y-2">
                     {goal.custom_goals.map((c, i) => (
                       <li key={i} className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm">
@@ -187,7 +187,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
                         {f.comment && <p className="mt-1 whitespace-pre-line text-sm">{f.comment}</p>}
                         {f.action_steps && (
                           <div className="mt-2 rounded-xl bg-surface p-3">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Recommended action steps</p>
+                            <p className="text-sm font-medium text-primary">Recommended action steps</p>
                             <p className="mt-1 whitespace-pre-line text-sm">{f.action_steps}</p>
                           </div>
                         )}

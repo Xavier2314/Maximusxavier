@@ -24,7 +24,7 @@ export default async function ProfilePage() {
         <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
           <AvatarUploader name={p.full_name} src={p.avatar_url} />
           <div>
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{p.full_name}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{p.full_name}</h1>
             <p className="mt-1 font-mono text-brand-lime">{p.member_id}</p>
             <div className="mt-3 flex flex-wrap justify-center gap-1.5 sm:justify-start">
               {rankLabel(p.business_rank) && <span className="rounded-full bg-brand-lime px-2.5 py-0.5 text-xs font-semibold text-brand-navy">{rankLabel(p.business_rank)}</span>}

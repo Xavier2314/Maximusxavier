@@ -14,7 +14,7 @@ export default function ForgotPasswordPage() {
       <Link href="/login" className="mb-6 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg">
         <ArrowLeft className="size-4" aria-hidden /> Back to sign in
       </Link>
-      <h1 className="text-3xl font-bold tracking-tight">Reset your password</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">Reset your password</h1>
       <p className="mt-1 text-fg-muted">Enter your email and we&apos;ll send you a secure reset link.</p>
       <form action={action} className="mt-8 space-y-5" noValidate>
         <FormMessage state={state} />

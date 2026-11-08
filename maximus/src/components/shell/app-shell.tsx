@@ -26,14 +26,14 @@ function BrandMark({ brand, compact = false, onDark = true }: { brand: Brand; co
       <span className="flex min-w-0 items-center gap-2.5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={brand.logo} alt={brand.name} className={cn("w-auto object-contain", compact ? "h-8 max-w-[120px]" : "h-9 max-w-[150px]")} />
-        {!compact && <span className={cn("truncate text-base font-bold tracking-tight", onDark ? "text-white" : "")}>{brand.name}</span>}
+        {!compact && <span className={cn("truncate text-base font-semibold tracking-tight", onDark ? "text-white" : "")}>{brand.name}</span>}
       </span>
     );
   }
   return (
     <span className="flex min-w-0 items-center gap-2.5">
-      <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-brand-lime font-bold text-brand-navy">{brand.name.slice(0, 1).toUpperCase()}</span>
-      {!compact && <span className={cn("truncate text-lg font-bold tracking-tight", onDark ? "text-white" : "")}>{brand.name}</span>}
+      <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-brand-lime font-semibold text-brand-navy">{brand.name.slice(0, 1).toUpperCase()}</span>
+      {!compact && <span className={cn("truncate text-lg font-semibold tracking-tight", onDark ? "text-white" : "")}>{brand.name}</span>}
     </span>
   );
 }
@@ -75,7 +75,7 @@ function NavLinks({ sections, pathname, onNavigate }: { sections: NavSection[]; 
     <nav aria-label="Main" className="space-y-6">
       {sections.map((section, i) => (
         <div key={section.title ?? i}>
-          {section.title && <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/60">{section.title}</p>}
+          {section.title && <p className="mb-2 px-3 text-sm font-medium text-white/60">{section.title}</p>}
           <ul className="space-y-0.5">
             {section.items.map((item) => {
               const Icon = NAV_ICONS[item.icon];

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarClock, ChevronRight, ClipboardCheck, Plus, TrendingUp, Users } from "lucide-react";
+import { ChevronRight, ClipboardCheck, Plus, TrendingUp, Users } from "lucide-react";
 import { TrendBars, TrendLines } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -56,10 +56,10 @@ export default async function EvaluationsPage() {
       </section>
 
       <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard label="Current period" value={currentDone ? "Submitted" : "Open"} hint={formatDate(period, { day: "numeric", month: "long" })} icon={<ClipboardCheck className="size-4" />} tone={currentDone ? "green" : "lime"} />
-        <StatCard label="Next evaluation" value={formatDate(nextEvaluationDate(today), { day: "numeric", month: "short" })} icon={<CalendarClock className="size-4" />} />
-        <StatCard label="Prospects (last 6)" value={evals.slice(0, 6).reduce((a, e) => a + e.prospects, 0)} icon={<Users className="size-4" />} tone="navy" />
-        <StatCard label="Earnings (last 6)" value={formatMoney(evals.slice(0, 6).reduce((a, e) => a + Number(e.earnings), 0))} icon={<TrendingUp className="size-4" />} tone="green" hint="Self-reported" />
+        <StatCard label="Current period" value={currentDone ? "Submitted" : "Open"} hint={formatDate(period, { day: "numeric", month: "long" })} />
+        <StatCard label="Next evaluation" value={formatDate(nextEvaluationDate(today), { day: "numeric", month: "short" })} />
+        <StatCard label="Prospects (last 6)" value={evals.slice(0, 6).reduce((a, e) => a + e.prospects, 0)} />
+        <StatCard label="Earnings (last 6)" value={formatMoney(evals.slice(0, 6).reduce((a, e) => a + Number(e.earnings), 0))} hint="Self-reported" />
       </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">

@@ -31,7 +31,7 @@ export function AnnouncementBar({ items }: { items: BarAnnouncement[] }) {
     <div className="bg-brand-navy text-white" role="region" aria-label="Announcements">
       <div className="mx-auto flex h-10 max-w-7xl items-center gap-2 px-4 text-sm sm:px-6">
         <Megaphone className="size-4 shrink-0 text-brand-lime" aria-hidden />
-        <span className="hidden shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide sm:inline">
+        <span className="hidden shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-xs font-semibold sm:inline">
           {a.kind === "recognition" ? "Recognition" : a.kind === "training" ? "Training" : "Announcement"}
         </span>
         <Link href={`/announcements#a-${a.id}`} className="min-w-0 flex-1 truncate font-medium hover:underline" key={a.id}>

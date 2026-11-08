@@ -45,7 +45,7 @@ export function CheckInPanel({ offices, open }: { offices: Office[]; open: Atten
       const s = res.data?.status;
       setMessage({
         ok: true,
-        text: kind === "out" ? "You're checked out. See you next time!"
+        text: kind === "out" ? "You're checked out. See you next time."
           : s === "verified_in_office" ? "Checked in — your location matched the office."
           : s === "outside_radius" ? "Checked in, but your location was outside the office radius. If you're at the office, submit a correction."
           : s === "pending_review" ? "Checked in. Your location was borderline, so your manager will review it."

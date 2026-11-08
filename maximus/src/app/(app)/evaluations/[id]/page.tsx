@@ -66,7 +66,7 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
                 {numbers.map(([label, value]) => (
                   <div key={label} className="rounded-2xl bg-surface-muted p-3">
                     <dt className="text-xs text-fg-subtle">{label}</dt>
-                    <dd className="mt-1 text-lg font-bold tabular-nums">{value}</dd>
+                    <dd className="mt-1 text-lg font-semibold tabular-nums">{value}</dd>
                   </div>
                 ))}
               </dl>
@@ -74,13 +74,13 @@ export default async function EvaluationDetailPage({ params, searchParams }: { p
                 <ReadAloud label="Listen to this evaluation" text={`${numbers.map(([l, v]) => `${l}: ${v}`).join(". ")}. Challenges: ${ev.challenges ?? "none"}. Priorities: ${ev.priorities ?? "none"}. ${ev.free_text ?? ""} Support needed: ${ev.support_needed ?? "none"}.`} />
                 {ev.free_text && (
                   <div className="rounded-2xl bg-surface-muted p-4">
-                    <h3 className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">In their own words</h3>
+                    <h3 className="text-sm font-medium text-fg-subtle">In their own words</h3>
                     <p className="mt-1 whitespace-pre-line text-sm">{ev.free_text}</p>
                   </div>
                 )}
                 {[["Challenges", ev.challenges], ["Priorities for the next five days", ev.priorities], ["Support needed from sponsor", ev.support_needed]].map(([l, t]) => (
                   <div key={l as string}>
-                    <h3 className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">{l}</h3>
+                    <h3 className="text-sm font-medium text-fg-subtle">{l}</h3>
                     <p className="mt-1 whitespace-pre-line text-sm">{t || <span className="text-fg-subtle">—</span>}</p>
                   </div>
                 ))}

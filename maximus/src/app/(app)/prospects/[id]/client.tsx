@@ -106,7 +106,7 @@ export function Conversation({ prospect: p, messages, readOnly, canAutoSend, spo
                   <li key={i}>
                     <button type="button" onClick={() => { setBody(o); setFromAi(true); }}
                       className="w-full rounded-xl border border-primary/30 bg-primary-soft/50 p-3 text-left text-sm hover:border-primary">
-                      <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-primary">Option {i + 1} · tap to use</span>{o}
+                      <span className="mb-1 block text-sm font-medium text-primary">Option {i + 1} · tap to use</span>{o}
                     </button>
                   </li>
                 ))}

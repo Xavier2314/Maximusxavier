@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bot, MessageCircle, Phone, UserPlus } from "lucide-react";
+import { Bot, UserPlus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, PageHeader, StatCard } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
@@ -35,10 +35,10 @@ export default async function ProspectsPage({ searchParams }: { searchParams: Pr
         action={!readOnly && <AddProspect />} />
 
       <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Pipeline summary">
-        <StatCard label="In progress" value={active} icon={<MessageCircle className="size-4" />} />
-        <StatCard label="Joined or bought" value={won} icon={<UserPlus className="size-4" />} tone="green" />
-        <StatCard label="On AI follow-up" value={auto} icon={<Bot className="size-4" />} tone="navy" />
-        <StatCard label="Follow-ups due" value={due} icon={<Phone className="size-4" />} tone="lime" />
+        <StatCard label="In progress" value={active} />
+        <StatCard label="Joined or bought" value={won} />
+        <StatCard label="On AI follow-up" value={auto} />
+        <StatCard label="Follow-ups due" value={due} />
       </section>
 
       {prospects.length === 0 ? (

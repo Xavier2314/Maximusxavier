@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, CalendarCheck, Compass, ClipboardCheck, Flame, Heart, History, ListChecks, Mail, Phone, ShieldCheck, ShoppingBag, Target } from "lucide-react";
+import { ArrowLeft, CalendarCheck, Compass, ClipboardCheck, Heart, History, ListChecks, Mail, Phone, ShieldCheck, Target } from "lucide-react";
 import { TrendLines } from "@/components/charts";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -94,7 +94,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
           <Avatar name={member.full_name} src={member.avatar_url} size={80} className="ring-4 ring-white/15" />
           <div className="flex-1">
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{member.full_name}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{member.full_name}</h1>
             <p className="mt-1 text-white/70">{member.member_id} · Joined {formatDate(member.joined_at, { month: "long", year: "numeric" })}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {rankLabel(member.business_rank) && <span className="rounded-full bg-brand-lime px-2.5 py-0.5 text-xs font-semibold text-brand-navy">{rankLabel(member.business_rank)}</span>}
@@ -173,10 +173,10 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
       ) : (
         <>
           <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            <StatCard label="Attendance streak" value={`${streak ?? 0} days`} icon={<Flame className="size-4" />} />
-            <StatCard label="Evaluations logged" value={evaluations?.length ?? 0} hint="Most recent 8" icon={<ClipboardCheck className="size-4" />} tone="lime" />
-            <StatCard label="Goal status" value={goal ? goal.status.replace("_", " ") : "Not set"} icon={<Target className="size-4" />} tone="navy" />
-            <StatCard label="Recent orders" value={formatMoney((orders ?? []).reduce((a, o) => a + Number(o.amount), 0))} hint={`${orders?.length ?? 0} orders`} icon={<ShoppingBag className="size-4" />} tone="green" />
+            <StatCard label="Attendance streak" value={`${streak ?? 0} days`} />
+            <StatCard label="Evaluations logged" value={evaluations?.length ?? 0} hint="Most recent 8" />
+            <StatCard label="Goal status" value={goal ? goal.status.replace("_", " ") : "Not set"} />
+            <StatCard label="Recent orders" value={formatMoney((orders ?? []).reduce((a, o) => a + Number(o.amount), 0))} hint={`${orders?.length ?? 0} orders`} />
           </section>
 
           {growth && (

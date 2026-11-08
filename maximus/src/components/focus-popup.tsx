@@ -40,8 +40,8 @@ export function FocusPopup({ areas, week }: { areas: PopupArea[]; week: string }
           <div className="flex items-center gap-3">
             <span className="grid size-11 place-items-center rounded-xl bg-brand-navy text-brand-lime"><Compass className="size-5" aria-hidden /></span>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Your focus this week</p>
-              <h2 id="focus-title" className="text-lg font-bold tracking-tight">Work on these {areas.length} things</h2>
+              <p className="text-sm font-medium text-primary">Your focus this week</p>
+              <h2 id="focus-title" className="text-lg font-semibold tracking-tight">Work on these {areas.length} things</h2>
             </div>
           </div>
           <button type="button" onClick={close} aria-label="Close" className="grid size-11 place-items-center rounded-lg text-fg-subtle hover:bg-surface-muted">
@@ -51,7 +51,7 @@ export function FocusPopup({ areas, week }: { areas: PopupArea[]; week: string }
         <ol className="mt-5 space-y-3">
           {areas.map((a, i) => (
             <li key={a.key} className="flex gap-3 rounded-2xl bg-surface-muted p-3">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-sm font-bold text-primary-fg">{i + 1}</span>
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-fg">{i + 1}</span>
               <div className="min-w-0 text-sm">
                 <p className="font-semibold">{a.title}</p>
                 <p className="mt-0.5 text-fg-muted">{a.why}</p>

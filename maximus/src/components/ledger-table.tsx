@@ -12,7 +12,7 @@ export function LedgerTable({ rows }: { rows: (FinancialTransaction & { account_
     <div className="overflow-x-auto">
       <table className="w-full min-w-[620px] text-sm">
         <caption className="sr-only">Ledger entries, most recent first</caption>
-        <thead className="text-left text-xs uppercase tracking-wide text-fg-subtle">
+        <thead className="text-left text-sm text-fg-subtle">
           <tr className="border-b border-border">
             <th scope="col" className="px-4 py-3 font-medium">Date</th>
             <th scope="col" className="px-4 py-3 font-medium">Entry</th>

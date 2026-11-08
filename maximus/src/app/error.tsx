@@ -13,7 +13,7 @@ export default function RootError({ error, reset }: { error: Error & { digest?: 
     <main className="grid min-h-dvh place-items-center p-6">
       <div className="card max-w-md p-8 text-center">
         <span className="mx-auto grid size-12 place-items-center rounded-xl bg-danger-soft text-danger" aria-hidden><TriangleAlert className="size-6" /></span>
-        <h1 className="mt-3 text-xl font-bold">Something went wrong</h1>
+        <h1 className="mt-3 text-xl font-semibold">Something went wrong</h1>
         <p className="mt-1 text-sm text-fg-muted">Please try again. We&apos;ve been sent the details so we can fix it.</p>
         {error.digest && <p className="mt-2 font-mono text-xs text-fg-subtle">Ref: {error.digest}</p>}
         <div className="mt-5 flex justify-center gap-2">

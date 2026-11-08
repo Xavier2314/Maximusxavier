@@ -46,7 +46,7 @@ export default async function GrowthPage() {
       )}
 
       <section aria-labelledby="top-focus" className="mb-8">
-        <h2 id="top-focus" className="mb-3 flex items-center gap-2 text-lg font-bold tracking-tight">
+        <h2 id="top-focus" className="mb-3 flex items-center gap-2 text-lg font-semibold tracking-tight">
           <Compass className="size-5 text-primary" aria-hidden /> Work on these first
         </h2>
         {top.length > 0 ? <FocusList areas={top} courses={courses} /> : (

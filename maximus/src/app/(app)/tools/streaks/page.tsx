@@ -45,9 +45,9 @@ export default async function StreaksPage() {
       <PageHeader title="Streaks" description="Days in a row you showed up. Don't break the chain." action={<BackToTools c="goals" />} />
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {tiles.map((t) => (
-          <Link key={t.label} href={t.href} className="card p-5 transition-shadow hover:shadow-md">
+          <Link key={t.label} href={t.href} className="card p-5 transition-colors hover:border-primary/40">
             <p className="text-sm text-fg-muted">{t.label}</p>
-            <p className={cn("mt-2 flex items-center gap-2 text-4xl font-bold tabular-nums", t.current > 0 ? "text-warning" : "text-fg-subtle")}>
+            <p className={cn("mt-2 flex items-center gap-2 text-4xl font-semibold tabular-nums", t.current > 0 ? "text-warning" : "text-fg-subtle")}>
               <Flame className="size-8" aria-hidden />{t.current}
             </p>
             <p className="mt-1 text-xs text-fg-subtle">{t.unit}{t.best ? ` · best ${t.best}` : ""}</p>

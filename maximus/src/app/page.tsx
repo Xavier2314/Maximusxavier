@@ -19,8 +19,8 @@ export default function Landing() {
         <Link href="/login" className="inline-flex h-11 items-center rounded-xl px-4 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white">Sign in</Link>
       </header>
       <section className="mx-auto max-w-6xl px-5 pb-16 pt-16 sm:pt-24">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-lime">Fulfilment in maximized potential</p>
-        <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
+        <p className="text-sm font-medium text-brand-lime">Fulfilment in maximized potential</p>
+        <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
           The growth platform for leaders who <span className="text-brand-lime">build winning teams.</span>
         </h1>
         <p className="mt-6 max-w-xl text-lg text-white/70">

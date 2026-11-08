@@ -23,7 +23,7 @@ export function CodeCard({ code }: { code: string }) {
   return (
     <div className="h-fit rounded-2xl bg-brand-navy p-5 text-white shadow-lg ring-1 ring-black/5">
       <p className="text-sm text-white/80">Your partner code</p>
-      <p className="mt-2 inline-block rounded-xl bg-white/10 px-3 py-1.5 font-mono text-3xl font-bold tracking-wider text-brand-lime">{code || "—"}</p>
+      <p className="mt-2 inline-block rounded-xl bg-white/10 px-3 py-1.5 font-mono text-3xl font-semibold tracking-wider text-brand-lime">{code || "—"}</p>
       <p className="mt-2 text-sm text-white/80">Share it with the person you want as your partner.</p>
       <div className="mt-4 flex flex-wrap gap-2">
         <Button variant="lime" size="sm" onClick={async () => { try { await navigator.clipboard.writeText(code); setCopied(true); } catch { /* ignore */ } }}>
@@ -47,7 +47,7 @@ export function RequestForm() {
         <Input id="code" name="code" required placeholder="ACC-X7K29P" maxLength={10} className="font-mono uppercase" autoComplete="off" />
       </Field>
       <Field label="Message" htmlFor="message" optional>
-        <Input id="message" name="message" maxLength={300} placeholder="Let's keep each other on track this month!" />
+        <Input id="message" name="message" maxLength={300} placeholder="Let's keep each other on track this month." />
       </Field>
       <SubmitButton pendingLabel="Sending…"><Send className="size-4" aria-hidden /> Send request</SubmitButton>
     </form>
@@ -65,7 +65,7 @@ export function RequestRow({ r }: { r: { id: string; incoming: boolean; message:
         <div>
           <p className="font-medium">{r.full_name} <span className="text-xs text-fg-subtle">{r.member_id}</span></p>
           <p className="text-sm text-fg-muted">{r.incoming ? "wants you as their partner" : "Waiting for them to accept"} · {formatRelative(r.created_at)}</p>
-          {r.message && <p className="mt-1 text-sm italic">&ldquo;{r.message}&rdquo;</p>}
+          {r.message && <p className="mt-1 text-sm text-fg-muted">&ldquo;{r.message}&rdquo;</p>}
         </div>
       </div>
       {msg ? <p className="text-sm text-fg-muted" role="status">{msg}</p> : r.incoming ? (

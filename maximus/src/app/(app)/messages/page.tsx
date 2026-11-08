@@ -65,7 +65,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
         <aside className={cn("space-y-4", current && c && "hidden lg:block")}>
           <Card>
             <CardBody className="space-y-1 p-2">
-              <p className="px-2 pt-1 text-xs font-semibold uppercase tracking-wide text-fg-subtle">Chats</p>
+              <p className="px-2 pt-1 text-sm font-medium text-fg-subtle">Chats</p>
               {list.length === 0 && <p className="px-2 py-3 text-sm text-fg-muted">No chats yet.</p>}
               {list.map((x) => (
                 <Link key={x.id} href={`/messages?c=${x.id}${viewQs}`} className={cn("flex items-center gap-3 rounded-xl px-2 py-2", current?.id === x.id ? "bg-primary-soft" : "hover:bg-surface-muted")}>
@@ -74,7 +74,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
                     <span className="block truncate text-sm font-medium">{x.full_name}</span>
                     <span className="block text-xs text-fg-muted">{x.kind === "partner" ? "Accountability partner" : "Sponsor line"}{x.can_send ? "" : " · read-only"}</span>
                   </span>
-                  {x.unread > 0 && <span className="grid min-w-5 place-items-center rounded-full bg-brand-green px-1.5 text-xs font-bold text-brand-navy">{x.unread}</span>}
+                  {x.unread > 0 && <span className="grid min-w-5 place-items-center rounded-full bg-brand-green px-1.5 text-xs font-semibold text-brand-navy">{x.unread}</span>}
                 </Link>
               ))}
             </CardBody>
@@ -82,7 +82,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
           {starters.length > 0 && (
             <Card>
               <CardBody className="space-y-2 p-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">Start a private chat</p>
+                <p className="text-sm font-medium text-fg-subtle">Start a private chat</p>
                 {starters.slice(0, 30).map((s) => (
                   <div key={s.id} className="flex items-center gap-2">
                     <Avatar name={s.full_name} src={s.avatar_url} size={32} />

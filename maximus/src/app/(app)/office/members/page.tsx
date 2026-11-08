@@ -87,7 +87,7 @@ export default async function OfficeMembersPage({ searchParams }: { searchParams
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-sm">
-              <thead className="border-b border-border bg-surface-muted/50 text-left text-xs uppercase tracking-wide text-fg-subtle">
+              <thead className="border-b border-border bg-surface-muted/50 text-left text-sm text-fg-subtle">
                 <tr>
                   <th scope="col" className="px-4 py-3 font-medium">Member</th>
                   <th scope="col" className="px-4 py-3 font-medium">Last active</th>

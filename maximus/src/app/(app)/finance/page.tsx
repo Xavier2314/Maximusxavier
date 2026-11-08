@@ -68,7 +68,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
               </p>
               {isSelf && b.kind === "savings" && <TargetForm accountId={b.account_id} target={b.target_amount} />}
             </div>
-            <p className="mt-3 text-3xl font-bold tabular-nums tracking-tight sm:text-4xl">{formatMoney(b.confirmed_balance)}</p>
+            <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight sm:text-4xl">{formatMoney(b.confirmed_balance)}</p>
             <p className="mt-1 text-sm text-white/70">
               {Number(b.pending_in) > 0 && <>+{formatMoney(b.pending_in)} pending · </>}
               {Number(b.pending_out) > 0 && <>−{formatMoney(b.pending_out)} withdrawal pending · </>}

@@ -1,4 +1,4 @@
-import { CalendarCheck, CalendarDays, ClipboardList, Flame, History, MonitorDot, QrCode, Send } from "lucide-react";
+import { CalendarCheck, CalendarDays, ClipboardList, History, MonitorDot, QrCode, Send } from "lucide-react";
 import { AttendanceBadge } from "@/components/attendance-badge";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -50,14 +50,14 @@ export default async function AttendancePage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="hero-gradient relative overflow-hidden rounded-2xl p-6 text-white lg:col-span-2" aria-label="Check in">
           <p className="text-sm text-white/70">{formatDate(today, { weekday: "long", day: "numeric", month: "long" }, tz)}</p>
-          <h2 className="mt-1 text-2xl font-bold">{open ? "You're at work" : "Ready to start your day?"}</h2>
+          <h2 className="mt-1 text-2xl font-semibold">{open ? "You're at work" : "Ready to start your day?"}</h2>
           <div className="relative mt-5">
             <CheckInPanel offices={offices} open={open ?? null} />
           </div>
         </section>
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1">
-          <StatCard label="Current streak" value={`${(streak as number | null) ?? 0} days`} icon={<Flame className="size-4" />} tone="lime" hint="Consecutive working days" />
-          <StatCard label="Days this month" value={presentDays.size} icon={<CalendarCheck className="size-4" />} tone="green" hint="Verified or approved" />
+          <StatCard label="Current streak" value={`${(streak as number | null) ?? 0} days`} hint="Consecutive working days" />
+          <StatCard label="Days this month" value={presentDays.size} hint="Verified or approved" />
         </div>
       </div>
 

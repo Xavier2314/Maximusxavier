@@ -21,7 +21,7 @@ export function PreferencesForm({ prefs }: { prefs: { push_enabled: boolean; mut
       <div className="grid gap-6 sm:grid-cols-2">
         {groups.map((g) => (
           <fieldset key={g}>
-            <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-fg-subtle">{g}</legend>
+            <legend className="mb-2 text-sm font-medium text-fg-subtle">{g}</legend>
             <div className="space-y-2">
               {NOTIFICATION_TYPES.filter((t) => t.group === g).map((t) => (
                 <label key={t.key} className="flex items-center gap-3 text-sm">

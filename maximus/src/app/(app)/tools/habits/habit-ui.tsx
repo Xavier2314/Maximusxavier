@@ -17,7 +17,7 @@ const ALL = [1, 2, 3, 4, 5, 6, 7];
 function StepLabel({ n, children, htmlFor }: { n: number; children: React.ReactNode; htmlFor?: string }) {
   return (
     <label htmlFor={htmlFor} className="mb-2 flex items-center gap-2 text-sm font-semibold">
-      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-fg">{n}</span>
+      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-fg">{n}</span>
       {children}
     </label>
   );
@@ -67,7 +67,7 @@ export function HabitForm() {
         <legend className="w-full">
           <span className="mb-2 flex items-center justify-between gap-2">
             <span className="flex items-center gap-2 text-sm font-semibold">
-              <span className="grid size-6 place-items-center rounded-full bg-primary text-xs font-bold text-primary-fg">3</span>Which days?
+              <span className="grid size-6 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-fg">3</span>Which days?
             </span>
             <span className="flex gap-1 text-xs">
               <button type="button" onClick={() => setDays(ALL)} className="rounded-lg px-2 py-0.5 font-medium text-primary hover:bg-primary-soft">Every day</button>
@@ -82,7 +82,7 @@ export function HabitForm() {
             const on = days.includes(i + 1);
             return (
               <button key={d} type="button" aria-pressed={on} onClick={() => toggleDay(i + 1)}
-                className={cn("h-10 rounded-xl text-xs font-bold transition-colors",
+                className={cn("h-10 rounded-xl text-xs font-semibold transition-colors",
                   on ? "bg-primary text-primary-fg shadow-sm" : "border-2 border-border text-fg-subtle")}>
                 {d}
               </button>
@@ -131,7 +131,7 @@ export function HabitRow({ habit, week, today, checked, streak, rate }: {
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-surface-muted text-2xl" aria-hidden>{habit.icon || "✅"}</span>
           <div className="min-w-0">
-            <p className="truncate text-base font-bold">{habit.name}</p>
+            <p className="truncate text-base font-semibold">{habit.name}</p>
             <p className="text-xs text-fg-muted">
               {habit.days.length === 7 ? "Every day" : habit.days.map((d) => DAYS[d - 1]).join(", ")}
               {habit.reminder_time ? ` · reminder ${habit.reminder_time.slice(0, 5)}` : ""}
@@ -139,7 +139,7 @@ export function HabitRow({ habit, week, today, checked, streak, rate }: {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold tabular-nums",
+          <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-semibold tabular-nums",
             streak > 0 ? "bg-warning-soft text-warning" : "bg-surface-muted text-fg-subtle")} title="Days in a row">
             <Flame className="size-4" aria-hidden />{streak} day{streak === 1 ? "" : "s"}
           </span>
@@ -152,7 +152,7 @@ export function HabitRow({ habit, week, today, checked, streak, rate }: {
       </div>
       {dueToday && (
         <button type="button" onClick={() => toggle(today)} disabled={pending}
-          className={cn("mb-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl text-base font-bold transition-colors",
+          className={cn("mb-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl text-base font-semibold transition-colors",
             doneToday ? "bg-brand-green text-brand-navy" : "bg-primary text-primary-fg hover:bg-primary-hover")}>
           <Check className="size-5" aria-hidden /> {doneToday ? "Done today! Tap to undo" : "Mark done for today"}
         </button>
@@ -169,7 +169,7 @@ export function HabitRow({ habit, week, today, checked, streak, rate }: {
                 on ? "bg-brand-green text-brand-navy" : due ? "bg-surface-muted text-fg hover:bg-border" : "bg-surface-muted/40 text-fg-subtle",
                 d === today && !on && "ring-2 ring-primary")}>
               <span>{DAYS[dow - 1].slice(0, 2)}</span>
-              <span className="mt-0.5 grid size-6 place-items-center text-sm font-bold">{on ? <Check className="size-4" aria-hidden /> : new Date(`${d}T12:00:00Z`).getUTCDate()}</span>
+              <span className="mt-0.5 grid size-6 place-items-center text-sm font-semibold">{on ? <Check className="size-4" aria-hidden /> : new Date(`${d}T12:00:00Z`).getUTCDate()}</span>
             </button>
           );
         })}

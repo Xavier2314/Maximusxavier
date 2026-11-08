@@ -205,7 +205,7 @@ export function FocusTimer({ mode, active, serverNow, prefs: initialPrefs, goals
   const face = (
     <div className="flex flex-col items-center">
       <TimerRing pct={planned ? pct : (elapsed % 60) / 0.6} color={ringColor} big={fullscreen}>
-        <p className={cn("font-bold tabular-nums tracking-tight", fullscreen ? "text-6xl sm:text-7xl" : "text-5xl")} aria-live="off">{fmtClock(shown)}</p>
+        <p className={cn("font-semibold tabular-nums tracking-tight", fullscreen ? "text-6xl sm:text-7xl" : "text-5xl")} aria-live="off">{fmtClock(shown)}</p>
         <p className={cn("mt-1 text-sm", fullscreen ? "text-white/70" : "text-fg-muted")}>
           {session ? (session.status === "paused" ? "Paused" : isBreak ? session.label ?? "Break" : planned ? "remaining" : "elapsed") : "Ready"}
         </p>

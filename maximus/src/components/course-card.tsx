@@ -51,8 +51,8 @@ export function CourseCard({ c }: { c: CourseCardData }) {
       </div>
     </>
   );
-  const cls = "card flex flex-col overflow-hidden transition-all";
+  const cls = "card flex flex-col overflow-hidden transition-colors";
   return soon
     ? <div className={cn(cls, "opacity-90")} aria-disabled>{body}</div>
-    : <Link href={`/academy/${c.slug}`} className={cn(cls, "hover:-translate-y-0.5 hover:shadow-xl")}>{body}</Link>;
+    : <Link href={`/academy/${c.slug}`} className={cn(cls, "")}>{body}</Link>;
 }

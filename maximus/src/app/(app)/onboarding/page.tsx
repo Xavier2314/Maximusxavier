@@ -23,7 +23,7 @@ export default async function OnboardingPage() {
     <div className="mx-auto max-w-2xl">
       <section className="hero-gradient overflow-hidden rounded-2xl p-8 text-center text-white">
         <Logo variant="mark" className="mx-auto h-14 w-auto" />
-        <h1 className="mt-5 text-3xl font-bold tracking-tight">Welcome to Maximus, {viewer.profile.full_name.split(" ")[0]}!</h1>
+        <h1 className="mt-5 text-3xl font-semibold tracking-tight">Welcome to Maximus, {viewer.profile.full_name.split(" ")[0]}!</h1>
         <p className="mt-2 text-white/70">Your Member ID is <b className="font-mono text-brand-lime">{viewer.profile.member_id}</b>. Let&apos;s get you set up.</p>
         <div className="mt-6"><AvatarUploader name={viewer.profile.full_name} src={viewer.profile.avatar_url} /></div>
         <p className="mt-2 text-xs text-white/60">Add a profile photo so your team recognises you</p>

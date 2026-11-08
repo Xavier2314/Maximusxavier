@@ -9,7 +9,7 @@ export default function OfflinePage() {
       <div className="max-w-sm text-center">
         <Logo variant="mark" className="mx-auto h-16" />
         <WifiOff className="mx-auto mt-8 size-8 text-brand-lime" aria-hidden />
-        <h1 className="mt-4 text-2xl font-bold">You&apos;re offline</h1>
+        <h1 className="mt-4 text-2xl font-semibold">You&apos;re offline</h1>
         <p className="mt-2 text-white/70">
           Maximus needs a connection to load your latest attendance, goals and finances. We&apos;ll be ready as soon as you&apos;re back online.
         </p>

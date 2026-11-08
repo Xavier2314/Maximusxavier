@@ -47,8 +47,8 @@ export default async function RecognitionPage() {
               <div className="relative flex items-center gap-5">
                 <Avatar name={b.full_name} src={b.avatar_url} size={84} className="ring-4 ring-brand-lime" />
                 <div>
-                  <p className="flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.16em] text-brand-lime"><Cake className="size-4" aria-hidden /> Happy birthday</p>
-                  <h2 className="mt-1 text-2xl font-bold tracking-tight">{b.full_name}</h2>
+                  <p className="flex items-center gap-1.5 text-sm font-medium text-brand-lime"><Cake className="size-4" aria-hidden /> Happy birthday</p>
+                  <h2 className="mt-1 text-2xl font-semibold tracking-tight">{b.full_name}</h2>
                   <p className="text-sm text-white/70">{dayMonth(b.birthday_month, b.birthday_day)}{b.office_name ? ` · ${b.office_name}` : ""}</p>
                 </div>
               </div>
@@ -68,7 +68,7 @@ export default async function RecognitionPage() {
                 <ul className="space-y-4">
                   {(posts ?? []).map((p) => (
                     <li key={p.id}>
-                      <Link href={`/announcements/${p.id}`} className="flex gap-4 rounded-2xl border border-border p-4 transition-all hover:-translate-y-px hover:border-primary/40">
+                      <Link href={`/announcements/${p.id}`} className="flex gap-4 rounded-2xl border border-border p-4 transition-colors hover:border-primary/40">
                         <Avatar name={p.recipient?.full_name ?? "Member"} src={p.recipient?.avatar_url} size={48} />
                         <div className="min-w-0 flex-1">
                           <p className="flex items-center gap-2 font-semibold"><Award className="size-4 text-brand-green" aria-hidden />{p.title}</p>

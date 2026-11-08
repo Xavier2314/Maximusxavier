@@ -45,7 +45,7 @@ function TreeNode({ node, level }: { node: Node; level: number }) {
           </button>
         ) : <span className="size-7 shrink-0" aria-hidden />}
         <Link href={`/team/${node.member}`}
-          className="group flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-border bg-surface px-3 py-2.5 transition-all hover:-translate-y-px hover:border-primary/40 hover:shadow-[var(--shadow-card)]">
+          className="group flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-border bg-surface px-3 py-2.5 transition-colors hover:border-primary/40">
           <span className="relative">
             <Avatar name={node.full_name} src={node.avatar_url} size={38} />
             <span className={cn("absolute -bottom-0.5 -right-0.5 size-3 rounded-full ring-2 ring-surface", node.is_active ? "bg-brand-green" : "bg-fg-subtle")}
@@ -142,7 +142,7 @@ export function TeamExplorer({ rootId, rootName, rootCode, rootAvatar, rootRank 
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
-            <thead className="text-left text-xs uppercase tracking-wide text-fg-subtle">
+            <thead className="text-left text-sm text-fg-subtle">
               <tr className="border-b border-border">
                 <th scope="col" className="px-4 py-3 font-medium">Member</th>
                 <th scope="col" className="px-4 py-3 font-medium">Level</th>

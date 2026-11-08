@@ -30,7 +30,7 @@ export function CopyReferral({ code, memberId }: { code: string; memberId: strin
       <div className="flex flex-1 items-center gap-3 rounded-2xl bg-surface-muted p-3">
         <div className="min-w-0 flex-1">
           <p className="text-xs text-fg-subtle">Referral code</p>
-          <p className="font-mono text-lg font-bold tracking-wider">{code}</p>
+          <p className="font-mono text-lg font-semibold tracking-wider">{code}</p>
           <p className="text-xs text-fg-subtle">or your Member ID {memberId}</p>
         </div>
         <Button variant="ghost" size="icon" onClick={() => copy(code, "code")} aria-label="Copy referral code">
