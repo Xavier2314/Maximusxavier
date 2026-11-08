@@ -7,16 +7,47 @@ import { GoalStatus } from "@/components/goal-status";
 import { requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { MonthlyGoal } from "@/lib/types";
-import { addMonths, formatDate, monthStart, todayIn } from "@/lib/utils";
+import { addMonths, cn, formatDate, monthStart, todayIn } from "@/lib/utils";
+import { PeriodGoals } from "./period-goals";
 
 export const metadata = { title: "Goals" };
 
 type TeamGoal = MonthlyGoal & { profiles: { full_name: string; avatar_url: string | null } | null };
 
-export default async function GoalsPage() {
+/** Monthly, weekly or daily: the same place for every size of goal. */
+function GoalTabs({ view }: { view: "monthly" | "weekly" | "daily" }) {
+  const tabs = [{ key: "monthly", label: "Monthly", href: "/goals" }, { key: "weekly", label: "Weekly", href: "/goals?view=weekly" }, { key: "daily", label: "Daily", href: "/goals?view=daily" }] as const;
+  return (
+    <nav aria-label="Goal period" className="mb-6 flex gap-2">
+      {tabs.map((t) => (
+        <Link key={t.key} href={t.href} aria-current={view === t.key ? "page" : undefined}
+          className={cn("inline-flex h-11 items-center rounded-full px-5 font-medium transition-colors",
+            view === t.key ? "bg-fg text-bg" : "bg-surface text-fg hover:bg-surface-muted")}>{t.label}</Link>
+      ))}
+    </nav>
+  );
+}
+
+export default async function GoalsPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const viewer = await requireViewer();
   const supabase = await createClient();
   const today = todayIn(viewer.profile.timezone);
+  const { view: rawView } = await searchParams;
+  const view = rawView === "weekly" || rawView === "daily" ? rawView : "monthly";
+
+  if (view !== "monthly") {
+    const { data: rows } = await supabase.from("tool_goals").select("id, title, target, unit, status")
+      .eq("user_id", viewer.id).eq("horizon", view).neq("status", "abandoned")
+      .lte("start_date", today).gte("deadline", today).order("created_at").limit(60);
+    const saved = (rows ?? []).map((g) => ({ id: g.id as string, title: g.title as string, target: g.target == null ? null : Number(g.target), unit: g.unit as string | null, done: g.status === "completed" }));
+    return (
+      <>
+        <PageHeader title={view === "weekly" ? "Weekly goals" : "Daily goals"} />
+        <GoalTabs view={view} />
+        <div className="max-w-3xl"><PeriodGoals period={view} saved={saved} /></div>
+      </>
+    );
+  }
   const thisMonth = monthStart(today);
   const nextMonth = addMonths(thisMonth, 1);
   const day = Number(today.slice(8, 10));
@@ -38,6 +69,7 @@ export default async function GoalsPage() {
     <>
       <PageHeader title="Monthly goals" description="Set clear targets, get your sponsor's feedback and watch your progress update automatically."
         action={<LinkButton href={`/goals/new?month=${upcoming ? thisMonth : nextMonth}`}><Plus className="size-4" aria-hidden /> Set goals</LinkButton>} />
+      <GoalTabs view="monthly" />
 
       {inWindow && !upcoming && (
         <div className="mb-6 flex flex-col gap-3 rounded-2xl bg-brand-lime/25 p-4 sm:flex-row sm:items-center sm:justify-between">
