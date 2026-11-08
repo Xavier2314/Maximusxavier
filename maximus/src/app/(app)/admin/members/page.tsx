@@ -46,7 +46,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
 
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Members & roles" description={`${count ?? 0} members`}
+      <PageHeader title="Members & roles" description={`${count ?? 0} members`}
         action={<LinkButton href="/api/export/members" variant="outline" size="sm" prefetch={false}><Download className="size-4" aria-hidden /> Export CSV</LinkButton>} />
       <Card>
         <form className="grid gap-3 border-b border-border p-4 sm:grid-cols-[1fr_auto_auto_auto_auto]" role="search">

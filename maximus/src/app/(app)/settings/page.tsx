@@ -33,7 +33,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHeader eyebrow="Account" title="Settings" action={<LinkButton href="/profile" variant="outline" size="sm"><UserRound className="size-4" aria-hidden /> Edit profile</LinkButton>} />
+      <PageHeader title="Settings" action={<LinkButton href="/profile" variant="outline" size="sm"><UserRound className="size-4" aria-hidden /> Edit profile</LinkButton>} />
       <div className="space-y-6">
         <Card id="notifications">
           <CardHeader title="Notifications" icon={<Bell className="size-4" />} description="Choose what you hear about and when." />

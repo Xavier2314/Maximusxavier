@@ -20,7 +20,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
 
   return (
     <>
-      <PageHeader eyebrow="Inbox" title="Notifications"
+      <PageHeader title="Notifications"
         action={<LinkButton href="/settings#notifications" variant="outline" size="sm"><Settings className="size-4" aria-hidden /> Preferences</LinkButton>} />
       <Card>
         {data && data.length > 0 ? (

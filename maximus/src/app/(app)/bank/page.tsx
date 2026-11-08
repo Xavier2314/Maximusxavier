@@ -28,14 +28,14 @@ export default async function BankPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Maximus Bank" title="Your money, in Naira" description="Banking built into Maximus. Coming soon." />
+      <PageHeader title="Maximus Bank" description="Not open yet. Join the waitlist and we'll tell you when it is." />
 
       <section className="hero-gradient relative mb-6 overflow-hidden rounded-2xl p-6 text-white sm:p-8">
         <div className="relative grid gap-6 lg:grid-cols-2 lg:items-center">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-lime px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-navy">Coming soon</span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight">Maximus Bank</h2>
-            <p className="mt-2 max-w-md text-white/75">Receive, save and send Naira from the same app you run your business in. Naira (₦) only.</p>
+            <h2 className="mt-3 text-2xl font-bold tracking-tight">Receive, save and send Naira</h2>
+            <p className="mt-2 max-w-md text-white/75">From the same app you run your business in. Naira (₦) only.</p>
             <p className="mt-4 text-sm text-white/60">{(count as number | null) ?? 0} member{count === 1 ? "" : "s"} on the waitlist</p>
           </div>
           {/* Preview of the account dashboard. No real balances are shown until launch. */}
@@ -71,7 +71,7 @@ export default async function BankPage() {
 
         <Card className="h-fit">
           <CardHeader title={joined ? "You're on the list" : "Join the waitlist"} icon={<BadgeCheck className="size-4" />}
-            description={joined ? "We'll notify you the moment Maximus Bank opens." : "Be first to get your account when we launch."} />
+            description={joined ? "We'll notify you when Maximus Bank opens." : "Get your account as soon as it opens."} />
           <CardBody>
             {joined ? (
               <form action={leaveBankWaitlistAction} className="space-y-3">

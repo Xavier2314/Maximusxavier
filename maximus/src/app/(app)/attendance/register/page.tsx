@@ -40,7 +40,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHeader eyebrow="Attendance" title="Office register" description="Green is on time, yellow is late, red is absent." />
+      <PageHeader title="Office register" description="Green is on time, yellow is late, red is absent." />
       {!office ? (
         <Card><EmptyState icon={<ClipboardList className="size-6" />} title="No office assigned" description="You need to belong to an office to see its register." /></Card>
       ) : (

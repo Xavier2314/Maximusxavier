@@ -26,7 +26,7 @@ export default async function SettingsAdminPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Administration" title="System settings" />
+      <PageHeader title="System settings" />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader title="Active member definition" icon={<Flame className="size-4" />}

@@ -21,7 +21,7 @@ export default async function ContentPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Content" description="Manage Academy courses and the approved knowledge Maximus AI answers from." />
+      <PageHeader title="Content" description="Manage Academy courses and the approved knowledge Maximus AI answers from." />
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-4 xl:col-span-2">
           <h2 className="flex items-center gap-2 text-lg font-bold"><BookOpen className="size-5 text-primary" aria-hidden /> Courses</h2>

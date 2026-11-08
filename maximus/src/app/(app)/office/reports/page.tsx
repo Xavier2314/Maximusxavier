@@ -68,7 +68,7 @@ export default async function AttendanceReportsPage({ searchParams }: {
 
   return (
     <>
-      <PageHeader eyebrow="Office view" title="Attendance reports"
+      <PageHeader title="Attendance reports"
         description={`${officeName} · ${formatDate(range.from, { day: "numeric", month: "short" })} – ${formatDate(range.to, { day: "numeric", month: "short", year: "numeric" })}`}
         action={<div className="no-print flex flex-wrap gap-2">
           <OfficePicker offices={viewer.offices} current={officeId} />

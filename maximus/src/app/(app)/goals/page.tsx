@@ -36,7 +36,7 @@ export default async function GoalsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Goals" title="Monthly goals" description="Set clear targets, get your sponsor's feedback and watch your progress update automatically."
+      <PageHeader title="Monthly goals" description="Set clear targets, get your sponsor's feedback and watch your progress update automatically."
         action={<LinkButton href={`/goals/new?month=${upcoming ? thisMonth : nextMonth}`}><Plus className="size-4" aria-hidden /> Set goals</LinkButton>} />
 
       {inWindow && !upcoming && (

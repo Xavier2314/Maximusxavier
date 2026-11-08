@@ -47,7 +47,7 @@ export default async function LiveBoardPage() {
       <Link href="/attendance" className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg">
         <ArrowLeft className="size-4" aria-hidden /> Attendance
       </Link>
-      <PageHeader eyebrow="Live" title="Office board" description="Presence is based on verified check-in and check-out events today."
+      <PageHeader title="Office board" description="Presence is based on verified check-in and check-out events today."
         action={<LiveRefresh />} />
 
       {(offices ?? []).length === 0 ? (

@@ -48,7 +48,7 @@ export default async function AdminOverviewPage({ searchParams }: { searchParams
 
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Organisation overview"
+      <PageHeader title="Organisation overview"
         action={
           <div className="flex rounded-xl bg-surface-muted p-1" role="tablist" aria-label="Date range">
             {Object.keys(RANGES).map((r) => (

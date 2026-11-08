@@ -40,7 +40,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <Logo variant="full" className="h-10 w-auto" />
         </div>
         <div className="-mt-6 flex flex-1 items-start justify-center rounded-t-3xl bg-bg px-5 py-8 sm:px-8 lg:mt-0 lg:items-center lg:rounded-none">
-          <div className="w-full max-w-md animate-rise">{children}</div>
+          <div className="w-full max-w-md">{children}</div>
         </div>
       </main>
     </div>

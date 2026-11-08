@@ -20,7 +20,7 @@ export default async function DailyAdminPage() {
   ]);
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Daily checklist & thoughts" description="What every member sees on their dashboard each day." />
+      <PageHeader title="Daily checklist & thoughts" description="What every member sees on their dashboard each day." />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader title="Daily checklist" icon={<ListChecks className="size-4" />} />

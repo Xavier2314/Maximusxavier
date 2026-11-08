@@ -26,7 +26,7 @@ export default async function AdminSupportPage({ searchParams }: { searchParams:
   const tabs = [["open", "Open"], ["in_progress", "Being handled"], ["resolved", "Resolved"], ["all", "All"]];
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Support tickets" description="Complaints and problems members sent from the chat bubble or Help page." />
+      <PageHeader title="Support tickets" description="Complaints and problems members sent from the chat bubble or Help page." />
       <div className="mb-4 flex flex-wrap gap-2">
         {tabs.map(([k, l]) => (
           <a key={k} href={`/admin/support?status=${k}`} className={cn("rounded-full px-4 py-2 text-sm font-medium", status === k ? "bg-primary text-primary-fg" : "bg-surface-muted text-fg-muted")}>{l}</a>

@@ -58,7 +58,7 @@ export default async function OfficeMembersPage({ searchParams }: { searchParams
 
   return (
     <>
-      <PageHeader eyebrow="Office view" title="Office members" description={`${all.length} active members in ${officeName}`}
+      <PageHeader title="Office members" description={`${all.length} active members in ${officeName}`}
         action={<OfficePicker offices={viewer.offices} current={officeId} />} />
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

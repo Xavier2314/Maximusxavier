@@ -18,7 +18,7 @@ export default async function PlatformBrandingPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Organisation" title="Platform branding (white-label)"
+      <PageHeader title="Platform branding (white-label)"
         description="Rename and recolour the whole system. Offices with their own branding keep it; everyone else sees this look." />
       <BrandEditor mode="platform" initial={{ ...current, logo: setting.logo_url ?? null, isDefault: !setting.app_name }}
         fallbackName={DEFAULT_BRAND.name} save={savePlatformBrandAction} reset={resetPlatformBrandAction} />

@@ -18,7 +18,7 @@ export default async function SupportPage() {
     .eq("user_id", viewer.id).order("created_at", { ascending: false }).limit(50);
   return (
     <>
-      <PageHeader eyebrow="Help" title="Help & complaints" description="Tell the admin team about a problem. You'll get a notification when they respond." />
+      <PageHeader title="Help & complaints" description="Tell the admin team about a problem. You'll get a notification when they respond." />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="h-fit">
           <CardHeader title="Make a complaint" icon={<LifeBuoy className="size-4" />} />

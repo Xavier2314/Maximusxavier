@@ -40,7 +40,7 @@ export default async function AttendancePage() {
 
   return (
     <>
-      <PageHeader eyebrow="Attendance" title="Office attendance" description="Check in when you arrive, check out when you leave."
+      <PageHeader title="Office attendance" description="Check in when you arrive, check out when you leave."
         action={<>
           {(isManager || viewer.isLeader) && <LinkButton href="/attendance/register" variant="outline" size="sm"><ClipboardList className="size-4" aria-hidden /> Register</LinkButton>}
           {isManager && <LinkButton href="/attendance/live" variant="outline" size="sm"><MonitorDot className="size-4" aria-hidden /> Live office board</LinkButton>}

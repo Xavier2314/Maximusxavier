@@ -35,7 +35,7 @@ export default async function OfficeBrandPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <PageHeader eyebrow="Office view" title="Branding"
+      <PageHeader title="Branding"
         description={`Make ${row?.name ?? "your office"} feel like yours: your name, logo and colours. Your members see it across the app.`}
         action={<OfficePicker offices={viewer.offices} current={officeId} />} />
       {!unlocked && fee && isFlutterwaveConfigured() && latest?.status !== "pending" && (

@@ -20,7 +20,7 @@ export default async function MyWhyPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Motivation" title="My Why"
+      <PageHeader title="My Why"
         description="The reasons you do this: your family, your goals, the life you're building. Read them on hard days." />
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-2">

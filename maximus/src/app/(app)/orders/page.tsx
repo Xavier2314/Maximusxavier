@@ -56,7 +56,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <PageHeader eyebrow="Business" title="Orders & activity" description="Record orders from Fiverr, Upwork, product sales and more, with a screenshot, and track your monthly business."
+      <PageHeader title="Orders & activity" description="Record orders from Fiverr, Upwork, product sales and more, with a screenshot, and track your monthly business."
         action={<LinkButton href={`/api/export/orders?month=${month}&scope=${scope}`} variant="outline" size="sm" prefetch={false}><Download className="size-4" aria-hidden /> Export report</LinkButton>} />
 
       <div className="mb-6 flex flex-wrap items-center gap-2">

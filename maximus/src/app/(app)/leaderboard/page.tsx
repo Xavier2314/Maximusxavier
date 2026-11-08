@@ -26,7 +26,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <PageHeader eyebrow="Recognition" title="Earnings leaderboard"
+      <PageHeader title="Earnings leaderboard"
         description="Celebrating who is moving. Based on earnings entered in 5-day evaluations." />
       <div className="mb-6 flex flex-wrap gap-2">
         {(["week", "month"] as const).map((p) => (

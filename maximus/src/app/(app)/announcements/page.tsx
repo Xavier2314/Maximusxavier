@@ -29,12 +29,12 @@ export default async function AnnouncementsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Community" title="Announcements" description="News, trainings and updates from Maximus leadership." />
+      <PageHeader title="Announcements" description="News, trainings and updates from Maximus leadership." />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           {(posts ?? []).length === 0 && <Card><EmptyState icon={<Megaphone className="size-6" />} title="No announcements yet" /></Card>}
           {(posts ?? []).map((p) => (
-            <Card key={p.id} id={`a-${p.id}`} className="animate-rise scroll-mt-32">
+            <Card key={p.id} id={`a-${p.id}`} className="scroll-mt-32">
               <CardBody>
                 <div className="flex items-center gap-3">
                   <Avatar name={p.profiles?.full_name ?? "Maximus"} src={p.profiles?.avatar_url} size={40} />

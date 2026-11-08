@@ -37,7 +37,7 @@ export default async function RecognitionPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Community" title="Recognition & celebrations" description="Celebrate birthdays, anniversaries and wins across the Maximus family." />
+      <PageHeader title="Recognition & celebrations" description="Celebrate birthdays, anniversaries and wins across the Maximus family." />
 
       {today.length > 0 && (
         <section className="mb-6 grid gap-4 md:grid-cols-2" aria-label="Today's birthdays">

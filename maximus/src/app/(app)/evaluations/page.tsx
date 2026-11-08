@@ -35,7 +35,7 @@ export default async function EvaluationsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Evaluations" title="Five-day evaluations"
+      <PageHeader title="Five-day evaluations"
         description="Every 1st, 5th, 10th, 15th, 20th, 25th and 30th (or month end), reflect on your progress."
         action={!currentDone && <LinkButton href="/evaluations/new"><Plus className="size-4" aria-hidden /> Start evaluation</LinkButton>} />
 

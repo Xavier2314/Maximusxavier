@@ -34,7 +34,7 @@ export default async function GrowthPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Growth" title="Your growth focus"
+      <PageHeader title="Your growth focus"
         description="Based on your last 30 days: the areas that will grow you and your team the most right now." />
 
       {focus && (

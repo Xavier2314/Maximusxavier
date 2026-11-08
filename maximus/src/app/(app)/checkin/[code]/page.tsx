@@ -10,7 +10,7 @@ export default async function QrCheckInPage({ params }: { params: Promise<{ code
   const { code } = await params;
   return (
     <>
-      <PageHeader eyebrow="Attendance" title="Office check-in" />
+      <PageHeader title="Office check-in" />
       <QrCheckIn code={code} />
     </>
   );

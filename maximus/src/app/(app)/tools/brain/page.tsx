@@ -21,7 +21,7 @@ export default async function BrainGymPage() {
   }
   return (
     <>
-      <PageHeader eyebrow="Brain gym" title="Brain gym" description="Quick games for focus, memory and problem-solving. For fun and brain training, not a medical or IQ test."
+      <PageHeader title="Brain gym" description="Quick games for focus, memory and problem-solving. For fun and brain training, not a medical or IQ test."
         action={<BackToTools />} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {GAMES.map((g) => (

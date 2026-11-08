@@ -86,7 +86,7 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
 
   return (
     <>
-      <PageHeader eyebrow="Tools" title="Your productivity toolkit" description="Focus, plan, build habits and train your brain." />
+      <PageHeader title="Your productivity toolkit" description="Focus, plan, build habits and train your brain." />
       {active && activePath && (
         <Link href={activePath} className="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-primary px-5 py-4 text-primary-fg shadow-sm">
           <span className="flex items-center gap-2 font-medium"><Timer className="size-5" aria-hidden />

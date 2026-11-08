@@ -23,7 +23,7 @@ export default async function OfficesPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Offices" description="Locations, check-in radius, working days and assigned members." />
+      <PageHeader title="Offices" description="Locations, check-in radius, working days and assigned members." />
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
           {(offices ?? []).length === 0 && (

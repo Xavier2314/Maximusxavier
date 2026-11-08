@@ -55,7 +55,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      <PageHeader eyebrow="Team" title="My team" description="Your sponsor line, your downlines and how everyone is doing."
+      <PageHeader title="My team" description="Your sponsor line, your downlines and how everyone is doing."
         action={<>
           <LiveTeam viewerId={viewer.id} />
           {team.length > 0 && <LinkButton href="/api/export/team" variant="outline" size="sm" prefetch={false}><Download className="size-4" aria-hidden /> Export CSV</LinkButton>}

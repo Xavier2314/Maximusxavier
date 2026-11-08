@@ -8,7 +8,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return (
     <>
       <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
-      <p className="mt-1 text-fg-muted">Sign in to continue your growth journey.</p>
+      <p className="mt-1 text-fg-muted">Sign in with your email and password.</p>
       {error === "link_expired" && (
         <p className="mt-4 rounded-xl bg-warning-soft px-4 py-3 text-sm text-warning" role="alert">
           That link has expired or was already used. Please sign in or request a new one.

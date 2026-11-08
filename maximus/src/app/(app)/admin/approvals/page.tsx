@@ -31,7 +31,7 @@ export default async function ApprovalsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Approvals" description="Review submitted payments and attendance corrections. Every decision is audited and the member is notified." />
+      <PageHeader title="Approvals" description="Review submitted payments and attendance corrections. Every decision is audited and the member is notified." />
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
           {canPay && (

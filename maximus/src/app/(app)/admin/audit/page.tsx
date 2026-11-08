@@ -27,7 +27,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
 
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Audit log" description="An append-only record of sensitive actions. Entries cannot be edited or deleted." />
+      <PageHeader title="Audit log" description="An append-only record of sensitive actions. Entries cannot be edited or deleted." />
       <Card>
         <form className="flex gap-2 border-b border-border p-4">
           <Select name="action" defaultValue={sp.action ?? ""} aria-label="Filter by action" className="max-w-xs">

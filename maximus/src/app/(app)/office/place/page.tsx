@@ -36,7 +36,7 @@ export default async function PlaceInOfficePage({ searchParams }: { searchParams
 
   return (
     <>
-      <PageHeader eyebrow="Office view" title="Place in an office"
+      <PageHeader title="Place in an office"
         description={superAdmin ? "Members without an office are listed first. Search to move anyone to the right office."
           : "People in your team without an office. Search your team to move someone to the right office."} />
       <form className="mb-4 max-w-sm" action="/office/place">

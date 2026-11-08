@@ -33,7 +33,7 @@ export default async function WhiteLabelPaymentsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Organisation" title="White-label payments"
+      <PageHeader title="White-label payments"
         description={fee ? `Offices pay ${formatMoney(fee.amount)} to ${fee.account_name} · ${fee.bank} ${fee.account_number} to remove "Powered by".` : undefined} />
       <p className="mb-6 rounded-2xl bg-warning-soft px-4 py-3 text-sm text-warning">
         The AI reads each screenshot and compares the amount and account, but screenshots can be edited.

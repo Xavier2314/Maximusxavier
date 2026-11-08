@@ -28,7 +28,7 @@ export default async function WeeklyReportsPage({ searchParams }: { searchParams
 
   return (
     <>
-      <PageHeader eyebrow="Office view" title="Weekly office reports"
+      <PageHeader title="Weekly office reports"
         description="Talk to Maximus AI or fill the table. Last week's numbers carry over, and you can download a PDF with your office logo."
         action={<>
           <OfficePicker offices={viewer.offices} current={officeId} />

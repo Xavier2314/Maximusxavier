@@ -18,7 +18,7 @@ export default async function AiPage({ searchParams }: { searchParams: Promise<{
 
   return (
     <>
-      <PageHeader eyebrow="Grow" title="Maximus AI" description="Your personal growth coach for prospecting, sales, leadership and goals." />
+      <PageHeader title="Maximus AI" description="Your personal growth coach for prospecting, sales, leadership and goals." />
       {!isAiConfigured() && <div className="mb-6"><NotConfigured feature="Maximus AI" envVars={["ANTHROPIC_API_KEY"]} /></div>}
       <Chat
         key={c ?? "new"}
