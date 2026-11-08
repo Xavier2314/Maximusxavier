@@ -153,23 +153,47 @@ function NavLinks({ sections, pathname, onNavigate, dark = false }: { sections: 
   );
 }
 
-function UserCard({ user, signOut, dark = false }: { user: ShellUser; signOut: () => void; dark?: boolean }) {
+/** The member's name and photo; opens an account menu with Profile, Settings and Log out. */
+function UserCard({ user, signOut, dark = false, onNavigate }: { user: ShellUser; signOut: () => void; dark?: boolean; onNavigate?: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
+  }, [open]);
+  const item = "flex min-h-11 w-full items-center gap-3 rounded-md px-2.5 text-sm hover:bg-surface-muted lg:min-h-9";
   return (
-    <div className={cn("flex items-center gap-2 rounded-lg p-2", dark ? "bg-white/5" : "")}>
-      <Link href="/profile" className="flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1 hover:opacity-80">
+    <div ref={ref} className="relative">
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-haspopup="menu" aria-expanded={open}
+        className={cn("flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors", dark ? "hover:bg-white/5" : "hover:bg-surface-muted/70")}>
         <Avatar name={user.name} src={user.avatar} size={32} className={dark ? "ring-white/10" : "ring-0"} />
         <span className="min-w-0 flex-1">
           <span className={cn("block truncate text-sm font-medium", dark ? "text-white" : "text-fg")}>{user.name}</span>
-          <span className={cn("block truncate text-xs", dark ? "text-white/60" : "text-fg-subtle")}>{user.role}, {user.memberId}</span>
+          <span className={cn("block truncate text-xs", dark ? "text-white/60" : "text-fg-subtle")}>{user.role}</span>
         </span>
-      </Link>
-      <form action={signOut}>
-        <button type="submit"
-          aria-label="Log out" title="Log out"
-          className={cn("grid size-11 place-items-center rounded-lg lg:size-9", dark ? "text-white/70 hover:bg-white/10 hover:text-white" : "text-fg-subtle hover:bg-surface-muted hover:text-fg")}>
-          <LogOut className="size-4" aria-hidden />
-        </button>
-      </form>
+        <ChevronsUpDown className={cn("size-4 shrink-0", dark ? "text-white/60" : "text-fg-subtle")} aria-hidden />
+      </button>
+      {open && (
+        <div role="menu" aria-label="Account" className="absolute inset-x-0 bottom-full z-50 mb-1 rounded-lg border border-border bg-surface p-1 text-fg shadow-lg animate-fade">
+          <p className="truncate px-2.5 pb-1.5 pt-1 text-xs text-fg-subtle">Member {user.memberId}</p>
+          <Link href="/profile" role="menuitem" onClick={() => { setOpen(false); onNavigate?.(); }} className={item}>
+            <User className="size-4 text-fg-subtle" aria-hidden />Profile
+          </Link>
+          <Link href="/settings" role="menuitem" onClick={() => { setOpen(false); onNavigate?.(); }} className={item}>
+            <Settings className="size-4 text-fg-subtle" aria-hidden />Settings
+          </Link>
+          <div className="my-1 border-t border-border" />
+          <form action={signOut}>
+            <button type="submit" role="menuitem" className={item}>
+              <LogOut className="size-4 text-fg-subtle" aria-hidden />Log out
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
@@ -301,10 +325,7 @@ export function AppShell({ sections: memberSections, team = null, office = null,
             {(team || office) && <ViewMenu team={team} office={office} mode={mode} onNavigate={() => setMenuOpen(false)} className="mb-5" />}
             <NavLinks sections={sections} pathname={pathname} onNavigate={() => setMenuOpen(false)} />
             <div className="mt-6 space-y-3">
-              <Link href="/settings" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-fg-muted hover:bg-surface-muted">
-                <Settings className="size-4 text-fg-subtle" aria-hidden />Settings
-              </Link>
-              <UserCard user={user} signOut={signOut} />
+              <UserCard user={user} signOut={signOut} onNavigate={() => setMenuOpen(false)} />
             </div>
           </div>
         </div>

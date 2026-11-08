@@ -7,6 +7,7 @@ import { requireViewer } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { isGoogleConfigured, isSpotifySearchConfigured, isWhatsAppConfigured } from "@/lib/followup";
 import { createClient } from "@/lib/supabase/server";
+import { signOutAction } from "../../(auth)/actions";
 import { disconnectIntegrationAction, signOutEverywhereAction } from "./actions";
 import { PasswordForm, PreferencesForm, PrivacyForm } from "./forms";
 import { PushToggle } from "./push-toggle";
@@ -90,10 +91,16 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <CardHeader title="Security" description={`Signed in as ${viewer.email}`} />
           <CardBody className="space-y-6">
             <PasswordForm />
-            <form action={signOutEverywhereAction} className="border-t border-border pt-6">
-              <p className="mb-3 text-sm text-fg-muted">Lost a phone or used a shared computer? Sign out of Maximus on every device.</p>
-              <SubmitButton variant="outline" pendingLabel="Signing out…"><LogOut className="size-4" aria-hidden /> Sign out everywhere</SubmitButton>
-            </form>
+            <div className="flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-end sm:justify-between">
+              <form action={signOutAction}>
+                <p className="mb-3 text-sm text-fg-muted">Log out of Maximus on this device.</p>
+                <SubmitButton variant="outline" pendingLabel="Logging out…"><LogOut className="size-4" aria-hidden />Log out</SubmitButton>
+              </form>
+              <form action={signOutEverywhereAction}>
+                <p className="mb-3 text-sm text-fg-muted">Lost a phone or used a shared computer? Sign out on every device.</p>
+                <SubmitButton variant="outline" pendingLabel="Signing out…">Sign out everywhere</SubmitButton>
+              </form>
+            </div>
           </CardBody>
         </Card>
       </div>
