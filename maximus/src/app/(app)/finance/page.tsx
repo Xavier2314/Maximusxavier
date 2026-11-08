@@ -105,7 +105,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
           <Card>
             <CardHeader title="Payment history" description="Every entry is permanent. Corrections appear as adjustments or reversals." />
             {rows.length > 0 ? <LedgerTable rows={rows} /> : (
-              <EmptyState title="No entries yet" description="Submit your first deposit or contribution to start your record." />
+              <EmptyState art="money" title="No entries yet" description="Submit your first deposit or contribution to start your record." />
             )}
           </Card>
         </div>

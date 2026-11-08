@@ -37,7 +37,7 @@ export default async function WeeklyReportsPage({ searchParams }: { searchParams
           </LinkButton>
         </>} />
       {reports.length === 0 ? (
-        <Card><EmptyState title="No reports yet"
+        <Card><EmptyState art="tasks" title="No reports yet"
           description="Start this week's report. It takes a few minutes, especially if you just talk to Maximus AI." /></Card>
       ) : (
         <Card className="divide-y divide-border">

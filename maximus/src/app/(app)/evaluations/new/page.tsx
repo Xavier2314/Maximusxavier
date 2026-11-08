@@ -27,7 +27,7 @@ export default async function NewEvaluationPage() {
       <PageHeader title="Five-day evaluation" description="Ten quick questions. Be honest — this is how your sponsor knows how to help." />
       <Card className="max-w-3xl">
         {open.length === 0 ? (
-          <EmptyState title="You're up to date"
+          <EmptyState art="tasks" title="You're up to date"
             description="All recent evaluations are submitted. The next one opens on the next evaluation date."
             action={<LinkButton href="/evaluations" variant="outline">View history</LinkButton>} />
         ) : (

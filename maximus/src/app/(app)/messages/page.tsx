@@ -97,7 +97,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
         </aside>
         <section>
           {room ?? (
-            <Card><EmptyState title="Pick someone to chat with"
+            <Card><EmptyState art="messages" title="Pick someone to chat with"
               description="Chat privately with your accountability partner, your sponsor or anyone in your team line."
               action={<Link href="/tools/accountability" className="text-primary">Find an accountability partner</Link>} /></Card>
           )}

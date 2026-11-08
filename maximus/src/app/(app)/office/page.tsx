@@ -42,7 +42,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("office_dashboard", { p_office: officeId });
   if (error || !data) {
-    return <EmptyState title="Couldn't load this office" description="Please refresh the page." />;
+    return <EmptyState art="team" title="Couldn't load this office" description="Please refresh the page." />;
   }
   const d = data as OfficeDashboard;
   const m = d.members_total;
@@ -107,7 +107,7 @@ export default async function OfficePage({ searchParams }: { searchParams: Promi
           <CardBody>
             {trend.some((t) => t.present > 0)
               ? <TrendBars data={trend} xKey="day" series={[{ key: "present", label: "Checked in" }]} caption="Members checked in per open day" />
-              : <EmptyState title="No check-ins yet"
+              : <EmptyState art="team" title="No check-ins yet"
                   description="Print the QR poster and put it at the entrance. Members scan it when they arrive." />}
           </CardBody>
         </Card>

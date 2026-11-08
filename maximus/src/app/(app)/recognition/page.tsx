@@ -79,7 +79,7 @@ export default async function RecognitionPage() {
                     </li>
                   ))}
                 </ul>
-              ) : <EmptyState title="No recognition posts yet" description="Leaders can celebrate team wins here." />}
+              ) : <EmptyState art="team" title="No recognition posts yet" description="Leaders can celebrate team wins here." />}
             </CardBody>
           </Card>
           {canRecognise && team.length > 0 && (

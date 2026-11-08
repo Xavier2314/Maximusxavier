@@ -1,4 +1,4 @@
-import { ShieldAlert } from "lucide-react";
+import { LockedIllustration } from "@/components/brand/illustrations";
 import { Logo } from "@/components/brand/logo";
 import { signOutAction } from "../(auth)/actions";
 
@@ -9,7 +9,7 @@ export default function SuspendedPage() {
     <main className="auth-gradient grid min-h-dvh place-items-center px-6 text-white">
       <div className="max-w-sm text-center">
         <Logo variant="mark" className="mx-auto h-14 w-auto" />
-        <ShieldAlert className="mx-auto mt-8 size-8 text-brand-lime" aria-hidden />
+        <LockedIllustration className="mx-auto mt-8 w-56" />
         <h1 className="mt-4 text-2xl font-semibold">Your account is not active</h1>
         <p className="mt-2 text-white/70">Your membership has been suspended or deactivated. Please contact your office manager or an administrator.</p>
         <form action={signOutAction} className="mt-6">

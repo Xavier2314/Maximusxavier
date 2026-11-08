@@ -98,7 +98,7 @@ export default async function AttendanceReportsPage({ searchParams }: {
       </div>
 
       {error ? (
-        <Card><EmptyState title="Couldn't build this report" description={error.message} /></Card>
+        <Card><EmptyState art="tasks" title="Couldn't build this report" description={error.message} /></Card>
       ) : (
         <>
           <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Summary">
@@ -113,7 +113,7 @@ export default async function AttendanceReportsPage({ searchParams }: {
             <CardBody>
               {chart.some((d) => d.onTime + d.late > 0)
                 ? <TrendBars data={chart} xKey="day" series={[{ key: "onTime", label: "On time" }, { key: "late", label: "Late", color: "2" }]} caption="Check-ins per open day" />
-                : <EmptyState title="No check-ins in this period" />}
+                : <EmptyState art="tasks" title="No check-ins in this period" />}
             </CardBody>
           </Card>
 

@@ -1,3 +1,4 @@
+import { EmptyIllustration, type EmptyArt } from "@/components/brand/illustrations";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { cn, initials } from "@/lib/utils";
@@ -66,11 +67,15 @@ export function Skeleton({ className }: { className?: string }) {
   return <div className={cn("skeleton", className)} aria-hidden />;
 }
 
-export function EmptyState({ title, description, action, className }: {
+/** An empty list: a small picture that matches what's missing, a title, a hint and one action. */
+export function EmptyState({ title, description, action, className, art = "generic", illustration }: {
   title: string; description?: ReactNode; action?: ReactNode; className?: string;
+  /** Which picture to show; `illustration` replaces it entirely (error and access pages). */
+  art?: EmptyArt; illustration?: ReactNode;
 }) {
   return (
     <div className={cn("px-5 py-10 text-center", className)}>
+      {illustration ?? <EmptyIllustration art={art} className="mx-auto mb-4 w-40 sm:w-44" />}
       <h3 className="font-medium">{title}</h3>
       {description && <p className="mx-auto mt-1 max-w-sm text-sm text-fg-muted">{description}</p>}
       {action && <div className="mt-4">{action}</div>}

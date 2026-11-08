@@ -109,7 +109,7 @@ export default async function PlannerPage({ searchParams }: { searchParams: Prom
                   {list.map((t) => <TaskRow key={t.id} task={t} today={today} assignerName={nameOf(t.assigned_by)} />)}
                 </ul>
               ) : (
-                <EmptyState
+                <EmptyState art="tasks"
                   title={view === "today" ? "Nothing planned for today" : view === "overdue" ? "You're all caught up" : view === "upcoming" ? "Nothing coming up" : "No completed tasks yet"}
                   description={view === "today" ? "Add a task above, or pick one of the suggestions." : undefined} />
               )}

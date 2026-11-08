@@ -26,7 +26,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
         {data && data.length > 0 ? (
           <NotificationList items={data} filter={filter === "unread" ? "unread" : "all"} />
         ) : (
-          <EmptyState title={filter === "unread" ? "No unread notifications" : "No notifications yet"}
+          <EmptyState art="messages" title={filter === "unread" ? "No unread notifications" : "No notifications yet"}
             description="Goal reviews, reminders, team updates and announcements will appear here." />
         )}
       </Card>

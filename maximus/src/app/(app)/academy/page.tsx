@@ -36,7 +36,7 @@ export default async function AcademyPage() {
             <Progress value={overall} className="mt-2 h-1.5" label="Academy progress" />
           </div>
         ) : undefined} />
-      {cards.length === 0 ? <EmptyState title="No courses yet" /> : CATEGORIES.map((cat) => {
+      {cards.length === 0 ? <EmptyState art="tasks" title="No courses yet" /> : CATEGORIES.map((cat) => {
         const list = cards.filter((c) => c.category === cat.key);
         if (list.length === 0) return null;
         return (

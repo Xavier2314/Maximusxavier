@@ -122,7 +122,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                   </tbody>
                 </table>
               </div>
-            ) : <EmptyState title="No orders this month" description="Record your first order to start tracking sales." />}
+            ) : <EmptyState art="money" title="No orders this month" description="Record your first order to start tracking sales." />}
           </Card>
           <div className="grid gap-6 md:grid-cols-2">
             <Card>

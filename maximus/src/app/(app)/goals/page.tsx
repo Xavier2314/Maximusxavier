@@ -61,7 +61,7 @@ export default async function GoalsPage() {
                     <ChevronRight className="size-4 text-fg-subtle" aria-hidden />
                   </Link>
                 ) : (
-                  <EmptyState className="py-6" title="No goals yet"
+                  <EmptyState art="tasks" className="py-6" title="No goals yet"
                     action={<LinkButton href={`/goals/new?month=${month}`} size="sm">Set {formatDate(month, { month: "long" })} goals</LinkButton>} />
                 )}
               </CardBody>

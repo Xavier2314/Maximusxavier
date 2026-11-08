@@ -41,7 +41,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
     <>
       <PageHeader title="Office register" description="Green is on time, yellow is late, red is absent." />
       {!office ? (
-        <Card><EmptyState title="No office assigned" description="You need to belong to an office to see its register." /></Card>
+        <Card><EmptyState art="team" title="No office assigned" description="You need to belong to an office to see its register." /></Card>
       ) : (
         <>
           <form className="mb-6 flex flex-wrap items-end gap-2">

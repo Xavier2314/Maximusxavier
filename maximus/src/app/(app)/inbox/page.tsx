@@ -34,7 +34,7 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
       </div>
       <Card>
         {rows.length === 0 ? (
-          <EmptyState title="Nothing here yet"
+          <EmptyState art="messages" title="Nothing here yet"
             description={tab === "sent" ? "Use “Send to sponsor / team leader” on your goals, evaluations or orders." : "When your team sends you something, it appears here."} />
         ) : (
           <ul className="divide-y divide-border">

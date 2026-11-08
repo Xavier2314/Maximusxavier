@@ -40,7 +40,7 @@ export default async function WhiteLabelPaymentsPage() {
         Before approving, confirm the money arrived in your bank app or SMS alert.
       </p>
       {rows.length === 0 ? (
-        <Card><EmptyState title="No payments yet" description="When an office sends a receipt it appears here, and you get a notification." /></Card>
+        <Card><EmptyState art="money" title="No payments yet" description="When an office sends a receipt it appears here, and you get a notification." /></Card>
       ) : (
         <div className="space-y-4">
           {rows.map((r) => {

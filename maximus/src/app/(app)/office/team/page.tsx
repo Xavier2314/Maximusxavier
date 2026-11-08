@@ -60,7 +60,7 @@ async function LeaderSection({ viewerId, canSeeExtended, period }: { viewerId: s
           <CardBody>
             {growthData.some((g) => g.total > 0)
               ? <TrendArea data={growthData} xKey="month" series={[{ key: "total", label: "Team members" }]} caption="Team size by month" />
-              : <EmptyState title="Your team chart starts with your first recruit"
+              : <EmptyState art="team" title="Your team chart starts with your first recruit"
                   description="Share your referral link from your profile to invite people." />}
           </CardBody>
         </Card>

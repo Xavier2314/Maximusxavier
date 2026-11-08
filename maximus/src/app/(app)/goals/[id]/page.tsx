@@ -1,3 +1,4 @@
+import { SuccessIllustration } from "@/components/brand/illustrations";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, CircleCheck, ListChecks, NotebookPen, Pencil, RotateCcw, Send } from "lucide-react";
@@ -80,11 +81,14 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
           {editable && <Link href={`/goals/${id}?edit=1`} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-sm font-medium text-primary-fg"><Pencil className="size-4" aria-hidden /> Edit</Link>}
         </>} />
 
-      {saved && (
-        <p className="mb-6 rounded-2xl bg-success-soft px-4 py-3 text-sm text-success" role="status">
-          {saved === "submit" ? "Goals submitted — your sponsor has been notified." : "Draft saved."}
-        </p>
-      )}
+      {saved === "submit" ? (
+        <div className="mb-6 flex items-center gap-4 rounded-[22px] border border-border bg-surface px-4 py-3" role="status">
+          <SuccessIllustration className="w-28 shrink-0" />
+          <p><span className="block font-semibold">Goals submitted</span><span className="text-fg-muted">Your sponsor has been notified.</span></p>
+        </div>
+      ) : saved ? (
+        <p className="mb-6 rounded-2xl bg-success-soft px-4 py-3 text-sm text-success" role="status">Draft saved.</p>
+      ) : null}
       {goal.status === "revision_requested" && isOwner && (
         <p className="mb-6 flex items-center gap-2 rounded-2xl bg-warning-soft px-4 py-3 text-sm text-warning" role="alert">
           <RotateCcw className="size-4" aria-hidden /> Your sponsor asked for changes. Read their feedback below, then edit and resubmit.

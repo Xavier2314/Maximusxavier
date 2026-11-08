@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Building2, MapPin, Plus } from "lucide-react";
+import { ArrowRight, Building2, Plus } from "lucide-react";
 import { TaskQuickAdd } from "../planner/task-ui";
 import { TASK_CATEGORIES, type Motivation, type Task } from "@/lib/planner";
 import { FocusPopup } from "@/components/focus-popup";
+import { CallerIllustration, ClimberIllustration, WaverIllustration } from "@/components/brand/illustrations";
 import { TodayList, type TodayItem } from "./today-list";
 import { DuplicationSummary, FocusList, coursesForFocus } from "@/components/growth-focus";
 import { LinkButton } from "@/components/ui/button";
@@ -145,18 +146,17 @@ export default async function DashboardPage() {
       </div>
 
       <section aria-label="Today" className="grid grid-flow-dense grid-cols-2 gap-3 lg:grid-cols-4">
-        <Link href="/goals" className="col-span-2 rounded-[22px] bg-tile-green p-5 text-black transition-[filter] hover:brightness-95">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="text-xl font-semibold leading-tight">{monthName} goals</h2>
-              <p className="mt-0.5 text-[15px]">{goalRows.length ? `${goalPct}% there, day ${dayNum} of ${daysInMonth}` : "Set your goals for this month"}</p>
-            </div>
-            <span className="shrink-0 text-sm font-semibold tabular-nums">Day {streakDays} in a row</span>
+        <Link href="/goals" className="relative col-span-2 flex items-end gap-2 overflow-hidden rounded-[22px] bg-tile-green p-5 text-black transition-[filter] hover:brightness-95">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-xl font-semibold leading-tight">{monthName} goals</h2>
+            <p className="mt-0.5 text-[15px]">{goalRows.length ? `${goalPct}% there, day ${dayNum} of ${daysInMonth}` : "Set your goals for this month"}</p>
+            <p className="mt-0.5 text-sm font-semibold tabular-nums">Day {streakDays} in a row at the office</p>
+            <Steps pct={goalRows.length ? goalPct : 0} />
           </div>
-          <Steps pct={goalRows.length ? goalPct : 0} />
+          <ClimberIllustration className="-mb-5 -mr-1 w-28 shrink-0 sm:w-36" />
         </Link>
 
-        <Link href="/planner" className="row-span-2 flex min-h-[248px] flex-col rounded-[22px] bg-brand-blue p-5 text-white transition-[filter] hover:brightness-110">
+        <Link href="/planner" className="row-span-2 flex min-h-[312px] flex-col rounded-[22px] bg-brand-blue p-5 text-white transition-[filter] hover:brightness-110">
           <h2 className="text-xl font-semibold leading-tight">Today&apos;s plan</h2>
           {planItems.length > 0 ? (
             <ul className="mt-4 space-y-3 text-[15px]">
@@ -174,13 +174,11 @@ export default async function DashboardPage() {
           <span className="mt-auto flex items-center justify-between pt-4 text-sm font-semibold">See all<ArrowRight className="size-4" aria-hidden /></span>
         </Link>
 
-        <Link href="/prospects" className="flex min-h-[118px] flex-col rounded-[22px] bg-tile-sky p-4 text-black transition-[filter] hover:brightness-95">
+        <Link href="/prospects" className="relative flex min-h-[150px] flex-col overflow-hidden rounded-[22px] bg-tile-sky p-4 text-black transition-[filter] hover:brightness-95">
           <h2 className="text-lg font-semibold leading-tight">Follow-ups</h2>
           <p className="text-sm">{followUpCount ? "Due today" : "None due today"}</p>
-          <span className="mt-auto flex items-end justify-between">
-            <span className="text-3xl font-semibold leading-none tabular-nums">{followUpCount}</span>
-            <ArrowRight className="size-4" aria-hidden />
-          </span>
+          <span className="relative z-10 mt-auto text-3xl font-semibold leading-none tabular-nums">{followUpCount}</span>
+          <CallerIllustration className="absolute -bottom-1 right-0 w-24" />
         </Link>
 
         <div className="col-span-2 flex flex-col gap-3">
@@ -198,13 +196,10 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <Link href="/attendance" className="flex min-h-[118px] flex-col rounded-[22px] bg-tile-green p-4 text-black transition-[filter] hover:brightness-95">
+        <Link href="/attendance" className="relative flex min-h-[150px] flex-col overflow-hidden rounded-[22px] bg-tile-green p-4 text-black transition-[filter] hover:brightness-95">
           <h2 className="text-lg font-semibold leading-tight">{checkedIn ? "Checked in" : "Check in"}</h2>
           <p className="text-sm">{checkedIn ? `Since ${formatTime(openAttendance.check_in_at, tz)}` : "At the office today"}</p>
-          <span className="mt-auto flex items-end justify-between">
-            <MapPin className="size-6" aria-hidden />
-            <ArrowRight className="size-4" aria-hidden />
-          </span>
+          <WaverIllustration className="absolute -bottom-1 right-1 w-24" />
         </Link>
       </section>
 
@@ -280,7 +275,7 @@ export default async function DashboardPage() {
               </div>
             </div>
           ) : (
-            <EmptyState title="No goals for this month yet"
+            <EmptyState art="tasks" title="No goals for this month yet"
               description="Members who write their goals down achieve more. It takes two minutes."
               action={<LinkButton href="/goals/new">Set my goals</LinkButton>} />
           )}

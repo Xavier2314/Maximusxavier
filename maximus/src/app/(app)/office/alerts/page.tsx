@@ -43,7 +43,7 @@ export default async function AlertsPage({ searchParams }: { searchParams: Promi
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           {concerns.length === 0 ? (
-            <Card><EmptyState title="Nothing needs attention right now"
+            <Card><EmptyState art="messages" title="Nothing needs attention right now"
               description="Everyone is on track by the rules below. Keep encouraging them." /></Card>
           ) : concerns.map((g) => (
             <Card key={g.member}>

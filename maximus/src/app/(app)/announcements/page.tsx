@@ -32,7 +32,7 @@ export default async function AnnouncementsPage() {
       <PageHeader title="Announcements" description="News, trainings and updates from Maximus leadership." />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          {(posts ?? []).length === 0 && <Card><EmptyState title="No announcements yet" /></Card>}
+          {(posts ?? []).length === 0 && <Card><EmptyState art="messages" title="No announcements yet" /></Card>}
           {(posts ?? []).map((p) => (
             <Card key={p.id} id={`a-${p.id}`} className="scroll-mt-32">
               <CardBody>

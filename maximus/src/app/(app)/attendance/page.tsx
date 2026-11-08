@@ -107,7 +107,7 @@ export default async function AttendancePage() {
                 ))}
               </ul>
             ) : (
-              <EmptyState title="No check-ins yet" description="Your attendance history will appear here." />
+              <EmptyState art="team" title="No check-ins yet" description="Your attendance history will appear here." />
             )}
           </CardBody>
         </Card>

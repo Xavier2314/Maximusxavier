@@ -41,7 +41,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
       </div>
 
       {rows.length === 0 ? (
-        <Card><EmptyState title="No earnings logged yet" description="Earnings appear here as members complete their 5-day evaluations." /></Card>
+        <Card><EmptyState art="team" title="No earnings logged yet" description="Earnings appear here as members complete their 5-day evaluations." /></Card>
       ) : (
         <>
           <section className="hero-gradient mb-6 grid grid-cols-3 items-end gap-3 rounded-2xl p-5 text-white sm:p-8" aria-label="Top three">

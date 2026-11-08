@@ -97,7 +97,7 @@ export default async function EvaluationsPage() {
                 ))}
               </ul>
             ) : (
-              <EmptyState title="No evaluations yet" action={<LinkButton href="/evaluations/new">Start your first</LinkButton>} />
+              <EmptyState art="tasks" title="No evaluations yet" action={<LinkButton href="/evaluations/new">Start your first</LinkButton>} />
             )}
           </CardBody>
         </Card>

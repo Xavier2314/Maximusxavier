@@ -63,7 +63,7 @@ export default async function TimeAuditPage({ searchParams }: { searchParams: Pr
         <StatCard label="Interruptions" value={interruptions} hint={list.length ? `${(interruptions / list.length).toFixed(1)} per session` : undefined} />
       </div>
       {list.length === 0 ? (
-        <Card><EmptyState title="No focus sessions yet"
+        <Card><EmptyState art="tasks" title="No focus sessions yet"
           description="Run a Pomodoro or deep work session and your time will show up here."
           action={<Link href="/tools/pomodoro" className="text-primary">Start a Pomodoro</Link>} /></Card>
       ) : (

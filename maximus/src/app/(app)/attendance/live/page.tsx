@@ -51,7 +51,7 @@ export default async function LiveBoardPage() {
         action={<LiveRefresh />} />
 
       {(offices ?? []).length === 0 ? (
-        <Card><EmptyState title="No offices to show" description="You don't manage any active offices yet." /></Card>
+        <Card><EmptyState art="team" title="No offices to show" description="You don't manage any active offices yet." /></Card>
       ) : (
         <div className="grid gap-6 lg:grid-cols-2">
           {(offices ?? []).map((o) => {

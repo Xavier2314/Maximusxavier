@@ -42,7 +42,7 @@ export default async function GoalsToolPage({ searchParams }: { searchParams: Pr
             ))}
           </nav>
           {active.length === 0 ? (
-            <Card><EmptyState title="No active goals here"
+            <Card><EmptyState art="tasks" title="No active goals here"
               description="Add a goal on the right. Break big goals into daily and weekly ones you can act on." /></Card>
           ) : active.map((g) => <GoalCard key={g.id} goal={g} today={today} notes={notesFor(g.id)} viewerId={viewer.id} partnerName={partnerName} />)}
           {done.length > 0 && (

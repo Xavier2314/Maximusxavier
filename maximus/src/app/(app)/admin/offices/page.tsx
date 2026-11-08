@@ -27,7 +27,7 @@ export default async function OfficesPage() {
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
           {(offices ?? []).length === 0 && (
-            <Card><EmptyState title="No offices yet" description="Create your first office so members can register and check in." /></Card>
+            <Card><EmptyState art="team" title="No offices yet" description="Create your first office so members can register and check in." /></Card>
           )}
           {(offices ?? []).map((o) => {
             const members = (memberships ?? []).filter((m) => m.office_id === o.id);

@@ -38,7 +38,7 @@ export default async function ApprovalsPage() {
             <Card>
               <CardHeader title="Payments awaiting confirmation" description={`${payments?.length ?? 0} pending`} />
               <CardBody className="pt-2">
-                {(payments ?? []).length === 0 ? <EmptyState className="py-8" title="All caught up" /> : (
+                {(payments ?? []).length === 0 ? <EmptyState art="tasks" className="py-8" title="All caught up" /> : (
                   <ul className="divide-y divide-border">
                     {(payments ?? []).map((p) => (
                       <li key={p.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center">
@@ -66,7 +66,7 @@ export default async function ApprovalsPage() {
             <Card>
               <CardHeader title="Attendance corrections" description={`${corrections?.length ?? 0} pending`} />
               <CardBody className="pt-2">
-                {(corrections ?? []).length === 0 ? <EmptyState className="py-8" title="No pending corrections" /> : (
+                {(corrections ?? []).length === 0 ? <EmptyState art="tasks" className="py-8" title="No pending corrections" /> : (
                   <ul className="divide-y divide-border">
                     {(corrections ?? []).map((c) => (
                       <li key={c.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center">

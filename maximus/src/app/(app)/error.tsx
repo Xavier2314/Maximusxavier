@@ -1,5 +1,6 @@
 "use client";
 
+import { FixingIllustration } from "@/components/brand/illustrations";
 import { useEffect } from "react";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
   }, [error]);
   return (
     <div className="card mx-auto mt-10 max-w-lg">
-      <EmptyState title="We couldn't load this page"
+      <EmptyState illustration={<FixingIllustration className="mx-auto mb-4 w-44" />} title="We couldn't load this page"
         description={<>Please try again. If it keeps happening, tell an admin. We&apos;ve been sent the details.{error.digest && <span className="mt-2 block font-mono text-xs text-fg-subtle">Ref: {error.digest}</span>}</>}
         action={<Button onClick={reset}><RotateCcw className="size-4" aria-hidden /> Try again</Button>} />
     </div>

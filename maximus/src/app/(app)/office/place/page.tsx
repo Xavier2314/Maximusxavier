@@ -43,7 +43,7 @@ export default async function PlaceInOfficePage({ searchParams }: { searchParams
           className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm" />
       </form>
       {people.length === 0 ? (
-        <Card><EmptyState title={needle ? "No one found" : "Everyone has an office"}
+        <Card><EmptyState art="team" title={needle ? "No one found" : "Everyone has an office"}
           description={needle ? "Try another name or member ID." : "New members who skip choosing an office will appear here."} /></Card>
       ) : (
         <Card className="divide-y divide-border">

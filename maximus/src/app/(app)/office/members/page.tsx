@@ -82,7 +82,7 @@ export default async function OfficeMembersPage({ searchParams }: { searchParams
       </div>
 
       {rows.length === 0 ? (
-        <Card><EmptyState title="No members match" description="Try another filter or search." /></Card>
+        <Card><EmptyState art="team" title="No members match" description="Try another filter or search." /></Card>
       ) : (
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">

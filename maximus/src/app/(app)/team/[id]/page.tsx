@@ -170,7 +170,7 @@ export default async function MemberPage({ params, searchParams }: { params: Pro
       )}
 
       {!canSeeActivity ? (
-        <Card className="mt-6"><EmptyState title="Activity is private" description="Only this member's authorised leaders can see their attendance, goals and evaluations." /></Card>
+        <Card className="mt-6"><EmptyState art="team" title="Activity is private" description="Only this member's authorised leaders can see their attendance, goals and evaluations." /></Card>
       ) : (
         <>
           <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">

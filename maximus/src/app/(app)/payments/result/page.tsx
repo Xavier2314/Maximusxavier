@@ -1,4 +1,5 @@
-import { CircleCheckBig, Clock, XCircle } from "lucide-react";
+import { SuccessIllustration } from "@/components/brand/illustrations";
+import { Clock, XCircle } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { requireViewer } from "@/lib/auth";
@@ -21,7 +22,7 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
     <div className="mx-auto max-w-md py-10">
       <Card>
         <CardBody className="flex flex-col items-center py-10 text-center">
-          {ok ? <CircleCheckBig className="size-14 text-success" aria-hidden /> : failed ? <XCircle className="size-14 text-danger" aria-hidden /> : <Clock className="size-14 text-warning" aria-hidden />}
+          {ok ? <SuccessIllustration className="w-52" /> : failed ? <XCircle className="size-14 text-danger" aria-hidden /> : <Clock className="size-14 text-warning" aria-hidden />}
           <h1 className="mt-4 text-2xl font-semibold">{ok ? "Payment received" : failed ? (cancelled ? "Payment cancelled" : "Payment not completed") : "Payment processing"}</h1>
           <p className="mt-2 text-fg-muted">
             {!p ? "We couldn't find this payment." : ok

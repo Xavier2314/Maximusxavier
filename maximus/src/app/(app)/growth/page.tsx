@@ -50,7 +50,7 @@ export default async function GrowthPage() {
           <Compass className="size-5 text-primary" aria-hidden /> Work on these first
         </h2>
         {top.length > 0 ? <FocusList areas={top} courses={courses} /> : (
-          <Card><EmptyState title="You're on target everywhere"
+          <Card><EmptyState art="tasks" title="You're on target everywhere"
             description="Great work. Keep supporting your team so they reach their targets too." /></Card>
         )}
         {rest.length > 0 && (
