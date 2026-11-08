@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Automation, e-learning, website and marketing packages by Valentine Xavier. Standard and Premium options with fixed prices and timelines.">
+<title>Bridgepoint Offers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: dark navy studio page. Hub of 5 build categories -> each opens a Standard vs Premium offer pair -> start screen. */
+:root{
+  --bg:#0D1B3E; --bg-deep:#091430; --panel:#13265A; --panel-2:#182F6B;
+  --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.18);
+  --fg:#F4F6FB; --muted:#A9B6D6; --soft:#7F8DB3;
+  --accent:#EF7A3A; --accent-2:#FF9A3C; --ink:#0A0F1F; --good:#5FD3A1;
+  --display:"Inter Tight","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:22px; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;
+  background-image:repeating-linear-gradient(124deg,rgba(255,255,255,.035) 0 1px,transparent 1px 34px);}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg-deep)}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:3px solid var(--accent-2);outline-offset:3px;border-radius:8px}
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(9,20,48,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-family:var(--display);font-weight:800;letter-spacing:.06em;font-size:15px}
+.brand b{font-weight:800}.brand span{font-weight:600;color:var(--muted)}
+.sym{height:34px;width:auto}
+.navlinks{display:flex;gap:6px;flex-wrap:wrap}
+.navlinks a{text-decoration:none;font-size:14px;font-weight:600;color:var(--muted);padding:8px 14px;border-radius:999px}
+.navlinks a[aria-current="page"],.navlinks a:hover{color:var(--fg);background:var(--panel)}
+/* type */
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg)}
+.eyebrow::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:clamp(38px,6vw,68px);line-height:1.02;font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(28px,3.6vw,40px);line-height:1.08;font-weight:800;letter-spacing:-.01em}
+h3{font-size:22px;font-weight:800}
+.hl{color:var(--accent)}
+.lead{color:var(--muted);font-size:clamp(17px,1.6vw,19px);max-width:62ch;margin:0}
+section{padding-block:clamp(48px,7vw,88px)}
+.stack{display:grid;gap:20px}
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:16px;border:0;cursor:pointer;text-decoration:none;font-family:var(--body);font-weight:700;font-size:17px;
+  background:var(--accent);color:var(--ink);border-radius:999px;padding:8px 8px 8px 28px;transition:transform .15s}
+.btn .dot{width:48px;height:48px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:var(--accent)}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--fg);border:1.5px solid var(--line-2)}
+.btn.ghost .dot{background:var(--panel)}
+.link{display:inline-flex;align-items:center;gap:12px;font-weight:600;font-size:18px;text-decoration:none;color:var(--fg);padding-bottom:8px;border-bottom:2px solid var(--fg)}
+.link:hover{color:var(--accent-2);border-color:var(--accent-2)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:28px}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* home */
+.hero{padding-block:clamp(64px,10vw,120px)}
+.hero .stack{gap:28px;max-width:860px}
+.note{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px dashed var(--line-2);border-radius:16px;padding:16px 18px;color:var(--muted);font-size:14px;max-width:640px}
+.note b{color:var(--fg)}
+/* hub */
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px;margin-top:40px}
+.cat{position:relative;display:grid;gap:14px;align-content:start;text-decoration:none;background:linear-gradient(160deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-radius:var(--r);padding:28px;transition:transform .18s,border-color .18s;min-width:0}
+.cat:hover{transform:translateY(-4px);border-color:var(--accent)}
+.cat .ic{width:52px;height:52px;border-radius:14px;background:rgba(239,122,58,.14);color:var(--accent-2);display:grid;place-items:center}
+.cat .ic svg{width:26px;height:26px}
+.cat p{margin:0;color:var(--muted)}
+.cat ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.cat li{font-size:13px;font-weight:600;color:var(--fg);background:rgba(255,255,255,.06);border:1px solid var(--line);padding:5px 11px;border-radius:999px}
+.cat .go{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--line);font-weight:700}
+.cat .go span:last-child{color:var(--accent-2);white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+@media (min-width:1080px){.cats{grid-template-columns:repeat(3,1fr)}.cat.custom{grid-column:span 2}}
+.cat.custom{background:transparent;border-style:dashed;border-color:var(--line-2)}
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px;margin-top:32px}
+.step{display:grid;gap:8px;padding:22px;border-top:2px solid var(--accent)}
+.step small{font-family:var(--display);font-weight:800;color:var(--accent-2);letter-spacing:.12em}
+.step p{margin:0;color:var(--muted)}
+/* category */
+.back{display:inline-flex;gap:8px;align-items:center;color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
+.back:hover{color:var(--fg)}
+.pains{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
+.pains li{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:15px;background:rgba(255,255,255,.04);border:1px solid var(--line);padding:8px 14px;border-radius:12px}
+.pains li svg{color:#FF8A8A}
+.offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px;margin-top:36px;align-items:start}
+.offer{background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:clamp(24px,3vw,36px);display:grid;gap:22px;min-width:0}
+.offer.premium{background:linear-gradient(170deg,#1E3A82,var(--panel) 60%);border:1.5px solid var(--accent);box-shadow:0 30px 80px -40px rgba(239,122,58,.55)}
+.tier{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.tier .tag{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.badge{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--ink);padding:6px 12px;border-radius:999px}
+.offer .promise{color:var(--muted);margin:6px 0 0}
+.price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.price strong{font-family:var(--display);font-size:clamp(40px,5vw,54px);font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.price span{color:var(--muted);font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:10px}
+.meta span{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;background:rgba(255,255,255,.06);padding:7px 12px;border-radius:10px}
+.blk h4{margin:0 0 10px;font-family:var(--display);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft)}
+.ticks{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ticks li{display:flex;gap:12px;align-items:flex-start}
+.ticks li svg{color:var(--good);margin-top:3px}
+.bonus li svg{color:var(--accent-2)}
+.guarantee{display:flex;gap:14px;align-items:flex-start;background:rgba(95,211,161,.08);border:1px solid rgba(95,211,161,.3);border-radius:16px;padding:16px}
+.guarantee svg{color:var(--good);width:26px;height:26px}
+.guarantee p{margin:0;font-size:15px}
+.scarce{font-size:14px;color:var(--accent-2);font-weight:600;margin:0}
+.offer .btn{justify-content:space-between;width:100%}
+.compare{margin-top:56px;overflow-x:auto;border:1px solid var(--line);border-radius:20px}
+.compare table{width:100%;border-collapse:collapse;min-width:560px}
+.compare th,.compare td{text-align:left;padding:14px 18px;border-bottom:1px solid var(--line);font-size:15px}
+.compare th{font-family:var(--display);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);background:var(--bg-deep)}
+.compare td:first-child{color:var(--muted)}
+.compare tr:last-child td{border-bottom:0}
+.faq{display:grid;gap:12px;margin-top:20px;max-width:820px}
+.faq details{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 20px}
+.faq summary{cursor:pointer;font-weight:700}
+.faq p{color:var(--muted);margin:10px 0 0}
+.unsure{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center;margin-top:56px;padding:28px;border:1px dashed var(--line-2);border-radius:var(--r)}
+/* start */
+.summary{background:var(--panel);border:1px solid var(--accent);border-radius:var(--r);padding:28px;display:grid;gap:10px;max-width:640px}
+.copyrow{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.copyrow code{font-family:var(--body);font-size:18px;font-weight:700;background:var(--bg-deep);padding:10px 14px;border-radius:10px;user-select:all}
+.small-btn{border:1px solid var(--line-2);background:transparent;color:var(--fg);font-weight:700;padding:10px 16px;border-radius:10px;cursor:pointer;font-family:var(--body)}
+form{display:grid;gap:14px;max-width:640px}
+label{display:grid;gap:6px;font-weight:600;font-size:14px}
+input,textarea,select{font:inherit;color:var(--fg);background:var(--bg-deep);border:1px solid var(--line-2);border-radius:12px;padding:12px 14px}
+.ok{color:var(--good);font-weight:700}
+footer{border-top:1px solid var(--line);color:var(--soft);font-size:14px}
+footer .wrap{padding-block:28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="#home"><svg viewBox="300 235 500 670" aria-hidden="true" class="sym"><defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF9A3C"/><stop offset="1" stop-color="#FF6B1A"/></linearGradient><mask id="vxgap" maskUnits="userSpaceOnUse" x="0" y="0" width="1100" height="1100"><rect x="0" y="0" width="1100" height="1100" fill="#fff"/><g transform="translate(540,595) rotate(-55.66)"><rect x="-62" y="-60" width="124" height="120" fill="#000"/></g></mask></defs><g mask="url(#vxgap)"><g transform="translate(540,595) rotate(55.66)"><rect x="-321" y="-48.5" width="642" height="97" fill="#FFFFFF"/></g></g><g transform="translate(540,595) rotate(-55.66)"><rect x="-321" y="-48.5" width="402" height="97" fill="#FFFFFF"/><rect x="93" y="-48.5" width="214" height="97" fill="url(#og)"/><polygon points="300,-82 404,0 300,82" fill="url(#og)"/></g><circle cx="540" cy="318" r="64" fill="url(#og)"/></svg><span><b style="color:var(--fg)">VALENTINE</b> XAVIER</span></a>
+  <nav class="navlinks" aria-label="Main">
+    <a href="#home">Home</a><a href="#offers">Offers</a><a href="#custom">Custom project</a>
+  </nav>
+</div></header>
+<main id="app"></main>
+<footer><div class="wrap"><span>Valentine Xavier · Bridgepoint Hub</span><span>Xavier@bridgepointhub.org</span></div></footer>
+
+<script>
+const I={
+ arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',back:'<path d="M19 12H5M11 6l-6 6 6 6"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7"/>',gift:'<path d="M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7c-2-4-6-3-5 0M12 7c2-4 6-3 5 0"/>',
+ shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',x:'<path d="M7 7l10 10M17 7L7 17"/>',
+ bolt:'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>',book:'<path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1zM12 6v14"/>',
+ screen:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',mega:'<path d="M4 10v4h3l9 5V5l-9 5zM20 9a4 4 0 010 6"/>',
+ puzzle:'<path d="M10 3h4v3a2 2 0 104 0V3h3v7h-3a2 2 0 100 4h3v7h-7v-3a2 2 0 10-4 0v3H3v-7h3a2 2 0 100-4H3V3z"/>',
+ users:'<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6.5 7-6.5s7 2.5 7 6.5M17 4a4 4 0 010 8M22 21c0-3-1.5-5.3-4-6.2"/>'};
+const ic=(n,c='i')=>`<svg class="${c}" viewBox="0 0 24 24">${I[n]}</svg>`;
+
+/* ===== EDIT YOUR OFFERS HERE. Prices, guarantees and capacity limits are suggestions — confirm before publishing. ===== */
+const CATS=[
+{id:'automation',icon:'bolt',name:'Automation',
+ short:'Stop answering the same messages by hand. Let AI reply, qualify and follow up for you.',
+ tags:['Message automation','AI chat agents','CRM & follow-ups','Workflows'],
+ eyebrow:'Automation builds',headline:'Every lead answered in seconds. <span class="hl">Even while you sleep.</span>',
+ lead:'We connect your inbox, DMs, forms and CRM so messages get answered, leads get qualified and follow-ups go out on time, without you copy-pasting all day.',
+ pains:['Leads wait hours for a reply','Same questions answered 20× a day','Follow-ups forgotten','Data stuck in 5 different apps'],
+ std:{name:'Inbox Autopilot',promise:'One channel answered and followed up automatically, so no lead slips through.',price:'$1,200',unit:'one-time',time:'Live in 14 days',
+   best:'Solo founders and small teams drowning in DMs or WhatsApp messages.',
+   inc:['AI reply agent on 1 channel (WhatsApp, Instagram DM, website chat or email)','Trained on your FAQs, prices and tone of voice','Lead capture into your CRM or Google Sheet','3-step automatic follow-up sequence','Hand-off to a human when the AI isn\'t sure','Loom walkthrough + 14 days of fixes'],
+   bonus:['Message script library for your top 10 questions'],
+   guar:'If it isn\'t live and working in 14 days, I keep working on it for free until it is.'},
+ pre:{name:'AI Operations System',promise:'Your whole lead-to-client process runs itself, from first message to invoice.',price:'$3,900',unit:'one-time',time:'Live in 4–5 weeks',
+   best:'Growing businesses with a team, several channels and repeat processes.',
+   inc:['Everything in Inbox Autopilot','AI agent on up to 3 channels','Process audit + automation map of your business','Up to 5 automated workflows (booking, onboarding, invoicing, reporting, reminders)','AI agent trained on your documents and SOPs','Live dashboard of leads, replies and conversions','30 days of support and tuning','Team training session (recorded)'],
+   bonus:['Monthly performance report for the first 2 months','Priority WhatsApp support line'],
+   guar:'Fixed price, fixed timeline. If a workflow we agreed on doesn\'t work as specified, I fix it at no cost.',scarce:'Limited to 3 Premium builds per month.'}},
+{id:'curriculum',icon:'book',name:'Curriculum & E-Learning',
+ short:'Turn what you know into a structured course people finish and pay for.',
+ tags:['Curriculum design','Online courses','LMS setup','Training programmes'],
+ eyebrow:'Curriculum & e-learning development',headline:'Turn your expertise into a course <span class="hl">people actually finish.</span>',
+ lead:'Certified course design, from learning outcomes to lessons, assessments and a ready-to-sell course on your platform.',
+ pains:['Knowledge stuck in your head','Courses people abandon halfway','No structure or assessments','Messy, confusing LMS setup'],
+ std:{name:'Course Blueprint',promise:'A complete, ready-to-record curriculum built on proven instructional design.',price:'$1,500',unit:'one-time',time:'Delivered in 3 weeks',
+   best:'Coaches, trainers and experts with knowledge but no course structure yet.',
+   inc:['Learner profile + clear learning outcomes','Full course outline up to 6 modules','Lesson plans with activities for every module','Quizzes and assessments','Slide templates in your brand','Recording guide for each lesson'],
+   bonus:['Course sales page outline'],
+   guar:'Two full rounds of revisions on every module.'},
+ pre:{name:'Academy Launch',promise:'A finished, branded online academy, built, loaded and ready to sell.',price:'$4,800',unit:'one-time',time:'Launch-ready in 6 weeks',
+   best:'Organisations and educators launching a paid course or staff training programme.',
+   inc:['Everything in Course Blueprint (up to 10 modules)','Video scripts for every lesson','Interactive e-learning content (quizzes, scenarios, downloads)','LMS setup on Teachable, Thinkific, LearnDash or OpenLearning','Completion certificates','Automated learner onboarding + reminder emails','Launch checklist and 30 days of support'],
+   bonus:['Lead-magnet mini-course to grow your list','Learner feedback survey + report'],
+   guar:'Your academy is launch-ready on the agreed date, or I keep working for free until it is.',scarce:'Limited to 2 Academy Launches per month.'}},
+{id:'websites',icon:'screen',name:'Website Design',
+ short:'A fast, modern website that explains what you do and turns visitors into enquiries.',
+ tags:['Business websites','Landing pages','Booking & payments','SEO basics'],
+ eyebrow:'Website design',headline:'A website that <span class="hl">brings you clients,</span> not just compliments.',
+ lead:'Conversion-focused websites with clear messaging, fast load times and booking or payment built in.',
+ pains:['Outdated or no website','Visitors leave without contacting you','Hard to update yourself','Not showing up on Google'],
+ std:{name:'Launch Site',promise:'A professional 5-page website that makes people want to contact you.',price:'$1,100',unit:'one-time',time:'Live in 14 days',
+   best:'New businesses and personal brands that need to look credible fast.',
+   inc:['Up to 5 pages, designed for mobile first','Copy polish on your existing text','Contact form + WhatsApp button','Basic SEO setup and Google indexing','Speed-optimised and secure','Training video so you can edit it yourself'],
+   bonus:['Free brand-matched favicon and social share image'],
+   guar:'Unlimited design revisions until you approve the homepage.'},
+ pre:{name:'Growth Website',promise:'A full website and lead machine, written, built and connected to your tools.',price:'$3,200',unit:'one-time',time:'Live in 4 weeks',
+   best:'Established businesses ready to grow through their website.',
+   inc:['Up to 12 pages including blog or portfolio','Full conversion copywriting','Booking, payments or product catalogue','Leads sent straight to your CRM with auto-reply','Analytics + conversion tracking set up','On-page SEO for your key services','30 days of support after launch'],
+   bonus:['One high-converting landing page for ads','Email newsletter signup with welcome email'],
+   guar:'Live by the agreed date, or your first month of support is free.',scarce:'Limited to 3 Growth Websites per month.'}},
+{id:'marketing',icon:'mega',name:'Marketing',
+ short:'Consistent content and campaigns that build your audience and bring in leads.',
+ tags:['Content strategy','Social media','Email marketing','Funnels'],
+ eyebrow:'Marketing',headline:'Show up every week <span class="hl">without doing it all yourself.</span>',
+ lead:'Content, campaigns and funnels in one consistent brand, planned around getting you real enquiries.',
+ pains:['Posting randomly, then disappearing','No idea what content works','No email list or follow-up','Ads that burn money'],
+ std:{name:'Content Engine',promise:'A month of on-brand content, planned, designed and scheduled for you.',price:'$900',unit:'per month',time:'Starts within 7 days',
+   best:'Personal brands and small businesses who need consistency.',
+   inc:['Monthly content strategy + calendar','12 designed posts or carousels per month','Captions and hashtags written for you','Scheduling on 2 platforms','Monthly performance summary'],
+   bonus:['Branded template pack so you can post extra content yourself'],
+   guar:'Month to month. Cancel any time after the first month.'},
+ pre:{name:'Full-Funnel Growth',promise:'Content, lead magnet, emails and ads working together as one system.',price:'$2,400',unit:'per month',time:'First campaign live in 3 weeks',
+   best:'Businesses ready to turn attention into a steady flow of leads.',
+   inc:['Everything in Content Engine (20 posts per month, 3 platforms)','Lead magnet + landing page','5–7 email nurture sequence','Paid ads setup and management (ad spend separate)','Monthly strategy call + reporting dashboard'],
+   bonus:['Short-form video editing: 4 reels per month','Quarterly campaign plan'],
+   guar:'If agreed deliverables are late in any month, that month\'s fee is reduced by 25%.',scarce:'Limited to 4 Full-Funnel clients at a time.'}},
+{id:'custom',icon:'puzzle',name:'Custom Project',custom:true,
+ short:'Have an idea that doesn\'t fit a box? Bring it to me and my team and we\'ll scope it.',
+ tags:['AI apps','Internal tools','Integrations','Mixed builds'],
+ eyebrow:'Custom projects',headline:'Got a project in mind? <span class="hl">Let\'s build it with you.</span>',
+ lead:'For anything that doesn\'t fit a package: AI tools, integrations, platforms or a mix of everything above. You work with me and my team.',
+ pains:['Off-the-shelf tools don\'t fit','Freelancers who disappear','Unclear quotes and scope creep','No one owns the whole build'],
+ std:{name:'Scoped Build',promise:'A clear scope, a fixed price and a finished build.',price:'From $2,500',unit:'fixed quote',time:'Quote within 48 hours of discovery call',
+   best:'One defined project with a clear goal.',
+   inc:['Discovery call + written scope document','Fixed price before any work starts','Milestone-based delivery with weekly updates','Shared project board you can follow','Handover documentation + recorded walkthrough','14 days of support after delivery'],
+   bonus:['Free technical recommendation report, yours to keep even if we don\'t work together'],
+   guar:'Fixed price. No surprise invoices.'},
+ pre:{name:'Dedicated Team Sprint',promise:'Me and my team working on your roadmap every month.',price:'$6,000',unit:'per month',time:'Kick-off within 7 days',
+   best:'Businesses with ongoing builds, several projects or a product to grow.',
+   inc:['Dedicated team capacity every month','Senior lead (me) on strategy and architecture','Weekly planning + demo call','Priority response within 1 business day','Automation, web, AI and content skills in one team','Monthly progress report'],
+   bonus:['Quarterly strategy workshop for your team'],
+   guar:'Month to month after the first month. If you\'re not happy after month one, the second month is half price.',scarce:'Limited to 2 Team Sprint clients at a time.'}}
+];
+/* ======================================================================================================================== */
+
+const app=document.getElementById('app');
+const EMAIL='Xavier@bridgepointhub.org';
+let chosen=null;
+
+function home(){return `
+<section class="hero"><div class="wrap"><div class="stack">
+ <span class="eyebrow">AI Automation Engineer</span>
+ <h1>Systems that work on <span class="hl">real data.</span> Not just in demos.</h1>
+ <p class="lead">Automation, e-learning, websites and marketing, built by me and my team, packaged so you know exactly what you get and what it costs.</p>
+ <div class="row">
+  <a class="btn" href="#start">Start a project <span class="dot">${ic('arrow')}</span></a>
+  <a class="link" href="#offers">See custom offers ${ic('arrow')}</a>
+ </div>
+ <div class="note">${ic('bolt')}<span><b>The change on your home page:</b> the "See selected work" link becomes <b>"See custom offers"</b> and opens the offers page. Keep selected work in your menu instead.</span></div>
+</div></div></section>`}
+
+function hub(){return `
+<section><div class="wrap">
+ <div class="stack"><span class="eyebrow">Offers</span>
+  <h1>Pick what you need built.<br><span class="hl">See exactly what you get.</span></h1>
+  <p class="lead">Every service has two packages: <b style="color:var(--fg)">Standard</b> to get it done fast, and <b style="color:var(--fg)">Premium</b> when you want the full system done for you. Fixed prices, clear timelines, real guarantees.</p></div>
+ <div class="cats">${CATS.map(c=>`
+  <a class="cat${c.custom?' custom':''}" href="#${c.id}">
+   <span class="ic">${ic(c.icon)}</span><h3>${c.name}</h3><p>${c.short}</p>
+   <ul>${c.tags.map(t=>`<li>${t}</li>`).join('')}</ul>
+   <span class="go"><span>${c.custom?'Standard & Premium options':`${c.std.name} · ${c.pre.name}`}</span><span>View ${ic('arrow')}</span></span>
+  </a>`).join('')}</div>
+ <div class="steps">
+  <div class="step"><small>STEP 1</small><h3>Choose a package</h3><p>Pick the service, then Standard or Premium.</p></div>
+  <div class="step"><small>STEP 2</small><h3>Quick call</h3><p>15 minutes to confirm details and your start date.</p></div>
+  <div class="step"><small>STEP 3</small><h3>We build</h3><p>Weekly updates until it's live and handed over.</p></div>
+ </div>
+</div></section>`}
+
+function card(c,o,tier){const p=tier==='Premium';return `
+<article class="offer${p?' premium':''}">
+ <div class="tier"><span class="tag">${tier}</span>${p?'<span class="badge">Done for you</span>':''}</div>
+ <div><h2>${o.name}</h2><p class="promise">${o.promise}</p></div>
+ <div class="price"><strong>${o.price}</strong><span>${o.unit}</span></div>
+ <div class="meta"><span>${ic('clock')}${o.time}</span></div>
+ <div class="blk"><h4>Best for</h4><p style="margin:0">${o.best}</p></div>
+ <div class="blk"><h4>What you get</h4><ul class="ticks">${o.inc.map(x=>`<li>${ic('check')}<span>${x}</span></li>`).join('')}</ul></div>
+ <div class="blk"><h4>Bonus</h4><ul class="ticks bonus">${o.bonus.map(x=>`<li>${ic('gift')}<span>${x}</span></li>`).join('')}</ul></div>
+ <div class="guarantee">${ic('shield')}<p><b>Guarantee.</b> ${o.guar}</p></div>
+ ${o.scarce?`<p class="scarce">${o.scarce}</p>`:''}
+ <a class="btn${p?'':' ghost'}" href="#start" data-pick="${c.id}|${tier}">Start ${o.name} <span class="dot">${ic('arrow')}</span></a>
+</article>`}
+
+function cat(c){const others=CATS.filter(x=>x.id!==c.id&&!x.custom);return `
+<section><div class="wrap">
+ <a class="back" href="#offers">${ic('back')} All offers</a>
+ <div class="stack" style="margin-top:24px"><span class="eyebrow">${c.eyebrow}</span><h1>${c.headline}</h1><p class="lead">${c.lead}</p>
+  <ul class="pains" aria-label="Problems this solves">${c.pains.map(p=>`<li>${ic('x')}${p}</li>`).join('')}</ul></div>
+ <div class="offers">${card(c,c.std,'Standard')}${card(c,c.pre,'Premium')}</div>
+ <div class="compare"><table><thead><tr><th></th><th>${c.std.name}</th><th>${c.pre.name}</th></tr></thead><tbody>
+  <tr><td>Price</td><td>${c.std.price} ${c.std.unit}</td><td>${c.pre.price} ${c.pre.unit}</td></tr>
+  <tr><td>Timeline</td><td>${c.std.time}</td><td>${c.pre.time}</td></tr>
+  <tr><td>Best for</td><td>${c.std.best}</td><td>${c.pre.best}</td></tr>
+  <tr><td>Guarantee</td><td>${c.std.guar}</td><td>${c.pre.guar}</td></tr>
+ </tbody></table></div>
+ <h2 style="margin-top:56px">Questions</h2>
+ <div class="faq">
+  <details><summary>Can I upgrade from Standard to Premium later?</summary><p>Yes. What you paid for Standard is credited in full if you upgrade within 60 days.</p></details>
+  <details><summary>How do payments work?</summary><p>50% to start and 50% on delivery for one-time builds. Monthly packages are billed at the start of each month.</p></details>
+  <details><summary>Who does the work?</summary><p>I lead every project personally and work with my team on design, content and development.</p></details>
+ </div>
+ <div class="unsure"><div><h3>Not sure which one fits?</h3><p class="lead" style="font-size:16px">Tell me about the project and I'll recommend a package, or scope a custom build.</p></div>
+  <a class="btn" href="#custom">Custom project <span class="dot">${ic('arrow')}</span></a></div>
+ ${c.custom?'':`<p style="color:var(--soft);margin-top:28px">Other services: ${others.map(o=>`<a href="#${o.id}" style="color:var(--fg)">${o.name}</a>`).join(' · ')}</p>`}
+</div></section>`}
+
+function start(){const sel=chosen?(()=>{const [id,t]=chosen.split('|');const c=CATS.find(x=>x.id===id);const o=t==='Premium'?c.pre:c.std;return {c,o,t}})():null;return `
+<section><div class="wrap"><div class="stack" style="max-width:720px">
+ <a class="back" href="${sel?'#'+sel.c.id:'#offers'}">${ic('back')} Back</a>
+ <span class="eyebrow">Start a project</span><h1>Let's get it <span class="hl">built.</span></h1>
+ ${sel?`<div class="summary"><span class="tag" style="font-family:var(--display);font-weight:800;letter-spacing:.2em;font-size:13px;color:var(--muted)">YOUR PACKAGE</span><h2>${sel.o.name}</h2><p style="margin:0;color:var(--muted)">${sel.c.name} · ${sel.t} · ${sel.o.price} ${sel.o.unit} · ${sel.o.time}</p></div>`:`<p class="lead">Pick a package on the <a href="#offers">offers page</a>, or describe your project below.</p>`}
+ <p class="lead">Email me with the package name and a short note about your business. I reply within one business day.</p>
+ <div class="copyrow"><code id="em">${EMAIL}</code><button class="small-btn" id="copy" type="button">Copy email</button><span id="copied" class="ok" hidden>Copied</span></div>
+ <form id="f"><label for="nm">Your name<input id="nm" required placeholder="Ada Obi"></label>
+  <label for="biz">Business / website<input id="biz" placeholder="adaobi.com"></label>
+  <label for="msg">What do you want built?<textarea id="msg" rows="4" placeholder="We get 50+ WhatsApp enquiries a day and can't keep up…"></textarea></label>
+  <button class="btn" type="submit" style="justify-self:start">Prepare my message <span class="dot">${ic('arrow')}</span></button>
+  <p id="done" hidden class="ok">Your message is ready below. Copy it and send it to ${EMAIL}.</p>
+  <textarea id="out" rows="6" hidden readonly></textarea>
+ </form>
+</div></div></section>`}
+
+function render(){const h=(location.hash||'#home').slice(1);let html;
+ if(h==='offers')html=hub();else if(h==='start')html=start();else{const c=CATS.find(x=>x.id===h);html=c?cat(c):home()}
+ app.innerHTML=html;window.scrollTo(0,0);
+ document.querySelectorAll('.navlinks a').forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+h||(h==='home'&&a.getAttribute('href')==='#home')?'page':'false'));
+ app.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{chosen=b.dataset.pick}));
+ const cp=document.getElementById('copy');if(cp)cp.onclick=()=>{const done=()=>{document.getElementById('copied').hidden=false};
+  try{navigator.clipboard.writeText(EMAIL).then(done,()=>{getSelection().selectAllChildren(document.getElementById('em'))})}catch(e){getSelection().selectAllChildren(document.getElementById('em'))}};
+ const f=document.getElementById('f');if(f)f.onsubmit=e=>{e.preventDefault();const pk=chosen?chosen.replace('|',' – '):'Custom project';
+  const out=document.getElementById('out');out.value=`Hi Xavier,\n\nI'm interested in: ${pk}\nName: ${document.getElementById('nm').value}\nBusiness: ${document.getElementById('biz').value}\n\n${document.getElementById('msg').value}`;
+  out.hidden=false;document.getElementById('done').hidden=false;out.select()};
+}
+addEventListener('hashchange',render);render();
+</script>
+</body>
+</html>
