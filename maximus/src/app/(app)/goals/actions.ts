@@ -198,3 +198,15 @@ export async function planGoalsAction(text: string, current?: string): Promise<{
     return { ok: false, message: aiErrorMessage(err) };
   }
 }
+
+/** Deletes all of the member's monthly drafts at once. Submitted and approved goals stay: their sponsor has them. */
+export async function deleteAllDraftsAction(): Promise<{ ok: boolean; message: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Please sign in again." };
+  const { error, count } = await supabase.from("monthly_goals").delete({ count: "exact" }).eq("user_id", user.id).eq("status", "draft");
+  if (error) return { ok: false, message: "Couldn't delete your drafts. Please try again." };
+  revalidatePath("/goals");
+  revalidatePath("/dashboard");
+  return { ok: true, message: count ? `Deleted ${count} ${count === 1 ? "draft" : "drafts"}. Set new goals whenever you're ready.` : "There were no drafts to delete." };
+}

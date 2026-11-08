@@ -119,3 +119,20 @@ function endOfWeek(day: string) {
   d.setUTCDate(d.getUTCDate() + ((7 - d.getUTCDay()) % 7));
   return d.toISOString().slice(0, 10);
 }
+
+/** Clears every goal for this week or for today, so the member can start over. */
+export async function deleteAllPeriodGoalsAction(period: Period): Promise<{ ok: boolean; message: string }> {
+  if (period !== "weekly" && period !== "daily") return { ok: false, message: "Unknown period." };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Please sign in again." };
+  const { data: profile } = await supabase.from("profiles").select("timezone").eq("id", user.id).single();
+  const today = todayIn(profile?.timezone ?? undefined);
+  const { error, count } = await supabase.from("tool_goals").delete({ count: "exact" })
+    .eq("user_id", user.id).eq("horizon", period).lte("start_date", today).gte("deadline", today);
+  if (error) return { ok: false, message: "Couldn't delete your goals. Please try again." };
+  revalidatePath("/goals");
+  revalidatePath("/daily");
+  revalidatePath("/dashboard");
+  return { ok: true, message: count ? `Deleted ${count} ${count === 1 ? "goal" : "goals"}. Start again whenever you're ready.` : "There were no goals to delete." };
+}

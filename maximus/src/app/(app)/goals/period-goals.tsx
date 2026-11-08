@@ -7,6 +7,7 @@ import { TalkToAi } from "@/components/form-modes";
 import { Button } from "@/components/ui/button";
 import { FormMessage, Input } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
+import { DeleteAllGoals } from "./delete-all";
 import { planPeriodGoalsAction, savePeriodGoalsAction, togglePeriodGoalAction, type Period, type PeriodGoal } from "./period-actions";
 
 type Saved = { id: string; title: string; target: number | null; unit: string | null; done: boolean };
@@ -94,6 +95,7 @@ export function PeriodGoals({ period, saved }: { period: Period; saved: Saved[] 
             ))}
           </ul>
         ) : <p className="text-fg-muted">No goals for {when} yet. Speak or type them above.</p>}
+        <DeleteAllGoals period={period} count={saved.length} />
       </section>
     </div>
   );

@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { MonthlyGoal } from "@/lib/types";
 import { addMonths, formatDate, monthStart, todayIn } from "@/lib/utils";
 import { GoalTabs, PeriodView } from "./period-view";
+import { DeleteAllGoals } from "./delete-all";
 
 export const metadata = { title: "Goals" };
 
@@ -39,11 +40,13 @@ export default async function GoalsPage({ searchParams }: { searchParams: Promis
   const upcoming = mine?.find((g) => g.month === nextMonth);
   const toReview = (team ?? []).filter((g) => g.status === "submitted");
 
+  const drafts = (mine ?? []).filter((g) => g.status === "draft").length;
   return (
     <>
       <PageHeader title="Monthly goals" description="Set clear targets, get your sponsor's feedback and watch your progress update automatically."
         action={<LinkButton href={`/goals/new?month=${upcoming ? thisMonth : nextMonth}`}><Plus className="size-4" aria-hidden /> Set goals</LinkButton>} />
       <GoalTabs view="monthly" />
+      {drafts > 0 && <div className="-mt-3 mb-6"><DeleteAllGoals period="monthly" count={drafts} /></div>}
 
       {inWindow && !upcoming && (
         <div className="mb-6 flex flex-col gap-3 rounded-2xl bg-brand-lime/25 p-4 sm:flex-row sm:items-center sm:justify-between">
