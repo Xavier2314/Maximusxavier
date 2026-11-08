@@ -32,7 +32,7 @@ const SECTIONS: Section[] = [
   {
     slug: "goals", icon: Target, title: "Goals & productivity", blurb: "Plan, track and finish.",
     tools: [
-      { href: "/planner", label: "Daily planner", desc: "Your smart to-do list", icon: ListChecks },
+      { href: "/daily", label: "Daily goals", desc: "Speak your goals for today", icon: ListChecks },
       { href: "/tools/goals", label: "Goal tracker", desc: "Daily to quarterly goals", icon: Target },
       { href: "/tools/habits", label: "Habit tracker", desc: "Tick off daily habits", icon: Repeat },
       { href: "/tools/score", label: "Productivity score", desc: "Your week, out of 100", icon: Gauge },

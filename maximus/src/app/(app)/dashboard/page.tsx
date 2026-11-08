@@ -1,9 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, Building2, Plus } from "lucide-react";
-import { TaskQuickAdd } from "../planner/task-ui";
-import { TASK_CATEGORIES, type Task } from "@/lib/planner";
+import { ArrowRight, Building2 } from "lucide-react";
 import { FocusPopup } from "@/components/focus-popup";
-import { TodayList, type TodayItem } from "./today-list";
 import { MonthTrack } from "./month-track";
 import { GoalBoxes } from "./goal-boxes";
 import { CallerIllustration, WaverIllustration } from "@/components/brand/illustrations";
@@ -24,8 +21,8 @@ function isoWeek(day: string) {
 }
 
 /**
- * Home: only what matters today. What's next, checking in, this month's goals and follow-ups,
- * and one list for the day. Everything else lives one tap away in the menu.
+ * Home: only what matters today. What's next, checking in, the month, and this week's and today's
+ * goals. Everything else lives one tap away in the menu.
  */
 export default async function DashboardPage() {
   const viewer = await requireViewer();
@@ -37,7 +34,7 @@ export default async function DashboardPage() {
 
   const [
     { data: streak }, { data: openAttendance }, { data: goal }, { data: evaluation }, { count: unread },
-    { data: focusData }, { data: checklistItems }, { data: checklistDone }, { data: followUps }, { data: todayTasks },
+    { data: focusData }, { data: followUps },
     { data: monthDays }, { data: team }, { data: periodGoals },
   ] = await Promise.all([
     supabase.rpc("attendance_streak"),
@@ -47,13 +44,9 @@ export default async function DashboardPage() {
     supabase.from("evaluations").select("id, submitted_at").eq("user_id", viewer.id).eq("period_date", period).maybeSingle(),
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", viewer.id).is("read_at", null),
     supabase.rpc("growth_focus"),
-    supabase.from("checklist_items").select("id, title").eq("is_active", true).order("sort_order"),
-    supabase.from("checklist_checks").select("item_id").eq("user_id", viewer.id).eq("check_date", today),
     supabase.from("prospects").select("id, full_name, phone, next_follow_up_at, stage").eq("owner_id", viewer.id)
       .not("next_follow_up_at", "is", null).lte("next_follow_up_at", `${today}T23:59:59`).eq("opted_out", false)
       .not("stage", "in", "(joined,customer,not_now)").order("next_follow_up_at").limit(4),
-    supabase.from("tasks").select("*").eq("user_id", viewer.id).is("completed_at", null).lte("due_date", today)
-      .order("due_date").order("priority").limit(6).returns<Task[]>(),
     supabase.from("attendance").select("attendance_date").eq("user_id", viewer.id).gte("attendance_date", month).lte("attendance_date", today),
     viewer.can("view_direct_downlines") ? supabase.rpc("team_member_stats", { p_root: viewer.id, p_max_depth: 1 }) : Promise.resolve({ data: [] }),
     supabase.from("tool_goals").select("id, title, target, unit, status, horizon").eq("user_id", viewer.id).in("horizon", ["weekly", "daily"])
@@ -88,36 +81,23 @@ export default async function DashboardPage() {
     .map((g) => ({ id: g.id as string, title: g.title as string, target: g.target == null ? null : Number(g.target), unit: g.unit as string | null, done: g.status === "completed" }));
   const checkInDays = [...new Set((monthDays ?? []).map((d) => Number(String(d.attendance_date).slice(8, 10))))];
 
-  type FollowUp = { id: string; full_name: string; phone: string | null; next_follow_up_at: string };
-  const todayItems: TodayItem[] = [
-    ...((followUps ?? []) as FollowUp[]).map((f) => ({
-      kind: "followup" as const, id: f.id, name: f.full_name, phone: f.phone, overdue: f.next_follow_up_at.slice(0, 10) < today,
-    })),
-    ...(todayTasks ?? []).map((t) => {
-      const overdue = Boolean(t.due_date && t.due_date < today);
-      const category = TASK_CATEGORIES.find((c) => c.key === t.category)?.label;
-      const detail = [
-        overdue ? "Overdue" : null,
-        category && category !== "Other" ? category : null,
-        t.priority === 1 ? "high priority" : null,
-      ].filter(Boolean).join(", ");
-      return { kind: "task" as const, id: t.id, title: t.title, detail: detail.charAt(0).toUpperCase() + detail.slice(1) || "Task", overdue };
-    }),
-    ...((checklistItems ?? []) as { id: string; title: string }[]).map((c) => ({
-      kind: "check" as const, id: c.id, title: c.title, done: (checklistDone ?? []).some((d) => d.item_id === c.id),
-    })),
-  ];
+  // Next up: the first unfinished daily goal, otherwise the next prospect to follow up.
+  type FollowUp = { id: string; full_name: string; next_follow_up_at: string };
+  const firstFollowUp = ((followUps ?? []) as FollowUp[])[0];
+  const nextGoal = boxGoals("daily").find((g) => !g.done);
+  const next = nextGoal
+    ? { href: "/daily", title: nextGoal.title, sub: "Daily goal", tag: "Today" }
+    : firstFollowUp
+      ? { href: "/prospects", title: `Call ${firstFollowUp.full_name}`, sub: "Prospect follow-up", tag: firstFollowUp.next_follow_up_at.slice(0, 10) < today ? "Overdue" : "Today" }
+      : null;
   const monthName = formatDate(today, { month: "long" }, tz);
   const firstName = viewer.profile.full_name.split(" ")[0] || viewer.profile.full_name;
   const streakDays = (streak as number | null) ?? 0;
   const unreadCount = unread ?? 0;
   const followUpCount = (followUps ?? []).length;
-  const planItems = todayItems.filter((i) => i.kind !== "check").slice(0, 3);
-  const next = planItems[0];
   const hour = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: tz }).format(new Date()));
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const sheet = "rounded-[22px] bg-surface dark:border dark:border-border";
-  const sheetLink = "text-sm font-medium text-primary hover:underline";
 
   return (
     <div className="space-y-6">
@@ -133,17 +113,17 @@ export default async function DashboardPage() {
       <MonthTrack monthName={monthName} daysInMonth={daysInMonth} today={dayNum} checkIns={checkInDays} goalPct={goalPct} hasGoals={goalRows.length > 0} />
 
       <section aria-label="Today" className="grid gap-2.5 lg:grid-cols-2">
-        <Link href="/planner" className="relative flex min-h-[148px] flex-col overflow-hidden rounded-[26px] bg-black p-5 text-white transition-opacity hover:opacity-90 dark:ring-1 dark:ring-border">
+        <Link href={next?.href ?? "/daily"} className="relative flex min-h-[148px] flex-col overflow-hidden rounded-[26px] bg-black p-5 text-white transition-opacity hover:opacity-90 dark:ring-1 dark:ring-border">
           <CallerIllustration className="absolute -bottom-1 right-5 hidden h-24 w-auto sm:block" />
           <span className="flex items-center justify-between gap-3">
             <span className="text-sm text-white/70">Next up</span>
-            {next && <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-black">{next.kind === "followup" || next.kind === "task" ? (next.overdue ? "Overdue" : "Today") : "Today"}</span>}
+            {next && <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-black">{next.tag}</span>}
           </span>
           <span className="mt-auto pt-3 font-display text-[26px] leading-tight tracking-[-0.02em]">
-            {next ? (next.kind === "followup" ? `Call ${next.name}` : next.title) : "Nothing planned yet"}
+            {next ? next.title : "Nothing planned yet"}
           </span>
           <span className="mt-1 text-sm text-white/70">
-            {next ? (next.kind === "followup" ? "Prospect follow-up" : next.detail) : "Add the first thing you'll do today"}
+            {next ? next.sub : "Speak your goals for today"}
           </span>
         </Link>
 
@@ -213,26 +193,6 @@ export default async function DashboardPage() {
         </Link>
       )}
 
-      <div>
-        {/* Today: one list of follow-ups, tasks and the daily checklist. */}
-        <section aria-labelledby="today-heading" className={sheet}>
-          <div className="flex items-baseline justify-between gap-3 px-5 pt-5">
-            <h2 id="today-heading" className="text-[22px] font-medium tracking-tight">Today</h2>
-            <Link href="/planner" className={sheetLink}>Planner</Link>
-          </div>
-          <div className="px-3 pb-2 pt-1 [&>p]:px-2">
-            {todayItems.length > 0 ? <TodayList items={todayItems} date={today} />
-              : <p className="py-4 text-fg-muted">Nothing planned for today yet. Add the first thing you&apos;ll do.</p>}
-          </div>
-          <details className="group border-t border-border px-5 py-3" open={todayItems.length === 0}>
-            <summary className="flex h-11 cursor-pointer list-none items-center gap-3 text-fg-muted hover:text-fg [&::-webkit-details-marker]:hidden">
-              <Plus className="size-5" aria-hidden />Add a task
-            </summary>
-            <div className="pb-2 pt-1"><TaskQuickAdd today={today} compact /></div>
-          </details>
-        </section>
-
-      </div>
 
     </div>
   );

@@ -96,6 +96,7 @@ export async function savePeriodGoalsAction(period: Period, goals: PeriodGoal[])
     return { ok: false, message: "Couldn't save your goals. Please try again." };
   }
   revalidatePath("/goals");
+  revalidatePath("/daily");
   revalidatePath("/tools", "layout");
   return { ok: true, message: rows.length === 1 ? "Goal saved." : `${rows.length} goals saved.` };
 }
@@ -108,6 +109,7 @@ export async function togglePeriodGoalAction(id: string, done: boolean): Promise
     .update({ status: done ? "completed" : "active", completed_at: done ? new Date().toISOString() : null }).eq("id", id);
   if (error) return { ok: false, message: "Couldn't update that goal." };
   revalidatePath("/goals");
+  revalidatePath("/daily");
   return { ok: true, message: done ? "Done." : "Marked as not done." };
 }
 
