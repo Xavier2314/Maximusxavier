@@ -29,34 +29,85 @@ const ARM_R: Pt[] = [[6, -52], [9, -38], [8, -28]];
 const WAVE_R: Pt[] = [[6, -52], [16, -62], [20, -76]];
 const POINT_L: Pt[] = [[-6, -52], [-18, -46], [-30, -50]];
 
+type Hair = "short" | "bun" | "long" | "afro" | "gele" | "braids";
 type FigureProps = {
-  x: number; y: number; scale?: number; skin?: string; hair?: "short" | "bun" | "long";
-  shirt?: string; pants?: string; shoes?: string;
+  x: number; y: number; scale?: number; skin?: string; hair?: Hair; hairColor?: string;
+  shirt?: string; pants?: string; shoes?: string; skirt?: string;
   armL?: Pt[]; armR?: Pt[]; legL?: Pt[]; legR?: Pt[]; children?: ReactNode;
 };
 
+/** A darker shade of a colour for folds and collars (works with hex and with theme variables). */
+const shade = (c: string, pct = 22) => `color-mix(in srgb, ${c} ${100 - pct}%, black)`;
+
+/**
+ * One person, drawn the same way in every scene: filled shirt with collar and sleeves, trousers or
+ * a skirt, shoes, a round head and a hairstyle. Arms and legs are point lists in figure space.
+ */
 function Figure({
-  x, y, scale = 1, skin = SKINS[0], hair = "short", shirt = BLUE, pants = NEUTRAL, shoes = "var(--fg)",
+  x, y, scale = 1, skin = SKINS[0], hair = "short", hairColor = HAIR, shirt = BLUE, pants = "#2b3a63", shoes = "var(--fg)", skirt,
   armL = ARM_L, armR = ARM_R, legL = LEG_L, legR = LEG_R, children,
 }: FigureProps) {
   const foot = (leg: Pt[]) => leg[leg.length - 1];
   const hand = (arm: Pt[]) => arm[arm.length - 1];
+  const legColor = skirt ? skin : pants;
+  const arm = (a: Pt[], i: number) => (
+    <g key={i}>
+      <path d={path(a.slice(0, 2))} {...stroke} stroke={shirt} strokeWidth="9" />
+      <path d={path(a.slice(1))} {...stroke} stroke={skin} strokeWidth="6.5" />
+      <circle cx={hand(a)[0]} cy={hand(a)[1]} r="4" fill={skin} />
+    </g>
+  );
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`}>
-      {[legL, legR].map((leg, i) => <path key={i} d={path(leg)} {...stroke} stroke={pants} strokeWidth="7" />)}
-      {[legL, legR].map((leg, i) => <ellipse key={i} cx={foot(leg)[0] + (i ? 2 : -2)} cy={foot(leg)[1]} rx="6" ry="3" fill={shoes} />)}
-      <line x1="0" y1="-30" x2="0" y2="-54" stroke={shirt} strokeWidth="18" strokeLinecap="round" />
-      {[armL, armR].map((arm, i) => <path key={i} d={path(arm)} {...stroke} stroke={skin} strokeWidth="5" />)}
-      {[armL, armR].map((arm, i) => <circle key={i} cx={hand(arm)[0]} cy={hand(arm)[1]} r="3.5" fill={skin} />)}
-      <rect x="-3" y="-66" width="6" height="8" fill={skin} />
+      {hair === "afro" && <circle cx="0" cy="-78" r="14" fill={hairColor} />}
+      {hair === "braids" && <path d="M-10 -78 Q-14 -60 -12 -50 M10 -78 Q14 -60 12 -50" {...stroke} stroke={hairColor} strokeWidth="4.5" />}
+      {[legL, legR].map((leg, i) => <path key={i} d={path(leg)} {...stroke} stroke={legColor} strokeWidth="9.5" />)}
+      {[legL, legR].map((leg, i) => {
+        const [fx, fy] = foot(leg);
+        return <path key={i} d={`M${fx - (i ? 3 : 8)} ${fy + 2} q0 -6 6 -6 h3 q5 0 5 6 z`} fill={shoes} />;
+      })}
+      {skirt
+        ? <path d="M-9 -32 L9 -32 L14 -12 Q0 -9 -14 -12 Z" fill={skirt} />
+        : <path d="M-9.5 -33 L9.5 -33 L10.5 -24 L-10.5 -24 Z" fill={pants} />}
+      <path d="M-12 -59 Q-13.5 -46 -10 -31 L10 -31 Q13.5 -46 12 -59 Q0 -64 -12 -59 Z" fill={shirt} />
+      <path d="M0 -58 V-34" stroke={shade(shirt)} strokeWidth="1" opacity=".5" />
+      {[armL, armR].map(arm)}
+      <rect x="-3" y="-66" width="6" height="8" rx="2" fill={shade(skin, 12)} />
+      <path d="M-5 -60 L0 -55 L5 -60" {...stroke} stroke={shade(shirt, 35)} strokeWidth="1.6" />
       <circle cx="0" cy="-74" r="10" fill={skin} />
-      {hair === "short" && <path d="M-10 -75 C-10 -87 10 -88 11 -77 C6 -81 -4 -82 -10 -75 Z" fill={HAIR} />}
-      {hair === "bun" && <><path d="M-10 -74 C-11 -88 11 -89 11 -74 C8 -80 -6 -82 -10 -74 Z" fill={HAIR} /><circle cx="5" cy="-86" r="5" fill={HAIR} /></>}
-      {hair === "long" && <path d="M-11 -74 C-12 -89 12 -89 11 -74 L12 -60 C9 -58 7 -62 7 -68 C5 -78 -5 -78 -7 -68 C-7 -62 -9 -58 -12 -60 Z" fill={HAIR} />}
+      <circle cx="-10" cy="-73" r="2.2" fill={shade(skin, 10)} />
+      {hair === "short" && <path d="M-10 -75 C-10 -87 10 -88 11 -77 C6 -81 -4 -82 -10 -75 Z" fill={hairColor} />}
+      {hair === "bun" && <><path d="M-10 -74 C-11 -88 11 -89 11 -74 C8 -80 -6 -82 -10 -74 Z" fill={hairColor} /><circle cx="5" cy="-86" r="5.5" fill={hairColor} /></>}
+      {hair === "long" && <path d="M-11 -74 C-12 -89 12 -89 11 -74 L12 -58 C9 -56 7 -60 7 -68 C5 -78 -5 -78 -7 -68 C-7 -60 -9 -56 -12 -58 Z" fill={hairColor} />}
+      {hair === "afro" && <path d="M-10 -76 C-8 -84 8 -84 10 -76 C8 -79 -8 -79 -10 -76 Z" fill={hairColor} />}
+      {hair === "braids" && <path d="M-10 -75 C-10 -88 10 -88 10 -75 C7 -80 -7 -80 -10 -75 Z" fill={hairColor} />}
+      {hair === "gele" && (
+        <g>
+          <path d="M-13 -75 C-19 -92 -9 -104 1 -99 C9 -108 24 -101 18 -89 C22 -84 15 -76 11 -78 C6 -84 -6 -84 -13 -75 Z" fill={GREEN} />
+          <path d="M-9 -83 C-4 -93 4 -95 9 -91 M-11 -78 C-5 -87 6 -88 12 -83 M2 -98 C8 -97 14 -94 16 -89" {...stroke} stroke={shade(GREEN, 32)} strokeWidth="1.5" />
+          <path d="M16 -90 q10 -4 11 -13 q-8 1 -11 7 z" fill={shade(GREEN, 15)} />
+        </g>
+      )}
       {children}
     </g>
   );
 }
+
+/* Props shared by the scenes. */
+function Plant({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <path d="M0 -14 C-10 -26 -14 -40 -8 -50 C-2 -40 2 -26 0 -14 Z" fill={GREEN} />
+      <path d="M0 -14 C8 -24 18 -30 22 -42 C10 -40 2 -28 0 -14 Z" fill={shade(GREEN, 18)} />
+      <path d="M0 -14 C-6 -20 -18 -24 -22 -32 C-10 -34 -2 -26 0 -14 Z" fill={shade(GREEN, 8)} />
+      <path d="M-9 -15 H9 L7 0 H-7 Z" fill={BLUE} />
+      <rect x="-10" y="-17" width="20" height="4" rx="2" fill={shade(BLUE, 25)} />
+    </g>
+  );
+}
+/** A soft round backdrop that gives a scene its setting. */
+const Backdrop = ({ cx = 100, cy = 74, r = 60, fill = "var(--surface-muted)" }: { cx?: number; cy?: number; r?: number; fill?: string }) =>
+  <circle cx={cx} cy={cy} r={r} fill={fill} />;
 
 function Scene({ className, viewBox = "0 0 200 140", children }: { className?: string; viewBox?: string; children: ReactNode }) {
   return <svg viewBox={viewBox} className={className} aria-hidden focusable="false">{children}</svg>;
@@ -77,7 +128,7 @@ export function ClimberIllustration({ className, ink = "#000" }: InkProps) {
       <rect x="132" y="44" width="28" height="96" rx="4" fill={ink} />
       <line x1="148" y1="10" x2="148" y2="44" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
       <path d="M147 10 L124 16 L147 23 Z" fill={BLUE} />
-      <Figure x={86} y={104} shoes="#fff" pants="#1d2a55"
+      <Figure x={86} y={104} shoes="#fff" hair="afro" pants="#1d2a55"
         legL={[[-2, -30], [-8, -14], [-16, 0]]} legR={[[2, -30], [12, -42], [17, -30]]}
         armL={[[-6, -52], [-12, -40], [-10, -30]]} armR={[[6, -52], [16, -62], [24, -74]]} />
     </Scene>
@@ -110,7 +161,7 @@ export function WaverIllustration({ className, ink = "#000" }: InkProps) {
       <path d="M36 96 C24 78 12 64 12 46 a24 24 0 0 1 48 0 C60 64 48 78 36 96 Z" fill={ink} />
       <circle cx="36" cy="46" r="9" fill="#fff" />
       <ellipse cx="36" cy="100" rx="14" ry="3" fill={ink} opacity=".25" />
-      <Figure x={94} y={124} shoes="#fff" pants="#1d2a55" skin={SKINS[1]} hair="bun" armR={WAVE_R} />
+      <Figure x={94} y={124} shoes="#fff" skin={SKINS[1]} hair="gele" shirt={BLUE} skirt="#fff" armR={WAVE_R} />
       <path d="M120 40 q4 4 0 8 M124 37 q6 7 0 14" {...stroke} stroke={ink} strokeWidth="2" />
     </Scene>
   );
@@ -124,14 +175,16 @@ export type EmptyArt = "generic" | "prospects" | "tasks" | "team" | "messages" |
 function GenericScene({ className }: Props) {
   return (
     <Scene className={className}>
+      <Backdrop cx={92} cy={70} r={60} />
       <Ground />
-      <rect x="30" y="14" width="88" height="112" rx="12" fill={CARD} stroke={LINE} strokeWidth="2" />
+      <Plant x={190} y={128} s={0.8} />
+      <rect x="30" y="14" width="88" height="112" rx="12" fill="var(--bg)" stroke={LINE} strokeWidth="2" />
       <rect x="44" y="32" width="46" height="8" rx="4" fill={BLUE} />
       <rect x="44" y="50" width="60" height="6" rx="3" fill={LINE} />
       <rect x="44" y="64" width="50" height="6" rx="3" fill={LINE} />
       <circle cx="74" cy="100" r="13" fill={GREEN} />
       <path d="M74 94 V106 M68 100 H80" {...stroke} stroke="#000" strokeWidth="3" />
-      <Figure x={156} y={128} shirt={GREEN} armL={POINT_L} />
+      <Figure x={156} y={128} hair="afro" shirt={GREEN} armL={POINT_L} />
     </Scene>
   );
 }
@@ -141,16 +194,17 @@ function ProspectsScene({ className }: Props) {
   const cards = [{ y: 18, c: BLUE }, { y: 52, c: GREEN }, { y: 86, c: SKY }];
   return (
     <Scene className={className}>
+      <Backdrop cx={84} cy={70} r={60} />
       <Ground />
       {cards.map(({ y, c }) => (
         <g key={y}>
-          <rect x="26" y={y} width="92" height="28" rx="10" fill={CARD} stroke={LINE} strokeWidth="2" />
+          <rect x="26" y={y} width="92" height="28" rx="10" fill="var(--bg)" stroke={LINE} strokeWidth="2" />
           <circle cx="42" cy={y + 14} r="7" fill={c} />
           <rect x="56" y={y + 8} width="44" height="5" rx="2.5" fill="var(--fg-muted)" />
           <rect x="56" y={y + 17} width="30" height="4" rx="2" fill={LINE} />
         </g>
       ))}
-      <Figure x={156} y={128} skin={SKINS[2]} hair="long" shirt={BLUE}
+      <Figure x={156} y={128} skin={SKINS[2]} hair="braids" shirt={BLUE} skirt={GREEN}
         armL={[[-6, -52], [-10, -40], [-16, -48]]} armR={[[6, -52], [2, -42], [-12, -50]]}>
         <rect x="-21" y="-60" width="11" height="17" rx="2.5" fill={GREEN} />
       </Figure>
@@ -163,8 +217,10 @@ function TasksScene({ className }: Props) {
   const rows = [{ y: 46, done: true }, { y: 72, done: true }, { y: 98, done: false }];
   return (
     <Scene className={className}>
+      <Backdrop cx={86} cy={70} r={60} />
       <Ground />
-      <rect x="28" y="16" width="86" height="110" rx="12" fill={CARD} stroke={LINE} strokeWidth="2" />
+      <Plant x={190} y={128} s={0.75} />
+      <rect x="28" y="16" width="86" height="110" rx="12" fill="var(--bg)" stroke={LINE} strokeWidth="2" />
       <rect x="54" y="10" width="34" height="14" rx="5" fill={NEUTRAL} />
       {rows.map(({ y, done }) => (
         <g key={y}>
@@ -185,10 +241,11 @@ function TasksScene({ className }: Props) {
 function TeamScene({ className }: Props) {
   return (
     <Scene className={className}>
+      <Backdrop cx={100} cy={72} r={62} />
       <Ground w={86} />
-      <Figure x={58} y={128} scale={0.94} skin={SKINS[2]} shirt={GREEN} armR={WAVE_R} />
-      <Figure x={142} y={128} scale={0.94} skin={SKINS[3]} hair="long" shirt={SKY} armR={[[6, -52], [14, -40], [6, -34]]} />
-      <Figure x={100} y={130} skin={SKINS[1]} hair="bun" shirt={BLUE} />
+      <Figure x={58} y={128} scale={0.94} skin={SKINS[2]} hair="afro" shirt={GREEN} armR={WAVE_R} />
+      <Figure x={142} y={128} scale={0.94} skin={SKINS[3]} hair="braids" shirt={SKY} armR={[[6, -52], [14, -40], [6, -34]]} />
+      <Figure x={100} y={130} skin={SKINS[1]} hair="gele" shirt={BLUE} skirt={SKY} />
     </Scene>
   );
 }
@@ -197,6 +254,7 @@ function TeamScene({ className }: Props) {
 function MessagesScene({ className }: Props) {
   return (
     <Scene className={className}>
+      <Backdrop cx={100} cy={70} r={60} />
       <Ground />
       <rect x="22" y="18" width="92" height="34" rx="17" fill={BLUE} />
       <path d="M34 50 L30 62 L46 51 Z" fill={BLUE} />
@@ -206,7 +264,7 @@ function MessagesScene({ className }: Props) {
       <path d="M112 98 L118 108 L104 99 Z" fill={GREEN} />
       <rect x="58" y="80" width="46" height="5" rx="2.5" fill="#000" />
       <rect x="58" y="89" width="30" height="4" rx="2" fill="#000" opacity=".6" />
-      <Figure x={164} y={128} skin={SKINS[0]} shirt={SKY}
+      <Figure x={164} y={128} skin={SKINS[0]} hair="afro" shirt={SKY}
         armL={[[-6, -52], [-10, -40], [-16, -48]]} armR={[[6, -52], [2, -42], [-12, -50]]}>
         <rect x="-21" y="-60" width="11" height="17" rx="2.5" fill={BLUE} />
       </Figure>
@@ -218,14 +276,15 @@ function MessagesScene({ className }: Props) {
 function MoneyScene({ className }: Props) {
   return (
     <Scene className={className}>
+      <Backdrop cx={96} cy={72} r={60} />
       <Ground />
       <rect x="40" y="30" width="44" height="10" rx="4" fill={NEUTRAL} />
-      <path d="M36 44 Q36 40 40 40 H84 Q88 40 88 44 V118 Q88 126 80 126 H44 Q36 126 36 118 Z" fill={CARD} stroke={LINE} strokeWidth="2" />
+      <path d="M36 44 Q36 40 40 40 H84 Q88 40 88 44 V118 Q88 126 80 126 H44 Q36 126 36 118 Z" fill="var(--bg)" stroke={LINE} strokeWidth="2" />
       {[118, 110, 102, 94].map((y, i) => <ellipse key={y} cx={i % 2 ? 66 : 58} cy={y} rx="14" ry="5" fill={GREEN} stroke="#3f7d0c" strokeWidth="1.5" />)}
       <circle cx="62" cy="16" r="8" fill={GREEN} stroke="#3f7d0c" strokeWidth="1.5" />
       <path d="M62 12 V20" stroke="#3f7d0c" strokeWidth="2" strokeLinecap="round" />
       <path d="M50 8 l-4 -4 M74 8 l4 -4" {...stroke} stroke={NEUTRAL} strokeWidth="2" />
-      <Figure x={140} y={128} skin={SKINS[3]} hair="bun" shirt={BLUE} armL={[[-6, -52], [-20, -62], [-34, -66]]} />
+      <Figure x={140} y={128} skin={SKINS[3]} hair="gele" shirt={BLUE} skirt={GREEN} armL={[[-6, -52], [-20, -62], [-34, -66]]} />
     </Scene>
   );
 }
@@ -246,11 +305,12 @@ export function EmptyIllustration({ art = "generic", className }: Props & { art?
 export function WelcomeIllustration({ className }: Props) {
   return (
     <Scene className={className} viewBox="0 0 220 140">
+      <circle cx="110" cy="72" r="64" fill="#ffffff" opacity=".07" />
       <ellipse cx="110" cy="131" rx="96" ry="4" fill="#ffffff" opacity=".12" />
-      <Figure x={62} y={128} scale={0.94} skin={SKINS[2]} shirt={GREEN} pants={SKY} shoes="#fff" armR={WAVE_R} />
-      <Figure x={158} y={128} scale={0.94} skin={SKINS[3]} hair="long" shirt={SKY} pants={GREEN} shoes="#fff"
+      <Figure x={62} y={128} scale={0.94} skin={SKINS[2]} hair="afro" shirt={GREEN} pants={SKY} shoes="#fff" armR={WAVE_R} />
+      <Figure x={158} y={128} scale={0.94} skin={SKINS[3]} hair="braids" shirt={SKY} pants={GREEN} shoes="#fff"
         armL={[[-6, -52], [-16, -62], [-20, -76]]} />
-      <Figure x={110} y={130} skin={SKINS[1]} hair="bun" shirt={BLUE} pants={SKY} shoes="#fff"
+      <Figure x={110} y={130} skin={SKINS[1]} hair="gele" shirt={BLUE} skirt={SKY} shoes="#fff"
         armL={[[-6, -52], [-16, -62], [-20, -76]]} armR={WAVE_R} />
     </Scene>
   );
@@ -278,6 +338,7 @@ export function SuccessIllustration({ className }: Props) {
         .mx-tick { stroke-dasharray: 40; animation: mx-draw .5s .3s ease-out both }
         .mx-bit { animation: mx-burst .7s .35s cubic-bezier(.2,.8,.2,1) both }
       `}</style>
+      <Backdrop cx={100} cy={70} r={60} />
       <Ground />
       {confetti.map((b, i) => (
         <rect key={i} className="mx-bit" x={b.x} y={b.y} width="7" height="4" rx="1" fill={b.c}
@@ -285,7 +346,7 @@ export function SuccessIllustration({ className }: Props) {
       ))}
       <circle className="mx-tick-bg" cx="70" cy="56" r="30" fill={GREEN} />
       <path className="mx-tick" d="M56 56 l10 10 l18 -20" {...stroke} stroke="#000" strokeWidth="6" />
-      <Figure x={148} y={120} skin={SKINS[0]} shirt={BLUE}
+      <Figure x={148} y={120} skin={SKINS[0]} hair="afro" shirt={BLUE}
         legL={[[-3, -30], [-10, -18], [-6, -6]]} legR={[[3, -30], [10, -18], [8, -4]]}
         armL={[[-6, -52], [-14, -64], [-16, -78]]} armR={[[6, -52], [14, -64], [16, -78]]} />
     </Scene>
@@ -298,11 +359,12 @@ export function SuccessIllustration({ className }: Props) {
 export function LostIllustration({ className }: Props) {
   return (
     <Scene className={className}>
+      <Backdrop cx={100} cy={70} r={60} />
       <Ground />
       <rect x="40" y="10" width="34" height="30" rx="15" fill={SKY} />
       <path d="M48 38 L46 48 L58 39 Z" fill={SKY} />
       <path d="M52 21 q0 -6 5 -6 q5 0 5 5 q0 4 -5 5 v3 M57 33 v.5" {...stroke} stroke="#000" strokeWidth="2.6" />
-      <Figure x={100} y={128} skin={SKINS[1]} shirt={GREEN} armL={[[-6, -52], [-14, -44], [-22, -46]]} armR={[[6, -52], [14, -44], [22, -46]]}>
+      <Figure x={100} y={128} skin={SKINS[1]} hair="bun" shirt={GREEN} armL={[[-6, -52], [-14, -44], [-22, -46]]} armR={[[6, -52], [14, -44], [22, -46]]}>
         <path d="M-30 -64 L-10 -58 L10 -64 L30 -58 L30 -30 L10 -36 L-10 -30 L-30 -36 Z" fill="#fff" stroke={LINE} strokeWidth="1.5" />
         <path d="M-10 -58 V-30 M10 -64 V-36" stroke={LINE} strokeWidth="1.5" />
         <path d="M-24 -44 q8 -10 16 -2 t16 -4" {...stroke} stroke={BLUE} strokeWidth="2.5" strokeDasharray="3 3" />
@@ -316,13 +378,14 @@ export function LostIllustration({ className }: Props) {
 export function OfflineIllustration({ className }: Props) {
   return (
     <Scene className={className}>
+      <Backdrop cx={100} cy={70} r={60} />
       <Ground />
       <g transform="translate(58 44)">
         {[24, 16, 8].map((r) => <path key={r} d={`M${-r} 0 A${r} ${r} 0 0 1 ${r} 0`} {...stroke} stroke={NEUTRAL} strokeWidth="4" transform={`translate(0 ${r * 0.6})`} />)}
         <circle cx="0" cy="18" r="3.5" fill={NEUTRAL} />
         <path d="M-22 -14 L22 26" {...stroke} stroke={BLUE} strokeWidth="4" />
       </g>
-      <Figure x={130} y={128} skin={SKINS[2]} hair="bun" shirt={GREEN} armL={[[-6, -52], [-16, -64], [-22, -80]]}>
+      <Figure x={130} y={128} skin={SKINS[2]} hair="braids" shirt={GREEN} skirt={BLUE} armL={[[-6, -52], [-16, -64], [-22, -80]]}>
         <rect x="-28" y="-98" width="12" height="20" rx="2.5" fill={BLUE} />
       </Figure>
     </Scene>
@@ -333,14 +396,15 @@ export function OfflineIllustration({ className }: Props) {
 export function LockedIllustration({ className }: Props) {
   return (
     <Scene className={className}>
+      <Backdrop cx={100} cy={70} r={60} />
       <Ground />
-      <rect x="32" y="14" width="70" height="114" rx="6" fill={CARD} stroke={LINE} strokeWidth="2" />
+      <rect x="32" y="14" width="70" height="114" rx="6" fill="var(--bg)" stroke={LINE} strokeWidth="2" />
       <rect x="42" y="24" width="50" height="40" rx="3" fill="none" stroke={LINE} strokeWidth="2" />
       <rect x="42" y="72" width="50" height="46" rx="3" fill="none" stroke={LINE} strokeWidth="2" />
       <path d="M60 78 v-6 a7 7 0 0 1 14 0 v6" {...stroke} stroke={BLUE} strokeWidth="4" />
       <rect x="55" y="77" width="24" height="18" rx="4" fill={BLUE} />
       <circle cx="67" cy="85" r="2.5" fill="#fff" />
-      <Figure x={146} y={128} skin={SKINS[3]} shirt={GREEN} armR={[[6, -52], [14, -42], [6, -36]]} armL={[[-6, -52], [-12, -44], [-6, -38]]} />
+      <Figure x={146} y={128} skin={SKINS[3]} hair="afro" shirt={GREEN} armR={[[6, -52], [14, -42], [6, -36]]} armL={[[-6, -52], [-12, -44], [-6, -38]]} />
     </Scene>
   );
 }
@@ -349,8 +413,9 @@ export function LockedIllustration({ className }: Props) {
 export function FixingIllustration({ className }: Props) {
   return (
     <Scene className={className}>
+      <Backdrop cx={100} cy={70} r={60} />
       <Ground />
-      <rect x="26" y="52" width="80" height="74" rx="10" fill={CARD} stroke={LINE} strokeWidth="2" />
+      <rect x="26" y="52" width="80" height="74" rx="10" fill="var(--bg)" stroke={LINE} strokeWidth="2" />
       <g transform="translate(66 89)">
         {Array.from({ length: 8 }, (_, i) => <rect key={i} x="-4" y="-22" width="8" height="10" rx="2" fill={BLUE} transform={`rotate(${i * 45})`} />)}
         <circle r="15" fill={BLUE} />

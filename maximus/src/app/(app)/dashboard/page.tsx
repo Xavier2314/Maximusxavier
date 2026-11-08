@@ -5,6 +5,7 @@ import { TASK_CATEGORIES, type Task } from "@/lib/planner";
 import { FocusPopup } from "@/components/focus-popup";
 import { TodayList, type TodayItem } from "./today-list";
 import { MonthTrack } from "./month-track";
+import { CallerIllustration, WaverIllustration } from "@/components/brand/illustrations";
 import { Avatar } from "@/components/ui/misc";
 import { requireViewer } from "@/lib/auth";
 import { FOCUS, topFocus, type GrowthFocus } from "@/lib/growth";
@@ -127,7 +128,8 @@ export default async function DashboardPage() {
       <MonthTrack monthName={monthName} daysInMonth={daysInMonth} today={dayNum} checkIns={checkInDays} goalPct={goalPct} hasGoals={goalRows.length > 0} />
 
       <section aria-label="Today" className="grid gap-2.5 lg:grid-cols-2">
-        <Link href="/planner" className="flex min-h-[148px] flex-col rounded-[26px] bg-black p-5 text-white transition-opacity hover:opacity-90 dark:ring-1 dark:ring-border">
+        <Link href="/planner" className="relative flex min-h-[148px] flex-col overflow-hidden rounded-[26px] bg-black p-5 text-white transition-opacity hover:opacity-90 dark:ring-1 dark:ring-border">
+          <CallerIllustration className="absolute -bottom-1 right-5 hidden h-24 w-auto sm:block" />
           <span className="flex items-center justify-between gap-3">
             <span className="text-sm text-white/70">Next up</span>
             {next && <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-black">{next.kind === "followup" || next.kind === "task" ? (next.overdue ? "Overdue" : "Today") : "Today"}</span>}
@@ -140,11 +142,12 @@ export default async function DashboardPage() {
           </span>
         </Link>
 
-        <Link href="/attendance" className="flex items-center justify-between gap-4 rounded-[26px] bg-tile-green p-5 text-black transition-[filter] hover:brightness-95">
-          <span className="min-w-0">
+        <Link href="/attendance" className="relative flex items-center justify-between gap-3 overflow-hidden rounded-[26px] bg-tile-green p-5 text-black transition-[filter] hover:brightness-95">
+          <span className="min-w-0 flex-1">
             <span className="block font-display text-[26px] leading-tight tracking-[-0.02em]">{checkedIn ? "Checked in" : "Check in"}</span>
             <span className="mt-1 block text-sm">{checkedIn ? `Since ${formatTime(openAttendance.check_in_at, tz)}` : "Tap when you arrive at the office"}</span>
           </span>
+          <WaverIllustration className="-my-5 h-28 w-auto shrink-0 self-end" />
           <span className="grid size-12 shrink-0 place-items-center rounded-full bg-black text-white"><ArrowRight className="size-5" aria-hidden /></span>
         </Link>
 
