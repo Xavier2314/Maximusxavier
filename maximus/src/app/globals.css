@@ -8,7 +8,7 @@
    Main:   Blue  #305EE6   Green #7ED321
    Accent: Lime  #B5F44A   Navy  #0F172A
    Highlight: Orange #F97316 — the Home banner only; always with navy text on it
-   Typeface: Futura (Jost is used as the web fallback, see layout.tsx)
+   Typefaces: Manjari for headings, Inter for text (see layout.tsx)
 
    Every text colour below meets WCAG AA (4.5:1) on --surface, --surface-muted
    and --bg, in both light and dark mode.
@@ -80,7 +80,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-manjari), var(--font-inter), ui-sans-serif, sans-serif;
 
   --color-brand-blue: var(--brand-blue);
   --color-brand-green: var(--brand-green);
@@ -150,6 +151,8 @@
     outline-offset: 2px;
   }
   input, select, textarea, button { font: inherit; }
+  /* Headings use the display face; the line height suits Manjari's tall ascenders. */
+  h1, h2, h3 { font-family: var(--font-manjari), var(--font-inter), ui-sans-serif, sans-serif; letter-spacing: -0.015em; }
 }
 
 @layer components {

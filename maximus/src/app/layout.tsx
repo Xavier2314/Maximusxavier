@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Jost } from "next/font/google";
+import { Inter, Manjari } from "next/font/google";
 import { ServiceWorkerRegister } from "@/components/shell/service-worker-register";
 import "./globals.css";
 
-// Jost, the web stand-in for the brand's Futura.
-const jost = Jost({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
+// Inter for reading text; Manjari, round and soft, for headings and big figures.
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const manjari = Manjari({ subsets: ["latin"], weight: ["400", "700"], variable: "--font-manjari", display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "Maximus", template: "%s · Maximus" },
@@ -31,7 +32,7 @@ const themeScript = `(function(){try{var t=localStorage.getItem('mx-theme-v2');v
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${jost.variable} dark`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${manjari.variable} dark`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
