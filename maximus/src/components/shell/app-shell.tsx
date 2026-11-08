@@ -102,59 +102,50 @@ function isActive(pathname: string, href: string) {
   return ["/dashboard", "/office", "/admin"].includes(href) ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-const COLLAPSED_KEY = "mx-nav-collapsed";
-
-/** Grouped navigation: titled categories fold away, and the one holding the current page always opens. */
+/**
+ * Grouped navigation. Titled categories start closed and open like an accordion: opening one
+ * closes the others. The category holding the current page opens by itself.
+ */
 function NavLinks({ sections, pathname, onNavigate, dark = false }: { sections: NavSection[]; pathname: string; onNavigate?: () => void; dark?: boolean }) {
-  const [collapsed, setCollapsed] = useState<string[]>([]);
-  useEffect(() => {
-    try { setCollapsed(JSON.parse(localStorage.getItem(COLLAPSED_KEY) ?? "[]")); } catch { /* storage blocked: all open */ }
-  }, []);
-  const toggle = (title: string) => setCollapsed((c) => {
-    const next = c.includes(title) ? c.filter((t) => t !== title) : [...c, title];
-    try { localStorage.setItem(COLLAPSED_KEY, JSON.stringify(next)); } catch { /* ignore */ }
-    return next;
+  const activeTitle = sections.find((sec) => sec.title && sec.items.some((item) => isActive(pathname, item.href)))?.title ?? null;
+  const [openTitle, setOpenTitle] = useState<string | null>(activeTitle);
+  useEffect(() => { if (activeTitle) setOpenTitle(activeTitle); }, [activeTitle]);
+
+  const row = "flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-[15px] transition-colors lg:min-h-9 lg:text-sm";
+  const idle = dark ? "text-white/80 hover:bg-white/5 hover:text-white" : "text-fg-muted hover:bg-surface-muted/70 hover:text-fg";
+
+  const links = (items: NavSection["items"], nested: boolean) => items.map((item) => {
+    const Icon = NAV_ICONS[item.icon];
+    const active = isActive(pathname, item.href);
+    return (
+      <li key={item.href}>
+        <Link href={item.href} onClick={onNavigate} aria-current={active ? "page" : undefined}
+          className={cn("group", row, nested && "pl-10",
+            active ? (dark ? "bg-white/10 font-medium text-white" : "bg-surface-muted font-medium text-fg") : idle)}>
+          {!nested && <Icon className={cn("size-4 shrink-0", dark ? (active ? "text-brand-lime" : "text-white/60") : (active ? "text-fg" : "text-fg-subtle group-hover:text-fg-muted"))} aria-hidden />}
+          {item.label}
+        </Link>
+      </li>
+    );
   });
 
   return (
-    <nav aria-label="Main" className="space-y-4">
+    <nav aria-label="Main" className="space-y-1">
       {sections.map((section, i) => {
-        const hasActive = section.items.some((item) => isActive(pathname, item.href));
-        const open = !section.title || hasActive || !collapsed.includes(section.title);
-        const listId = `nav-${(section.title ?? `top-${i}`).toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+        if (!section.title) return <ul key={`top-${i}`} className="space-y-0.5 pb-2">{links(section.items, false)}</ul>;
+        const title = section.title;
+        const open = openTitle === title;
+        const listId = `nav-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+        const holdsActive = activeTitle === title;
         return (
-          <div key={section.title ?? i}>
-            {section.title && (
-              <button type="button" onClick={() => toggle(section.title!)} aria-expanded={open} aria-controls={listId}
-                disabled={hasActive}
-                className={cn("group mb-0.5 flex min-h-9 w-full items-center gap-1 rounded-md px-3 text-xs font-medium transition-colors lg:min-h-7",
-                  dark ? "text-white/60 hover:text-white" : "text-fg-subtle hover:text-fg-muted", "disabled:cursor-default")}>
-                {section.title}
-                <ChevronDown className={cn("size-3.5 transition-transform", !open && "-rotate-90", hasActive && "opacity-0")} aria-hidden />
-              </button>
-            )}
-            {open && (
-              <ul id={listId} className="space-y-0.5">
-                {section.items.map((item) => {
-                  const Icon = NAV_ICONS[item.icon];
-                  const active = isActive(pathname, item.href);
-                  return (
-                    <li key={item.href}>
-                      <Link href={item.href} onClick={onNavigate} aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "group flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] transition-colors lg:min-h-9 lg:text-sm",
-                          dark
-                            ? active ? "bg-white/10 font-medium text-white" : "text-white/70 hover:bg-white/5 hover:text-white"
-                            : active ? "bg-surface-muted font-medium text-fg" : "text-fg-muted hover:bg-surface-muted/70 hover:text-fg",
-                        )}>
-                        <Icon className={cn("size-4 shrink-0", dark ? (active ? "text-brand-lime" : "text-white/60") : (active ? "text-fg" : "text-fg-subtle group-hover:text-fg-muted"))} aria-hidden />
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+          <div key={title}>
+            <button type="button" onClick={() => setOpenTitle(open ? null : title)} aria-expanded={open} aria-controls={listId}
+              className={cn(row, "justify-between font-medium",
+                holdsActive || open ? (dark ? "text-white" : "text-fg") : (dark ? "text-white/80 hover:bg-white/5 hover:text-white" : "text-fg hover:bg-surface-muted/70"))}>
+              {title}
+              <ChevronDown className={cn("size-4 shrink-0 transition-transform duration-200", dark ? "text-white/60" : "text-fg-subtle", !open && "-rotate-90")} aria-hidden />
+            </button>
+            {open && <ul id={listId} className="space-y-0.5 pb-1 animate-fade">{links(section.items, true)}</ul>}
           </div>
         );
       })}
