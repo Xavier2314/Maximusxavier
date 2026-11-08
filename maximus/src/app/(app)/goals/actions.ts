@@ -50,13 +50,13 @@ export async function saveGoalAction(_prev: GoalFormState, formData: FormData): 
   const allowed: readonly string[] = PROSPECTING_METHODS;
   const prospecting_methods = [...new Set(formData.getAll("prospecting_methods").map(String))].filter((m) => allowed.includes(m));
 
-  // Savings, product sales and PV are required every month; everything else is optional.
+  // No target is compulsory: members set the goals they choose. Submitting just needs something to submit.
   if (v.intent === "submit") {
-    const errors: Record<string, string[]> = {};
-    if (!(Number(v.savings_target) > 0)) errors.savings_target = ["Set how much you'll save this month"];
-    if (!(Number(v.product_pv_target) > 0)) errors.product_pv_target = ["Set how many PV you'll sell"];
-    if (!(Number(v.sales_target) > 0)) errors.sales_target = ["Set your product sales target (₦)"];
-    if (Object.keys(errors).length) return { ok: false, message: "Savings and product sales targets are required. You can save a draft anytime.", errors };
+    const targets = [v.income_target, v.sales_target, v.savings_target, v.fiverr_target, v.upwork_target, v.freelance_other_target,
+      v.product_pv_target, v.prospecting_target, v.recruitment_target, v.order_target];
+    const hasSomething = targets.some((t) => Number(t) > 0) || custom_goals.length > 0 || prospecting_methods.length > 0
+      || Boolean(v.books || v.personal_development_target || v.plan_text);
+    if (!hasSomething) return { ok: false, message: "Add at least one goal before you submit. You can save a draft anytime." };
   }
 
   const supabase = await createClient();
@@ -169,7 +169,7 @@ const PLAN_TOOL = {
 };
 
 /** Turns what the member typed or said into goal targets and a to-do list. */
-export async function planGoalsAction(text: string): Promise<{ ok: boolean; message: string; plan?: GoalPlan }> {
+export async function planGoalsAction(text: string, current?: string): Promise<{ ok: boolean; message: string; plan?: GoalPlan }> {
   const input = z.string().trim().min(5, "Tell Maximus AI a bit more about your goals.").max(4000).safeParse(text);
   if (!input.success) return { ok: false, message: input.error.issues[0].message };
   if (!isAiConfigured()) return { ok: false, message: "Maximus AI is not configured yet." };
@@ -180,10 +180,12 @@ export async function planGoalsAction(text: string): Promise<{ ok: boolean; mess
     const res = await aiClient().messages.create({
       model: AI_MODEL,
       max_tokens: 8000,
-      system: "You help members of Maximus, a Nigerian network-marketing and freelancing team, turn their monthly goals into clear targets and a practical to-do list. Use Naira. Only fill targets the member mentioned or clearly implied; use null otherwise. Savings, product sales (₦) and PV are required every month, so if they are missing add an action reminding the member to set them. Make actions specific, daily or weekly, and achievable. Never promise income. Always answer by calling the monthly_goal_plan tool exactly once; never reply in plain text.",
+      system: "You help members of Maximus, a Nigerian network-marketing and freelancing team, turn their monthly goals into clear targets and a practical to-do list. Use Naira. Set only what the member said: fill the targets they mentioned and use null for everything else. Never add targets, reminders or actions they did not ask for. Turn the things they said they will do into specific actions. Never promise income. Always answer by calling the monthly_goal_plan tool exactly once; never reply in plain text.",
       tools: [PLAN_TOOL],
       tool_choice: { type: "auto" }, // forced tool choice is rejected by current models; the instruction below asks for the tool
-      messages: [{ role: "user", content: `My goals for this month, in my own words:\n\n${input.data}` }],
+      messages: [{ role: "user", content: current
+        ? `I already have goals for this month:\n${current.slice(0, 4000)}\n\nAdd this, in my own words. Fill only what I'm adding or changing now; use null for anything I don't mention:\n\n${input.data}`
+        : `My goals for this month, in my own words:\n\n${input.data}` }],
     });
     const block = res.content.find((b) => b.type === "tool_use");
     if (!block || block.type !== "tool_use") return { ok: false, message: "Maximus AI couldn't build a plan. Please try again." };

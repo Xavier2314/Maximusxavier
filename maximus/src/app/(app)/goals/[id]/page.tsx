@@ -12,7 +12,7 @@ import { requireViewer } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { GoalProgress, MonthlyGoal } from "@/lib/types";
 import { formatDate, formatMoney, formatRelative, percent } from "@/lib/utils";
-import { GoalForm } from "../goal-form";
+import { GoalComposer } from "../goal-composer";
 import { ReviewPanel } from "./review-panel";
 
 export const metadata = { title: "Goals" };
@@ -45,7 +45,7 @@ export default async function GoalDetailPage({ params, searchParams }: { params:
         <Link href={`/goals/${id}`} className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg"><ArrowLeft className="size-4" aria-hidden /> Back</Link>
         <PageHeader title={`Edit ${formatDate(goal.month, { month: "long" })} goals`} />
         <Card className="max-w-3xl"><CardBody className="sm:p-8">
-          <GoalForm goal={goal} defaultMonth={goal.month}
+          <GoalComposer goal={goal} defaultMonth={goal.month}
             months={[{ value: goal.month, label: formatDate(goal.month, { month: "long", year: "numeric" }) }]} />
         </CardBody></Card>
       </>

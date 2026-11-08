@@ -50,9 +50,18 @@ export function GoalForm({ goal, months, defaultMonth, plan, planText, simple = 
   goal?: MonthlyGoal; months: { value: string; label: string }[]; defaultMonth: string; plan?: GoalPlan | null; planText?: string; simple?: boolean;
 }) {
   const [state, action] = useActionState(saveGoalAction, null);
+  // What the AI heard is added to goals already saved: new numbers replace old ones, lists and notes grow.
   const g: GoalLike = { ...(goal ?? {}), ...Object.fromEntries(Object.entries(plan ?? {}).filter(([, v]) => v != null)) };
-  const [custom, setCustom] = useState<CustomGoal[]>(plan?.actions?.length ? plan.actions : goal?.custom_goals?.length ? goal.custom_goals : []);
-  const [methods, setMethods] = useState<string[]>(g.prospecting_methods ?? []);
+  const join = (a?: string | null, b?: string | null) => (a && b && a.trim() !== b.trim() ? `${a.trim()}\n${b.trim()}` : b || a || null);
+  if (goal && plan) {
+    g.books = join(goal.books, plan.books);
+    g.personal_development_target = join(goal.personal_development_target, plan.personal_development_target);
+    g.prospecting_methods_other = join(goal.prospecting_methods_other, plan.prospecting_methods_other);
+  }
+  const savedGoals = goal?.custom_goals ?? [];
+  const newGoals = (plan?.actions ?? []).filter((a) => !savedGoals.some((b) => b.title.trim().toLowerCase() === a.title.trim().toLowerCase()));
+  const [custom, setCustom] = useState<CustomGoal[]>([...savedGoals, ...newGoals]);
+  const [methods, setMethods] = useState<string[]>([...new Set([...(goal?.prospecting_methods ?? []), ...(plan?.prospecting_methods ?? [])])]);
   const [other, setOther] = useState(Boolean(g.prospecting_methods_other));
   const e = state?.errors ?? {};
   const toggle = (m: string) => setMethods((cur) => (cur.includes(m) ? cur.filter((x) => x !== m) : [...cur, m]));
@@ -70,22 +79,22 @@ export function GoalForm({ goal, months, defaultMonth, plan, planText, simple = 
       {simple ? (
         <>
           <div className="grid gap-4 sm:grid-cols-3">
-            <Money name="savings_target" label="Savings target" value={g.savings_target} error={e.savings_target} required />
-            <Money name="sales_target" label="Product sales" value={g.sales_target} error={e.sales_target} required />
-            <Count name="product_pv_target" label="Product sales (PV)" value={g.product_pv_target} error={e.product_pv_target} required unit="PV" />
+            <Money name="savings_target" label="Savings target" value={g.savings_target} error={e.savings_target} />
+            <Money name="sales_target" label="Product sales" value={g.sales_target} error={e.sales_target} />
+            <Count name="product_pv_target" label="Product sales (PV)" value={g.product_pv_target} error={e.product_pv_target} unit="PV" />
           </div>
         </>
       ) : (
         <>
-          <Section icon={PiggyBank} title="Required every month">
+          <Section icon={PiggyBank} title="Savings & product sales">
             <div className="grid gap-4 sm:grid-cols-3">
-              <Money name="savings_target" label="Savings target" hint="How much you'll save" value={g.savings_target} error={e.savings_target} required />
-              <Money name="sales_target" label="Product sales" hint="Value of products you'll sell" value={g.sales_target} error={e.sales_target} required />
-              <Count name="product_pv_target" label="Product sales (PV)" hint="Point value you'll sell" value={g.product_pv_target} error={e.product_pv_target} required unit="PV" />
+              <Money name="savings_target" label="Savings target" hint="How much you'll save" value={g.savings_target} error={e.savings_target} />
+              <Money name="sales_target" label="Product sales" hint="Value of products you'll sell" value={g.sales_target} error={e.sales_target} />
+              <Count name="product_pv_target" label="Product sales (PV)" hint="Point value you'll sell" value={g.product_pv_target} error={e.product_pv_target} unit="PV" />
             </div>
           </Section>
 
-          <Section icon={Wallet} title="Income & freelancing" note="optional">
+          <Section icon={Wallet} title="Income & freelancing">
             <div className="grid gap-4 sm:grid-cols-2">
               <Money name="income_target" label="Total monthly income" value={g.income_target} error={e.income_target} />
               <Money name="fiverr_target" label="Fiverr" value={g.fiverr_target} error={e.fiverr_target} />
@@ -94,7 +103,7 @@ export function GoalForm({ goal, months, defaultMonth, plan, planText, simple = 
             </div>
           </Section>
 
-          <Section icon={Megaphone} title="Prospecting & team" note="optional">
+          <Section icon={Megaphone} title="Prospecting & team">
             <div className="grid gap-4 sm:grid-cols-3">
               <Count name="prospecting_target" label="People to contact" value={g.prospecting_target} error={e.prospecting_target} />
               <Count name="recruitment_target" label="New team members" hint="3 is a good start, no limit" value={g.recruitment_target} error={e.recruitment_target} />
@@ -119,7 +128,7 @@ export function GoalForm({ goal, months, defaultMonth, plan, planText, simple = 
             </div>
           </Section>
 
-          <Section icon={BookOpen} title="Personal development" note="optional">
+          <Section icon={BookOpen} title="Personal development">
             <Field label="Books you plan to read" htmlFor="books" hint="One per line">
               <Textarea id="books" name="books" rows={3} maxLength={1000} defaultValue={g.books ?? ""} placeholder={"Go Pro – Eric Worre\nThe Compound Effect – Darren Hardy"} />
             </Field>
@@ -133,7 +142,7 @@ export function GoalForm({ goal, months, defaultMonth, plan, planText, simple = 
 
       <Field label={<span className="inline-flex items-center gap-2"><NotebookPen className="size-4 text-primary" aria-hidden />My plan in my own words</span>}
         htmlFor="plan_text" hint="Write or speak your plan. Your sponsor and team leader will see this." optional={!simple}>
-        <VoiceTextarea id="plan_text" name="plan_text" rows={simple ? 10 : 4} maxLength={4000} defaultValue={planText ?? goal?.plan_text ?? ""}
+        <VoiceTextarea id="plan_text" name="plan_text" rows={simple ? 10 : 4} maxLength={4000} defaultValue={goal?.plan_text && planText ? join(goal.plan_text, planText) ?? "" : planText ?? goal?.plan_text ?? ""}
           placeholder="e.g. This month I want to bring in 3 people, make ₦150,000 and finish the prospecting course…" />
       </Field>
 
