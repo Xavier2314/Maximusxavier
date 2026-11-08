@@ -7,7 +7,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const { next, error } = await searchParams;
   return (
     <>
-      <h1 className="text-3xl font-semibold tracking-tight">Sign in</h1>
+      <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.02em]">Sign in</h1>
       <p className="mt-1 text-fg-muted">Sign in with your email and password.</p>
       {error === "link_expired" && (
         <p className="mt-4 rounded-xl bg-warning-soft px-4 py-3 text-sm text-warning" role="alert">
