@@ -1,0 +1,59 @@
+/* Cream / Ink Black / Burnt Orange theme — loaded after styles.css on every page.
+   Cream #F3EEE3 · Ink Black #111111 · Burnt Orange #D9541E */
+:root{
+  --navy-950:#111111; --navy-900:#1A1A1A; --navy-800:#242424; --navy-700:#2E2E2E;
+  --orange:#D9541E; --amber:#E46A36; --orange-ink:#B5410F;
+  --paper:#F3EEE3; --paper-2:#EAE3D4; --white:#FBF8F2; --ink:#111111;
+  --slate:#5F5A51; --mist:#E2DACB; --sky:#A8A195;
+  --shadow-lg:0 30px 80px -30px rgba(17,17,17,.28);
+  --font-serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+}
+.tone-dark{--bg:#F3EEE3;--bg-2:#FBF8F2;--fg:#111111;--muted:#5F5A51;--line:rgba(17,17,17,.12);--line-strong:rgba(17,17,17,.28);--accent-text:#D9541E;--field:#FBF8F2}
+.tone-light{--bg:#FBF8F2;--bg-2:#FFFFFF;--fg:#111111;--muted:#5F5A51;--line:rgba(17,17,17,.10);--line-strong:rgba(17,17,17,.26);--accent-text:#B5410F;--field:#FFFFFF}
+.tone-deep{--bg:#111111;--bg-2:#1C1C1C;--fg:#F3EEE3;--muted:#A8A195;--line:rgba(243,238,227,.12);--line-strong:rgba(243,238,227,.28);--accent-text:#E46A36;--field:rgba(243,238,227,.05)}
+body{background:#F3EEE3;color:#111111}
+::selection{background:#D9541E;color:#FFFFFF}
+
+/* header on cream */
+.header.is-scrolled{background:rgba(243,238,227,.92);border-bottom-color:rgba(17,17,17,.08)}
+.header .brand{color:#111111}
+.header .brand svg [fill="#F7F5F0"]{fill:#111111}
+.header .nav-links a{color:rgba(17,17,17,.62)}
+.header .nav-links a:hover,.header .nav-links a[aria-current="page"]{color:#111111}
+.header .menu-btn{border-color:rgba(17,17,17,.22);color:#111111}
+.header .btn--primary{background:#111111;color:#F3EEE3}
+.header .btn--primary .btn-ico{background:#D9541E;color:#FFFFFF}
+.header .btn--primary:hover{background:#2A2A2A}
+
+/* buttons: burnt orange pill, white text */
+.btn--primary{background:#D9541E;color:#FFFFFF}
+.btn--primary .btn-ico{background:#111111;color:#FFFFFF}
+.btn--primary:hover{background:#C24A18}
+.skip{color:#FFFFFF}
+
+/* brand gradients -> burnt orange */
+svg stop[stop-color="#FF9A3C"]{stop-color:#E46A36}
+svg stop[stop-color="#FF6B1A"]{stop-color:#D9541E}
+
+/* hero */
+.hero-bg::before{background:radial-gradient(800px 520px at 88% 12%,rgba(217,84,30,.10),transparent 60%)}
+.hero-bg::after{background:repeating-linear-gradient(124.34deg,rgba(17,17,17,.035) 0 1px,transparent 1px 26px)}
+.hero-sub{color:#5F5A51}
+.hero-sub strong{color:#111111}
+.hero-meta div{color:#5F5A51}
+.hero-meta b{color:#111111}
+.clients li{color:rgba(17,17,17,.62)}
+.portrait-cap span{color:rgba(243,238,227,.8)}
+
+/* editorial serif italic accents (like "never sleeps.") */
+em.serif-i,em.accent,h2 em{font-family:var(--font-serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+h1 em.serif-i{color:#111111;text-decoration:underline;text-decoration-color:#D9541E;text-decoration-thickness:.055em;text-underline-offset:.1em;text-decoration-skip-ink:none}
+h1 .ln{padding-bottom:.14em;margin-bottom:-.14em}
+h2 em,em.accent{color:#D9541E}
+.tone-deep h1 em.serif-i{color:#F3EEE3}
+
+/* dark objects stay dark (ink) with cream text */
+.tone-dark .diagram{background:#1A1A1A;box-shadow:inset 0 0 0 1px rgba(243,238,227,.06)}
+.diagram::before{background:radial-gradient(500px 300px at 85% 0%,rgba(217,84,30,.22),transparent 60%)}
+.flow .node{background:rgba(17,17,17,.6)}
+.lw-item.lw-light{background:#1A1A1A}
